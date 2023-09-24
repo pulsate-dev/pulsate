@@ -60,4 +60,4 @@ Pulsate コミュニティでは、攻撃的あるいはセンシティブな問
 
 この場を借りて最大限の感謝を伝えます。
 
-[mod-email]: mailto:pulsate@approvers.dev
+[mod-email]: mailto:moderation@pulsate.dev
