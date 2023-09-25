@@ -30,9 +30,10 @@ data "google_iam_policy" "cloud_run_public" {
 }
 
 resource "google_cloud_run_service_iam_policy" "policy" {
-  location = google_cloud_run_service.default.location
-  project  = google_cloud_run_service.default.project
-  service  = google_cloud_run_service.default.name
+  for_each = google_cloud_run_service.default
+  location = each.value.location
+  project  = each.value.project
+  service  = each.value.name
 
   policy_data = data.google_iam_policy.cloud_run_public.policy_data
 }
