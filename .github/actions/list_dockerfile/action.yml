@@ -10,8 +10,8 @@ outputs:
 runs:
   using: composite
   steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v4
     - id: set_matrix
       shell: bash
-      run: echo "::set-output name=matrix::$(ls services/**/Dockerfile | jq -R -s -c 'split("\n")[:-1]')"
+      run: echo "matrix=$(ls services/**/Dockerfile | jq -R -s -c 'split("\n")[:-1]')" >> $GITHUB_OUTPUT
 
