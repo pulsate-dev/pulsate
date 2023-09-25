@@ -1,0 +1,14 @@
+name: Dockerfile lint
+
+on:
+  pull_request:
+    paths-ignore:
+      - "Dockerfile"
+
+jobs:
+  lint:
+    name: Dockerfile lint
+    runs-on: ubuntu-latest
+    steps:
+      - run: |
+          echo "No Dockerfile updated"

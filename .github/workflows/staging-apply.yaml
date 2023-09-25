@@ -1,0 +1,90 @@
+name: Staging Terraform Apply
+
+on:
+  push:
+    branches:
+      - "main"
+
+env:
+  TF_CLOUD_ORGANIZATION: "pulsate"
+  TF_API_TOKEN: "${{ secrets.TF_API_TOKEN }}"
+  TF_WORKSPACE: "pulsate-staging"
+  CONFIG_DIRECTORY: "./staging/"
+
+jobs:
+  list_dockerfile:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: ./github/actions/list_dockerfile
+        id: set_matrix
+    outputs:
+      matrix: ${{ steps.set_matrix.outputs.matrix }}
+  images:
+    needs: list_dockerfile
+    name: Push Docker images
+    runs-on: ubuntu-latest
+    strategy:
+        matrix:
+          dockerfile: ${{ fromJson(needs.list_dockerfile.outputs.matrix) }}
+
+    steps:
+      - uses: "actions/checkout@v4"
+      - name: Docker meta
+        id: meta
+        uses: docker/metadata-action@v5
+        with:
+          images: |
+            ghcr.io/approvers/oreorebot2
+          tags: |
+            ${{ github.sha }}
+            type=raw,value=latest,enable={{is_default_branch}}
+
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v3
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3.0.0
+
+      - name: Login to GitHub Container Registry
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.repository_owner }}
+          password: ${{ github.token }}
+      - name: Build and push
+        uses: docker/build-push-action@v5
+        with:
+          push: true
+          file: ${{ matrix.dockerfile }}
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+  apply:
+    needs: images
+    if: github.repository == 'approvers/pulsate'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - uses: "actions/checkout@v4"
+      - name: Upload Configuration
+        uses: "hashicorp/tfc-workflows-github/actions/upload-configuration@v1.0.4"
+        id: apply-upload
+        with:
+          workspace: ${{ env.TF_WORKSPACE }}
+          directory: ${{ env.CONFIG_DIRECTORY }}
+      - name: Create Apply Run
+        uses: "hashicorp/tfc-workflows-github/actions/create-run@v1.0.4"
+        id: apply-run
+        with:
+          workspace: ${{ env.TF_WORKSPACE }}
+          configuration_version: ${{ steps.apply-upload.outputs.configuration_version_id }}
+      - name: Apply
+        uses: "hashicorp/tfc-workflows-github/actions/apply-run@v1.0.4"
+        if: fromJSON(steps.apply-run.outputs.payload).data.attributes.actions.IsConfirmable
+        id: apply
+        with:
+          run: ${{ steps.apply-run.outputs.run_id }}
+          comment: "Apply Run from GitHub Actions CI ${{ github.sha }}"

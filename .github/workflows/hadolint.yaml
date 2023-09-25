@@ -1,0 +1,52 @@
+name: Dockerfile lint
+
+on:
+  pull_request:
+    paths:
+      - "Dockerfile"
+
+jobs:
+  list_dockerfile:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: "actions/checkout@v2"
+      - uses: "./github/actions/list_dockerfile"
+        id: set_matrix
+    outputs:
+      matrix: ${{ steps.set_matrix.outputs.matrix }}
+  lint:
+    needs: list_dockerfile
+    name: Dockerfile lint by Hadolint Action
+    runs-on: ubuntu-latest
+    strategy:
+        matrix:
+          dockerfile: ${{ fromJson(needs.list_dockerfile.outputs.matrix) }}
+
+    steps:
+      - uses: "actions/checkout@v4"
+
+      - uses: "hadolint/hadolint-action@v3.1.0"
+        id: run_hadolint
+        with:
+          dockerfile: ${{ matrix.dockerfile }}
+          no-color: false
+          no-fail: false
+
+      - name: Create pull request comment
+        uses: "actions/github-script@v6"
+        if: github.event_name == 'pull_request'
+        with:
+          script: |
+            const hadolintOutput = `
+            #### Hadolint: \`${{ steps.run_hadolint.outcome }}\`
+            \`\`\`
+            ${process.env.HADOLINT_RESULTS}
+            \`\`\`
+            `;
+
+            github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: hadolintOutput,
+            });
