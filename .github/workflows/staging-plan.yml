@@ -25,7 +25,7 @@ jobs:
         name: Authenticate to Google Cloud
         uses: "google-github-actions/auth@v1"
         with:
-          workload_identity_provider: "projects/1065320521129/locations/global/workloadIdentityPools/ci-pool"
+          workload_identity_provider: "projects/1065320521129/locations/global/workloadIdentityPools/ci-pool/providers/ci-provider"
           service_account: "staging-deploy-from-github-act@pulsate-staging-400117.iam.gserviceaccount.com"
 
       - name: Upload Configuration
