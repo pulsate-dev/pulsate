@@ -6,7 +6,7 @@ on:
       - "main"
 
 env:
-  TF_CLOUD_ORGANIZATION: "Colk-tech"
+  TF_CLOUD_ORGANIZATION: "pulsate-dev"
   TF_API_TOKEN: "${{ secrets.TF_API_TOKEN }}"
   TF_WORKSPACE: "pulsate-staging"
   CONFIG_DIRECTORY: "./staging/"
