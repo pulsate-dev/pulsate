@@ -14,5 +14,5 @@ resource "google_cloud_run_service" "default" {
 }
 
 output "urls" {
-  value = [for service in google_cloud_run_service : service.status[0].url]
+  value = [for service in google_cloud_run_service.default : service.status[0].url]
 }
