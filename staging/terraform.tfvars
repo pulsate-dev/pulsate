@@ -5,4 +5,4 @@ container_images = [{
   name  = "hello"
   image = "ghcr.io/approvers/services/hello"
 }]
-service_account_name = "github-actions@ pulsate-staging-400117.iam.gserviceaccount.com"
+service_account_name = "github-actions@pulsate-staging-400117.iam.gserviceaccount.com"

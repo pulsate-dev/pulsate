@@ -69,6 +69,14 @@ jobs:
       contents: read
     steps:
       - uses: "actions/checkout@v4"
+
+      - id: "auth"
+        name: Authenticate to Google Cloud
+        uses: "google-github-actions/auth@v1"
+        with:
+          workload_identity_provider: "projects/1065320521129/locations/global/workloadIdentityPools/ci-pool"
+          service_account: "staging-deploy-from-github-act@pulsate-staging-400117.iam.gserviceaccount.com"
+
       - name: Upload Configuration
         uses: "hashicorp/tfc-workflows-github/actions/upload-configuration@v1.0.4"
         id: apply-upload
