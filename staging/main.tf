@@ -13,6 +13,11 @@ terraform {
   }
 }
 
+provider "google" {
+  project = var.project
+  region  = var.location
+}
+
 locals {
   cloudrun_roles = [
     "roles/run.developer",
