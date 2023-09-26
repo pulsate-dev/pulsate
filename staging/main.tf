@@ -62,13 +62,6 @@ resource "google_service_account_iam_member" "github-account-iam" {
   member             = "principalSet://iam.googleapis.com/${google_iam_workload_identity_pool.github.name}/attribute.repository/${var.repo_name}"
 }
 
-resource "google_project_iam_member" "service_account" {
-  count   = length(local.cloudrun_roles)
-  project = var.project
-  role    = element(local.cloudrun_roles, count.index)
-  member  = "serviceAccount:${google_service_account.github_actions.email}"
-}
-
 resource "google_compute_network" "vpc_network" {
   name                    = "${var.project_id}-net"
   auto_create_subnetworks = false
@@ -79,6 +72,11 @@ resource "google_compute_subnetwork" "vpc_subnetwork" {
   region        = var.location
   network       = google_compute_network.vpc_network.name
   ip_cidr_range = "10.10.0.0/24"
+}
+
+data "google_container_engine_versions" "gke_version" {
+  location       = var.location
+  version_prefix = "1.27."
 }
 
 resource "google_container_cluster" "primary" {
