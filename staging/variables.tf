@@ -35,3 +35,9 @@ variable "service_account_name" {
   type        = string
   default     = ""
 }
+
+variable "gke_num_nodes" {
+  description = "Total node count on GKE pool"
+  type        = number
+  default     = 1
+}
