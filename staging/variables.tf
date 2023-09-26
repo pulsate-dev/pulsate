@@ -4,6 +4,12 @@ variable "project" {
   default     = null
 }
 
+variable "project_id" {
+  description = "A project id of a GCP project"
+  type        = string
+  default     = null
+}
+
 variable "repo_name" {
   description = "github repository name"
   default     = "approvers/pulsate"

@@ -1,5 +1,3 @@
-# From https://developer.hashicorp.com/terraform/tutorials/automation/github-actions
-
 terraform {
   required_version = "~> 1.5.7"
   required_providers {
@@ -16,31 +14,6 @@ terraform {
 provider "google" {
   project = var.project
   region  = var.location
-}
-
-locals {
-  cloudrun_roles = [
-    "roles/run.developer",
-    "roles/iam.serviceAccountUser"
-  ]
-}
-
-data "google_iam_policy" "cloud_run_public" {
-  binding {
-    role = "roles/run.invoker"
-    members = [
-      "allUsers",
-    ]
-  }
-}
-
-resource "google_cloud_run_service_iam_policy" "policy" {
-  for_each = google_cloud_run_service.default
-  location = each.value.location
-  project  = each.value.project
-  service  = each.value.name
-
-  policy_data = data.google_iam_policy.cloud_run_public.policy_data
 }
 
 resource "google_project_service" "default" {
@@ -96,12 +69,55 @@ resource "google_project_iam_member" "service_account" {
   member  = "serviceAccount:${google_service_account.github_actions.email}"
 }
 
-output "service_account_github_actions_email" {
-  description = "github account for github actions"
-  value       = google_service_account.github_actions.email
+resource "google_compute_network" "vpc_network" {
+  name                    = "${var.project_id}-net"
+  auto_create_subnetworks = false
 }
 
-output "google_iam_workload_identity_pool_provider_github_name" {
-  description = "Workload Identity Pood Provider ID"
-  value       = google_iam_workload_identity_pool_provider.github.name
+resource "google_compute_subnetwork" "vpc_subnetwork" {
+  name          = "${var.project_id}-subnet"
+  region        = var.location
+  network       = google_compute_network.vpc_network.name
+  ip_cidr_range = "10.10.0.0/24"
+}
+
+resource "google_container_cluster" "primary" {
+  name     = "pulsate-gke-cluster"
+  location = var.location
+
+  # We can't create a cluster with no node pool defined, but we want to only use
+  # separately managed node pools. So we create the smallest possible default
+  # node pool and immediately delete it.
+  remove_default_node_pool = true
+  initial_node_count       = 1
+
+  network    = google_compute_network.vpc_network.name
+  subnetwork = google_compute_subnetwork.vpc_subnetwork.name
+}
+
+resource "google_container_node_pool" "primary_nodes" {
+  name     = google_container_cluster.primary.name
+  location = var.location
+  cluster  = google_container_cluster.primary.name
+
+  version    = data.google_container_engine_versions.gke_version.release_channel_latest_version["STABLE"]
+  node_count = var.gke_num_nodes
+
+  node_config {
+    oauth_scopes = [
+      "https://www.googleapis.com/auth/logging.write",
+      "https://www.googleapis.com/auth/monitoring",
+    ]
+
+    labels = {
+      env = var.project_id
+    }
+
+    # preemptible  = true
+    machine_type = "n1-standard-1"
+    tags         = ["gke-node", "${var.project_id}-gke"]
+    metadata = {
+      disable-legacy-endpoints = "true"
+    }
+  }
 }
