@@ -77,6 +77,7 @@ jobs:
         with:
           workload_identity_provider: "projects/1065320521129/locations/global/workloadIdentityPools/ci-pool/providers/ci-provider"
           service_account: "staging-deploy-from-github-act@pulsate-staging-400117.iam.gserviceaccount.com"
+          token_format: "access_token"
 
       - name: Upload Configuration
         uses: "hashicorp/tfc-workflows-github/actions/upload-configuration@v1.0.4"
@@ -90,6 +91,8 @@ jobs:
         with:
           workspace: ${{ env.TF_WORKSPACE }}
           configuration_version: ${{ steps.apply-upload.outputs.configuration_version_id }}
+        env:
+          TF_VAR_access_token: ${{ steps.auth.outputs.access_token }}
       - name: Apply
         uses: "hashicorp/tfc-workflows-github/actions/apply-run@v1.0.4"
         if: fromJSON(steps.apply-run.outputs.payload).data.attributes.actions.IsConfirmable
