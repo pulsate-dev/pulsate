@@ -14,6 +14,7 @@ jobs:
         id: set_matrix
     outputs:
       matrix: ${{ steps.set_matrix.outputs.matrix }}
+
   lint:
     needs: list_dockerfile
     name: Dockerfile lint by Hadolint Action
