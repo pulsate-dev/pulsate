@@ -13,5 +13,5 @@ runs:
     - uses: actions/checkout@v4
     - id: set_matrix
       shell: bash
-      run: echo "matrix=$(ls services/**/Dockerfile | jq -R -s -c 'split("\n")[:-1]')" >> $GITHUB_OUTPUT
+      run: echo "matrix=$(find . -name Dockerfile -maxdepth 3 -print0 | jq -R -s -c 'split("\n")[:-1]')" >> $GITHUB_OUTPUT
 
