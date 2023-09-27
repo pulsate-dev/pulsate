@@ -51,11 +51,15 @@ jobs:
           registry: ghcr.io
           username: ${{ github.repository_owner }}
           password: ${{ github.token }}
+      - name: Get context directory of Dockerfile
+        id: dockerfile-context
+        run: |
+          echo "context=$(dirname '${{ matrix.dockerfile }}')" >> $GITHUB_OUTPUT
       - name: Build and push
         uses: docker/build-push-action@v5
         with:
           push: true
-          file: ${{ matrix.dockerfile }}
+          context: ${{ steps.dockerfile-context.outputs.context }}
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
           cache-from: type=gha
