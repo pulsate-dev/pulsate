@@ -16,7 +16,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: "actions/checkout@v4"
-      - uses: "./github/actions/list_dockerfile"
+      - uses: "./.github/actions/list_dockerfile"
         id: set_matrix
     outputs:
       matrix: ${{ steps.set_matrix.outputs.matrix }}
