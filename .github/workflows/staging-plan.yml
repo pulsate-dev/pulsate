@@ -1,0 +1,90 @@
+name: Staging Terraform Plan
+
+on:
+  pull_request:
+    branches:
+      - "main"
+
+env:
+  TF_CLOUD_ORGANIZATION: "pulsate-dev"
+  TF_API_TOKEN: "${{ secrets.TF_API_TOKEN }}"
+  TF_WORKSPACE: "pulsate-staging"
+  CONFIG_DIRECTORY: "./staging/"
+
+jobs:
+  plan:
+    if: github.repository == 'approvers/pulsate'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pull-requests: write
+      id-token: write
+    steps:
+      - uses: "actions/checkout@v4"
+
+      - id: "auth"
+        name: Authenticate to Google Cloud
+        uses: "google-github-actions/auth@v1"
+        with:
+          workload_identity_provider: "projects/1065320521129/locations/global/workloadIdentityPools/ci-pool/providers/ci-provider"
+          service_account: "staging-deploy-from-github-act@pulsate-staging-400117.iam.gserviceaccount.com"
+          token_format: "access_token"
+
+      - name: Upload Configuration
+        uses: "hashicorp/tfc-workflows-github/actions/upload-configuration@v1.0.4"
+        id: "plan-upload"
+        with:
+          workspace: ${{ env.TF_WORKSPACE }}
+          directory: ${{ env.CONFIG_DIRECTORY }}
+          speculative: true
+      - name: Create Plan Run
+        uses: "hashicorp/tfc-workflows-github/actions/create-run@v1.0.4"
+        id: plan-run
+        with:
+          workspace: ${{ env.TF_WORKSPACE }}
+          configuration_version: ${{ steps.plan-upload.outputs.configuration_version_id }}
+          plan_only: true
+        env:
+          TF_VAR_access_token: "\"${{ steps.auth.outputs.access_token }}\""
+      - name: Get Plan Output
+        uses: "hashicorp/tfc-workflows-github/actions/plan-output@v1.0.0"
+        id: plan-output
+        with:
+          plan: ${{ fromJSON(steps.plan-run.outputs.payload).data.relationships.plan.data.id }}
+      - name: Update PR
+        uses: "actions/github-script@v6"
+        id: plan-comment
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            const { data: comments } = await github.rest.issues.listComments({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: context.issue.number,
+            });
+            const botComment = comments.find(comment => {
+              return comment.user.type === 'Bot' && comment.body.includes('Terraform Cloud Plan Output')
+            });
+            const output = `#### Terraform Cloud Plan Output
+            \`\`\`
+            Plan: ${{ steps.plan-output.outputs.add }} to add, ${{ steps.plan-output.outputs.change }} to change, ${{ steps.plan-output.outputs.destroy }} to destroy.
+            \`\`\`
+            [Terraform Cloud Plan](${{ steps.plan-run.outputs.run_link }})
+            `;
+            // 3. Delete previous comment so PR timeline makes sense
+            if (botComment !== undefined) {
+              github.rest.issues.updateComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                comment_id: botComment.id,
+                body: output,
+              });
+            } else {
+              github.rest.issues.createComment({
+                issue_number: context.issue.number,
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                body: output,
+              });
+            }
+
