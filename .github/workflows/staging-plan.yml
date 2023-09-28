@@ -29,6 +29,7 @@ jobs:
           workload_identity_provider: "projects/1065320521129/locations/global/workloadIdentityPools/github/providers/github-provider"
           service_account: "github-actions@pulsate-staging-400117.iam.gserviceaccount.com"
           create_credentials_file: true
+          export_environment_variables: true
 
       - name: Upload Configuration
         uses: "hashicorp/tfc-workflows-github/actions/upload-configuration@v1.0.4"
