@@ -16,9 +16,15 @@ variable "repo_name" {
 }
 
 variable "location" {
-  description = "A location of a cloud run instance"
+  description = "A location of using service"
   type        = string
   default     = "asia-northeast1"
+}
+
+variable "zone" {
+  description = "A zone of a GKE cluster"
+  type        = string
+  default     = "asia-northeast1-a"
 }
 
 variable "container_images" {
