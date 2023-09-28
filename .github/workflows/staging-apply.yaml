@@ -35,7 +35,7 @@ jobs:
         uses: docker/metadata-action@v5
         with:
           images: |
-            ghcr.io/approvers/oreorebot2
+            ghcr.io/approvers/pulsate
           tags: |
             ${{ github.sha }}
             type=raw,value=latest,enable={{is_default_branch}}
