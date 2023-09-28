@@ -12,9 +12,8 @@ terraform {
 }
 
 provider "google" {
-  project      = var.project
-  region       = var.location
-  access_token = var.access_token
+  project = var.project
+  region  = var.location
 }
 
 resource "google_project_service" "default" {
