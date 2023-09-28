@@ -9,9 +9,10 @@ terraform {
 }
 
 provider "google" {
-  project = var.project_id
-  region  = var.location
-  zone    = var.zone
+  project      = var.project_id
+  region       = var.location
+  zone         = var.zone
+  access_token = var.access_token
 }
 
 resource "google_project_service" "default" {

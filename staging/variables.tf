@@ -1,3 +1,9 @@
+variable "access_token" {
+  description = "An acceess token for login to GCP"
+  type        = string
+  default     = null
+}
+
 variable "project" {
   description = "A name of a GCP project"
   type        = string
