@@ -6,9 +6,6 @@ terraform {
       version = "4.83.0"
     }
   }
-  backend "gcs" {
-    prefix = "terraform/state"
-  }
 }
 
 provider "google" {
