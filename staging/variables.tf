@@ -30,12 +30,6 @@ variable "container_images" {
   default = []
 }
 
-variable "service_account_name" {
-  description = "Email address of the IAM service account"
-  type        = string
-  default     = ""
-}
-
 variable "gke_num_nodes" {
   description = "Total node count on GKE pool"
   type        = number
