@@ -72,7 +72,7 @@ data "google_container_engine_versions" "gke_version" {
 
 resource "google_container_cluster" "primary" {
   name     = "pulsate-gke-cluster"
-  location = var.location
+  location = var.zone
 
   # We can't create a cluster with no node pool defined, but we want to only use
   # separately managed node pools. So we create the smallest possible default
