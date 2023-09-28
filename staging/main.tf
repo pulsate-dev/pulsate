@@ -9,31 +9,27 @@ terraform {
 }
 
 provider "google" {
-  project = var.project
+  project = var.project_id
   region  = var.location
 }
 
 resource "google_project_service" "default" {
-  project = var.project
   service = "iamcredentials.googleapis.com"
 }
 
 resource "google_service_account" "github_actions" {
-  project      = var.project
   account_id   = "github-actions"
   display_name = "A service account for GitHub Actions"
   description  = "link to Workload Identity Pool used by github actions"
 }
 
 resource "google_iam_workload_identity_pool" "github" {
-  project                   = var.project
   workload_identity_pool_id = "github"
   display_name              = "github"
   description               = "Workload Identity Pool for GitHub Actions"
 }
 
 resource "google_iam_workload_identity_pool_provider" "github" {
-  project                            = var.project
   workload_identity_pool_id          = google_iam_workload_identity_pool.github.workload_identity_pool_id
   workload_identity_pool_provider_id = "github-provider"
   display_name                       = "github actions provider"
