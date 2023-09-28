@@ -30,12 +30,22 @@ jobs:
 
     steps:
       - uses: "actions/checkout@v4"
+
+      - name: Get context directory of Dockerfile
+        id: dockerfile-context
+        run: |
+          echo "context=$(dirname '${{ matrix.dockerfile }}')" >> $GITHUB_OUTPUT
+      - name: Get microservice name
+        id: microservice-name
+        run: |
+          echo "service-name=$(basename '${{ steps.dockerfile-context.outputs.context }}')" >> $GITHUB_OUTPUT
+
       - name: Docker meta
         id: meta
         uses: docker/metadata-action@v5
         with:
           images: |
-            ghcr.io/approvers/oreorebot2
+            ghcr.io/approvers/pulsate/${{ steps.microservice-name.outputs.service-name }}
           tags: |
             ${{ github.sha }}
             type=raw,value=latest,enable={{is_default_branch}}
@@ -55,7 +65,7 @@ jobs:
         uses: docker/build-push-action@v5
         with:
           push: true
-          file: ${{ matrix.dockerfile }}
+          context: ${{ steps.dockerfile-context.outputs.context }}
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
           cache-from: type=gha
