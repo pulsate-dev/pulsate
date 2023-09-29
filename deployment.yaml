@@ -1,0 +1,18 @@
+apuVersion: apps/v1
+kind: Deployment
+metadata:
+  name: pulsate-app
+spec:
+  selector:
+    matchLabels:
+      app: pulsate-app
+    spec:
+      containers:
+        - name: pulsate-app-hello
+          image: hello
+          resources:
+            limits:
+              memory: "128Mi"
+              cpu: "500m"
+          ports:
+            - containerPort: 8000
