@@ -6,5 +6,5 @@ spec:
   selector:
     app: pulsate-app
   ports:
-    - port: 8000
-      targetPort: 8000
+  - port: 8000
+    targetPort: 8000

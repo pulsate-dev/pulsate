@@ -3,9 +3,9 @@ kind: Kustomization
 commonLabels:
   app: pulsate-app
 resources:
-  - deployment.yaml
-  - service.yaml
+- deployment.yaml
+- service.yaml
 configMapGenerator:
-  - name: pulsate-app-map
-    literals:
-      - KEY=value
+- literals:
+  - KEY=value
+  name: pulsate-app-map
