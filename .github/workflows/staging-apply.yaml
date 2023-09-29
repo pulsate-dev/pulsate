@@ -77,8 +77,8 @@ jobs:
         name: Authenticate to Google Cloud
         uses: "google-github-actions/auth@v1"
         with:
-          workload_identity_provider: "projects/1065320521129/locations/global/workloadIdentityPools/github/providers/github-provider"
-          service_account: "github-actions@pulsate-staging-400117.iam.gserviceaccount.com"
+          workload_identity_provider: "projects/1065320521129/locations/global/workloadIdentityPools/staging-cluster-pool/providers/github-provider"
+          service_account: "staging-cluster-service@pulsate-staging-400117.iam.gserviceaccount.com"
 
       - uses: "google-github-actions/setup-gcloud@v1"
         with:
