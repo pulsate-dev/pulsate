@@ -93,15 +93,14 @@ jobs:
           cluster_name: ${{ env.GKE_CLUSTER }}
           location: ${{ env.GKE_ZONE }}
 
-      - name: Set up Kustomize
-        run: |
-          curl -sfLo kustomize https://github.com/kubernetes-sigs/kustomize/releases/download/v5.1.1/kustomize_5.1.1_linux_amd64
-          chmod u+x ./kustomize
+      - uses: "syntaqx/setup-kustomize@v1"
+        with:
+          kustomize-version: "5.1.1"
 
       - name: Deploy to the GKE cluster
         run: |
-          ./kustomize edit set image ghcr.io/approvers/pulsate/${{ steps.microservice-name.outputs.service-name }}:$GITHUB_SHA
-          ./kustomize build . | kubectl apply -f -
+          kustomize edit set image ghcr.io/approvers/pulsate/${{ steps.microservice-name.outputs.service-name }}:$GITHUB_SHA
+          kustomize build . | kubectl apply -f -
           kubectl rollout status deployment/staging
           kubectl get services -o wide
 
