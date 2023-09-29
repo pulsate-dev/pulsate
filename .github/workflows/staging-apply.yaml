@@ -6,10 +6,8 @@ on:
       - "main"
 
 env:
-  TF_CLOUD_ORGANIZATION: "pulsate-dev"
-  TF_API_TOKEN: "${{ secrets.TF_API_TOKEN }}"
-  TF_WORKSPACE: "pulsate-staging"
-  CONFIG_DIRECTORY: "./staging/"
+  GKE_CLUSTER: pulsate-gke-cluster
+  GKE_ZONE: asia-northeast1-a
 
 jobs:
   list_dockerfile:
@@ -71,42 +69,35 @@ jobs:
           cache-from: type=gha
           cache-to: type=gha,mode=max
 
-  apply:
-    needs: images
-    if: github.repository == 'approvers/pulsate'
-    runs-on: ubuntu-latest
-    permissions:
-      contents: read
-      id-token: write
-    steps:
-      - uses: "actions/checkout@v4"
-
       - id: "auth"
         name: Authenticate to Google Cloud
         uses: "google-github-actions/auth@v1"
         with:
           workload_identity_provider: "projects/1065320521129/locations/global/workloadIdentityPools/github/providers/github-provider"
           service_account: "github-actions@pulsate-staging-400117.iam.gserviceaccount.com"
-          token_format: "access_token"
 
-      - name: Upload Configuration
-        uses: "hashicorp/tfc-workflows-github/actions/upload-configuration@v1.0.4"
-        id: apply-upload
+      - uses: "google-github-actions/setup-gcloud@v1"
         with:
-          workspace: ${{ env.TF_WORKSPACE }}
-          directory: ${{ env.CONFIG_DIRECTORY }}
-      - name: Create Apply Run
-        uses: "hashicorp/tfc-workflows-github/actions/create-run@v1.0.4"
-        id: apply-run
+          version: ">= 363.0.0"
+
+      - name: Configure Docker to use gcloud as a credential helper
+        run: |
+          gcloud --quiet auth configure-docker
+
+      - uses: google-github-actions/get-gke-credentials@db150f2cc60d1716e61922b832eae71d2a45938f
         with:
-          workspace: ${{ env.TF_WORKSPACE }}
-          configuration_version: ${{ steps.apply-upload.outputs.configuration_version_id }}
-        env:
-          TF_VAR_access_token: "\"${{ steps.auth.outputs.access_token }}\""
-      - name: Apply
-        uses: "hashicorp/tfc-workflows-github/actions/apply-run@v1.0.4"
-        if: fromJSON(steps.apply-run.outputs.payload).data.attributes.actions.IsConfirmable
-        id: apply
-        with:
-          run: ${{ steps.apply-run.outputs.run_id }}
-          comment: "Apply Run from GitHub Actions CI ${{ github.sha }}"
+          cluster_name: ${{ env.GKE_CLUSTER }}
+          location: ${{ env.GKE_ZONE }}
+
+      - name: Set up Kustomize
+        run: |
+          curl -sfLo kustomize https://github.com/kubernetes-sigs/kustomize/releases/download/v5.1.1/kustomize_5.1.1_linux_amd64
+          chmod u+x ./kustomize
+
+      - name: Deploy to the GKE cluster
+        run: |
+          ./kustomize edit set image ghcr.io/approvers/pulsate/${{ steps.microservice-name.outputs.service-name }}:$GITHUB_SHA
+          ./kustomize build . | kubectl apply -f -
+          kubectl rollout status deployment/staging
+          kubectl get services -o wide
+
