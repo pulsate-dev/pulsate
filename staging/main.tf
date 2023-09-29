@@ -3,41 +3,35 @@ terraform {
   required_providers {
     google = {
       source  = "hashicorp/google"
-      version = "4.83.0"
+      version = "~> 4.83.0"
     }
-  }
-  backend "gcs" {
-    prefix = "terraform/state"
   }
 }
 
 provider "google" {
-  project      = var.project
+  project      = var.project_id
   region       = var.location
+  zone         = var.zone
   access_token = var.access_token
 }
 
 resource "google_project_service" "default" {
-  project = var.project
   service = "iamcredentials.googleapis.com"
 }
 
 resource "google_service_account" "github_actions" {
-  project      = var.project
   account_id   = "github-actions"
   display_name = "A service account for GitHub Actions"
   description  = "link to Workload Identity Pool used by github actions"
 }
 
 resource "google_iam_workload_identity_pool" "github" {
-  project                   = var.project
   workload_identity_pool_id = "github"
   display_name              = "github"
   description               = "Workload Identity Pool for GitHub Actions"
 }
 
 resource "google_iam_workload_identity_pool_provider" "github" {
-  project                            = var.project
   workload_identity_pool_id          = google_iam_workload_identity_pool.github.workload_identity_pool_id
   workload_identity_pool_provider_id = "github-provider"
   display_name                       = "github actions provider"
@@ -80,7 +74,7 @@ data "google_container_engine_versions" "gke_version" {
 
 resource "google_container_cluster" "primary" {
   name     = "pulsate-gke-cluster"
-  location = var.location
+  location = var.zone
 
   # We can't create a cluster with no node pool defined, but we want to only use
   # separately managed node pools. So we create the smallest possible default
@@ -94,11 +88,21 @@ resource "google_container_cluster" "primary" {
 
 resource "google_container_node_pool" "primary_nodes" {
   name     = google_container_cluster.primary.name
-  location = var.location
+  location = var.zone
   cluster  = google_container_cluster.primary.name
 
   version    = data.google_container_engine_versions.gke_version.release_channel_latest_version["STABLE"]
   node_count = var.gke_num_nodes
+
+  management {
+    auto_repair  = true
+    auto_upgrade = true
+  }
+
+  network_config {
+    create_pod_range     = false
+    enable_private_nodes = false
+  }
 
   node_config {
     oauth_scopes = [
@@ -116,5 +120,16 @@ resource "google_container_node_pool" "primary_nodes" {
     metadata = {
       disable-legacy-endpoints = "true"
     }
+
+    shielded_instance_config {
+      enable_integrity_monitoring = true
+      enable_secure_boot          = false
+    }
+  }
+
+  upgrade_settings {
+    max_surge       = 1
+    max_unavailable = 0
+    strategy        = "SURGE"
   }
 }
