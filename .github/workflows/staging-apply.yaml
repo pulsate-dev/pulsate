@@ -101,6 +101,5 @@ jobs:
         run: |
           kustomize edit set image ${{ steps.microservice-name.outputs.service-name }}=ghcr.io/approvers/pulsate/${{ steps.microservice-name.outputs.service-name }}:$GITHUB_SHA
           kustomize build . | kubectl apply -f -
-          kubectl rollout status deployment/staging
+          kubectl rollout status deployment/pulsate-hello
           kubectl get services -o wide
-
