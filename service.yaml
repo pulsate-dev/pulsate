@@ -1,10 +1,13 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: pulsate-app
+  name: pulsate-hello
+  labels:
+    app: pulsate-hello
 spec:
   selector:
-    app: pulsate-app
+    app: pulsate-hello
   ports:
-  - port: 8000
+  - port: 80
     targetPort: 8000
+  type: LoadBalancer
