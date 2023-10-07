@@ -1,7 +1,19 @@
 name: "Bug report"
 description: "Create a report on bugs you find"
+labels:
+  - "bug"
 
 body:
+  - type: checkboxes
+    id: confirmation
+    attributes:
+      label: Before reporting
+      description: Before reporting, you have to check follows
+      options:
+        - label: Checked [same issue](https://github.com/approvers/pulsate/issues?q=) already has not already been reported
+          required: true
+        - label: Checked this issue is not a security issue
+          required: true
   - type: input
     id: version
     attributes:
@@ -15,6 +27,13 @@ body:
       description: Please provide details of the bug (or what you believe to be an out-of-specification event) that is occurring.
     validations:
       required: true
+  - type: textarea
+    attributes:
+      label: How to reproduce
+      description: Operations performed and events that occurred when the problem occurred.
+  - type: textarea
+    attributes:
+      label: Expected behavior
   - type: textarea
     attributes:
       label: Logs
