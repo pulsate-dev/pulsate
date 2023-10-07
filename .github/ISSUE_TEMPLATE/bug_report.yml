@@ -1,0 +1,30 @@
+name: "Bug report"
+description: "Create a report on bugs you find"
+
+body:
+  - type: input
+    id: version
+    attributes:
+      label: Pulsate Version
+    validations:
+      required: true
+  - type: textarea
+    id: description
+    attributes:
+      label: What happening
+      description: Please provide details of the bug (or what you believe to be an out-of-specification event) that is occurring.
+    validations:
+      required: true
+  - type: textarea
+    attributes:
+      label: Logs
+      description: Please provide logs if available
+    validations:
+      required: false
+  - type: textarea
+    attributes:
+      label: System Info
+      description: Information on Docker and various language execution environment versions and operating systems
+  - type: textarea
+    attributes:
+      label: Any additional comments?
