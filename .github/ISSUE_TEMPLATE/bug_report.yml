@@ -12,7 +12,7 @@ body:
       options:
         - label: Checked [same issue](https://github.com/approvers/pulsate/issues?q=) already has not already been reported
           required: true
-        - label: Checked this issue is not a security issue
+        - label: Checked this issue is not a security issue. If it is a security issue, follow [this](https://github.com/approvers/pulsate/tree/main/.github/SECURITY.md).
           required: true
   - type: input
     id: version
@@ -31,9 +31,13 @@ body:
     attributes:
       label: How to reproduce
       description: Operations performed and events that occurred when the problem occurred.
+    validations:
+      required: true
   - type: textarea
     attributes:
       label: Expected behavior
+    validations:
+      required: true
   - type: textarea
     attributes:
       label: Logs
