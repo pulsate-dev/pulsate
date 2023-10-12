@@ -1,0 +1,30 @@
+name: "Feature request"
+description: "Create a feature request"
+labels:
+  - "feature"
+body:
+  - type: textarea
+    attributes:
+      label: Problem
+      description: Please describe the problem you want to solve.
+    validations:
+      required: true
+  - type: textarea
+    attributes:
+      label: Proposed Solution
+      description: Please describe how you would like to solve this problem.
+    validations:
+      required: true
+  - type: textarea
+    attributes:
+      label: Other information
+  - type: checkboxes
+    id: confirmation
+    attributes:
+      label: Before requesting
+      description: Before requesting, you have to check follows
+      options:
+        - label: Checked [same request](https://github.com/approvers/pulsate/issues?q=) already has not already been reported
+          required: true
+        - label: Understand that this request is not certain to be adopted.
+          required: true
