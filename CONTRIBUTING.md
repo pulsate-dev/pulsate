@@ -30,7 +30,7 @@ Please check the following points before submission.
 - Similar issues have not already been submitted.
   - Click [here](https://github.com/approvers/pulsate/issues?q=) to check.
 - (Bug report only) Is it not a security-related bug?
-  - If you are submitting such a bug report, you must submit it in an appropriate manner, **not as an Issue**. Please check our [security policy](./.github/SECURITY.md) for details.
+  - If you are submitting such a bug report, you must submit it in an appropriate manner, **not as an Issue**. Please check our [security policy](./SECURITY.md) for details.
 
 ## Pull Requests
 
