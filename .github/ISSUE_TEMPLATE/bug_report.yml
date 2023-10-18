@@ -12,7 +12,7 @@ body:
       options:
         - label: Checked [same issue](https://github.com/approvers/pulsate/issues?q=) already has not already been reported
           required: true
-        - label: Checked this issue is not a security issue. If it is a security issue, follow [this](https://github.com/approvers/pulsate/tree/main/.github/SECURITY.md).
+        - label: Checked this issue is not a security issue. If it is a security issue, follow [this](https://github.com/approvers/pulsate/tree/main/SECURITY.md).
           required: true
   - type: input
     id: version
