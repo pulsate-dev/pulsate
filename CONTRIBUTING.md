@@ -1,0 +1,144 @@
+# Contribute Guide
+
+A guide on how to participate in this project.
+
+- [Contribute Guide](#contribute-guide)
+  - [Issues](#issues)
+  - [Pull Requests](#pull-requests)
+    - [Review](#review)
+  - [Commit Message](#commit-message)
+  - [Style Guide](#style-guide)
+    - [null and undefined](#null-and-undefined)
+    - [Quote marks](#quote-marks)
+    - [Arrays](#arrays)
+
+**Before "Contribution"**: All Contributors and Maintainers are required to follow the [Code of Conduct](./CODE_OF_CONDUCT.md).
+
+## Issues
+
+Pulsate accepts the following issues:
+
+- [Bug reports](https://github.com/approvers/pulsate/issues/new?assignees=&labels=bug&projects=&template=bug_report.yml)
+- [Feature requests](https://github.com/approvers/pulsate/issues/new?assignees=&labels=feature&projects=&template=feature_request.yml)
+
+These issues can be submitted by filling out the form.
+
+If the issue type you wish to submit is not listed here, you can submit an empty issue [here](https://github.com/approvers/pulsate/issues/new).
+
+Please check the following points before submission.
+
+- Similar issues have not already been submitted.
+  - Click [here](https://github.com/approvers/pulsate/issues?q=) to check.
+- (Bug report only) Is it not a security-related bug?
+  - If you are submitting such a bug report, you must submit it in an appropriate manner, **not as an Issue**. Please check our [security policy](./.github/SECURITY.md) for details.
+
+## Pull Requests
+
+Pulsate welcomes pull request submissions.
+
+To submit a pull request to Pulsate, you need to clarify **why this change is needed**, **summary of changes**.
+
+When you try to submit a pull request, a pre-prepared template will be displayed as a placeholder. Follow the template to describe the pull request you are submitting.
+
+Before submitting a pull request, please check the following points:
+
+- Check to see if the pull request you are submitting is the same as the one you are submitting.
+  - Click [here](https://github.com/approvers/pulsate/pulls?q=) to check.
+- You are not trying to submit a PR that is still in progress.
+  - If you want to submit a PR in progress, [please submit it as "Draft"](https://docs.github.com/pull-requests/collaborating-with-pull-requests/proposing-changes-to-your-work-with-pull-requests/changing-the-stage-of-a-pull-request).
+- Pull request title conforms to [Conventional Commits](#commit-message)
+
+If you are sure, run "deno fmt" to format the code.
+
+Once it has been reviewed and approved by the Pulsate maintainer, it can be merged.
+
+### Review
+
+During the review, keep the following in mind.
+
+- Answer questions from the maintainer.
+  - Reply to any questions about changes from the maintainer during the review. This will be helpful during the review.
+
+## Commit Message
+
+Pulsate commit messages must follow [conventional commit](https://www.conventionalcommits.org/ja/v1.0.0/).
+
+- The commit message should be in the following form.
+
+```text
+<type>[optional scope]: <description>
+
+[optional body]
+
+[optional footer(s)]
+```
+
+- The `type` must be the correct "type" for the change.
+  - For example, **Add new feature** is `feat`, **Fix bug** is `fix`.
+- If you make any backward-compatibility-breaking changes, you must set `scope` to `!` and add a description of the destructive change to `body`.
+  - Please contact the maintainer via Issue or Discussion once you make such a change. In most cases, such changes are not desired.
+
+## Style Guide
+
+The basic naming conventions follow the [TypeScript Coding guidelines](https://github.com/microsoft/TypeScript/wiki/Coding-guidelines).
+
+- The variable and function name is `camelCase`.
+- The class name is `PascalCase`.
+  - The class member and method name is `camelCase`.
+- The interface name is `PascalCase`.
+  - The interface member name is `camelCase`.
+- The enum name and member is `PascalCase`.
+- The type name is `PascalCase`.
+  - The type member name is `camelCase`.
+- The namespace name is `PascalCase`.
+
+- The file name should be in `camelCase`.
+
+### null and undefined
+
+Do not use either null or undefined if possible.
+
+```ts
+// Good
+let foo: { x: number, y?: number } = { x: 123 };
+
+// Bad
+let foo = { x: 123, y: undefined };
+```
+
+Use undefined if it must be used or its use cannot be avoided for some reason.
+
+**DO NOT** use null.
+
+```ts
+// Good
+return undefined;
+
+// Bad
+return null;
+const a = "apple" as any;
+```
+
+### Quote marks
+
+Use single quotes for strings.
+
+```ts
+// Good
+const a = 'hoge';
+
+// Bad
+const a = "hoge";
+```
+
+### Arrays
+
+Use annotations when declaring arrays to ensure readability.
+
+```ts
+// Good
+const a: string[]
+
+// Bad
+const a: Array<string>
+```
