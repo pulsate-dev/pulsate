@@ -1,63 +1,66 @@
-# 行動規範
+# Code of Conduct
 
-# Core Value
+**Last updated:** 2021-10-19
 
-> *あらゆる人間関係の衝突は、謙虚・尊敬・信頼の欠如によるものだ  
-> --- Team Geek ―Googleのギークたちはいかにしてチームを作るのか*
+[日本語版](./.github/CODE_OF_CONDUCT_JA.md)
 
-## 1. Humility ( 謙遜 )
+## Core Value
 
-あなたの技術力はすばらしいもので、周りから常に羨望の眼差しを受けているかもしれません。
+> *Every relationship conflict is due to a lack of humility, respect, and trust  
+> --- Team Geek -How Google Geeks Build Teams*.
 
-しかしながら、あなたが常に正しい選択をできるとは限りません。
+### 1. Humility
 
-他のコントリビューターも、プロダクトをより良いものにしたい気持ちは同じです。
+Your technical skills are great and you may always be the envy of those around you.
 
-他人の意見を柔軟に取り入れる姿勢を忘れないようにしましょう。
+However, you may not always make the right choices.
 
-## 2. Respect ( 尊敬 )
+Other contributors are just as eager to improve their products.
 
-尊敬とは相互的なものであり、ただの一方通行では成り立ちません。
+Remember to be flexible and open to other people's opinions.
 
-他の人々のアイデアと時間に価値を置き、公平かつ礼儀正しい対応を心がけましょう。
+### 2. Respect
 
-違いを尊重、より多くの案を考慮することで、豊かな視点と解決策が生まれます。
+Respect is mutual and cannot be just a one-way street.
 
-## 3. Trust ( 信頼 )
+Value other people's ideas and time, and be fair and courteous in your responses.
 
-信頼は約束を守り、誠実に行動することから生まれます。
+Respecting differences and considering more ideas will result in richer perspectives and solutions.
 
-他のチームメンバーが対応できると信じ、自分も対応できると信じられるように努力しましょう。
+### 3. Trust
 
-信頼は情報のオープンな共有、責任の明確化、そして良い意図を持って行動することでさらに強化されます。
+Trust comes from keeping your word and acting with integrity.
 
-# 行動
+Strive to trust that other team members will be responsive and that you will be responsive.
 
-1. 私たちは友好的、安全ですべての人を歓迎する環境をここに提供することに尽力します。
-2. 誰にでも親切、丁寧に行動しましょう。意地悪をする必要はありません。
-3. 人々にはそれぞれの考えがあり、意見の相違は必ずあります。正解はありません。それぞれの意見を尊重しましょう。
-4. 私たちは、あなたが誰かを侮辱しハラスメント行為を行った場合はあなたを対話から除外します。
-5. 個人的なハラスメント行為も許されません。あなたがコミュニティメンバーにハラスメントを受けていたり不快な気持ちにさせられていると感じた場合は [**Pulsate モデレーションチーム**][mod-email] に連絡してください。
-あなたが常連のコントリビューターであっても、新規参加者であろうと私たちはあなたの味方です。
-6. 同様に、いかなるスパムや荒らし行為、感情的な言動も歓迎されるものではありません。
+Trust is further strengthened by open sharing of information, clarity of responsibility, and acting with good intentions.
 
-# モデレーション
+## Conduct
 
-万が一モデレーションが必要だと判断した場合は [**Pulsate モデレーションチーム**][mod-email] に連絡してください。
+1. We are committed to providing a friendly, safe and welcoming environment for all here.
+2. Act kind and courteous to everyone. There is no need to be mean.
+3. People have their own ideas and there will always be differences of opinion. There is no right answer. Let's respect each opinion.
+4. We will exclude you from the dialogue if you have insulted or harassed anyone.
+5. Personal acts of harassment will not be tolerated. If you feel you are being harassed or made to feel uncomfortable by a community member, please contact [**Pulsate Moderation Team**][mod-email].
+6. Likewise, any spam, trolling, or emotional language is not welcome.
 
-1. 悪意や人を傷つける発言など、Pulsateの行動規範に反する発言は許されません。
-2. モデレーターが不適切だと判断した発言は、行動規範に記載されているか問わず許されません。
-3. モデレーターが下した処罰が不当なものだと考えた場合は、別のモデレーターと**プライベートな場所**でやり取りを行ってください。
-4. モデレーターは他のコミュニティメンバーよりも重くこの行動規範を守る必要があります。モデレーターが不適切な言動を取った場合、他のユーザーよりも厳しい対応が求められます。
+## Moderation
 
-Pulsate コミュニティでは、攻撃的あるいはセンシティブな問題には触れないようにしてください。これは自分を守るためでもなり大切な人を守ることにも繋がります。
+In the unlikely event that you determine that moderation is required, please contact the [**Pulsate Moderation Team**][mod-email].
 
-そして、誰かがあなたの言動に異を唱えたら自衛に走ろうとする衝動を抑えましょう。指摘された言動をやめて謝りましょう。あなたの仲間が快適だと感じられるようにするのはあなたの責任だということを覚えておいてください。私たちはあなたの味方です。ここにいます。あなたが信頼されている限り人々は善意をもって接してくれるでしょう。
+1. Statements that violate Pulsate's Code of Conduct, such as malicious or hurtful remarks, will not be tolerated.
+2. Any comments deemed inappropriate by the moderators will not be tolerated, regardless of whether or not they are addressed in the Code of Conduct.
+3. If you believe that the punishment handed down by a moderator is unjustified, please communicate with another moderator **in private**.
+4. Moderators are required to adhere to this code of conduct more heavily than other community members. If a moderator says or does something inappropriate, he or she will be expected to take more severe action than other users.
 
----
+Please do not touch offensive or sensitive issues in the Pulsate community. This is both for your own protection and the protection of those you care about.
 
-この行動規範は [**プログラミング言語【Rust】の行動規範**](https://www.rust-lang.org/ja/policies/code-of-conduct) を参考に制定されました。
+And if someone objects to something you say or do, resist the urge to defend yourself. Stop and apologize for the words and actions that have been pointed out. Remember, it is your responsibility to make sure your people feel comfortable. We are on your side. We are here for you. People will treat you with goodwill as long as they trust you.
 
-この場を借りて最大限の感謝を伝えます。
+----
+
+This Code of Conduct was established with reference to the [**Code of Conduct for the Programming Language [Rust]**](https://www.rust-lang.org/ja/policies/code-of-conduct).
+
+We take this opportunity to express our utmost appreciation.
 
 [mod-email]: mailto:moderation@pulsate.dev
