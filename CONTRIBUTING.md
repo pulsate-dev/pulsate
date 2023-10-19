@@ -8,9 +8,10 @@ A guide on how to participate in this project.
     - [Review](#review)
   - [Commit Message](#commit-message)
   - [Style Guide](#style-guide)
-    - [null and undefined](#null-and-undefined)
-    - [Quote marks](#quote-marks)
-    - [Arrays](#arrays)
+    - [TypeScript](#typescript)
+      - [null and undefined](#null-and-undefined)
+      - [Quote marks](#quote-marks)
+      - [Arrays](#arrays)
 
 **Before "Contribution"**: All Contributors and Maintainers are required to follow the [Code of Conduct](./CODE_OF_CONDUCT.md).
 
@@ -80,6 +81,24 @@ Pulsate commit messages must follow [conventional commit](https://www.convention
 
 ## Style Guide
 
+A style guide for Pulsate development.
+
+- These settings are bound by deno fmt, .editorconfig.
+  - Some editors and IDEs require special plug-ins to be installed.
+  - For more details, click [here](https://editorconfig.org/#download).
+
+----
+
+- All files must have spaces at the end of lines removed.
+  - In the case of Markdown, it is not necessary to remove it because it also means a line break.
+- All files must have a single newline at the end.
+- All files should be opened with `space` intent.
+  - The size of the intent is about `2` characters.
+- Use `lf` for line breaks.
+- Use `utf-8` character encoding.
+
+### TypeScript
+
 The basic naming conventions follow the [TypeScript Coding guidelines](https://github.com/microsoft/TypeScript/wiki/Coding-guidelines).
 
 - The variable and function name is `camelCase`.
@@ -94,7 +113,7 @@ The basic naming conventions follow the [TypeScript Coding guidelines](https://g
 
 - The file name should be in `camelCase`.
 
-### null and undefined
+#### null and undefined
 
 Do not use either null or undefined if possible.
 
@@ -119,7 +138,7 @@ return null;
 const a = "apple" as any;
 ```
 
-### Quote marks
+#### Quote marks
 
 Use single quotes for strings.
 
@@ -131,7 +150,7 @@ const a = 'hoge';
 const a = "hoge";
 ```
 
-### Arrays
+#### Arrays
 
 Use annotations when declaring arrays to ensure readability.
 
