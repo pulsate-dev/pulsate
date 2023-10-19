@@ -12,7 +12,7 @@
     "semiColons": true,
     "singleQuote": true,
     "proseWrap": "always",
-    "exclude": ["CODE_OF_CONDUCT.md", "CONTRIBUTING.md"]
+    "exclude": ["CODE_OF_CONDUCT.md", "CONTRIBUTING.md", "SECURITY.md"]
   },
   "lint": {
     "include": ["services/hello/"],
