@@ -1,0 +1,23 @@
+{
+  "tasks": {
+    "fmt": "deno fmt",
+    "fmt:watch": "deno fmt --watch .",
+    "fmt:check": "deno fmt --check",
+    "lint": "deno lint"
+  },
+  "fmt": {
+    "useTabs": false,
+    "lineWidth": 80,
+    "indentWidth": 2,
+    "semiColons": true,
+    "singleQuote": true,
+    "proseWrap": "always",
+    "exclude": ["CODE_OF_CONDUCT.md", "CONTRIBUTING.md"]
+  },
+  "lint": {
+    "include": ["services/hello/"],
+    "rules": {
+      "tags": ["recommended"]
+    }
+  }
+}
