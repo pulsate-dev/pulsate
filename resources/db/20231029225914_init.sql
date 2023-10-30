@@ -6,7 +6,7 @@ CREATE TABLE IF NOT EXISTS account (
 	nickname VARCHAR(255),
 	mail VARCHAR(128),
 	passphrase_hash VARCHAR(255),
-	bio TEXT DEFAULT '',
+	bio TEXT NOT NULL DEFAULT '',
 	role INT NOT NULL DEFAULT 0,
 	status INT NOT NULL DEFAULT 0,
 	created_at DATETIME(6) NOT NULL,
@@ -99,12 +99,11 @@ CREATE TABLE IF NOT EXISTS note_attachment (
 	PRIMARY KEY (medium_id, note_id)
 );
 -- +goose Down
-DROP TABLE IF EXISTS account;
-DROP TABLE IF EXISTS following;
-DROP TABLE IF EXISTS note;
-DROP TABLE IF EXISTS reaction;
-DROP TABLE IF EXISTS bookmark;
-DROP TABLE IF EXISTS list;
-DROP TABLE IF EXISTS list_member;
 DROP TABLE IF EXISTS medium;
-DROP TABLE IF EXISTS note_attachment;
+DROP TABLE IF EXISTS list_member;
+DROP TABLE IF EXISTS list;
+DROP TABLE IF EXISTS bookmark;
+DROP TABLE IF EXISTS reaction;
+DROP TABLE IF EXISTS note;
+DROP TABLE IF EXISTS following;
+DROP TABLE IF EXISTS account;
