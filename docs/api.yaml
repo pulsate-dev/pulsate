@@ -27,9 +27,9 @@ paths:
                 $ref: '#/components/schemas/LoginResponse'
         '400':
           description: |
-            `ACCOUNT_NOT_FOUND`: account_name というアカウントは登録されていない\
-            `INVALID_PASSPHRASE`: passphrase が不正\
-            `YOU_ARE_BOT`: captcha_token の検証に失敗\
+            - `ACCOUNT_NOT_FOUND`: account_name というアカウントは登録されていない
+            - `INVALID_PASSPHRASE`: passphrase が不正
+            - `YOU_ARE_BOT`: captcha_token の検証に失敗
           content:
             application/json:
               schema:
@@ -62,8 +62,8 @@ paths:
                 $ref: '#/components/schemas/RefreshResponse'
         '400':
           description: |
-            `INVALID_TOKEN`:  更新トークンが不正\
-            `EXPIRED_TOKEN`:  トークンが期限切れ
+            - `INVALID_TOKEN`:  更新トークンが不正
+            - `EXPIRED_TOKEN`:  トークンが期限切れ
           content:
             application/json:
               schema:
@@ -90,10 +90,11 @@ paths:
                 $ref: "#/components/schemas/CreateAccountResponse"
         "400":
           description: |
-            Bad Request\
-            `ACCOUNT_NAME_IN_USE`: アカウント名が既に使用されている\
-            `MAIL_ADDRESS_IN_USE`: メールアドレスが既に使用されている\
-            `YOU_ARE_BOT`: captcha_token の検証に失敗
+            Bad Request
+
+            - `ACCOUNT_NAME_IN_USE`: アカウント名が既に使用されている
+            - `MAIL_ADDRESS_IN_USE`: メールアドレスが既に使用されている
+            - `YOU_ARE_BOT`: captcha_token の検証に失敗
 
 
 
@@ -134,9 +135,9 @@ paths:
                 $ref: "#/components/schemas/UpdateAccountMailResponse"
         "400":
           description: |
-            `ACCOUNT_NOT_FOUND`: 名前が`account_name`のアカウントが見つからない\
-            `INVALID_SEQUENCE`: パラメータ内に使用不可能な文字種を含んでいる\
-            `VULNERABLE_PASSPHRASE`: 新しいパスフレーズがパスフレーズとしての要件を満たさない
+            - `ACCOUNT_NOT_FOUND`: 名前が`account_name`のアカウントが見つからない
+            - `INVALID_SEQUENCE`: パラメータ内に使用不可能な文字種を含んでいる
+            - `VULNERABLE_PASSPHRASE`: 新しいパスフレーズがパスフレーズとしての要件を満たさない
           content:
             application/json:
               schema:
@@ -161,8 +162,6 @@ paths:
       responses:
         "200":
           description: OK
-          content:
-            application/json:
         "400":
          description: |
            `ACCOUNT_NOT_FOUND`: 名前が`account_name`のアカウントが見つからない
@@ -177,8 +176,6 @@ paths:
       responses:
         "200":
           description: OK
-          content:
-            application/json:
         "400":
           description: |
             `ACCOUNT_NOT_FOUND`: 名前が`account_name`のアカウントが見つからない
@@ -200,8 +197,6 @@ paths:
       responses:
         "200":
           description: OK
-          content:
-            application/json:
         "400":
           description: |
             `ACCOUNT_NOT_REGISTERING`: そのアカウント名のアカウントが登録中でない
@@ -226,15 +221,10 @@ paths:
       responses:
         "200":
           description: OK
-          content:
-            application/json:
         "400":
           description:  |
-            `ACCOUNT_NOT_REGISTERING`: そのアカウント名のアカウントが登録中でない\\
-            `INVALID_STATE`: state が一致しない
-
-
-
+            - `ACCOUNT_NOT_REGISTERING`: そのアカウント名のアカウントが登録中でない
+            - `INVALID_STATE`: state が一致しない
 
 components:
   schemas:
@@ -284,7 +274,6 @@ components:
 
     CreateAccountResponse:
       type: object
-      properties:
 
     UpdateAccountRequest:
       type: object
