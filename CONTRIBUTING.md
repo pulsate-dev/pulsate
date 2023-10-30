@@ -17,7 +17,7 @@ A guide on how to participate in this project.
   - [Applying migration](#applying-migration)
   - [Rolling back a migration](#rolling-back-a-migration)
 
-**Before "Contribution"**: All Contributors and Maintainers are required to follow the [Code of Conduct](./CODE_OF_CONDUCT.md).
+**Before "Contribution"**: All Contributors and Maintainers are required to follow the [Code of Conduct](https://github.com/pulsate-dev/.github?tab=coc-ov-file).
 
 ## Issues
 
