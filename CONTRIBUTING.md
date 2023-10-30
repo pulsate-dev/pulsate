@@ -2,22 +2,6 @@
 
 A guide on how to participate in this project.
 
-- [Contribute Guide](#contribute-guide)
-  - [Issues](#issues)
-  - [Pull Requests](#pull-requests)
-    - [Review](#review)
-  - [Commit Message](#commit-message)
-  - [Style Guide](#style-guide)
-    - [TypeScript](#typescript)
-      - [null and undefined](#null-and-undefined)
-      - [Quote marks](#quote-marks)
-      - [Arrays](#arrays)
-  - [Database Schema Migration](#database-schema-migration)
-    - [Creating a New Migration File](#creating-a-new-migration-file)
-      - [Recommendations for Creating SQL Migration Files](#recommendations-for-creating-sql-migration-files)
-    - [Applying migration](#applying-migration)
-    - [Rolling back a migration](#rolling-back-a-migration)
-
 **Before "Contribution"**: All Contributors and Maintainers are required to follow the [Code of Conduct](./CODE_OF_CONDUCT.md).
 
 ## Issues
