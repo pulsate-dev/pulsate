@@ -174,11 +174,14 @@ We migrate our database schema using [goose](https://github.com/pressly/goose). 
 
 All migration files should be saved under the `resources/db` directory.  
 Follow the steps below to create a new migration file.
+
 ```bash
 cd resources/db
 goose create add_some_column sql
 ```
+
 Once the migration file is created, write the following:
+
 ```sql
 -- +goose Up
 CREATE TABLE IF NOT EXISTS account (
@@ -197,6 +200,7 @@ CREATE TABLE IF NOT EXISTS account (
 -- +goose Down
 DROP TABLE IF EXISTS account;
 ```
+
 `-- +goose <Up/Down>` is required.
 
 #### Recommendations for Creating SQL Migration Files
@@ -206,6 +210,7 @@ We recommend to include database credentials in the `.env` file as possible. For
 ### Applying migration
 
 Here is how to apply a migration
+
 ```bash
 cd resources/db
 goose up
@@ -214,6 +219,7 @@ goose up
 ### Rolling back a migration
 
 Here is how to roll back a migration one generation
+
 ```bash
 cd resources/db
 goose down
