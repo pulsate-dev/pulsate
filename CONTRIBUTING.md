@@ -152,9 +152,7 @@ const a: Array<string>
 ```
 
 ## Database Schema Migration
-We utilize [goose](https://github.com/pressly/goose) to update our database schema.  
-The installation is necessary, regardless of whether you are currently updating the schema or not.  
-Please consult the [Install](https://github.com/pressly/goose#install) guide for instructions on installation.
+We migrate our database schema using [goose](https://github.com/pressly/goose). It should be installed whether or not you are currently modifying the schema. For installation instructions, see the [Installation](https://github.com/pressly/goose#install) guide.
 
 
 ### Creating a New Migration File
