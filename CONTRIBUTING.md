@@ -11,6 +11,11 @@ A guide on how to participate in this project.
     - [null and undefined](#null-and-undefined)
     - [Quote marks](#quote-marks)
     - [Arrays](#arrays)
+- [Database Schema Migration](#database-schema-migration)
+  - [Creating a New Migration File](#creating-a-new-migration-file)
+    - [Recommendations for Creating SQL Migration Files](#recommendations-for-creating-sql-migration-files)
+  - [Applying migration](#applying-migration)
+  - [Rolling back a migration](#rolling-back-a-migration)
 
 **Before "Contribution"**: All Contributors and Maintainers are required to follow the [Code of Conduct](./CODE_OF_CONDUCT.md).
 
@@ -160,3 +165,63 @@ const a: string[]
 // Bad
 const a: Array<string>
 ```
+
+## Database Schema Migration
+
+We migrate our database schema using [goose](https://github.com/pressly/goose). It should be installed whether or not you are currently modifying the schema. For installation instructions, see the [Installation](https://github.com/pressly/goose#install) guide.
+
+### Creating a New Migration File
+
+All migration files should be saved under the `resources/db` directory.  
+Follow the steps below to create a new migration file.
+
+```bash
+cd resources/db
+goose create add_some_column sql
+```
+
+Once the migration file is created, write the following:
+
+```sql
+-- +goose Up
+CREATE TABLE IF NOT EXISTS account (
+	id VARCHAR(255) PRIMARY KEY,
+	name VARCHAR(128) NOT NULL,
+	nickname VARCHAR(255),
+	mail VARCHAR(128),
+	passphrase_hash VARCHAR(255),
+	bio TEXT NOT NULL DEFAULT '',
+	role INT NOT NULL DEFAULT 0,
+	status INT NOT NULL DEFAULT 0,
+	created_at DATETIME(6) NOT NULL,
+	updated_at DATETIME(6) DEFAULT NULL,
+	deleted_at DATETIME(6) DEFAULT NULL
+);
+-- +goose Down
+DROP TABLE IF EXISTS account;
+```
+
+`-- +goose <Up/Down>` is required.
+
+#### Recommendations for Creating SQL Migration Files
+
+We recommend to include database credentials in the `.env` file as possible. For more information, see the Goose documentation. Note that Goose will create a `go` migration file with the extension, but you need to change it to `sql`.
+
+### Applying migration
+
+Here is how to apply a migration
+
+```bash
+cd resources/db
+goose up
+```
+
+### Rolling back a migration
+
+Here is how to roll back a migration one generation
+
+```bash
+cd resources/db
+goose down
+```
+ 
