@@ -1,8 +1,6 @@
 {
   "recommendations": [
-    // https://marketplace.visualstudio.com/items?itemName=denoland.vscode-deno
     "denoland.vscode-deno",
-    // https://marketplace.visualstudio.com/items?itemName=yzhang.markdown-all-in-one
     "yzhang.markdown-all-in-one"
   ]
 }

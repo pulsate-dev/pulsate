@@ -2,16 +2,15 @@
 
 A guide on how to participate in this project.
 
-- [Contribute Guide](#contribute-guide)
-  - [Issues](#issues)
-  - [Pull Requests](#pull-requests)
-    - [Review](#review)
-  - [Commit Message](#commit-message)
-  - [Style Guide](#style-guide)
-    - [TypeScript](#typescript)
-      - [null and undefined](#null-and-undefined)
-      - [Quote marks](#quote-marks)
-      - [Arrays](#arrays)
+- [Issues](#issues)
+- [Pull Requests](#pull-requests)
+  - [Review](#review)
+- [Commit Message](#commit-message)
+- [Style Guide](#style-guide)
+  - [TypeScript](#typescript)
+    - [null and undefined](#null-and-undefined)
+    - [Quote marks](#quote-marks)
+    - [Arrays](#arrays)
 
 **Before "Contribution"**: All Contributors and Maintainers are required to follow the [Code of Conduct](./CODE_OF_CONDUCT.md).
 
