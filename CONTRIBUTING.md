@@ -2,6 +2,21 @@
 
 A guide on how to participate in this project.
 
+- [Issues](#issues)
+- [Pull Requests](#pull-requests)
+  - [Review](#review)
+- [Commit Message](#commit-message)
+- [Style Guide](#style-guide)
+  - [TypeScript](#typescript)
+    - [null and undefined](#null-and-undefined)
+    - [Quote marks](#quote-marks)
+    - [Arrays](#arrays)
+- [Database Schema Migration](#database-schema-migration)
+  - [Creating a New Migration File](#creating-a-new-migration-file)
+    - [Recommendations for Creating SQL Migration Files](#recommendations-for-creating-sql-migration-files)
+  - [Applying migration](#applying-migration)
+  - [Rolling back a migration](#rolling-back-a-migration)
+
 **Before "Contribution"**: All Contributors and Maintainers are required to follow the [Code of Conduct](./CODE_OF_CONDUCT.md).
 
 ## Issues
@@ -152,15 +167,16 @@ const a: Array<string>
 ```
 
 ## Database Schema Migration
+
 We migrate our database schema using [goose](https://github.com/pressly/goose). It should be installed whether or not you are currently modifying the schema. For installation instructions, see the [Installation](https://github.com/pressly/goose#install) guide.
 
-
 ### Creating a New Migration File
+
 All migration files should be saved under the `resources/db` directory.  
 Follow the steps below to create a new migration file.
 ```bash
-$ cd resources/db
-$ goose create add_some_column sql
+cd resources/db
+goose create add_some_column sql
 ```
 Once the migration file is created, write the following:
 ```sql
@@ -188,16 +204,18 @@ DROP TABLE IF EXISTS account;
 We recommend to include database credentials in the `.env` file as possible. For more information, see the Goose documentation. Note that Goose will create a `go` migration file with the extension, but you need to change it to `sql`.
 
 ### Applying migration
+
 Here is how to apply a migration
 ```bash
-$ cd resources/db
-$ goose up
+cd resources/db
+goose up
 ```
 
 ### Rolling back a migration
+
 Here is how to roll back a migration one generation
 ```bash
-$ cd resources/db
-$ goose down
+cd resources/db
+goose down
 ```
  
