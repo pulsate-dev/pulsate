@@ -185,8 +185,7 @@ DROP TABLE IF EXISTS account;
 
 #### Recommendations for Creating SQL Migration Files
 
-It is recommended to include the database connection information in the `.env` file where possible. Consult the goose documentation for more detailed information.  
-Additionally, it is mandatory to create migration files in `sql`, as the default is `go`.  
+We recommend to include database credentials in the `.env` file as possible. For more information, see the Goose documentation. Note that Goose will create a `go` migration file with the extension, but you need to change it to `sql`.
 
 ### Applying migration
 Here is how to apply a migration
