@@ -12,6 +12,11 @@ A guide on how to participate in this project.
       - [null and undefined](#null-and-undefined)
       - [Quote marks](#quote-marks)
       - [Arrays](#arrays)
+  - [Database Schema Migration](#database-schema-migration)
+    - [Creating a New Migration File](#creating-a-new-migration-file)
+      - [Recommendations for Creating SQL Migration Files](#recommendations-for-creating-sql-migration-files)
+    - [Applying migration](#applying-migration)
+    - [Rolling back a migration](#rolling-back-a-migration)
 
 **Before "Contribution"**: All Contributors and Maintainers are required to follow the [Code of Conduct](./CODE_OF_CONDUCT.md).
 
@@ -161,3 +166,57 @@ const a: string[]
 // Bad
 const a: Array<string>
 ```
+
+## Database Schema Migration
+We utilize [goose](https://github.com/pressly/goose) to update our database schema.  
+The installation is necessary, regardless of whether you are currently updating the schema or not.  
+Please consult the [Install](https://github.com/pressly/goose#install) guide for instructions on installation.
+
+
+### Creating a New Migration File
+All migration files should be saved under the `resources/db` directory.  
+Follow the steps below to create a new migration file.
+```bash
+$ cd resources/db
+$ goose create add_some_column sql
+```
+Once the migration file is created, write the following:
+```sql
+-- +goose Up
+CREATE TABLE IF NOT EXISTS account (
+	id VARCHAR(255) PRIMARY KEY,
+	name VARCHAR(128) NOT NULL,
+	nickname VARCHAR(255),
+	mail VARCHAR(128),
+	passphrase_hash VARCHAR(255),
+	bio TEXT NOT NULL DEFAULT '',
+	role INT NOT NULL DEFAULT 0,
+	status INT NOT NULL DEFAULT 0,
+	created_at DATETIME(6) NOT NULL,
+	updated_at DATETIME(6) DEFAULT NULL,
+	deleted_at DATETIME(6) DEFAULT NULL
+);
+-- +goose Down
+DROP TABLE IF EXISTS account;
+```
+`-- +goose <Up/Down>` is required.
+
+#### Recommendations for Creating SQL Migration Files
+
+It is recommended to include the database connection information in the `.env` file where possible. Consult the goose documentation for more detailed information.  
+Additionally, it is mandatory to create migration files in `sql`, as the default is `go`.  
+
+### Applying migration
+Here is how to apply a migration
+```bash
+$ cd resources/db
+$ goose up
+```
+
+### Rolling back a migration
+Here is how to roll back a migration one generation
+```bash
+$ cd resources/db
+$ goose down
+```
+ 
