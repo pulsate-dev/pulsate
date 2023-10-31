@@ -1,7 +1,7 @@
 name: "Feature request"
 description: "Create a feature request"
 labels:
-  - "feature"
+  - "T: feature"
 
 body:
   - type: checkboxes
