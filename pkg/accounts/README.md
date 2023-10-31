@@ -1,6 +1,7 @@
 # Accounts module
 
-This module authorizes an user as an account and manages its session and profile.
+This module authorizes an user as an account and manages its session and
+profile.
 
 ## Directory structure
 
