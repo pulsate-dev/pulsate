@@ -16,7 +16,7 @@ Deno.test('generate id', () => {
 
 Deno.test('generate at the same time but do not output the same ID', () => {
   let oldID = '';
-  for (let i = 0; i < 4095; i++) {
+  for (let i = 0; i < 4096; i++) {
     const newID = generator.generate(
       BigInt(new Date('2023/9/10 00:00:00 UTC').getTime()),
     );

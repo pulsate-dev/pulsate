@@ -34,7 +34,6 @@ export class SnowflakeIDGenerator {
     if (timeFromEpoch < 0) {
       throw new Error('invalid date');
     }
-    this.lastTimeStamp = time;
 
     if (this.lastTimeStamp === time) {
       if ((this.incremental + 1n) > this.MAX_INCREMENTAL) {
@@ -45,11 +44,13 @@ export class SnowflakeIDGenerator {
       this.incremental = 0n;
     }
 
+    this.lastTimeStamp = time;
+
     const id = timeFromEpoch <<
         (this.WORKER_ID_BIT_LENGTH + this.INCREMENTAL_BIT_LENGTH) |
       this.workerID << this.INCREMENTAL_BIT_LENGTH |
       this.incremental;
-
+    console.log(this.incremental);
     return id.toString() as ID<T>;
   }
 }
