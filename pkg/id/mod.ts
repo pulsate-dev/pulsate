@@ -1,4 +1,9 @@
+import { Result } from 'npm:@mikuroxina/mini-fn';
 import type { ID } from './type.ts';
+
+export interface Clock {
+  Now(): bigint;
+}
 
 export class SnowflakeIDGenerator {
   /**
@@ -13,8 +18,9 @@ export class SnowflakeIDGenerator {
   private readonly workerID: bigint = 0n;
   private incremental = 0n;
   private lastTimeStamp: bigint;
+  private clock: Clock;
 
-  constructor(workerID: number) {
+  constructor(workerID: number, clock: Clock) {
     if (workerID < 0 || workerID > this.MAX_WORKER_ID) {
       throw new Error(
         `WorkerID must be greater than or equal to 0 and less than or equal to ${this.MAX_WORKER_ID}`,
@@ -23,21 +29,23 @@ export class SnowflakeIDGenerator {
 
     this.workerID = BigInt(workerID);
     this.lastTimeStamp = BigInt(Date.now());
+    this.clock = clock;
   }
 
   /**
    * @param time UNIX millisecond (TZ: UTC)
    * @returns SnowflakeID (string)
    */
-  public generate<T>(time: bigint): ID<T> {
+  public generate<T>(): Result.Result<Error, ID<T>> {
+    const time = this.clock.Now();
     const timeFromEpoch = time - this.EPOCH;
     if (timeFromEpoch < 0) {
-      throw new Error('invalid date');
+      return Result.err(new Error('invalid date'));
     }
 
     if (this.lastTimeStamp === time) {
       if ((this.incremental + 1n) > this.MAX_INCREMENTAL) {
-        throw new Error('increment overflow');
+        return Result.err(new Error('increment overflow'));
       }
       this.incremental = (this.incremental + 1n) & this.MAX_INCREMENTAL;
     } else {
@@ -50,7 +58,7 @@ export class SnowflakeIDGenerator {
         (this.WORKER_ID_BIT_LENGTH + this.INCREMENTAL_BIT_LENGTH) |
       this.workerID << this.INCREMENTAL_BIT_LENGTH |
       this.incremental;
-    console.log(this.incremental);
-    return id.toString() as ID<T>;
+
+    return Result.ok(id.toString() as ID<T>);
   }
 }

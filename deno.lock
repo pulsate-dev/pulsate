@@ -1,5 +1,16 @@
 {
   "version": "3",
+  "packages": {
+    "specifiers": {
+      "npm:@mikuroxina/mini-fn": "npm:@mikuroxina/mini-fn@5.1.0"
+    },
+    "npm": {
+      "@mikuroxina/mini-fn@5.1.0": {
+        "integrity": "sha512-NnbSIBbf2kadmawA3+grEfjvINeTMYcv7Vn+Aw5i81dCVfF4U0Qkq7WaB1NIoYJVCb1sTReytUPbStAWz0PlaQ==",
+        "dependencies": {}
+      }
+    }
+  },
   "remote": {
     "https://deno.land/std@0.204.0/assert/_constants.ts": "8a9da298c26750b28b326b297316cdde860bc237533b07e1337c021379e6b2a9",
     "https://deno.land/std@0.204.0/assert/_diff.ts": "58e1461cc61d8eb1eacbf2a010932bf6a05b79344b02ca38095f9b805795dc48",
