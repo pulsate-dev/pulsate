@@ -26,7 +26,6 @@ export class SnowflakeIDGenerator {
   }
 
   /**
-   *
    * @param time UNIX millisecond (TZ: UTC)
    * @returns SnowflakeID (string)
    */
