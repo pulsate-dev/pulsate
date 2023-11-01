@@ -37,6 +37,9 @@ export class SnowflakeIDGenerator {
     this.lastTimeStamp = time;
 
     if (this.lastTimeStamp === time) {
+      if ((this.incremental + 1n) > this.MAX_INCREMENTAL) {
+        throw new Error('increment overflow');
+      }
       this.incremental = (this.incremental + 1n) & this.MAX_INCREMENTAL;
     } else {
       this.incremental = 0n;
