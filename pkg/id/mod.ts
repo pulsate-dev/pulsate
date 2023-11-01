@@ -25,6 +25,11 @@ export class SnowflakeIDGenerator {
     this.lastTimeStamp = BigInt(Date.now());
   }
 
+  /**
+   *
+   * @param time UNIX millisecond (TZ: UTC)
+   * @returns SnowflakeID (string)
+   */
   public generate<T>(time: bigint): ID<T> {
     const timeFromEpoch = time - this.EPOCH;
     if (timeFromEpoch < 0) {
