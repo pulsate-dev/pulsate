@@ -2,6 +2,8 @@
 
 A Guide to Pulsate's Security Policy.
 
+[日本語版](./.github/SECURITY_JA.md)
+
 ## Supported Versions
 
 Below is the support status for each version of Pulsate.
@@ -24,6 +26,5 @@ The reporting procedure is as follows.
 
 The advisory will be reviewed by the maintainer and released to the public.
 
-> **Warning**
->
+> [!WARNING]
 > **DO NOT PUBLISH EXTERNALLY** until full disclosure of the reported advisory has been made.
