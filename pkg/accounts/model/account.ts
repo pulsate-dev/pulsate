@@ -108,15 +108,15 @@ export class Account {
   get getStatus(): AccountStatus {
     return this.status;
   }
-  public freeze() {
+  public setFreeze() {
     this.status = 'frozen';
   }
 
-  public unfreeze() {
+  public setUnfreeze() {
     this.status = 'active';
   }
 
-  public silence() {
+  public setSilence() {
     this.status = 'silenced';
   }
 
