@@ -20,7 +20,7 @@
     ]
   },
   "lint": {
-    "include": ["services/hello/"],
+    "include": ["services/hello/", "pkg/"],
     "rules": {
       "tags": ["recommended"]
     }
