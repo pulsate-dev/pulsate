@@ -10,10 +10,14 @@
     <br />
 </p>
 
-Pulsate is the next generation of distributed social networking in the [ActivityPub](#what-is-a-activitypub) implementation and is easy to modify, fast, and developer and user friendly.
+Pulsate is the next generation of distributed social networking in the
+[ActivityPub](#what-is-a-activitypub) implementation and is easy to modify,
+fast, and developer and user friendly.
 
-> [!IMPORTANT]
-> Pulsate is currently in the development phase, in a pre-alpha stage. The official release build may be missing some features or may have unforeseen defects.
+> [!IMPORTANT]\
+> Pulsate is currently in the development phase, in a pre-alpha stage. The
+> official release build may be missing some features or may have unforeseen
+> defects.
 
 <p align="center">
   <!-- TODO: Insert Pulsate Screenshot -->
@@ -41,26 +45,37 @@ Pulsate is the next generation of distributed social networking in the [Activity
 
 ## What is a ActivityPub?
 
-ActivityPub is an open-source, decentralized social networking protocol. It provides a standardized model for the communication of applications, allowing them to share activities across a network of servers.
+ActivityPub is an open-source, decentralized social networking protocol. It
+provides a standardized model for the communication of applications, allowing
+them to share activities across a network of servers.
 
-With ActivityPub, social network users can follow each other, share posts, and interact across diverse servers using different software implementation. Its decentralized nature enables greater data ownership and control for users, as their information is not housed in one centralized server. Instead, each server retains its data and establishes its policies, thereby resisting monopoly and censorship.
+With ActivityPub, social network users can follow each other, share posts, and
+interact across diverse servers using different software implementation. Its
+decentralized nature enables greater data ownership and control for users, as
+their information is not housed in one centralized server. Instead, each server
+retains its data and establishes its policies, thereby resisting monopoly and
+censorship.
 
 ## Developer Guide
 
-If you want to participate in the development of Pulsate, be sure to read the [contributing guide](./CONTRIBUTING.md).
+If you want to participate in the development of Pulsate, be sure to read the
+[contributing guide](./CONTRIBUTING.md).
 
-This guide describes the TypeScript naming conventions and how to handle `null`, `undefined`, etc. in Pulsate.
+This guide describes the TypeScript naming conventions and how to handle `null`,
+`undefined`, etc. in Pulsate.
 
 ## Security Policy
 
-Check the [Security Policy](./SECURITY.md) for security advisories, where to report vulnerabilities, and support status.
+Check the [Security Policy](./SECURITY.md) for security advisories, where to
+report vulnerabilities, and support status.
 
 ## License
 
 Pulsate is open source software distributed under **Apache 2.0**.
 
-Please check [Apache Software Foundation's official web site](https://www.apache.org/licenses/), [license file](./LICENSE) for more information.
-
+Please check
+[Apache Software Foundation's official web site](https://www.apache.org/licenses/),
+[license file](./LICENSE) for more information.
 
 ## Community & Related Sites
 
