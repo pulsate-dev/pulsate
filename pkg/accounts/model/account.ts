@@ -6,6 +6,8 @@ import {
 } from './account.errors.ts';
 
 export type AccountID = string;
+export type AccountRole = 'admin' | 'normal' | 'moderator';
+export type AccountStatus = 'active' | 'frozen' | 'silenced' | 'notActivated';
 
 export interface CreateAccountArgs {
   id: ID<AccountID>;
@@ -14,8 +16,8 @@ export interface CreateAccountArgs {
   nickname: string;
   passphraseHash: string | undefined;
   bio: string;
-  role: number;
-  status: number;
+  role: AccountRole;
+  status: AccountStatus;
   createdAt: Date;
   updatedAt: Date | undefined;
   deletedAt: Date | undefined;
@@ -62,7 +64,7 @@ export class Account {
   get getNickname(): string {
     return this.nickname;
   }
-  private setNickName(name: string) {
+  public setNickName(name: string) {
     if ([...name].length > 128) {
       throw new AccountNickNameLengthError('nickname length is too long');
     }
@@ -73,7 +75,7 @@ export class Account {
   get getPassphraseHash(): string | undefined {
     return this.passphraseHash;
   }
-  private set setPassphraseHash(hash: string | undefined) {
+  public setPassphraseHash(hash: string) {
     this.passphraseHash = hash;
   }
 
@@ -81,35 +83,52 @@ export class Account {
   get getBio(): string {
     return this.bio;
   }
-  private set setBio(bio: string) {
+  public setBio(bio: string) {
     if ([...bio].length > 1024) {
       throw new AccountBioLengthError('bio is too long');
     }
     this.bio = bio;
   }
 
-  // TODO: role, status は enum にしたい
-  private role: number;
-  get getRole(): number {
+  private role: AccountRole;
+  get getRole(): AccountRole {
     return this.role;
   }
-  private set setRole(role: number) {
-    this.role = role;
+  public toAdmin() {
+    this.role = 'admin';
+  }
+  public toNormal() {
+    this.role = 'normal';
+  }
+  public toModerator() {
+    this.role = 'moderator';
   }
 
-  private status: number;
-  get getStatus(): number {
+  private status: AccountStatus;
+  get getStatus(): AccountStatus {
     return this.status;
   }
-  private set setStatus(status: number) {
-    this.status = status;
+  public freeze() {
+    this.status = 'frozen';
+  }
+
+  public unfreeze() {
+    this.status = 'active';
+  }
+
+  public silence() {
+    this.status = 'silenced';
+  }
+
+  public undoSilence() {
+    this.status = 'active';
   }
 
   private updatedAt: Date | undefined;
   get getUpdatedAt(): Date | undefined {
     return this.updatedAt;
   }
-  private set setUpdatedAt(at: Date) {
+  private setUpdatedAt(at: Date) {
     if (this.createdAt > at) {
       throw new AccountDateInvalidError('updatedAt must be after createdAt');
     }
@@ -120,14 +139,14 @@ export class Account {
   get getDeletedAt(): Date | undefined {
     return this.deletedAt;
   }
-  private set setDeletedAt(at: Date) {
+  private setDeletedAt(at: Date) {
     if (this.createdAt > at) {
       throw new AccountDateInvalidError('deletedAt must be after createdAt');
     }
     this.deletedAt = at;
   }
 
-  public new(arg: Omit<CreateAccountArgs, 'deletedAt' | 'updatedAt'>) {
+  public static new(arg: Omit<CreateAccountArgs, 'deletedAt' | 'updatedAt'>) {
     return new Account({
       id: arg.id,
       mail: arg.mail,
@@ -137,7 +156,7 @@ export class Account {
       nickname: arg.nickname,
       passphraseHash: arg.passphraseHash,
       role: arg.role,
-      status: arg.status,
+      status: 'notActivated',
       updatedAt: undefined,
       deletedAt: undefined,
     });
