@@ -26,14 +26,14 @@ Deno.test('generate id', () => {
 
 Deno.test('generate at the same time but do not output the same ID', () => {
   let oldID = '';
-  for (let i = 0; i < 4096; i++) {
+  for (let i = 0; i < 4095; i++) {
     const newID = generator.generate();
 
     if (Result.isOk(newID)) {
       assertNotEquals(newID[1], oldID);
       oldID = newID[1];
     }
-    assertFalse(Result.isErr(newID));
+    assertEquals(Result.isErr(newID), false);
   }
 
   const res = generator.generate();

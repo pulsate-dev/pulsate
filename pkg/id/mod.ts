@@ -33,7 +33,6 @@ export class SnowflakeIDGenerator {
   }
 
   /**
-   * @param time UNIX millisecond (TZ: UTC)
    * @returns SnowflakeID (string)
    */
   public generate<T>(): Result.Result<Error, ID<T>> {
