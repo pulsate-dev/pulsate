@@ -8,6 +8,7 @@
   <p align="center">
     💙 Easy-to-change, faster, developer friendly next generation decentralized social media. 💙
     <br />
+  </p>
 </p>
 
 Pulsate is the next generation of distributed social networking in the
