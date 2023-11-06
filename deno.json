@@ -3,7 +3,8 @@
     "fmt": "deno fmt",
     "fmt:watch": "deno fmt --watch .",
     "fmt:check": "deno fmt --check",
-    "lint": "deno lint"
+    "lint": "deno lint",
+    "test": "deno test"
   },
   "fmt": {
     "useTabs": false,
