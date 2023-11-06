@@ -27,7 +27,7 @@ Deno.test('generate new instance', () => {
   assertEquals(account.getPassphraseHash, exampleInput.passphraseHash);
   assertEquals(account.getBio, exampleInput.bio);
   assertEquals(account.getRole, exampleInput.role);
-  assertEquals(account.getStatus, "notActivated");
+  assertEquals(account.getStatus, 'notActivated');
   assertEquals(account.getCreatedAt, exampleInput.createdAt);
   assertEquals(account.getUpdatedAt, undefined);
   assertEquals(account.getDeletedAt, undefined);
@@ -41,10 +41,10 @@ Deno.test('account nickname must be less than 128', () => {
   });
 });
 
-Deno.test("account bio must be less than 1024 chars", () => {
+Deno.test('account bio must be less than 1024 chars', () => {
   const bio = 'a'.repeat(1025);
-    const account = Account.new(exampleInput);
-    assertThrows(() => {
-      account.setBio(bio);
-    });
-})
+  const account = Account.new(exampleInput);
+  assertThrows(() => {
+    account.setBio(bio);
+  });
+});
