@@ -7,7 +7,9 @@ import {
 
 export type AccountID = string;
 export type AccountRole = 'admin' | 'normal' | 'moderator';
-export type AccountStatus = 'active' | 'frozen' | 'silenced' | 'notActivated';
+export type AccountStatus = 'active' | 'notActivated';
+export type AccountFrozen = 'frozen' | 'normal';
+export type AccountSilenced = 'silenced' | 'normal';
 
 export interface CreateAccountArgs {
   id: ID<AccountID>;
@@ -17,6 +19,8 @@ export interface CreateAccountArgs {
   passphraseHash: string | undefined;
   bio: string;
   role: AccountRole;
+  frozen: AccountFrozen;
+  silenced: AccountSilenced;
   status: AccountStatus;
   createdAt: Date;
   updatedAt: Date | undefined;
@@ -33,6 +37,8 @@ export class Account {
     this.bio = arg.bio;
     this.role = arg.role;
     this.status = arg.status;
+    this.frozen = arg.frozen;
+    this.silenced = arg.silenced;
     this.createdAt = arg.createdAt;
     this.updatedAt = arg.updatedAt;
     this.deletedAt = arg.deletedAt;
@@ -104,23 +110,34 @@ export class Account {
     this.role = 'moderator';
   }
 
+  private frozen: AccountFrozen;
+  get getFrozen(): AccountFrozen {
+    return this.frozen;
+  }
+  public setFreeze() {
+    this.frozen = 'frozen';
+  }
+
+  public setUnfreeze() {
+    this.frozen = 'normal';
+  }
+
+  private silenced: AccountSilenced;
+  get getSilenced(): AccountSilenced {
+    return this.silenced;
+  }
+  public setSilence() {
+    this.silenced = 'silenced';
+  }
+  public undoSilence() {
+    this.silenced = 'normal';
+  }
+
   private status: AccountStatus;
   get getStatus(): AccountStatus {
     return this.status;
   }
-  public setFreeze() {
-    this.status = 'frozen';
-  }
-
-  public setUnfreeze() {
-    this.status = 'active';
-  }
-
-  public setSilence() {
-    this.status = 'silenced';
-  }
-
-  public undoSilence() {
+  public activate() {
     this.status = 'active';
   }
 
@@ -157,6 +174,8 @@ export class Account {
       passphraseHash: arg.passphraseHash,
       role: arg.role,
       status: 'notActivated',
+      frozen: 'normal',
+      silenced: 'normal',
       updatedAt: undefined,
       deletedAt: undefined,
     });

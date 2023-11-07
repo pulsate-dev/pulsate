@@ -12,6 +12,8 @@ const exampleInput: CreateAccountArgs = {
   passphraseHash: 'leknflkwnrigohidvlk',
   role: 'admin',
   status: 'active',
+  frozen: 'frozen',
+  silenced: 'silenced',
   name: 'johndoe@social.example.com',
   updatedAt: new Date('2023-09-10T09:00:00.000Z'),
   deletedAt: new Date('2023-09-10T10:00:00.000Z'),
