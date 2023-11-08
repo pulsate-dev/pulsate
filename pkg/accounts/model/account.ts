@@ -216,7 +216,7 @@ export class Account {
   get getUpdatedAt(): Date | undefined {
     return this.updatedAt;
   }
-  private setUpdatedAt(at: Date) {
+  public setUpdatedAt(at: Date) {
     if (this.createdAt > at) {
       throw new AccountDateInvalidError('updatedAt must be after createdAt');
     }
@@ -227,7 +227,7 @@ export class Account {
   get getDeletedAt(): Date | undefined {
     return this.deletedAt;
   }
-  private setDeletedAt(at: Date) {
+  public setDeletedAt(at: Date) {
     if (this.createdAt > at) {
       throw new AccountDateInvalidError('deletedAt must be after createdAt');
     }
@@ -235,7 +235,7 @@ export class Account {
   }
 
   private isDeleted(): boolean {
-    if (this.deletedAt) {
+    if (this.deletedAt === undefined) {
       return false;
     }
 

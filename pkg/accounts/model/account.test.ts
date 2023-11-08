@@ -50,3 +50,45 @@ Deno.test('account bio must be less than 1024 chars', () => {
     account.setBio(bio);
   });
 });
+
+Deno.test('can\'t change values when account is frozen', () => {
+  const account = Account.new(exampleInput);
+  account.setFreeze();
+
+  assertThrows(() => {
+    account.setBio('test');
+  });
+
+  assertThrows(() => {
+    account.setNickName('hello@example.com');
+  });
+
+  assertThrows(() => {
+    account.setPassphraseHash('123');
+  });
+
+  assertThrows(() => {
+    account.setSilence();
+  });
+});
+
+Deno.test('deleted account can\'t change values', () => {
+  const account = Account.new(exampleInput);
+  account.setDeletedAt(new Date());
+
+  assertThrows(() => {
+    account.setBio('test');
+  });
+
+  assertThrows(() => {
+    account.setNickName('hello@example.com');
+  });
+
+  assertThrows(() => {
+    account.setPassphraseHash('123');
+  });
+
+  assertThrows(() => {
+    account.setSilence();
+  });
+});
