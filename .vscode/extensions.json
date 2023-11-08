@@ -1,6 +1,7 @@
 {
   "recommendations": [
     "denoland.vscode-deno",
-    "yzhang.markdown-all-in-one"
+    "yzhang.markdown-all-in-one",
+    "EditorConfig.EditorConfig"
   ]
 }
