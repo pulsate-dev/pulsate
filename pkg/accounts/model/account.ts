@@ -1,5 +1,7 @@
 import { ID } from '../../id/type.ts';
 import {
+  AccountAlreadyDeletedError,
+  AccountAlreadyFrozenError,
   AccountBioLengthError,
   AccountDateInvalidError,
   AccountNickNameLengthError,
@@ -71,6 +73,13 @@ export class Account {
     return this.nickname;
   }
   public setNickName(name: string) {
+    if (this.isDeleted()) {
+      throw new AccountAlreadyDeletedError('account already deleted');
+    }
+    if (this.getFrozen === 'frozen') {
+      throw new AccountAlreadyFrozenError('account already frozen');
+    }
+
     if ([...name].length > 128) {
       throw new AccountNickNameLengthError('nickname length is too long');
     }
@@ -82,6 +91,13 @@ export class Account {
     return this.passphraseHash;
   }
   public setPassphraseHash(hash: string) {
+    if (this.isDeleted()) {
+      throw new AccountAlreadyDeletedError('account already deleted');
+    }
+    if (this.getFrozen === 'frozen') {
+      throw new AccountAlreadyFrozenError('account already frozen');
+    }
+
     this.passphraseHash = hash;
   }
 
@@ -90,6 +106,13 @@ export class Account {
     return this.bio;
   }
   public setBio(bio: string) {
+    if (this.isDeleted()) {
+      throw new AccountAlreadyDeletedError('account already deleted');
+    }
+    if (this.getFrozen === 'frozen') {
+      throw new AccountAlreadyFrozenError('account already frozen');
+    }
+
     if ([...bio].length > 1024) {
       throw new AccountBioLengthError('bio is too long');
     }
@@ -101,12 +124,33 @@ export class Account {
     return this.role;
   }
   public toAdmin() {
+    if (this.isDeleted()) {
+      throw new AccountAlreadyDeletedError('account already deleted');
+    }
+    if (this.getFrozen === 'frozen') {
+      throw new AccountAlreadyFrozenError('account already frozen');
+    }
+
     this.role = 'admin';
   }
   public toNormal() {
+    if (this.isDeleted()) {
+      throw new AccountAlreadyDeletedError('account already deleted');
+    }
+    if (this.getFrozen === 'frozen') {
+      throw new AccountAlreadyFrozenError('account already frozen');
+    }
+
     this.role = 'normal';
   }
   public toModerator() {
+    if (this.isDeleted()) {
+      throw new AccountAlreadyDeletedError('account already deleted');
+    }
+    if (this.getFrozen === 'frozen') {
+      throw new AccountAlreadyFrozenError('account already frozen');
+    }
+
     this.role = 'moderator';
   }
 
@@ -115,10 +159,17 @@ export class Account {
     return this.frozen;
   }
   public setFreeze() {
+    if (this.isDeleted()) {
+      throw new AccountAlreadyDeletedError('account already deleted');
+    }
+
     this.frozen = 'frozen';
   }
 
   public setUnfreeze() {
+    if (this.isDeleted()) {
+      throw new AccountAlreadyDeletedError('account already deleted');
+    }
     this.frozen = 'normal';
   }
 
@@ -127,9 +178,23 @@ export class Account {
     return this.silenced;
   }
   public setSilence() {
+    if (this.isDeleted()) {
+      throw new AccountAlreadyDeletedError('account already deleted');
+    }
+    if (this.getFrozen === 'frozen') {
+      throw new AccountAlreadyFrozenError('account already frozen');
+    }
+
     this.silenced = 'silenced';
   }
   public undoSilence() {
+    if (this.isDeleted()) {
+      throw new AccountAlreadyDeletedError('account already deleted');
+    }
+    if (this.getFrozen === 'frozen') {
+      throw new AccountAlreadyFrozenError('account already frozen');
+    }
+
     this.silenced = 'normal';
   }
 
@@ -138,6 +203,12 @@ export class Account {
     return this.status;
   }
   public activate() {
+    if (this.isDeleted()) {
+      throw new AccountAlreadyDeletedError('account already deleted');
+    }
+    if (this.getFrozen === 'frozen') {
+      throw new AccountAlreadyFrozenError('account already frozen');
+    }
     this.status = 'active';
   }
 
@@ -161,6 +232,14 @@ export class Account {
       throw new AccountDateInvalidError('deletedAt must be after createdAt');
     }
     this.deletedAt = at;
+  }
+
+  private isDeleted(): boolean {
+    if (this.deletedAt) {
+      return false;
+    }
+
+    return true;
   }
 
   public static new(arg: Omit<CreateAccountArgs, 'deletedAt' | 'updatedAt'>) {
