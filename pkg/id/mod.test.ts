@@ -1,10 +1,6 @@
-import {
-  assertEquals,
-  assertFalse,
-  assertNotEquals,
-} from 'https://deno.land/std@0.206.0/assert/mod.ts';
+import { assertEquals, assertFalse, assertNotEquals } from 'std/assert';
 import { Clock, SnowflakeIDGenerator } from './mod.ts';
-import { Result } from 'npm:@mikuroxina/mini-fn';
+import { Result } from 'mini-fn';
 
 class DummyClock implements Clock {
   Now(): bigint {
