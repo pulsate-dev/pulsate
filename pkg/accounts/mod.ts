@@ -1,4 +1,4 @@
-import { Hono } from 'https://deno.land/x/hono@v3.8.2/mod.ts';
+import { Hono } from 'hono';
 
 export const accounts = new Hono();
 
