@@ -31,5 +31,10 @@
   "lint-staged": {
     "*": "deno task lint && deno task fmt",
     "deno.jsonc": "deno task setup-hooks"
+  },
+  "imports": {
+    "std/assert": "https://deno.land/std@0.205.0/assert/mod.ts",
+    "hono": "https://deno.land/x/hono@v3.8.2/mod.ts",
+    "mini-fn": "npm:@mikuroxina/mini-fn"
   }
 }
