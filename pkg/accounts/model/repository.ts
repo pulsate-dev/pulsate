@@ -1,4 +1,4 @@
-import { Option, Result } from 'npm:@mikuroxina/mini-fn';
+import { Option, Result } from 'mini-fn';
 import { Account, AccountID } from './account.ts';
 import { ID } from '../../id/type.ts';
 

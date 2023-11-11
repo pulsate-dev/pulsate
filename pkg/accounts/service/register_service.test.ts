@@ -1,4 +1,4 @@
-import { assertEquals } from 'https://deno.land/std@0.205.0/assert/mod.ts';
+import { assertEquals } from 'std/assert';
 import { Clock, SnowflakeIDGenerator } from '../../id/mod.ts';
 import { ScryptPasswordEncoder } from '../../password/mod.ts';
 import {
@@ -9,7 +9,7 @@ import { AccountRepository } from '../model/repository.ts';
 import { RegisterAccountService } from './register_service.ts';
 import { DummySendNotificationService } from './send_notification_service.ts';
 import { TokenVerifyService } from './token_verify_service.ts';
-import { Result } from 'npm:@mikuroxina/mini-fn';
+import { Result } from 'mini-fn';
 import { AccountRole } from '../model/account.ts';
 
 const repository: AccountRepository = new InMemoryAccountRepository();

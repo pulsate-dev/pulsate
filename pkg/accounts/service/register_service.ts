@@ -1,4 +1,4 @@
-import { Option, Result } from 'npm:@mikuroxina/mini-fn';
+import { Option, Result } from 'mini-fn';
 import { Account, AccountID, AccountRole } from '../model/account.ts';
 import { AccountRepository } from '../model/repository.ts';
 import { SnowflakeIDGenerator } from '../../id/mod.ts';

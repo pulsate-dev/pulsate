@@ -1,9 +1,9 @@
-import { Result } from 'npm:@mikuroxina/mini-fn';
+import { Result } from 'mini-fn';
 import { ID } from '../../id/type.ts';
 import { InMemoryAccountVerifyTokenRepository } from '../adaptor/repository/dummy.ts';
 import { AccountID } from '../model/account.ts';
 import { TokenVerifyService } from './token_verify_service.ts';
-import { assertEquals } from 'https://deno.land/std@0.205.0/assert/assert_equals.ts';
+import { assertEquals } from 'std/assert';
 import { Clock } from '../../id/mod.ts';
 
 const repository = new InMemoryAccountVerifyTokenRepository();

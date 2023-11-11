@@ -1,4 +1,4 @@
-import { Result } from 'npm:@mikuroxina/mini-fn';
+import { Result } from 'mini-fn';
 
 export interface SendNotificationService {
   Send(to: string, body: string): Promise<Result.Result<Error, void>>;

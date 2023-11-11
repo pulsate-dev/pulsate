@@ -1,4 +1,4 @@
-import { Option, Result } from 'npm:@mikuroxina/mini-fn';
+import { Option, Result } from 'mini-fn';
 import { AccountVerifyTokenRepository } from '../model/repository.ts';
 import { ID } from '../../id/type.ts';
 import { AccountID } from '../model/account.ts';

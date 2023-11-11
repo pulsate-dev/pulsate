@@ -1,7 +1,6 @@
-import { assertThrows } from 'https://deno.land/std@0.206.0/assert/assert_throws.ts';
+import { assertThrows, assertEquals } from 'std/assert';
 import { Account, AccountID, CreateAccountArgs } from './account.ts';
 import { ID } from '../../id/type.ts';
-import { assertEquals } from 'https://deno.land/std@0.206.0/assert/assert_equals.ts';
 
 const exampleInput: CreateAccountArgs = {
   id: '1' as ID<AccountID>,

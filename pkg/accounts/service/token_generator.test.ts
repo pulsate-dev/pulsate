@@ -1,7 +1,6 @@
-import { Option } from 'npm:@mikuroxina/mini-fn';
+import { Option } from 'mini-fn';
 import { TokenGenerator } from './token_generator.ts';
-import { assertEquals } from 'https://deno.land/std@0.204.0/assert/assert_equals.ts';
-import { assertFalse } from 'https://deno.land/std@0.205.0/assert/assert_false.ts';
+import { assertEquals, assertFalse } from 'std/assert';
 
 const generator = await TokenGenerator.new();
 Deno.test('verify JWT Token', async () => {

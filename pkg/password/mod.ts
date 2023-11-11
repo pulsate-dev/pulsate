@@ -2,7 +2,7 @@ import {
   genSalt,
   hash,
   verify,
-} from 'https://deno.land/x/scrypt@v4.2.1/mod.ts';
+} from 'scrypt';
 
 export type EncodedPassword = string;
 

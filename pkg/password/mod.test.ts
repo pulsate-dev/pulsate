@@ -1,5 +1,5 @@
 import { PasswordEncoder, ScryptPasswordEncoder } from './mod.ts';
-import { assertEquals } from 'https://deno.land/std@0.204.0/assert/assert_equals.ts';
+import { assertEquals } from 'std/assert';
 
 const encoder: PasswordEncoder = new ScryptPasswordEncoder();
 const raw = 'じゃすた・いぐざんぽぅ';

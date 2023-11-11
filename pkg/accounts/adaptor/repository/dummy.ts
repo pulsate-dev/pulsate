@@ -4,7 +4,7 @@ import {
   AccountRepository,
   AccountVerifyTokenRepository,
 } from '../../model/repository.ts';
-import { Option, Result } from 'npm:@mikuroxina/mini-fn';
+import { Option, Result } from 'mini-fn';
 
 export class InMemoryAccountRepository implements AccountRepository {
   private data: Set<Account>;

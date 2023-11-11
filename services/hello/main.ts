@@ -1,4 +1,4 @@
-import nhttp from 'https://deno.land/x/nhttp@1.3.9/mod.ts';
+import nhttp from 'nhttp';
 
 if (import.meta.main) {
   const app = nhttp();

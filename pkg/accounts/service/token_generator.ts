@@ -1,5 +1,5 @@
-import { Option } from 'npm:@mikuroxina/mini-fn';
-import * as jose from 'https://deno.land/x/jose@v5.1.0/index.ts';
+import { Option } from 'mini-fn';
+import * as jose from 'jose';
 
 export class TokenGenerator {
   private readonly privateKey: CryptoKey;
