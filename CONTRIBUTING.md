@@ -6,6 +6,8 @@ A guide on how to participate in this project.
 - [Pull Requests](#pull-requests)
   - [Review](#review)
 - [Commit Message](#commit-message)
+- [Deno](#deno)
+  - [How to add dependencies](#how-to-add-dependencies)
 - [Style Guide](#style-guide)
   - [TypeScript](#typescript)
     - [null and undefined](#null-and-undefined)
@@ -82,6 +84,35 @@ Pulsate commit messages must follow [conventional commit](https://www.convention
   - For example, **Add new feature** is `feat`, **Fix bug** is `fix`.
 - If you make any backward-compatibility-breaking changes, you must set `scope` to `!` and add a description of the destructive change to `body`.
   - Please contact the maintainer via Issue or Discussion once you make such a change. In most cases, such changes are not desired.
+
+## Deno
+
+### How to add dependencies
+
+Use import_maps to add Deno dependencies. **DO NOT** add URLs directly to the source code.
+
+Import_maps can be used by inserting the URL directly into `imports` of `deno.jsonc`.
+
+```json
+"imports": {
+  "std/assert": "https://deno.land/std@0.205.0/assert/mod.ts",
+  "hono": "https://deno.land/x/hono@v3.8.2/mod.ts",
+  "mini-fn": "npm:@mikuroxina/mini-fn"
+}
+```
+
+You can use dependencies by putting the key of `imports` in the actual source code.
+
+```ts
+import { Hono } from 'hono';
+import { accounts } from './pkg/accounts/mod.ts';
+
+const app = new Hono();
+
+app.route('/accounts', accounts);
+
+Deno.serve({ port: 3000 }, app.fetch);
+```
 
 ## Style Guide
 
