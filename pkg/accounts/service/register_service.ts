@@ -16,10 +16,10 @@ export class AccountAlreadyExistsError extends Error {
 
 export class RegisterAccountService {
   private readonly accountRepository: AccountRepository;
-  private readonly idGenerator: SnowflakeIDGenerator;
+  private readonly snowflakeIDGenerator: SnowflakeIDGenerator;
   private readonly passwordEncoder: PasswordEncoder;
-  private readonly sendNotification: SendNotificationService;
-  private readonly verifyTokenService: TokenVerifyService;
+  private readonly sendNotificationService: SendNotificationService;
+  private readonly tokenVerifyService: TokenVerifyService;
 
   constructor(arg: {
     repository: AccountRepository;
@@ -29,10 +29,10 @@ export class RegisterAccountService {
     verifyTokenService: TokenVerifyService;
   }) {
     this.accountRepository = arg.repository;
-    this.idGenerator = arg.idGenerator;
+    this.snowflakeIDGenerator = arg.idGenerator;
     this.passwordEncoder = arg.passwordEncoder;
-    this.sendNotification = arg.sendNotification;
-    this.verifyTokenService = arg.verifyTokenService;
+    this.sendNotificationService = arg.sendNotification;
+    this.tokenVerifyService = arg.verifyTokenService;
   }
 
   public async handle(
@@ -52,7 +52,7 @@ export class RegisterAccountService {
 
     const passphraseHash = this.passwordEncoder.EncodePasword(passphrase);
 
-    const generatedID = this.idGenerator.generate<AccountID>();
+    const generatedID = this.snowflakeIDGenerator.generate<AccountID>();
     if (Result.isErr(generatedID)) {
       return Result.err(generatedID[1]);
     }
@@ -74,13 +74,13 @@ export class RegisterAccountService {
       return Result.err(res[1]);
     }
 
-    const token = await this.verifyTokenService.generate(account.getID);
+    const token = await this.tokenVerifyService.generate(account.getID);
     if (Result.isErr(token)) {
       return Result.err(token[1]);
     }
 
     // ToDo: Notification Body
-    this.sendNotification.Send(mail, `token: ${token[1]}`);
+    this.sendNotificationService.Send(mail, `token: ${token[1]}`);
     return Result.ok(account);
   }
 
