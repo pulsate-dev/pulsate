@@ -25,5 +25,5 @@ Deno.test('if token expired', async () => {
   );
   if (Option.isNone(expired)) return;
 
-  assertFalse(await generator.verify(expired[1]))
+  assertFalse(await generator.verify(expired[1]));
 });

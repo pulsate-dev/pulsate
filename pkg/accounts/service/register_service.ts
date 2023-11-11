@@ -1,9 +1,10 @@
 import { Option, Result } from 'npm:@mikuroxina/mini-fn';
-import { Account, AccountID } from '../model/account.ts';
+import { Account, AccountID, AccountRole } from '../model/account.ts';
 import { AccountRepository } from '../model/repository.ts';
 import { SnowflakeIDGenerator } from '../../id/mod.ts';
 import { PasswordEncoder } from '../../password/mod.ts';
 import { SendNotificationService } from './send_notification_service.ts';
+import { TokenVerifyService } from './token_verify_service.ts';
 
 export class AccountAlreadyExistsError extends Error {
   override readonly name = 'AccountAlreadyExistsError' as const;
@@ -13,22 +14,25 @@ export class AccountAlreadyExistsError extends Error {
   }
 }
 
-export class RegisterUserService {
+export class RegisterAccountService {
   private readonly accountRepository: AccountRepository;
   private readonly idGenerator: SnowflakeIDGenerator;
   private readonly passwordEncoder: PasswordEncoder;
   private readonly sendNotification: SendNotificationService;
+  private readonly verifyTokenService: TokenVerifyService;
 
   constructor(arg: {
     repository: AccountRepository;
     idGenerator: SnowflakeIDGenerator;
     passwordEncoder: PasswordEncoder;
     sendNotification: SendNotificationService;
+    verifyTokenService: TokenVerifyService;
   }) {
     this.accountRepository = arg.repository;
     this.idGenerator = arg.idGenerator;
     this.passwordEncoder = arg.passwordEncoder;
     this.sendNotification = arg.sendNotification;
+    this.verifyTokenService = arg.verifyTokenService;
   }
 
   public async handle(
@@ -37,18 +41,9 @@ export class RegisterUserService {
     nickname: string,
     passphrase: string,
     bio: string,
+    role: AccountRole,
   ): Promise<Result.Result<Error, Account>> {
-    /*
-    1. captcha_token をそれ用の秘密鍵で検証します。
-    2. アカウントのメールアドレスが mail_address またはアカウント名が account_name である登録済みアカウントまたは登録中のアカウントを検索します。 OK
-      1. 存在すればエラー終了します。 OK
-    3. ソルト (暗号学的乱数) として salt を生成します。 OK
-    4. パスフレーズにソルトを結合し、ハッシュ passphrase_hash にします。 OK
-    5. 検証チャレンジのステート (暗号学的乱数) として state を作成します。
-    6. [登録中アカウント](https://www.notion.so/2030fb1f982c4c1fb3b1a4b350762ec4?pvs=21) をそれ専用のレポジトリに追加します。
-    7. mail_address 宛に account_name と state が付いた検証メッセージを送信します。 OK
-    */
-    // ToDo: Captcha の検証
+    // ToDo: verify with Captcha
     if (await this.isExists(mail, name)) {
       return Result.err(
         new AccountAlreadyExistsError('account already exists'),
@@ -68,7 +63,7 @@ export class RegisterUserService {
       nickname: nickname,
       passphraseHash: passphraseHash,
       bio: bio,
-      role: 'normal',
+      role: role,
       frozen: 'normal',
       silenced: 'normal',
       status: 'notActivated',
@@ -78,7 +73,14 @@ export class RegisterUserService {
     if (Result.isErr(res)) {
       return Result.err(res[1]);
     }
-    this.sendNotification.Send(mail, "")
+
+    const token = await this.verifyTokenService.generate(account.getID);
+    if (Result.isErr(token)) {
+      return Result.err(token[1]);
+    }
+
+    // ToDo: Notification Body
+    this.sendNotification.Send(mail, `token: ${token[1]}`);
     return Result.ok(account);
   }
 
