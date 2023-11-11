@@ -1,4 +1,4 @@
-import { assertThrows, assertEquals } from 'std/assert';
+import { assertEquals, assertThrows } from 'std/assert';
 import { Account, AccountID, CreateAccountArgs } from './account.ts';
 import { ID } from '../../id/type.ts';
 

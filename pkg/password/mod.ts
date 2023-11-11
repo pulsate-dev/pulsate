@@ -1,8 +1,4 @@
-import {
-  genSalt,
-  hash,
-  verify,
-} from 'scrypt';
+import { genSalt, hash, verify } from 'scrypt';
 
 export type EncodedPassword = string;
 
