@@ -3,6 +3,7 @@ import { TokenGenerator } from './token_generator.ts';
 import { assertEquals, assertFalse } from 'std/assert';
 
 const generator = await TokenGenerator.new();
+
 Deno.test('verify JWT Token', async () => {
   const token = await generator.generate(
     '',
