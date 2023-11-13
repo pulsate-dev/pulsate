@@ -11,12 +11,12 @@ export class InMemoryAccountRepository implements AccountRepository {
   constructor() {
     this.data = new Set();
   }
-  Create(account: Account): Promise<Result.Result<Error, void>> {
+  create(account: Account): Promise<Result.Result<Error, void>> {
     this.data.add(account);
     return Promise.resolve(Result.ok(undefined));
   }
 
-  FindByName(name: string): Promise<Option.Option<Account>> {
+  findByName(name: string): Promise<Option.Option<Account>> {
     const account = Array.from(this.data).find((a) => a.getName === name);
     if (!account) {
       return Promise.resolve(
@@ -26,7 +26,7 @@ export class InMemoryAccountRepository implements AccountRepository {
     return Promise.resolve(Option.some(account));
   }
 
-  FindByMail(mail: string): Promise<Option.Option<Account>> {
+  findByMail(mail: string): Promise<Option.Option<Account>> {
     const account = Array.from(this.data).find((a) => a.getMail === mail);
     if (!account) {
       return Promise.resolve(Option.none());
@@ -43,7 +43,7 @@ export class InMemoryAccountVerifyTokenRepository
     this.data = new Map();
   }
 
-  Create(
+  create(
     accountID: ID<AccountID>,
     token: string,
     expire: Date,
@@ -52,7 +52,7 @@ export class InMemoryAccountVerifyTokenRepository
     return Promise.resolve(Result.ok(undefined));
   }
 
-  FindByID(
+  findByID(
     id: ID<string>,
   ): Promise<Option.Option<{ token: string; expire: Date }>> {
     const data = this.data.get(id);

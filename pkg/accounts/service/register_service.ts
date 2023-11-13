@@ -69,7 +69,7 @@ export class RegisterAccountService {
       status: 'notActivated',
       createdAt: new Date(),
     });
-    const res = await this.accountRepository.Create(account);
+    const res = await this.accountRepository.create(account);
     if (Result.isErr(res)) {
       return Result.err(res[1]);
     }
@@ -90,8 +90,8 @@ export class RegisterAccountService {
    * @returns account is exist
    */
   private async isExists(mail: string, name: string): Promise<boolean> {
-    const byName = await this.accountRepository.FindByName(name);
-    const byMail = await this.accountRepository.FindByMail(mail);
+    const byName = await this.accountRepository.findByName(name);
+    const byMail = await this.accountRepository.findByMail(mail);
 
     if (Option.isNone(byName) || Option.isNone(byMail)) {
       return true;

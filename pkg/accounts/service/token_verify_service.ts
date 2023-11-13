@@ -34,7 +34,7 @@ export class TokenVerifyService {
       Number(this.clock.Now()) + 7 * 24 * 60 * 60 * 1000,
     );
 
-    const res = await this.repository.Create(
+    const res = await this.repository.create(
       accountID,
       verifyToken.toString(),
       expireDate,
@@ -56,7 +56,7 @@ export class TokenVerifyService {
     accountID: ID<AccountID>,
     token: string,
   ): Promise<Result.Result<Error, void>> {
-    const res = await this.repository.FindByID(accountID);
+    const res = await this.repository.findByID(accountID);
     if (Option.isNone(res)) {
       // ToDo(laminne): Consider whether to create an error type (e.g. AccountNotFoundError)
       return Result.err(new Error('Account not found'));
