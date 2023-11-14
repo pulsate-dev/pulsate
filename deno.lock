@@ -2,11 +2,11 @@
   "version": "3",
   "packages": {
     "specifiers": {
-      "npm:@mikuroxina/mini-fn": "npm:@mikuroxina/mini-fn@5.1.0"
+      "npm:@mikuroxina/mini-fn@5.3.0": "npm:@mikuroxina/mini-fn@5.3.0"
     },
     "npm": {
-      "@mikuroxina/mini-fn@5.1.0": {
-        "integrity": "sha512-NnbSIBbf2kadmawA3+grEfjvINeTMYcv7Vn+Aw5i81dCVfF4U0Qkq7WaB1NIoYJVCb1sTReytUPbStAWz0PlaQ==",
+      "@mikuroxina/mini-fn@5.3.0": {
+        "integrity": "sha512-GENYCDLkoOYlaoClu6YlNMQzbF9cZ1U0YlHnLDqFLrvaHKEpaYp0s66G7f/eWpRa4MEh7Iht/a8sG+GXlMzyqg==",
         "dependencies": {}
       }
     }
