@@ -16,6 +16,10 @@ export class InMemoryAccountRepository implements AccountRepository {
     return Promise.resolve(Result.ok(undefined));
   }
 
+  reset(): void {
+    this.data.clear();
+  }
+
   findByName(name: string): Promise<Option.Option<Account>> {
     const account = Array.from(this.data).find((a) => a.getName === name);
     if (!account) {
