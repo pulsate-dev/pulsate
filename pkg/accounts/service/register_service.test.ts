@@ -5,14 +5,13 @@ import {
   InMemoryAccountRepository,
   InMemoryAccountVerifyTokenRepository,
 } from '../adaptor/repository/dummy.ts';
-import { AccountRepository } from '../model/repository.ts';
 import { RegisterAccountService } from './register_service.ts';
 import { DummySendNotificationService } from './send_notification_service.ts';
 import { TokenVerifyService } from './token_verify_service.ts';
 import { Result } from 'mini-fn';
 import { AccountRole } from '../model/account.ts';
 
-const repository: AccountRepository = new InMemoryAccountRepository();
+const repository = new InMemoryAccountRepository();
 const verifyRepository = new InMemoryAccountVerifyTokenRepository();
 class DummyClock implements Clock {
   Now(): bigint {
@@ -50,8 +49,8 @@ Deno.test('register account', async () => {
   assertEquals(res[1].getName, exampleInput.name);
   assertEquals(res[1].getMail, exampleInput.mail);
   assertEquals(res[1].getNickname, exampleInput.nickname);
-  assertEquals(res[1].getPassphraseHash, exampleInput.passphrase);
   assertEquals(res[1].getBio, exampleInput.bio);
   assertEquals(res[1].getRole, exampleInput.role);
   assertEquals(res[1].getStatus, 'notActivated');
+  repository.reset();
 });

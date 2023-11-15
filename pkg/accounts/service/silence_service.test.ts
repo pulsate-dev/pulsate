@@ -9,7 +9,7 @@ import {
 import { RegisterAccountService } from './register_service.ts';
 import { TokenVerifyService } from './token_verify_service.ts';
 import { AccountRole } from '../model/account.ts';
-import { assertEquals } from 'std/assert';
+import { assertEquals, assertNotEquals } from 'std/assert';
 import { SilenceService } from './silence_service.ts';
 
 const repository = new InMemoryAccountRepository();
@@ -51,6 +51,8 @@ Deno.test('set account silence', async () => {
   await silenceService.setSilence(exampleInput.name);
 
   assertEquals(res[1].getSilenced, 'silenced');
+  assertNotEquals(res[1].getSilenced, 'normal');
+  repository.reset();
 });
 
 Deno.test('unset account silence', async () => {
@@ -68,4 +70,6 @@ Deno.test('unset account silence', async () => {
   await silenceService.undoSilence(exampleInput.name);
 
   assertEquals(res[1].getSilenced, 'normal');
+  assertNotEquals(res[1].getSilenced, 'silenced');
+  repository.reset();
 });
