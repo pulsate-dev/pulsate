@@ -9,7 +9,7 @@ import {
 import { RegisterAccountService } from './register_service.ts';
 import { TokenVerifyService } from './token_verify_service.ts';
 import { AccountRole } from '../model/account.ts';
-import { assertEquals } from 'std/assert';
+import { assertEquals, assertNotEquals } from 'std/assert';
 import { FreezeService } from './freeze_service.ts';
 
 const repository = new InMemoryAccountRepository();
@@ -51,4 +51,24 @@ Deno.test('set account freeze', async () => {
   await freezeService.setFreeze(exampleInput.name);
 
   assertEquals(res[1].getFrozen, 'frozen');
+  assertNotEquals(res[1].getFrozen, 'normal');
+  repository.reset();
+});
+
+Deno.test('unset account freeze', async () => {
+  const res = await registerService.handle(
+    exampleInput.name,
+    exampleInput.mail,
+    exampleInput.nickname,
+    exampleInput.passphrase,
+    exampleInput.bio,
+    exampleInput.role,
+  );
+  if (Result.isErr(res)) return;
+
+  await freezeService.undoFreeze(exampleInput.name);
+
+  assertEquals(res[1].getFrozen, 'normal');
+  assertNotEquals(res[1].getFrozen, 'frozen');
+  repository.reset();
 });
