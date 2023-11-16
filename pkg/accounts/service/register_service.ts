@@ -93,10 +93,6 @@ export class RegisterAccountService {
     const byName = await this.accountRepository.findByName(name);
     const byMail = await this.accountRepository.findByMail(mail);
 
-    if (Option.isNone(byName) || Option.isNone(byMail)) {
-      return true;
-    }
-
-    return false;
+    return Option.isSome(byName) || Option.isSome(byMail);
   }
 }
