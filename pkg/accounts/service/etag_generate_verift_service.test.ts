@@ -21,6 +21,20 @@ const accountArgs: CreateAccountArgs = {
   deletedAt: new Date('2023-09-10T10:00:00.000Z'),
 };
 
+Deno.test('success to verify etag', async () => {
+  const account = Account.new(accountArgs);
+  const etag = await service.generate(account);
+  const result = await service.compare(account, etag);
+  assertEquals(result, true);
+});
+
+Deno.test('failed to verify etag', async () => {
+  const account = Account.new(accountArgs);
+  const etag = await service.generate(account) + '_invalid';
+  const result = await service.compare(account, etag);
+  assertEquals(result, false);
+});
+
 Deno.test('should return string which is 64 characters long', async () => {
   const etag = await service.generate(Account.new(accountArgs));
   assertEquals(etag.length, 64);
