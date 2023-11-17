@@ -1,4 +1,4 @@
-import { EtagGenerateService } from './etag_generate_service.ts';
+import { EtagGenerateService } from './etag_verify_generate_service.ts';
 import { ID } from '../../id/type.ts';
 import { Account, AccountID, CreateAccountArgs } from '../model/account.ts';
 import { assertEquals } from 'std/assert';
