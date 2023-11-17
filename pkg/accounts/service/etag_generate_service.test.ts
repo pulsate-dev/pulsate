@@ -1,13 +1,9 @@
-import { InMemoryAccountRepository } from '../adaptor/repository/dummy.ts';
-import { AccountRepository } from '../model/repository.ts';
 import { EtagGenerateService } from './etag_generate_service.ts';
 import { ID } from '../../id/type.ts';
 import { Account, AccountID, CreateAccountArgs } from '../model/account.ts';
 import { assertEquals } from 'std/assert';
-import { Result } from 'mini-fn';
 
-const repository: AccountRepository = new InMemoryAccountRepository();
-const service: EtagGenerateService = new EtagGenerateService(repository);
+const service: EtagGenerateService = new EtagGenerateService();
 
 const accountArgs: CreateAccountArgs = {
   id: '1' as ID<AccountID>,
@@ -25,28 +21,7 @@ const accountArgs: CreateAccountArgs = {
   deletedAt: new Date('2023-09-10T10:00:00.000Z'),
 };
 
-Deno.test('should return true', async () => {
-  const account = Account.new(accountArgs);
-  await repository.create(account);
-
-  const etag = await service.generate(account);
-  const result = await service.compare(account.getName, etag);
-  assertEquals(Result.isErr(result), false);
-  assertEquals(result[1], true);
-});
-
-Deno.test('should return false', async () => {
-  const account = Account.new(accountArgs);
-  await repository.create(account);
-
-  const etag = await service.generate(account) + '_dummy';
-  const result = await service.compare(account.getName, etag);
-  assertEquals(Result.isErr(result), false);
-  assertEquals(result[1], false);
-});
-
-Deno.test('should return error which account not found', async () => {
-  const result = await service.compare('dummy_etag', 'dummy');
-  assertEquals(Result.isErr(result), true);
-  assertEquals(Result.isOk(result), false);
+Deno.test('should return string which is 64 characters long', async () => {
+  const etag = await service.generate(Account.new(accountArgs));
+  assertEquals(etag.length, 64);
 });
