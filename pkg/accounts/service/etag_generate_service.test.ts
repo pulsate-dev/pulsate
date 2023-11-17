@@ -1,6 +1,6 @@
 import { InMemoryAccountRepository } from '../adaptor/repository/dummy.ts';
 import { AccountRepository } from '../model/repository.ts';
-import { EtagService } from './etag_service.ts';
+import { EtagService } from './etag_generate_service.ts';
 import { ID } from '../../id/type.ts';
 import { Account, AccountID, CreateAccountArgs } from '../model/account.ts';
 import { assertEquals } from 'std/assert';
