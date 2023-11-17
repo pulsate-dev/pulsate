@@ -3,7 +3,7 @@ import { encodeHex } from 'std/encoding/hex';
 import { AccountRepository } from '../model/repository.ts';
 import { Account } from '../model/account.ts';
 
-export class EtagService {
+export class EtagGenerateService {
   private repository: AccountRepository;
 
   constructor(repository: AccountRepository) {

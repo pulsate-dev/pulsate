@@ -1,13 +1,13 @@
 import { InMemoryAccountRepository } from '../adaptor/repository/dummy.ts';
 import { AccountRepository } from '../model/repository.ts';
-import { EtagService } from './etag_generate_service.ts';
+import { EtagGenerateService } from './etag_generate_service.ts';
 import { ID } from '../../id/type.ts';
 import { Account, AccountID, CreateAccountArgs } from '../model/account.ts';
 import { assertEquals } from 'std/assert';
 import { Result } from 'mini-fn';
 
 const repository: AccountRepository = new InMemoryAccountRepository();
-const service: EtagService = new EtagService(repository);
+const service: EtagGenerateService = new EtagGenerateService(repository);
 
 const accountArgs: CreateAccountArgs = {
   id: '1' as ID<AccountID>,
