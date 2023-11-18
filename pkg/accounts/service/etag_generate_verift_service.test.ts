@@ -49,7 +49,7 @@ Deno.test('success to verify etag', async () => {
   const account = Result.unwrap(res);
 
   const etag = await etagVerifyService.generate(account);
-  const result = await etagVerifyService.compare(account, etag);
+  const result = await etagVerifyService.Verify(account, etag);
   assertEquals(result, true);
   repository.reset();
 });
@@ -66,7 +66,7 @@ Deno.test('failed to verify etag', async () => {
   const account = Result.unwrap(res);
 
   const etag = await etagVerifyService.generate(account) + '_invalid';
-  const result = await etagVerifyService.compare(account, etag);
+  const result = await etagVerifyService.Verify(account, etag);
   assertEquals(result, false);
   repository.reset();
 });

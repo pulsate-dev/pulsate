@@ -8,7 +8,7 @@ export class EtagVerifyService {
    * @param etag
    * @returns if success: true, if failure: false
    */
-  async compare(account: Account, etag: string): Promise<boolean> {
+  async Verify(account: Account, etag: string): Promise<boolean> {
     const generated = await this.generate(account);
     return generated === etag;
   }
