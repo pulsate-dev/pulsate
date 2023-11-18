@@ -1,0 +1,27 @@
+name: Auto assign and Specify reviewer
+
+on:
+  pull_request:
+    types: [ opened, unassigned ]
+
+jobs:
+  assign:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+
+    steps:
+      - run: gh pr edit ${{ github.event.number }} --add-assignee ${{ github.actor }}
+        if: ${{ toJson(github.event.pull_request.assignees) == '[]' }}
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GH_REPO: ${{ github.repository }}
+  reviewer:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+
+    steps:
+      - run: gh pr edit ${{ github.event.number }} --add-reviewer @approvers/pulsate
+        if: ${{ toJson(github.event.pull_request.requested_reviewers) != '@approvers/pulsate' }}
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GH_REPO: ${{ github.repository }}
