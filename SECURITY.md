@@ -18,7 +18,7 @@ If you find a serious security vulnerability in Pulsate, you must follow the pro
 
 The reporting procedure is as follows.
 
-1. Go to [Security Advisories](https://github.com/approvers/pulsate/security/advisories).
+1. Go to [Security Advisories](https://github.com/pulsate-dev/pulsate/security/advisories).
 2. Click on **New draft security advisory**.
 3. Fill in **Advisory Details**.
    - See the [GitHub Docs](https://docs.github.com/enterprise-cloud@latest/code-security/security-advisories/working-with-repository-security-advisories/creating-a-repository-security-advisory#creating-a-security-advisory) for more information on what to enter.

@@ -10,9 +10,9 @@ body:
       label: Before reporting
       description: Before reporting, you have to check follows
       options:
-        - label: Checked [same issue](https://github.com/approvers/pulsate/issues?q=) already has not already been reported
+        - label: Checked [same issue](https://github.com/pulsate-dev/pulsate/issues?q=) already has not already been reported
           required: true
-        - label: Checked this issue is not a security issue. If it is a security issue, follow [this](https://github.com/approvers/pulsate/tree/main/SECURITY.md).
+        - label: Checked this issue is not a security issue. If it is a security issue, follow [this](https://github.com/pulsate-dev/pulsate/tree/main/SECURITY.md).
           required: true
   - type: input
     id: version

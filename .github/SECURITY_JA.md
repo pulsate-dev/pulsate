@@ -20,7 +20,7 @@ Pulsate に重大な脆弱性を見つけた際は、適切な方法に従って
 
 報告手順は以下のとおりです。
 
-1. [Security Advisories](https://github.com/approvers/pulsate/security/advisories)
+1. [Security Advisories](https://github.com/pulsate-dev/pulsate/security/advisories)
    にアクセスします。
 2. **New draft security advisory** をクリックします。
 3. **Advisory Details** に詳細を入力します。

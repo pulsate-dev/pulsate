@@ -18,7 +18,7 @@ variable "project_id" {
 
 variable "repo_name" {
   description = "github repository name"
-  default     = "approvers/pulsate"
+  default     = "pulsate-dev/pulsate"
 }
 
 variable "location" {

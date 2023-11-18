@@ -47,7 +47,7 @@ jobs:
         uses: docker/metadata-action@v5
         with:
           images: |
-            ghcr.io/approvers/pulsate/${{ steps.microservice-name.outputs.service-name }}
+            ghcr.io/pulsate-dev/pulsate/${{ steps.microservice-name.outputs.service-name }}
           tags: |
             ${{ github.sha }}
             type=raw,value=latest,enable={{is_default_branch}}
@@ -99,7 +99,7 @@ jobs:
 
       - name: Deploy to the GKE cluster
         run: |
-          kustomize edit set image ${{ steps.microservice-name.outputs.service-name }}=ghcr.io/approvers/pulsate/${{ steps.microservice-name.outputs.service-name }}:$GITHUB_SHA
+          kustomize edit set image ${{ steps.microservice-name.outputs.service-name }}=ghcr.io/pulsate-dev/pulsate/${{ steps.microservice-name.outputs.service-name }}:$GITHUB_SHA
           kustomize build . | kubectl apply -f -
           kubectl rollout status deployment/pulsate-hello
           kubectl get services -o wide
