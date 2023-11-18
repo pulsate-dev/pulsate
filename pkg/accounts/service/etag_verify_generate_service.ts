@@ -14,7 +14,7 @@ export class EtagVerifyService {
   }
 
   /**
-   * Generate Etag from given account.
+   * Generate a 64-character Etag from the given account.
    * @param account
    * @returns Etag
    */
