@@ -14,7 +14,7 @@ export class EditNicknameService {
     this.etagVerifyService = etagVerifyService;
   }
 
-  async EditNickname(
+  async editNickname(
     etag: string,
     name: string,
     nickname: string,

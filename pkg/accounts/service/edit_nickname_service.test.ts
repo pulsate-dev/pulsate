@@ -53,7 +53,7 @@ Deno.test('should be success to update nickname', async () => {
   );
   const account = Result.unwrap(res);
   const etag = await etagVerifyService.generate(account);
-  const updateRes = await updateNicknameService.EditNickname(
+  const updateRes = await updateNicknameService.editNickname(
     etag,
     exampleInput.name,
     'new nickname',
@@ -74,7 +74,7 @@ Deno.test('should be fail to update nickname when etag not match', async () => {
     exampleInput.role,
   );
 
-  const res = await updateNicknameService.EditNickname(
+  const res = await updateNicknameService.editNickname(
     'invalid_etag',
     exampleInput.name,
     'new nickname',
@@ -84,7 +84,7 @@ Deno.test('should be fail to update nickname when etag not match', async () => {
 });
 
 Deno.test('should be fail to update nickname when account not found', async () => {
-  const res = await updateNicknameService.EditNickname(
+  const res = await updateNicknameService.editNickname(
     'invalid etag',
     'foo',
     'new nickname',
