@@ -24,8 +24,8 @@ fast, and developer and user friendly.
   <!-- TODO: Insert Pulsate Screenshot -->
   <br />
   <br />
-  <a href="https://github.com/approvers/pulsate/actions/workflows/deno.yaml">
-    <img src="https://github.com/approvers/pulsate/actions/workflows/deno.yaml/badge.svg">
+  <a href="https://github.com/pulsate-dev/pulsate/actions/workflows/deno.yaml">
+    <img src="https://github.com/pulsate-dev/pulsate/actions/workflows/deno.yaml/badge.svg">
   </a>
   <a href="https://link.pulsate.dev/discord">
     <img src="https://img.shields.io/discord/1155472831744856164?label=Discord&color=5865F2">

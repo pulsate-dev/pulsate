@@ -12,7 +12,7 @@ spec:
         app: pulsate-hello
     spec:
       containers:
-      - image: ghcr.io/approvers/pulsate/hello:latest
+      - image: ghcr.io/pulsate-dev/pulsate/hello:latest
         imagePullPolicy: Always
         name: hello
       restartPolicy: Always

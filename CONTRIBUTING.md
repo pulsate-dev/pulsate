@@ -25,17 +25,17 @@ A guide on how to participate in this project.
 
 Pulsate accepts the following issues:
 
-- [Bug reports](https://github.com/approvers/pulsate/issues/new?assignees=&labels=bug&projects=&template=bug_report.yml)
-- [Feature requests](https://github.com/approvers/pulsate/issues/new?assignees=&labels=feature&projects=&template=feature_request.yml)
+- [Bug reports](https://github.com/pulsate-dev/pulsate/issues/new?assignees=&labels=bug&projects=&template=bug_report.yml)
+- [Feature requests](https://github.com/pulsate-dev/pulsate/issues/new?assignees=&labels=feature&projects=&template=feature_request.yml)
 
 These issues can be submitted by filling out the form.
 
-If the issue type you wish to submit is not listed here, you can submit an empty issue [here](https://github.com/approvers/pulsate/issues/new).
+If the issue type you wish to submit is not listed here, you can submit an empty issue [here](https://github.com/pulsate-dev/pulsate/issues/new).
 
 Please check the following points before submission.
 
 - Similar issues have not already been submitted.
-  - Click [here](https://github.com/approvers/pulsate/issues?q=) to check.
+  - Click [here](https://github.com/pulsate-dev/pulsate/issues?q=) to check.
 - (Bug report only) Is it not a security-related bug?
   - If you are submitting such a bug report, you must submit it in an appropriate manner, **not as an Issue**. Please check our [security policy](./SECURITY.md) for details.
 
@@ -50,7 +50,7 @@ When you try to submit a pull request, a pre-prepared template will be displayed
 Before submitting a pull request, please check the following points:
 
 - Check to see if the pull request you are submitting is the same as the one you are submitting.
-  - Click [here](https://github.com/approvers/pulsate/pulls?q=) to check.
+  - Click [here](https://github.com/pulsate-dev/pulsate/pulls?q=) to check.
 - You are not trying to submit a PR that is still in progress.
   - If you want to submit a PR in progress, [please submit it as "Draft"](https://docs.github.com/pull-requests/collaborating-with-pull-requests/proposing-changes-to-your-work-with-pull-requests/changing-the-stage-of-a-pull-request).
 - Pull request title conforms to [Conventional Commits](#commit-message)
