@@ -3,7 +3,7 @@ import { Account } from '../model/account.ts';
 
 export class EtagVerifyService {
   /**
-   * Compare Etag with Etag in given account. Ref: https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/ETag
+   * Verify Etag with Etag in given account. Ref: https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/ETag
    * @param account
    * @param etag
    * @returns if success: true, if failure: false
