@@ -94,3 +94,104 @@ Deno.test('should be fail to update nickname when account not found', async () =
   assertEquals(Result.isErr(res), true);
   repository.reset();
 });
+
+Deno.test('should be success to update passphrase', async () => {
+  const res = await registerService.handle(
+    exampleInput.name,
+    exampleInput.mail,
+    exampleInput.nickname,
+    exampleInput.passphrase,
+    exampleInput.bio,
+    exampleInput.role,
+  );
+  const account = Result.unwrap(res);
+  const etag = await etagVerifyService.generate(account);
+
+  const updateRes = await editAccountService.editPassphrase(
+    etag,
+    exampleInput.name,
+    'new password',
+  );
+  assertEquals(Result.isErr(updateRes), false);
+  assertEquals(updateRes[1], true);
+  repository.reset();
+});
+
+Deno.test('should be fail to update passphrase when etag not match', async () => {
+  await registerService.handle(
+    exampleInput.name,
+    exampleInput.mail,
+    exampleInput.nickname,
+    exampleInput.passphrase,
+    exampleInput.bio,
+    exampleInput.role,
+  );
+
+  const res = await editAccountService.editPassphrase(
+    'invalid_etag',
+    exampleInput.name,
+    'new password',
+  );
+  assertEquals(Result.isErr(res), true);
+  repository.reset();
+});
+
+Deno.test('should be fail to update passphrase when account not found', async () => {
+  const res = await editAccountService.editPassphrase(
+    'invalid etag',
+    'foo',
+    'new password',
+  );
+  assertEquals(Result.isErr(res), true);
+  repository.reset();
+});
+
+Deno.test('should be success to update email', async () => {
+  const res = await registerService.handle(
+    exampleInput.name,
+    exampleInput.mail,
+    exampleInput.nickname,
+    exampleInput.passphrase,
+    exampleInput.bio,
+    exampleInput.role,
+  );
+  const account = Result.unwrap(res);
+  const etag = await etagVerifyService.generate(account);
+
+  const updateRes = await editAccountService.editEmail(
+    etag,
+    exampleInput.name,
+    'pulsate@pulsate.mail',
+  );
+  assertEquals(Result.isErr(updateRes), false);
+  assertEquals(updateRes[1], true);
+  repository.reset();
+});
+
+Deno.test('should be fail to update email when etag not match', async () => {
+  const res = await registerService.handle(
+    exampleInput.name,
+    exampleInput.mail,
+    exampleInput.nickname,
+    exampleInput.passphrase,
+    exampleInput.bio,
+    exampleInput.role,
+  );
+  Result.unwrap(res);
+
+  const updateRes = await editAccountService.editEmail(
+    'invalid_etag',
+    exampleInput.name,
+    'pulsate@pulsate.mail',
+  );
+  assertEquals(Result.isErr(updateRes), true);
+});
+
+Deno.test('should be fail to update email when account not found', async () => {
+  const updateRes = await editAccountService.editEmail(
+    'invalid etag',
+    'foo',
+    'pulsate@pulsate.mail',
+  );
+  assertEquals(Result.isErr(updateRes), true);
+});
