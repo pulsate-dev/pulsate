@@ -8,7 +8,8 @@ import { RegisterAccountService } from './register_service.ts';
 import { DummySendNotificationService } from './send_notification_service.ts';
 import { TokenVerifyService } from './token_verify_service.ts';
 import { EtagVerifyService } from './etag_verify_generate_service.ts';
-import { EditNicknameService } from './edit_nickname_service.ts';
+import { EditAccountService } from './edit_account_service.ts';
+
 import { AccountRole } from '../model/account.ts';
 import { Result } from 'mini-fn';
 import { assertEquals } from 'std/assert';
@@ -28,9 +29,10 @@ const registerService: RegisterAccountService = new RegisterAccountService({
   verifyTokenService: new TokenVerifyService(verifyRepository),
 });
 const etagVerifyService = new EtagVerifyService();
-const updateNicknameService = new EditNicknameService(
+const editAccountService = new EditAccountService(
   repository,
   etagVerifyService,
+  new ScryptPasswordEncoder(),
 );
 
 const exampleInput = {
@@ -53,7 +55,7 @@ Deno.test('should be success to update nickname', async () => {
   );
   const account = Result.unwrap(res);
   const etag = await etagVerifyService.generate(account);
-  const updateRes = await updateNicknameService.editNickname(
+  const updateRes = await editAccountService.editNickname(
     etag,
     exampleInput.name,
     'new nickname',
@@ -74,7 +76,7 @@ Deno.test('should be fail to update nickname when etag not match', async () => {
     exampleInput.role,
   );
 
-  const res = await updateNicknameService.editNickname(
+  const res = await editAccountService.editNickname(
     'invalid_etag',
     exampleInput.name,
     'new nickname',
@@ -84,7 +86,7 @@ Deno.test('should be fail to update nickname when etag not match', async () => {
 });
 
 Deno.test('should be fail to update nickname when account not found', async () => {
-  const res = await updateNicknameService.editNickname(
+  const res = await editAccountService.editNickname(
     'invalid etag',
     'foo',
     'new nickname',
