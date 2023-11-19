@@ -8,7 +8,7 @@ import { RegisterAccountService } from './register_service.ts';
 import { DummySendNotificationService } from './send_notification_service.ts';
 import { TokenVerifyService } from './token_verify_service.ts';
 import { EtagVerifyService } from './etag_verify_generate_service.ts';
-import { EditAccountService } from './edit_account_service.ts';
+import { EditAccountService } from './editAccountService.ts';
 
 import { AccountRole } from '../model/account.ts';
 import { Result } from 'mini-fn';
