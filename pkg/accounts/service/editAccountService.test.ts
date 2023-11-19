@@ -4,11 +4,11 @@ import {
 } from '../adaptor/repository/dummy.ts';
 import { Clock, SnowflakeIDGenerator } from '../../id/mod.ts';
 import { ScryptPasswordEncoder } from '../../password/mod.ts';
-import { RegisterAccountService } from './register_service.ts';
-import { DummySendNotificationService } from './send_notification_service.ts';
-import { TokenVerifyService } from './token_verify_service.ts';
-import { EtagVerifyService } from './etag_verify_generate_service.ts';
-import { EditAccountService } from './edit_account_service.ts';
+import { RegisterAccountService } from './registerService.ts';
+import { DummySendNotificationService } from './sendNotificationService.ts';
+import { TokenVerifyService } from './tokenVerifyService.ts';
+import { EtagVerifyService } from './etagGenerateVeriftService.ts';
+import { EditAccountService } from './editAccountService.ts';
 
 import { AccountRole } from '../model/account.ts';
 import { Result } from 'mini-fn';
