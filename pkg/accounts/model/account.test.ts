@@ -71,7 +71,7 @@ Deno.test('can\'t change values when account is frozen', () => {
   });
 
   assertThrows(() => {
-    account.setMail('pulsate@pulsate.mail');
+    account.setMail('pulsate@example.com');
   });
 });
 
@@ -96,6 +96,6 @@ Deno.test('deleted account can\'t change values', () => {
   });
 
   assertThrows(() => {
-    account.setMail('pulsate@pulsate.mail');
+    account.setMail('pulsate@example.com');
   });
 });

@@ -161,7 +161,7 @@ Deno.test('should be success to update email', async () => {
   const updateRes = await editAccountService.editEmail(
     etag,
     exampleInput.name,
-    'pulsate@pulsate.mail',
+    'pulsate@example.com',
   );
   assertEquals(Result.isErr(updateRes), false);
   assertEquals(updateRes[1], true);
@@ -182,7 +182,7 @@ Deno.test('should be fail to update email when etag not match', async () => {
   const updateRes = await editAccountService.editEmail(
     'invalid_etag',
     exampleInput.name,
-    'pulsate@pulsate.mail',
+    'pulsate@example.com',
   );
   assertEquals(Result.isErr(updateRes), true);
 });
