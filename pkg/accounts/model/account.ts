@@ -57,17 +57,27 @@ export class Account {
     return this.name;
   }
 
-  private readonly mail: string;
-  get getMail(): string {
-    return this.mail;
-  }
-
   private createdAt: Date;
   get getCreatedAt(): Date {
     return this.createdAt;
   }
 
   // 可変
+  private mail: string;
+  get getMail(): string {
+    return this.mail;
+  }
+  public setMail(mail: string) {
+    if (this.isDeleted()) {
+      throw new AccountAlreadyDeletedError('account already deleted');
+    }
+    if (this.getFrozen === 'frozen') {
+      throw new AccountAlreadyFrozenError('account already frozen');
+    }
+
+    this.mail = mail;
+  }
+
   private nickname: string;
   get getNickname(): string {
     return this.nickname;
