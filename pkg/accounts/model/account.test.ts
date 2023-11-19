@@ -69,6 +69,10 @@ Deno.test('can\'t change values when account is frozen', () => {
   assertThrows(() => {
     account.setSilence();
   });
+
+  assertThrows(() => {
+    account.setMail('');
+  });
 });
 
 Deno.test('deleted account can\'t change values', () => {
@@ -89,5 +93,9 @@ Deno.test('deleted account can\'t change values', () => {
 
   assertThrows(() => {
     account.setSilence();
+  });
+
+  assertThrows(() => {
+    account.setMail('');
   });
 });
