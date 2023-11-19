@@ -68,4 +68,30 @@ export class EditAccountService {
       return Result.err(e);
     }
   }
+
+  async editEmail(
+    etag: string,
+    name: string,
+    newEmail: string,
+  ): Promise<Result.Result<Error, boolean>> {
+    const res = await this.accountRepository.findByName(name);
+    if (Option.isNone(res)) {
+      return Result.err(new Error('account not found'));
+    }
+    const account = Option.unwrap(res);
+
+    const match = await this.etagVerifyService.Verify(account, etag);
+    if (!match) {
+      return Result.err(new Error('etag not match'));
+    }
+
+    // TODO: add a process to check the email is active
+
+    try {
+      account.setMail(newEmail);
+      return Result.ok(true);
+    } catch (e) {
+      return Result.err(e);
+    }
+  }
 }
