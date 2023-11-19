@@ -23,7 +23,7 @@ export class EditNicknameService {
     if (Option.isNone(res)) {
       return Result.err(new Error('account not found'));
     }
-    const account = res[1];
+    const account = Option.unwrap(res);
 
     const match = await this.etagVerifyService.Verify(account, etag);
     if (!match) {
