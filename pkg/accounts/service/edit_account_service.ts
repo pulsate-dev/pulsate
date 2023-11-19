@@ -1,9 +1,9 @@
-import { AccountRepository } from '../model/repository.ts';
-import { EtagVerifyService } from './etag_verify_generate_service.ts';
-import { PasswordEncoder } from '../../password/mod.ts';
 import { Option, Result } from 'mini-fn';
+import { EtagVerifyService } from './etag_verify_generate_service.ts';
+import { AccountRepository } from '../model/repository.ts';
+import { PasswordEncoder } from '../../password/mod.ts';
 
-export class EditPassphraseService {
+export class EditAccountService {
   private accountRepository: AccountRepository;
   private etagVerifyService: EtagVerifyService;
   private passwordEncoder: PasswordEncoder;
@@ -18,10 +18,34 @@ export class EditPassphraseService {
     this.passwordEncoder = passwordEncoder;
   }
 
+  async editNickname(
+    etag: string,
+    name: string,
+    nickname: string,
+  ): Promise<Result.Result<Error, boolean>> {
+    const res = await this.accountRepository.findByName(name);
+    if (Option.isNone(res)) {
+      return Result.err(new Error('account not found'));
+    }
+    const account = Option.unwrap(res);
+
+    const match = await this.etagVerifyService.Verify(account, etag);
+    if (!match) {
+      // TODO: add a new error type for etag not match
+      return Result.err(new Error('etag not match'));
+    }
+
+    try {
+      account.setNickName(nickname);
+      return Result.ok(true);
+    } catch (e) {
+      return Result.err(e);
+    }
+  }
+
   async editPassphrase(
     etag: string,
     name: string,
-    oldPassphrase: string,
     newPassphrase: string,
   ): Promise<Result.Result<Error, boolean>> {
     const res = await this.accountRepository.findByName(name);
@@ -33,16 +57,6 @@ export class EditPassphraseService {
     const match = await this.etagVerifyService.Verify(account, etag);
     if (!match) {
       return Result.err(new Error('etag not match'));
-    }
-
-    const oldPassphraseHash = account.getPassphraseHash;
-    if (!oldPassphraseHash) {
-      return Result.err(new Error('failed to match passphrase'));
-    }
-    if (
-      !this.passwordEncoder.IsMatchPassword(oldPassphrase, oldPassphraseHash)
-    ) {
-      return Result.err(new Error('failed to match passphrase'));
     }
 
     try {
