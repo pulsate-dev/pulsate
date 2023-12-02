@@ -2,5 +2,6 @@
   "deno.enable": true,
   "deno.lint": true,
   "deno.unstable": false,
+  "editor.defaultFormatter": "denoland.vscode-deno",
   "markdown.extension.toc.levels": "2..6"
 }
