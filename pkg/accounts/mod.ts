@@ -1,7 +1,15 @@
-import { Hono } from 'hono';
+import { OpenAPIHono } from 'hono/zod-openapi';
+import { CreateAccountRoute } from './router.ts';
 
-export const accounts = new Hono();
+export const accounts = new OpenAPIHono();
 
-accounts.get('/', (c) => {
-  return c.text('Hello, World!');
-});
+accounts.openapi(CreateAccountRoute, (c) => {
+  const {name, email} = c.req.valid("json");
+
+  return c.json({
+    id: "103848392",
+    name: name,
+    email: email,
+  })
+})
+
