@@ -9,6 +9,7 @@
       "npm:@scalar/hono-api-reference@0.1.22": "npm:@scalar/hono-api-reference@0.1.22_hono@3.8.2",
       "npm:@scalar/hono-api-reference@0.2.0": "npm:@scalar/hono-api-reference@0.2.0_hono@3.8.2",
       "npm:@scalar/hono-api-reference@0.2.2": "npm:@scalar/hono-api-reference@0.2.2_hono@3.8.2",
+      "npm:hono": "npm:hono@3.11.2",
       "npm:hono@3.10.3": "npm:hono@3.10.3",
       "npm:hono@3.8.2": "npm:hono@3.8.2"
     },

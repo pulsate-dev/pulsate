@@ -13,3 +13,11 @@ accounts.openapi(CreateAccountRoute, (c) => {
   })
 })
 
+accounts.doc("/accounts/doc.json", {
+  openapi: "3.0.0",
+  info: {
+    title: "Accounts API",
+    version: "0.1.0",
+  },
+})
+
