@@ -11,7 +11,7 @@ export const CommonErrorResponseSchema = z.object({
 
 export const CreateAccountRequestSchema = z.object({
   // ToDo: 文字種制約/先頭,末尾制約の実装
-  name: z.string().min(3).max(64).openapi({
+  name: z.string().min(1).max(64).openapi({
     example: 'example_man',
     description:
       'Characters must be [A-Za-z0-9-\.] The first and last characters must be [A-Za-z0-9-\.]',
