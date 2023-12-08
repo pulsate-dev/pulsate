@@ -20,6 +20,7 @@
     "exclude": [
       "CODE_OF_CONDUCT.md",
       "./.github/CODE_OF_CONDUCT_JA.md",
+      "./.github/CONTRIBUTING_JA.md",
       "CONTRIBUTING.md",
       "SECURITY.md"
     ]
