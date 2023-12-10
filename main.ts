@@ -4,10 +4,11 @@ import { apiReference } from 'scalar/hono-api-reference';
 
 const app = new Hono();
 
+/*
+All routes must be "/"
+(The "/" account cannot be written in the library specification.
+ */
 app.route('/', accounts);
-app.get('/notes', (c) => {
-  return c.text('Hello, World!');
-});
 
 app.get('/doc.json', async (c) => {
   const modulePath: string[] = ['accounts'];
