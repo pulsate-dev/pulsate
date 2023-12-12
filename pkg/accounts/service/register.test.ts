@@ -1,16 +1,15 @@
-import { Result } from 'mini-fn';
+import { assertEquals } from 'std/assert';
 import { Clock, SnowflakeIDGenerator } from '../../id/mod.ts';
 import { ScryptPasswordEncoder } from '../../password/mod.ts';
-import { DummySendNotificationService } from './sendNotificationService.ts';
 import {
   InMemoryAccountRepository,
   InMemoryAccountVerifyTokenRepository,
 } from '../adaptor/repository/dummy.ts';
-import { RegisterAccountService } from './registerService.ts';
-import { TokenVerifyService } from './tokenVerifyService.ts';
+import { RegisterAccountService } from './register.ts';
+import { DummySendNotificationService } from './sendNotification.ts';
+import { TokenVerifyService } from './tokenVerify.ts';
+import { Result } from 'mini-fn';
 import { AccountRole } from '../model/account.ts';
-import { assertEquals, assertNotEquals } from 'std/assert';
-import { SilenceService } from './silenceService.ts';
 
 const repository = new InMemoryAccountRepository();
 const verifyRepository = new InMemoryAccountVerifyTokenRepository();
@@ -26,7 +25,6 @@ const registerService: RegisterAccountService = new RegisterAccountService({
   sendNotification: new DummySendNotificationService(),
   verifyTokenService: new TokenVerifyService(verifyRepository),
 });
-const silenceService = new SilenceService(repository);
 
 const exampleInput = {
   name: 'john_doe@example.com',
@@ -37,7 +35,7 @@ const exampleInput = {
   role: 'normal' as AccountRole,
 };
 
-Deno.test('set account silence', async () => {
+Deno.test('register account', async () => {
   const res = await registerService.handle(
     exampleInput.name,
     exampleInput.mail,
@@ -48,28 +46,11 @@ Deno.test('set account silence', async () => {
   );
   if (Result.isErr(res)) return;
 
-  await silenceService.setSilence(exampleInput.name);
-
-  assertEquals(res[1].getSilenced, 'silenced');
-  assertNotEquals(res[1].getSilenced, 'normal');
-  repository.reset();
-});
-
-Deno.test('unset account silence', async () => {
-  const res = await registerService.handle(
-    exampleInput.name,
-    exampleInput.mail,
-    exampleInput.nickname,
-    exampleInput.passphrase,
-    exampleInput.bio,
-    exampleInput.role,
-  );
-  if (Result.isErr(res)) return;
-
-  await silenceService.setSilence(exampleInput.name);
-  await silenceService.undoSilence(exampleInput.name);
-
-  assertEquals(res[1].getSilenced, 'normal');
-  assertNotEquals(res[1].getSilenced, 'silenced');
+  assertEquals(res[1].getName, exampleInput.name);
+  assertEquals(res[1].getMail, exampleInput.mail);
+  assertEquals(res[1].getNickname, exampleInput.nickname);
+  assertEquals(res[1].getBio, exampleInput.bio);
+  assertEquals(res[1].getRole, exampleInput.role);
+  assertEquals(res[1].getStatus, 'notActivated');
   repository.reset();
 });

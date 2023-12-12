@@ -3,8 +3,8 @@ import { Account, AccountID, AccountRole } from '../model/account.ts';
 import { AccountRepository } from '../model/repository.ts';
 import { SnowflakeIDGenerator } from '../../id/mod.ts';
 import { PasswordEncoder } from '../../password/mod.ts';
-import { SendNotificationService } from './sendNotificationService.ts';
-import { TokenVerifyService } from './tokenVerifyService.ts';
+import { SendNotificationService } from './sendNotification.ts';
+import { TokenVerifyService } from './tokenVerify.ts';
 
 export class AccountAlreadyExistsError extends Error {
   override readonly name = 'AccountAlreadyExistsError' as const;

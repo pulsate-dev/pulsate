@@ -1,16 +1,16 @@
 import { Result } from 'mini-fn';
 import { Clock, SnowflakeIDGenerator } from '../../id/mod.ts';
 import { ScryptPasswordEncoder } from '../../password/mod.ts';
-import { DummySendNotificationService } from './sendNotificationService.ts';
+import { DummySendNotificationService } from './sendNotification.ts';
 import {
   InMemoryAccountRepository,
   InMemoryAccountVerifyTokenRepository,
 } from '../adaptor/repository/dummy.ts';
-import { RegisterAccountService } from './registerService.ts';
-import { TokenVerifyService } from './tokenVerifyService.ts';
+import { RegisterAccountService } from './register.ts';
+import { TokenVerifyService } from './tokenVerify.ts';
 import { AccountRole } from '../model/account.ts';
 import { assertEquals, assertNotEquals } from 'std/assert';
-import { FreezeService } from './freezeService.ts';
+import { FreezeService } from './freeze.ts';
 
 const repository = new InMemoryAccountRepository();
 const verifyRepository = new InMemoryAccountVerifyTokenRepository();

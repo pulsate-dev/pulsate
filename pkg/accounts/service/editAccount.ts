@@ -1,5 +1,5 @@
 import { Option, Result } from 'mini-fn';
-import { EtagVerifyService } from './etagGenerateVeriftService.ts';
+import { EtagVerifyService } from './etagGenerateVerify.ts';
 import { AccountRepository } from '../model/repository.ts';
 import { PasswordEncoder } from '../../password/mod.ts';
 

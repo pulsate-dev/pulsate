@@ -2,7 +2,7 @@ import { Result } from 'mini-fn';
 import { ID } from '../../id/type.ts';
 import { InMemoryAccountVerifyTokenRepository } from '../adaptor/repository/dummy.ts';
 import { AccountID } from '../model/account.ts';
-import { TokenVerifyService } from './tokenVerifyService.ts';
+import { TokenVerifyService } from './tokenVerify.ts';
 import { assertEquals } from 'std/assert';
 import { Clock } from '../../id/mod.ts';
 
