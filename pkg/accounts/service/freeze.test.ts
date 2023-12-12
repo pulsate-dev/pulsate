@@ -1,16 +1,16 @@
 import { Result } from 'mini-fn';
 import { Clock, SnowflakeIDGenerator } from '../../id/mod.ts';
 import { ScryptPasswordEncoder } from '../../password/mod.ts';
-import { DummySendNotificationService } from './sendNotificationService.ts';
+import { DummySendNotificationService } from './sendNotification.ts';
 import {
   InMemoryAccountRepository,
   InMemoryAccountVerifyTokenRepository,
 } from '../adaptor/repository/dummy.ts';
-import { RegisterAccountService } from './registerService.ts';
-import { TokenVerifyService } from './tokenVerifyService.ts';
+import { RegisterAccountService } from './register.ts';
+import { TokenVerifyService } from './tokenVerify.ts';
 import { AccountRole } from '../model/account.ts';
 import { assertEquals, assertNotEquals } from 'std/assert';
-import { SilenceService } from './silenceService.ts';
+import { FreezeService } from './freeze.ts';
 
 const repository = new InMemoryAccountRepository();
 const verifyRepository = new InMemoryAccountVerifyTokenRepository();
@@ -26,7 +26,7 @@ const registerService: RegisterAccountService = new RegisterAccountService({
   sendNotification: new DummySendNotificationService(),
   verifyTokenService: new TokenVerifyService(verifyRepository),
 });
-const silenceService = new SilenceService(repository);
+const freezeService = new FreezeService(repository);
 
 const exampleInput = {
   name: 'john_doe@example.com',
@@ -37,7 +37,7 @@ const exampleInput = {
   role: 'normal' as AccountRole,
 };
 
-Deno.test('set account silence', async () => {
+Deno.test('set account freeze', async () => {
   const res = await registerService.handle(
     exampleInput.name,
     exampleInput.mail,
@@ -48,14 +48,14 @@ Deno.test('set account silence', async () => {
   );
   if (Result.isErr(res)) return;
 
-  await silenceService.setSilence(exampleInput.name);
+  await freezeService.setFreeze(exampleInput.name);
 
-  assertEquals(res[1].getSilenced, 'silenced');
-  assertNotEquals(res[1].getSilenced, 'normal');
+  assertEquals(res[1].getFrozen, 'frozen');
+  assertNotEquals(res[1].getFrozen, 'normal');
   repository.reset();
 });
 
-Deno.test('unset account silence', async () => {
+Deno.test('unset account freeze', async () => {
   const res = await registerService.handle(
     exampleInput.name,
     exampleInput.mail,
@@ -66,10 +66,9 @@ Deno.test('unset account silence', async () => {
   );
   if (Result.isErr(res)) return;
 
-  await silenceService.setSilence(exampleInput.name);
-  await silenceService.undoSilence(exampleInput.name);
+  await freezeService.undoFreeze(exampleInput.name);
 
-  assertEquals(res[1].getSilenced, 'normal');
-  assertNotEquals(res[1].getSilenced, 'silenced');
+  assertEquals(res[1].getFrozen, 'normal');
+  assertNotEquals(res[1].getFrozen, 'frozen');
   repository.reset();
 });

@@ -1,15 +1,15 @@
-import { EtagVerifyService } from './etagGenerateVeriftService.ts';
+import { EtagVerifyService } from './etagGenerateVerify.ts';
 import { assertEquals } from 'std/assert';
 import {
   InMemoryAccountRepository,
   InMemoryAccountVerifyTokenRepository,
 } from '../adaptor/repository/dummy.ts';
 import { Result } from 'mini-fn';
-import { RegisterAccountService } from './registerService.ts';
+import { RegisterAccountService } from './register.ts';
 import { Clock, SnowflakeIDGenerator } from '../../id/mod.ts';
 import { ScryptPasswordEncoder } from '../../password/mod.ts';
-import { DummySendNotificationService } from './sendNotificationService.ts';
-import { TokenVerifyService } from './tokenVerifyService.ts';
+import { DummySendNotificationService } from './sendNotification.ts';
+import { TokenVerifyService } from './tokenVerify.ts';
 import { AccountRole } from '../model/account.ts';
 
 class DummyClock implements Clock {

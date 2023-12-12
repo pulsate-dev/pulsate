@@ -5,9 +5,9 @@ import {
   InMemoryAccountRepository,
   InMemoryAccountVerifyTokenRepository,
 } from '../adaptor/repository/dummy.ts';
-import { RegisterAccountService } from './registerService.ts';
-import { DummySendNotificationService } from './sendNotificationService.ts';
-import { TokenVerifyService } from './tokenVerifyService.ts';
+import { RegisterAccountService } from './register.ts';
+import { DummySendNotificationService } from './sendNotification.ts';
+import { TokenVerifyService } from './tokenVerify.ts';
 import { Result } from 'mini-fn';
 import { AccountRole } from '../model/account.ts';
 
