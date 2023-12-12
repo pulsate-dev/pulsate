@@ -1,4 +1,5 @@
 import { Option, Result } from 'mini-fn';
+import {encodeBase64} from "std/encoding/base64";
 import { AccountVerifyTokenRepository } from '../model/repository.ts';
 import { ID } from '../../id/type.ts';
 import { AccountID } from '../model/account.ts';
@@ -34,16 +35,18 @@ export class TokenVerifyService {
       Number(this.clock.Now()) + 7 * 24 * 60 * 60 * 1000,
     );
 
+    const encodedToken = encodeBase64(verifyToken);
+
     const res = await this.repository.create(
       accountID,
-      verifyToken.toString(),
+      encodedToken,
       expireDate,
     );
     if (Result.isErr(res)) {
       return Result.err(res[1]);
     }
 
-    return Result.ok(verifyToken.toString());
+    return Result.ok(encodedToken);
   }
 
   /**

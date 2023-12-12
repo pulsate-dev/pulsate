@@ -38,6 +38,7 @@
   "imports": {
     "std/assert": "https://deno.land/std@0.206.0/assert/mod.ts",
     "std/encoding/hex": "https://deno.land/std@0.206.0/encoding/hex.ts",
+    "std/encoding/base64": "https://deno.land/std@0.206.0/encoding/base64.ts",
     "jose": "https://deno.land/x/jose@v5.1.0/index.ts",
     "nhttp": "https://deno.land/x/nhttp@1.3.9/mod.ts",
     "scrypt": "https://deno.land/x/scrypt@v4.2.1/mod.ts",
