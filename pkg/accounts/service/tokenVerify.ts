@@ -1,5 +1,5 @@
 import { Option, Result } from 'mini-fn';
-import {encodeBase64} from "std/encoding/base64";
+import { encodeBase64 } from 'std/encoding/base64';
 import { AccountVerifyTokenRepository } from '../model/repository.ts';
 import { ID } from '../../id/type.ts';
 import { AccountID } from '../model/account.ts';
