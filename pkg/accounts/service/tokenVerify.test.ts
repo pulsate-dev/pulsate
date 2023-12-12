@@ -14,6 +14,7 @@ Deno.test('generate/verify account verify token', async () => {
   if (Result.isErr(token)) {
     return;
   }
+
   const verify = await service.verify('1' as ID<AccountID>, token[1]);
   if (Result.isErr(verify)) {
     return;
