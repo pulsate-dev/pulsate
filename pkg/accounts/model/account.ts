@@ -90,7 +90,7 @@ export class Account {
       throw new AccountAlreadyFrozenError('account already frozen');
     }
 
-    if ([...name].length > 128) {
+    if ([...name].length > 256) {
       throw new AccountNickNameLengthError('nickname length is too long');
     }
     this.nickname = name;
