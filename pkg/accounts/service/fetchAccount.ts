@@ -14,9 +14,9 @@ export class FetchAccountService {
     if (Option.isNone(res)) {
       return Result.err(new Error('AccountNotFoundError'));
     }
-    const account = Option.unwrap(res);
 
     try {
+      const account = Option.unwrap(res);
       return Result.ok(account);
     } catch (e) {
       return Result.err(e);
