@@ -225,6 +225,7 @@ Deno.test('should be fail to update email when etag not match', async () => {
     'pulsate@example.com',
   );
   assertEquals(Result.isErr(updateRes), true);
+  repository.reset();
 });
 
 Deno.test('should be fail to update email when account not found', async () => {
