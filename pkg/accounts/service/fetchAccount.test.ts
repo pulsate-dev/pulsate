@@ -29,7 +29,7 @@ const registerService: RegisterAccountService = new RegisterAccountService({
 const fetchAccountService = new FetchAccountService(repository);
 
 const exampleInput = {
-  name: 'john_doe@example.com',
+  name: '@john_doe@example.com',
   mail: 'johndoe@example.com',
   nickname: 'John Doe',
   passphrase: 'password',
