@@ -1,5 +1,10 @@
 import { Option, Result } from 'mini-fn';
-import { Account, AccountID, AccountRole } from '../model/account.ts';
+import {
+  Account,
+  AccountID,
+  AccountName,
+  AccountRole,
+} from '../model/account.ts';
 import { AccountRepository } from '../model/repository.ts';
 import { SnowflakeIDGenerator } from '../../id/mod.ts';
 import { PasswordEncoder } from '../../password/mod.ts';
@@ -36,7 +41,7 @@ export class RegisterAccountService {
   }
 
   public async handle(
-    name: string,
+    name: AccountName,
     mail: string,
     nickname: string,
     passphrase: string,
