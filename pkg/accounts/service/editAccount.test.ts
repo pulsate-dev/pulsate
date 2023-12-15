@@ -221,6 +221,107 @@ Deno.test('should be success to update passphrase', async () => {
   repository.reset();
 });
 
+Deno.test('should be fail to update passphrase when passphrase shorter more than 8', async () => {
+  const res = await registerService.handle(
+    exampleInput.name,
+    exampleInput.mail,
+    exampleInput.nickname,
+    exampleInput.passphrase,
+    exampleInput.bio,
+    exampleInput.role,
+  );
+  const account = Result.unwrap(res);
+  if (Result.isErr(res)) {
+    return;
+  }
+  const etag = await etagVerifyService.generate(account);
+
+  const updateRes = await editAccountService.editPassphrase(
+    etag,
+    exampleInput.name,
+    'a'.repeat(7),
+  );
+  assertEquals(Result.isErr(updateRes), true);
+  repository.reset();
+});
+Deno.test(
+  'should be fail to update passphrase when passphrase longer more than 512',
+  async () => {
+    const res = await registerService.handle(
+      exampleInput.name,
+      exampleInput.mail,
+      exampleInput.nickname,
+      exampleInput.passphrase,
+      exampleInput.bio,
+      exampleInput.role,
+    );
+    const account = Result.unwrap(res);
+    if (Result.isErr(res)) {
+      return;
+    }
+    const etag = await etagVerifyService.generate(account);
+
+    const updateRes = await editAccountService.editPassphrase(
+      etag,
+      exampleInput.name,
+      'a'.repeat(513),
+    );
+    assertEquals(Result.isErr(updateRes), true);
+    repository.reset();
+  },
+);
+Deno.test('should be success to update passphrase when passphrase 8', async () => {
+  const res = await registerService.handle(
+    exampleInput.name,
+    exampleInput.mail,
+    exampleInput.nickname,
+    exampleInput.passphrase,
+    exampleInput.bio,
+    exampleInput.role,
+  );
+  const account = Result.unwrap(res);
+  if (Result.isErr(res)) {
+    return;
+  }
+  const etag = await etagVerifyService.generate(account);
+
+  const updateRes = await editAccountService.editPassphrase(
+    etag,
+    exampleInput.name,
+    'a'.repeat(8),
+  );
+  assertEquals(Result.isErr(updateRes), false);
+  assertEquals(updateRes[1], true);
+  repository.reset();
+});
+Deno.test(
+  'should be success to update passphrase when passphrase 512',
+  async () => {
+    const res = await registerService.handle(
+      exampleInput.name,
+      exampleInput.mail,
+      exampleInput.nickname,
+      exampleInput.passphrase,
+      exampleInput.bio,
+      exampleInput.role,
+    );
+    const account = Result.unwrap(res);
+    if (Result.isErr(res)) {
+      return;
+    }
+    const etag = await etagVerifyService.generate(account);
+
+    const updateRes = await editAccountService.editPassphrase(
+      etag,
+      exampleInput.name,
+      'a'.repeat(512),
+    );
+    assertEquals(Result.isErr(updateRes), false);
+    assertEquals(updateRes[1], true);
+    repository.reset();
+  },
+);
+
 Deno.test(
   'should be fail to update passphrase when etag not match',
   async () => {
