@@ -3,12 +3,12 @@ import { EtagVerifyService } from './etagGenerateVerify.ts';
 import { AccountRepository } from '../model/repository.ts';
 import { PasswordEncoder } from '../../password/mod.ts';
 
-const nicknameShortest = 1;
-const nicknameLongest = 256;
-const emailShortest = 7;
-const emailLongest = 319;
-
 export class EditAccountService {
+  private readonly nicknameShortest = 1;
+  private readonly nicknameLongest = 256;
+  private readonly emailShortest = 7;
+  private readonly emailLongest = 319;
+
   private accountRepository: AccountRepository;
   private etagVerifyService: EtagVerifyService;
   private passwordEncoder: PasswordEncoder;
@@ -40,10 +40,10 @@ export class EditAccountService {
       return Result.err(new Error('etag not match'));
     }
 
-    if (nickname.length < nicknameShortest) {
+    if (nickname.length < this.nicknameShortest) {
       return Result.err(new Error('nickname too short'));
     }
-    if (nickname.length > nicknameLongest) {
+    if (nickname.length > this.nicknameLongest) {
       return Result.err(new Error('nickname too long'));
     }
 
@@ -97,10 +97,10 @@ export class EditAccountService {
       return Result.err(new Error('etag not match'));
     }
 
-    if (newEmail.length < emailShortest) {
+    if (newEmail.length < this.emailShortest) {
       return Result.err(new Error('email too short'));
     }
-    if (newEmail.length > emailLongest) {
+    if (newEmail.length > this.emailLongest) {
       return Result.err(new Error('email too long'));
     }
 
