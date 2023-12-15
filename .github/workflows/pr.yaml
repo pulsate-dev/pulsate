@@ -22,6 +22,6 @@ jobs:
               owner: context.repo.owner,
               repo: context.repo.repo,
               issue_number: context.issue.number,
-              assignees: `${{ github.actor}}`
+              assignees: `${{ github.actor }}`
             })
 
