@@ -6,6 +6,8 @@ import { PasswordEncoder } from '../../password/mod.ts';
 export class EditAccountService {
   private readonly nicknameShortest = 1;
   private readonly nicknameLongest = 256;
+  private readonly passphraseShortest = 8;
+  private readonly passphraseLongest = 512;
   private readonly emailShortest = 7;
   private readonly emailLongest = 319;
 
@@ -69,6 +71,13 @@ export class EditAccountService {
     const match = await this.etagVerifyService.verify(account, etag);
     if (!match) {
       return Result.err(new Error('etag not match'));
+    }
+
+    if (newPassphrase.length < this.passphraseShortest) {
+      return Result.err(new Error('passphrase too short'));
+    }
+    if (newPassphrase.length > this.passphraseLongest) {
+      return Result.err(new Error('passphrase too long'));
     }
 
     try {
