@@ -34,8 +34,8 @@ Deno.test('generate new instance', () => {
   assertEquals(account.getDeletedAt, undefined);
 });
 
-Deno.test('account nickname must be less than 128', () => {
-  const name = 'a'.repeat(129);
+Deno.test('account nickname must be less than 256', () => {
+  const name = 'a'.repeat(257);
   const account = Account.new(exampleInput);
   assertThrows(() => {
     account.setNickName(name);

@@ -4,6 +4,13 @@ import { AccountRepository } from '../model/repository.ts';
 import { PasswordEncoder } from '../../password/mod.ts';
 
 export class EditAccountService {
+  private readonly nicknameShortest = 1;
+  private readonly nicknameLongest = 256;
+  private readonly passphraseShortest = 8;
+  private readonly passphraseLongest = 512;
+  private readonly emailShortest = 7;
+  private readonly emailLongest = 319;
+
   private accountRepository: AccountRepository;
   private etagVerifyService: EtagVerifyService;
   private passwordEncoder: PasswordEncoder;
@@ -35,6 +42,13 @@ export class EditAccountService {
       return Result.err(new Error('etag not match'));
     }
 
+    if (nickname.length < this.nicknameShortest) {
+      return Result.err(new Error('nickname too short'));
+    }
+    if (nickname.length > this.nicknameLongest) {
+      return Result.err(new Error('nickname too long'));
+    }
+
     try {
       account.setNickName(nickname);
       return Result.ok(true);
@@ -57,6 +71,13 @@ export class EditAccountService {
     const match = await this.etagVerifyService.verify(account, etag);
     if (!match) {
       return Result.err(new Error('etag not match'));
+    }
+
+    if (newPassphrase.length < this.passphraseShortest) {
+      return Result.err(new Error('passphrase too short'));
+    }
+    if (newPassphrase.length > this.passphraseLongest) {
+      return Result.err(new Error('passphrase too long'));
     }
 
     try {
@@ -83,6 +104,13 @@ export class EditAccountService {
     const match = await this.etagVerifyService.verify(account, etag);
     if (!match) {
       return Result.err(new Error('etag not match'));
+    }
+
+    if (newEmail.length < this.emailShortest) {
+      return Result.err(new Error('email too short'));
+    }
+    if (newEmail.length > this.emailLongest) {
+      return Result.err(new Error('email too long'));
     }
 
     // TODO: add a process to check the email is active
