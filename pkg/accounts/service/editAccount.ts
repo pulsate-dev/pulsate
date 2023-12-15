@@ -3,6 +3,9 @@ import { EtagVerifyService } from './etagGenerateVerify.ts';
 import { AccountRepository } from '../model/repository.ts';
 import { PasswordEncoder } from '../../password/mod.ts';
 
+const nicknameShortest = 1;
+const nicknameLongest = 256;
+
 export class EditAccountService {
   private accountRepository: AccountRepository;
   private etagVerifyService: EtagVerifyService;
@@ -33,6 +36,13 @@ export class EditAccountService {
     if (!match) {
       // TODO: add a new error type for etag not match
       return Result.err(new Error('etag not match'));
+    }
+
+    if (nickname.length < nicknameShortest) {
+      return Result.err(new Error('nickname too short'));
+    }
+    if (nickname.length > nicknameLongest) {
+      return Result.err(new Error('nickname too long'));
     }
 
     try {
