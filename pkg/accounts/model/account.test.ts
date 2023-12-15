@@ -4,7 +4,7 @@ import { ID } from '../../id/type.ts';
 
 const exampleInput: CreateAccountArgs = {
   id: '1' as ID<AccountID>,
-  bio: 'this is john doe\'s account!',
+  bio: "this is john doe's account!",
   createdAt: new Date('2023-09-10T00:00:00.000Z'),
   mail: 'test@mail.example.com',
   nickname: 'John Doe',
@@ -50,7 +50,7 @@ Deno.test('account bio must be less than 1024 chars', () => {
   });
 });
 
-Deno.test('can\'t change values when account is frozen', () => {
+Deno.test("can't change values when account is frozen", () => {
   const account = Account.new(exampleInput);
   account.setFreeze();
 
@@ -75,7 +75,7 @@ Deno.test('can\'t change values when account is frozen', () => {
   });
 });
 
-Deno.test('deleted account can\'t change values', () => {
+Deno.test("deleted account can't change values", () => {
   const account = Account.new(exampleInput);
   account.setDeletedAt(new Date());
 
