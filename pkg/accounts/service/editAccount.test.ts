@@ -78,9 +78,8 @@ Deno.test(
       exampleInput.role,
     );
     const account = Result.unwrap(res);
-    if (Result.isErr(res)) {
-      return;
-    }
+    assertEquals(Result.isErr(res), false);
+
     const etag = await etagVerifyService.generate(account);
     const updateRes = await editAccountService.editNickname(
       etag,
@@ -104,6 +103,8 @@ Deno.test(
       exampleInput.role,
     );
     const account = Result.unwrap(res);
+    assertEquals(Result.isErr(res), false);
+
     const etag = await etagVerifyService.generate(account);
     const updateRes = await editAccountService.editNickname(
       etag,
@@ -125,9 +126,8 @@ Deno.test('should be success to update nickname when nickname 256', async () => 
     exampleInput.role,
   );
   const account = Result.unwrap(res);
-  if (Result.isErr(res)) {
-    return;
-  }
+  assertEquals(Result.isErr(res), false);
+
   const etag = await etagVerifyService.generate(account);
   const updateRes = await editAccountService.editNickname(
     etag,
@@ -152,9 +152,8 @@ Deno.test(
       exampleInput.role,
     );
     const account = Result.unwrap(res);
-    if (Result.isErr(res)) {
-      return;
-    }
+    assertEquals(Result.isErr(res), false);
+
     const etag = await etagVerifyService.generate(account);
     const updateRes = await editAccountService.editNickname(
       etag,
@@ -231,9 +230,8 @@ Deno.test('should be fail to update passphrase when passphrase shorter more than
     exampleInput.role,
   );
   const account = Result.unwrap(res);
-  if (Result.isErr(res)) {
-    return;
-  }
+  assertEquals(Result.isErr(res), false);
+
   const etag = await etagVerifyService.generate(account);
 
   const updateRes = await editAccountService.editPassphrase(
@@ -256,9 +254,8 @@ Deno.test(
       exampleInput.role,
     );
     const account = Result.unwrap(res);
-    if (Result.isErr(res)) {
-      return;
-    }
+    assertEquals(Result.isErr(res), false);
+
     const etag = await etagVerifyService.generate(account);
 
     const updateRes = await editAccountService.editPassphrase(
@@ -280,9 +277,8 @@ Deno.test('should be success to update passphrase when passphrase 8', async () =
     exampleInput.role,
   );
   const account = Result.unwrap(res);
-  if (Result.isErr(res)) {
-    return;
-  }
+  assertEquals(Result.isErr(res), false);
+
   const etag = await etagVerifyService.generate(account);
 
   const updateRes = await editAccountService.editPassphrase(
@@ -306,9 +302,8 @@ Deno.test(
       exampleInput.role,
     );
     const account = Result.unwrap(res);
-    if (Result.isErr(res)) {
-      return;
-    }
+    assertEquals(Result.isErr(res), false);
+
     const etag = await etagVerifyService.generate(account);
 
     const updateRes = await editAccountService.editPassphrase(
@@ -418,6 +413,7 @@ Deno.test('should be success to update email when email shortest', async () => {
     exampleInput.role,
   );
   const account = Result.unwrap(res);
+  assertEquals(Result.isErr(res), false);
   const etag = await etagVerifyService.generate(account);
 
   const updateRes = await editAccountService.editEmail(
@@ -440,6 +436,7 @@ Deno.test('should be success to update email when email length 8', async () => {
     exampleInput.role,
   );
   const account = Result.unwrap(res);
+  assertEquals(Result.isErr(res), false);
   const etag = await etagVerifyService.generate(account);
 
   const updateRes = await editAccountService.editEmail(
@@ -462,6 +459,7 @@ Deno.test('should be fail to update email when email too long', async () => {
     exampleInput.role,
   );
   const account = Result.unwrap(res);
+  assertEquals(Result.isErr(res), false);
   const etag = await etagVerifyService.generate(account);
 
   const updateRes = await editAccountService.editEmail(
@@ -485,6 +483,7 @@ Deno.test(
       exampleInput.role,
     );
     const account = Result.unwrap(res);
+    assertEquals(Result.isErr(res), false);
     const etag = await etagVerifyService.generate(account);
 
     const updateRes = await editAccountService.editEmail(
