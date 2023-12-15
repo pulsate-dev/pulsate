@@ -66,6 +66,46 @@ Deno.test('should be success to update nickname', async () => {
   repository.reset();
 });
 
+Deno.test('should be fail to update nickname when nickname too short', async () => {
+  const res = await registerService.handle(
+    exampleInput.name,
+    exampleInput.mail,
+    exampleInput.nickname,
+    exampleInput.passphrase,
+    exampleInput.bio,
+    exampleInput.role,
+  );
+  const account = Result.unwrap(res);
+  const etag = await etagVerifyService.generate(account);
+  const updateRes = await editAccountService.editNickname(
+    etag,
+    exampleInput.name,
+    '',
+  );
+  assertEquals(Result.isErr(updateRes), true);
+  repository.reset();
+});
+
+Deno.test('should be fail to update nickname when nickname too long', async () => {
+  const res = await registerService.handle(
+    exampleInput.name,
+    exampleInput.mail,
+    exampleInput.nickname,
+    exampleInput.passphrase,
+    exampleInput.bio,
+    exampleInput.role,
+  );
+  const account = Result.unwrap(res);
+  const etag = await etagVerifyService.generate(account);
+  const updateRes = await editAccountService.editNickname(
+    etag,
+    exampleInput.name,
+    'a'.repeat(257),
+  );
+  assertEquals(Result.isErr(updateRes), true);
+  repository.reset();
+});
+
 Deno.test('should be fail to update nickname when etag not match', async () => {
   await registerService.handle(
     exampleInput.name,
