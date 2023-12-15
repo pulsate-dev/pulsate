@@ -8,6 +8,7 @@ import {
 } from './account.errors.ts';
 
 export type AccountID = string;
+export type AccountName = `@${string}@${string}`;
 export type AccountRole = 'admin' | 'normal' | 'moderator';
 export type AccountStatus = 'active' | 'notActivated';
 export type AccountFrozen = 'frozen' | 'normal';
@@ -15,7 +16,7 @@ export type AccountSilenced = 'silenced' | 'normal';
 
 export interface CreateAccountArgs {
   id: ID<AccountID>;
-  name: string;
+  name: AccountName;
   mail: string;
   nickname: string;
   passphraseHash: string | undefined;
@@ -52,8 +53,8 @@ export class Account {
     return this.id;
   }
 
-  private readonly name: string;
-  get getName(): string {
+  private readonly name: AccountName;
+  get getName(): AccountName {
     return this.name;
   }
 
