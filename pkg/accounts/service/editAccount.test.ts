@@ -78,6 +78,9 @@ Deno.test(
       exampleInput.role,
     );
     const account = Result.unwrap(res);
+    if (Result.isErr(res)) {
+      return;
+    }
     const etag = await etagVerifyService.generate(account);
     const updateRes = await editAccountService.editNickname(
       etag,
