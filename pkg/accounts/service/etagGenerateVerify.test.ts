@@ -10,7 +10,7 @@ import { Clock, SnowflakeIDGenerator } from '../../id/mod.ts';
 import { ScryptPasswordEncoder } from '../../password/mod.ts';
 import { DummySendNotificationService } from './sendNotification.ts';
 import { TokenVerifyService } from './tokenVerify.ts';
-import { AccountRole } from '../model/account.ts';
+import { AccountName, AccountRole } from '../model/account.ts';
 
 class DummyClock implements Clock {
   Now(): bigint {
@@ -29,7 +29,7 @@ const registerService = new RegisterAccountService({
 const etagVerifyService: EtagVerifyService = new EtagVerifyService();
 
 const exampleInput = {
-  name: 'john_doe@example.com',
+  name: '@john_doe@example.com' as AccountName,
   mail: 'johndoe@example.com',
   nickname: 'John Doe',
   passphrase: 'password',

@@ -10,7 +10,7 @@ import { TokenVerifyService } from './tokenVerify.ts';
 import { EtagVerifyService } from './etagGenerateVerify.ts';
 import { EditAccountService } from './editAccount.ts';
 
-import { AccountRole } from '../model/account.ts';
+import { AccountName, AccountRole } from '../model/account.ts';
 import { Result } from 'mini-fn';
 import { assertEquals } from 'std/assert';
 
@@ -36,7 +36,7 @@ const editAccountService = new EditAccountService(
 );
 
 const exampleInput = {
-  name: 'john_doe@example.com',
+  name: '@john_doe@example.com' as AccountName,
   mail: 'johndoe@example.com',
   nickname: 'John Doe',
   passphrase: 'password',

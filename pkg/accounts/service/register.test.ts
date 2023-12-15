@@ -9,7 +9,7 @@ import { RegisterAccountService } from './register.ts';
 import { DummySendNotificationService } from './sendNotification.ts';
 import { TokenVerifyService } from './tokenVerify.ts';
 import { Result } from 'mini-fn';
-import { AccountRole } from '../model/account.ts';
+import { AccountName, AccountRole } from '../model/account.ts';
 
 const repository = new InMemoryAccountRepository();
 const verifyRepository = new InMemoryAccountVerifyTokenRepository();
@@ -27,7 +27,7 @@ const registerService: RegisterAccountService = new RegisterAccountService({
 });
 
 const exampleInput = {
-  name: 'john_doe@example.com',
+  name: '@john_doe@example.com' as AccountName,
   mail: 'johndoe@example.com',
   nickname: 'John Doe',
   passphrase: 'password',

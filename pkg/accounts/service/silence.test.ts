@@ -8,7 +8,7 @@ import {
 } from '../adaptor/repository/dummy.ts';
 import { RegisterAccountService } from './register.ts';
 import { TokenVerifyService } from './tokenVerify.ts';
-import { AccountRole } from '../model/account.ts';
+import { AccountName, AccountRole } from '../model/account.ts';
 import { assertEquals, assertNotEquals } from 'std/assert';
 import { SilenceService } from './silence.ts';
 
@@ -29,7 +29,7 @@ const registerService: RegisterAccountService = new RegisterAccountService({
 const silenceService = new SilenceService(repository);
 
 const exampleInput = {
-  name: 'john_doe@example.com',
+  name: '@john_doe@example.com' as AccountName,
   mail: 'johndoe@example.com',
   nickname: 'John Doe',
   passphrase: 'password',
