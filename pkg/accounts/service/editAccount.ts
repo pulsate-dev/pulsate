@@ -29,7 +29,7 @@ export class EditAccountService {
     }
     const account = Option.unwrap(res);
 
-    const match = await this.etagVerifyService.Verify(account, etag);
+    const match = await this.etagVerifyService.verify(account, etag);
     if (!match) {
       // TODO: add a new error type for etag not match
       return Result.err(new Error('etag not match'));
@@ -54,7 +54,7 @@ export class EditAccountService {
     }
     const account = Option.unwrap(res);
 
-    const match = await this.etagVerifyService.Verify(account, etag);
+    const match = await this.etagVerifyService.verify(account, etag);
     if (!match) {
       return Result.err(new Error('etag not match'));
     }
@@ -80,7 +80,7 @@ export class EditAccountService {
     }
     const account = Option.unwrap(res);
 
-    const match = await this.etagVerifyService.Verify(account, etag);
+    const match = await this.etagVerifyService.verify(account, etag);
     if (!match) {
       return Result.err(new Error('etag not match'));
     }
