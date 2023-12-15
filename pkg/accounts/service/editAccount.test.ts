@@ -115,6 +115,58 @@ Deno.test(
   },
 );
 
+Deno.test('should be success to update nickname when nickname 256', async () => {
+  const res = await registerService.handle(
+    exampleInput.name,
+    exampleInput.mail,
+    exampleInput.nickname,
+    exampleInput.passphrase,
+    exampleInput.bio,
+    exampleInput.role,
+  );
+  const account = Result.unwrap(res);
+  if (Result.isErr(res)) {
+    return;
+  }
+  const etag = await etagVerifyService.generate(account);
+  const updateRes = await editAccountService.editNickname(
+    etag,
+    exampleInput.name,
+    'a'.repeat(256),
+  );
+  assertEquals(Result.isErr(updateRes), false);
+  assertEquals(updateRes[1], true);
+  assertEquals(account.getNickname, 'a'.repeat(256));
+  repository.reset();
+});
+
+Deno.test(
+  'should be success to update nickname when nickname 1',
+  async () => {
+    const res = await registerService.handle(
+      exampleInput.name,
+      exampleInput.mail,
+      exampleInput.nickname,
+      exampleInput.passphrase,
+      exampleInput.bio,
+      exampleInput.role,
+    );
+    const account = Result.unwrap(res);
+    if (Result.isErr(res)) {
+      return;
+    }
+    const etag = await etagVerifyService.generate(account);
+    const updateRes = await editAccountService.editNickname(
+      etag,
+      exampleInput.name,
+      'a',
+    );
+    assertEquals(Result.isErr(updateRes), false);
+    assertEquals(updateRes[1], true);
+    repository.reset();
+  },
+);
+
 Deno.test('should be fail to update nickname when etag not match', async () => {
   await registerService.handle(
     exampleInput.name,
