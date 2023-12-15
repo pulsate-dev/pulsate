@@ -5,6 +5,8 @@ import { PasswordEncoder } from '../../password/mod.ts';
 
 const nicknameShortest = 1;
 const nicknameLongest = 256;
+const emailShortest = 7;
+const emailLongest = 319;
 
 export class EditAccountService {
   private accountRepository: AccountRepository;
@@ -93,6 +95,13 @@ export class EditAccountService {
     const match = await this.etagVerifyService.verify(account, etag);
     if (!match) {
       return Result.err(new Error('etag not match'));
+    }
+
+    if (newEmail.length < emailShortest) {
+      return Result.err(new Error('email too short'));
+    }
+    if (newEmail.length > emailLongest) {
+      return Result.err(new Error('email too long'));
     }
 
     // TODO: add a process to check the email is active
