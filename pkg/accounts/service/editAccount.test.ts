@@ -67,7 +67,7 @@ Deno.test('should be success to update nickname', async () => {
 });
 
 Deno.test(
-  'should be fail to update nickname when nickname too short',
+  'should be fail to update nickname when nickname shorter more than 1',
   async () => {
     const res = await registerService.handle(
       exampleInput.name,
@@ -90,7 +90,7 @@ Deno.test(
 );
 
 Deno.test(
-  'should be fail to update nickname when nickname too long',
+  'should be fail to update nickname when nickname more than 256',
   async () => {
     const res = await registerService.handle(
       exampleInput.name,
@@ -317,24 +317,27 @@ Deno.test('should be fail to update email when email too long', async () => {
   repository.reset();
 });
 
-Deno.test('should be success to update email when email length 319', async () => {
-  const res = await registerService.handle(
-    exampleInput.name,
-    exampleInput.mail,
-    exampleInput.nickname,
-    exampleInput.passphrase,
-    exampleInput.bio,
-    exampleInput.role,
-  );
-  const account = Result.unwrap(res);
-  const etag = await etagVerifyService.generate(account);
+Deno.test(
+  'should be success to update email when email length 319',
+  async () => {
+    const res = await registerService.handle(
+      exampleInput.name,
+      exampleInput.mail,
+      exampleInput.nickname,
+      exampleInput.passphrase,
+      exampleInput.bio,
+      exampleInput.role,
+    );
+    const account = Result.unwrap(res);
+    const etag = await etagVerifyService.generate(account);
 
-  const updateRes = await editAccountService.editEmail(
-    etag,
-    exampleInput.name,
-    'a'.repeat(319),
-  );
-  assertEquals(Result.isErr(updateRes), false);
-  assertEquals(updateRes[1], true);
-  repository.reset();
-});
+    const updateRes = await editAccountService.editEmail(
+      etag,
+      exampleInput.name,
+      'a'.repeat(319),
+    );
+    assertEquals(Result.isErr(updateRes), false);
+    assertEquals(updateRes[1], true);
+    repository.reset();
+  },
+);
