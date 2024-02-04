@@ -1,0 +1,16 @@
+{
+  "name": "pulsate",
+  "version": "0.0.1",
+  "description": "",
+  "main": "main.ts",
+  "scripts": {
+    "build": "tsc -p .",
+    "start": "node ./build/main.js"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "Apache-2.0",
+  "dependencies": {
+    "typescript": "^5.3.3"
+  }
+}
