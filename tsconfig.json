@@ -22,11 +22,10 @@
     "noUncheckedIndexedAccess": true,
     "forceConsistentCasingInFileNames": true,
     "allowUnreachableCode": false,
-
+    "verbatimModuleSyntax": true,
     "pretty": true,
     "esModuleInterop": true,
-    "resolveJsonModule": true,
-    "verbatimModuleSyntax": true
+    "resolveJsonModule": true
   },
   "include": [
     "**/*.ts"
