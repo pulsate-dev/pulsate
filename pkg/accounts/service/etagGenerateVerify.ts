@@ -1,5 +1,4 @@
-import { encodeHex } from 'std/encoding/hex';
-import { Account } from '../model/account.ts';
+import { Account } from '../model/account.js';
 
 export class EtagVerifyService {
   /**
@@ -24,6 +23,7 @@ export class EtagVerifyService {
       'SHA-256',
       new TextEncoder().encode(src),
     );
-    return encodeHex(digest);
+    // fixme: maybe it returns hex string...?
+    return Buffer.from(digest).toString('hex')
   }
 }

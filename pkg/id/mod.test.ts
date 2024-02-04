@@ -1,6 +1,6 @@
-import { assertEquals, assertFalse, assertNotEquals } from 'std/assert';
-import { Clock, SnowflakeIDGenerator } from './mod.ts';
-import { Result } from 'mini-fn';
+import { describe, it, expect} from "vitest";
+import { type Clock, SnowflakeIDGenerator } from './mod.js';
+import { Result } from '@mikuroxina/mini-fn';
 
 class DummyClock implements Clock {
   Now(): bigint {
@@ -10,28 +10,30 @@ class DummyClock implements Clock {
 
 const generator = new SnowflakeIDGenerator(1, new DummyClock());
 
-Deno.test('generate id', () => {
-  const expected = '223593313075204096';
-  const result = generator.generate();
+describe('SnowflakeIDGenerator', () => {
+  it('generate id', () => {
+    const expected = '223593313075204096';
+    const result = generator.generate();
 
-  if (Result.isOk(result)) {
-    assertEquals(result[1], expected);
-  }
-  assertFalse(Result.isErr(result));
-});
-
-Deno.test('generate at the same time but do not output the same ID', () => {
-  let oldID = '';
-  for (let i = 0; i < 4095; i++) {
-    const newID = generator.generate();
-
-    if (Result.isOk(newID)) {
-      assertNotEquals(newID[1], oldID);
-      oldID = newID[1];
+    if (Result.isOk(result)) {
+      expect(result[1]).toBe(expected);
     }
-    assertEquals(Result.isErr(newID), false);
-  }
+    expect(Result.isErr(result)).toBe(false);
+  });
 
-  const res = generator.generate();
-  assertEquals(Result.isErr(res), true);
+  it('generate at the same time but do not output the same ID', () => {
+    let oldID = '';
+    for (let i = 0; i < 4095; i++) {
+      const newID = generator.generate();
+
+      if (Result.isOk(newID)) {
+        expect(newID[1]).not.toBe(oldID);
+        oldID = newID[1];
+      }
+      expect(Result.isErr(newID)).toBe(false);
+    }
+
+    const res = generator.generate();
+    expect(Result.isErr(res)).toBe(true);
+  });
 });

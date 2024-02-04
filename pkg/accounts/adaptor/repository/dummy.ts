@@ -1,10 +1,9 @@
-import { ID } from '../../../id/type.ts';
-import { Account, AccountID } from '../../model/account.ts';
-import {
-  AccountRepository,
-  AccountVerifyTokenRepository,
-} from '../../model/repository.ts';
-import { Option, Result } from 'mini-fn';
+import { type ID } from '../../../id/type.js';
+import { Account, type AccountID } from '../../model/account.js';
+import type {
+  AccountRepository, AccountVerifyTokenRepository,
+} from '../../model/repository.js';
+import { Option, Result } from '@mikuroxina/mini-fn';
 
 export class InMemoryAccountRepository implements AccountRepository {
   private data: Set<Account>;

@@ -1,4 +1,4 @@
-import { OpenAPIHono } from 'hono/zod-openapi';
+import { OpenAPIHono } from '@hono/zod-openapi';
 import {
   CreateAccountRoute,
   FollowAccountRoute,
@@ -13,7 +13,7 @@ import {
   UnSilenceAccountRoute,
   UpdateAccountRoute,
   VerifyEmailRoute,
-} from './router.ts';
+} from './router.js';
 
 export const accounts = new OpenAPIHono();
 
@@ -35,16 +35,8 @@ accounts.openapi(CreateAccountRoute, (c) => {
   });
 });
 
-accounts.openapi(UpdateAccountRoute, (c) => {
-  const { bio, email, nickname } = c.req.valid('json');
-
-  return c.json({
-    id: '103848392',
-    name: name,
-    nickname: nickname,
-    email: email,
-    bio: bio,
-  });
+accounts.openapi(UpdateAccountRoute, () => {
+  throw new Error('Not implemented');
 });
 
 accounts.openapi(FreezeAccountRoute, () => {
@@ -73,21 +65,12 @@ accounts.openapi(GetAccountRoute, (c) => {
   });
 });
 
-accounts.openapi(LoginRoute, (c) => {
-  return c.json({
-    authorization_token:
-      'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIzZTE2NDQ4MzMwMDAwMDIiLCJpYXQiOjE2NDA5OTUyMDEsInJlZnJlc2hfdG9rZW4iOiJleUpoYkdjaU9pSklVekkxTmlJc0luUjVjQ0k2SWtwWFZDSjkuZXlKemRXSWlPaUl6WlRFMk5EUTRNek13TURBd01ESWlMQ0pwWVhRaU9qRTJOREE1T1RVeU1ERjkud2Q4cWJVcWowWGtCU1hud0FxM0lRYU1nQS1RTFd2MHVKU1NLX3BIVTZCYyJ9.mRUfLIYOGlLuC9D72zBriVvrHYrQgVHW7ntQ-bp5SHs',
-    refresh_token:
-      'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIzZTE2NDQ4MzMwMDAwMDIiLCJpYXQiOjE2NDA5OTUyMDEsInJlZnJlc2hfdG9rZW4iOiJleUpoYkdjaU9pSklVekkxTmlJc0luUjVjQ0k2SWtwWFZDSjkuZXlKemRXSWlPaUl6WlRFMk5EUTRNek13TURBd01ESWlMQ0pwWVhRaU9qRTJOREE1T1RVeU1ERjkud2Q4cWJVcWowWGtCU1hud0FxM0lRYU1nQS1RTFd2MHVKU1NLX3BIVTZCYyJ9.mRUfLIYOGlLuC9D72zBriVvrHYrQgVHW7ntQ-bp5SHs',
-    expires_in: 10000000000,
-  });
+accounts.openapi(LoginRoute, () => {
+  throw new Error('Not implemented');
 });
 
-accounts.openapi(RefreshRoute, (c) => {
-  return c.json({
-    authorization_token:
-      'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIzZTE2NDQ4MzMwMDAwMDIiLCJpYXQiOjE2NDA5OTUyMDEsInJlZnJlc2hfdG9rZW4iOiJleUpoYkdjaU9pSklVekkxTmlJc0luUjVjQ0k2SWtwWFZDSjkuZXlKemRXSWlPaUl6WlRFMk5EUTRNek13TURBd01ESWlMQ0pwWVhRaU9qRTJOREE1T1RVeU1ERjkud2Q4cWJVcWowWGtCU1hud0FxM0lRYU1nQS1RTFd2MHVKU1NLX3BIVTZCYyJ9.mRUfLIYOGlLuC9D72zBriVvrHYrQgVHW7ntQ-bp5SHs',
-  });
+accounts.openapi(RefreshRoute, () => {
+  throw new Error('Not implemented');
 });
 
 accounts.openapi(SilenceAccountRoute, () => {
@@ -99,7 +82,7 @@ accounts.openapi(UnSilenceAccountRoute, () => {
 });
 
 accounts.openapi(FollowAccountRoute, () => {
-  return new Response(null, { status: 204 });
+  throw new Error('Not implemented');
 });
 
 accounts.openapi(ResendVerificationEmailRoute, () => {

@@ -1,0 +1,36 @@
+{
+  "compileOnSave": true,
+  "compilerOptions": {
+    "tsBuildInfoFile": "./build/.tsbuildinfo",
+    "target": "ESNext",
+    "module": "NodeNext",
+    "outDir": "./build",
+    "rootDir": ".",
+    "moduleResolution": "Node16",
+    "newLine": "lf",
+
+    "incremental": true,
+    "removeComments": true,
+    "skipLibCheck": true,
+    "sourceMap": true,
+
+    "strict": true,
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
+    "noImplicitReturns": true,
+    "noFallthroughCasesInSwitch": true,
+    "noUncheckedIndexedAccess": true,
+    "forceConsistentCasingInFileNames": true,
+    "allowUnreachableCode": false,
+    "verbatimModuleSyntax": true,
+    "pretty": true,
+    "esModuleInterop": true,
+    "resolveJsonModule": true
+  },
+  "include": [
+    "**/*.ts"
+  ],
+  "exclude": [
+    "node_modules"
+  ]
+}

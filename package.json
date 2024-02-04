@@ -1,0 +1,30 @@
+{
+  "name": "pulsate",
+  "version": "0.0.1",
+  "description": "",
+  "type": "module",
+  "main": "main.ts",
+  "scripts": {
+    "build": "tsc -p .",
+    "start": "node ./build/main.js",
+    "test": "vitest run"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "Apache-2.0",
+  "dependencies": {
+    "@hono/node-server": "^1.7.0",
+    "@hono/swagger-ui": "^0.2.1",
+    "@hono/zod-openapi": "^0.9.6",
+    "@mikuroxina/mini-fn": "^5.5.1",
+    "@scalar/hono-api-reference": "^0.3.39",
+    "argon2": "^0.31.2",
+    "hono": "^3.12.10",
+    "jose": "^5.2.1",
+    "typescript": "^5.3.3"
+  },
+  "devDependencies": {
+    "@types/node": "^20.11.16",
+    "vitest": "^1.2.2"
+  }
+}

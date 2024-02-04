@@ -1,28 +1,26 @@
-import { EtagVerifyService } from './etagGenerateVerify.ts';
-import { assertEquals } from 'std/assert';
-import {
-  InMemoryAccountRepository,
-  InMemoryAccountVerifyTokenRepository,
-} from '../adaptor/repository/dummy.ts';
-import { Result } from 'mini-fn';
-import { RegisterAccountService } from './register.ts';
-import { Clock, SnowflakeIDGenerator } from '../../id/mod.ts';
-import { ScryptPasswordEncoder } from '../../password/mod.ts';
-import { DummySendNotificationService } from './sendNotification.ts';
-import { TokenVerifyService } from './tokenVerify.ts';
-import { AccountName, AccountRole } from '../model/account.ts';
+import {afterEach, describe, expect, it} from "vitest";
+import {EtagVerifyService} from './etagGenerateVerify.js';
+import {InMemoryAccountRepository, InMemoryAccountVerifyTokenRepository,} from '../adaptor/repository/dummy.js';
+import {Result} from '@mikuroxina/mini-fn';
+import {RegisterAccountService} from './register.js';
+import {type Clock, SnowflakeIDGenerator} from '../../id/mod.js';
+import {Argon2idPasswordEncoder} from '../../password/mod.js';
+import {DummySendNotificationService} from './sendNotification.js';
+import {TokenVerifyService} from './tokenVerify.js';
+import {type AccountName, type AccountRole} from '../model/account.js';
 
 class DummyClock implements Clock {
   Now(): bigint {
     return BigInt(new Date('2023/9/10 00:00:00 UTC').getTime());
   }
 }
+
 const repository = new InMemoryAccountRepository();
 const verifyRepository = new InMemoryAccountVerifyTokenRepository();
 const registerService = new RegisterAccountService({
   repository: repository,
   idGenerator: new SnowflakeIDGenerator(1, new DummyClock()),
-  passwordEncoder: new ScryptPasswordEncoder(),
+  passwordEncoder: new Argon2idPasswordEncoder(),
   sendNotification: new DummySendNotificationService(),
   verifyTokenService: new TokenVerifyService(verifyRepository),
 });
@@ -37,52 +35,54 @@ const exampleInput = {
   role: 'normal' as AccountRole,
 };
 
-Deno.test('success to verify etag', async () => {
-  const res = await registerService.handle(
-    exampleInput.name,
-    exampleInput.mail,
-    exampleInput.nickname,
-    exampleInput.passphrase,
-    exampleInput.bio,
-    exampleInput.role,
-  );
-  const account = Result.unwrap(res);
+describe("EtagVerifyService", () => {
+  afterEach(() => repository.reset())
 
-  const etag = await etagVerifyService.generate(account);
-  const result = await etagVerifyService.verify(account, etag);
-  assertEquals(result, true);
-  repository.reset();
-});
+  it('success to verify etag', async () => {
+    const res = await registerService.handle(
+      exampleInput.name,
+      exampleInput.mail,
+      exampleInput.nickname,
+      exampleInput.passphrase,
+      exampleInput.bio,
+      exampleInput.role,
+    );
+    const account = Result.unwrap(res);
 
-Deno.test('failed to verify etag', async () => {
-  const res = await registerService.handle(
-    exampleInput.name,
-    exampleInput.mail,
-    exampleInput.nickname,
-    exampleInput.passphrase,
-    exampleInput.bio,
-    exampleInput.role,
-  );
-  const account = Result.unwrap(res);
+    const etag = await etagVerifyService.generate(account);
+    const result = await etagVerifyService.verify(account, etag);
+    expect(result).toBe(true);
+  });
 
-  const etag = (await etagVerifyService.generate(account)) + '_invalid';
-  const result = await etagVerifyService.verify(account, etag);
-  assertEquals(result, false);
-  repository.reset();
-});
+  it('failed to verify etag', async () => {
+    const res = await registerService.handle(
+      exampleInput.name,
+      exampleInput.mail,
+      exampleInput.nickname,
+      exampleInput.passphrase,
+      exampleInput.bio,
+      exampleInput.role,
+    );
+    const account = Result.unwrap(res);
 
-Deno.test('should return string which is 64 characters long', async () => {
-  const res = await registerService.handle(
-    exampleInput.name,
-    exampleInput.mail,
-    exampleInput.nickname,
-    exampleInput.passphrase,
-    exampleInput.bio,
-    exampleInput.role,
-  );
-  const account = Result.unwrap(res);
+    const etag = (await etagVerifyService.generate(account)) + '_invalid';
+    const result = await etagVerifyService.verify(account, etag);
+    expect(result).toBe(false);
+  });
 
-  const etag = await etagVerifyService.generate(account);
-  assertEquals(etag.length, 64);
-  repository.reset();
-});
+  it('should return string which is 64 characters long', async () => {
+    const res = await registerService.handle(
+      exampleInput.name,
+      exampleInput.mail,
+      exampleInput.nickname,
+      exampleInput.passphrase,
+      exampleInput.bio,
+      exampleInput.role,
+    );
+    const account = Result.unwrap(res);
+
+    const etag = await etagVerifyService.generate(account);
+    expect(etag.length).toBe(64);
+  });
+})
+

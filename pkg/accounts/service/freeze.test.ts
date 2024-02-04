@@ -1,16 +1,16 @@
-import { Result } from 'mini-fn';
-import { Clock, SnowflakeIDGenerator } from '../../id/mod.ts';
-import { ScryptPasswordEncoder } from '../../password/mod.ts';
-import { DummySendNotificationService } from './sendNotification.ts';
+import {describe, it, expect} from "vitest";
+import { Result } from '@mikuroxina/mini-fn';
+import {type Clock, SnowflakeIDGenerator } from '../../id/mod.js';
+import { Argon2idPasswordEncoder } from '../../password/mod.js';
+import { DummySendNotificationService } from './sendNotification.js';
 import {
   InMemoryAccountRepository,
   InMemoryAccountVerifyTokenRepository,
-} from '../adaptor/repository/dummy.ts';
-import { RegisterAccountService } from './register.ts';
-import { TokenVerifyService } from './tokenVerify.ts';
-import { AccountName, AccountRole } from '../model/account.ts';
-import { assertEquals, assertNotEquals } from 'std/assert';
-import { FreezeService } from './freeze.ts';
+} from '../adaptor/repository/dummy.js';
+import { RegisterAccountService } from './register.js';
+import { TokenVerifyService } from './tokenVerify.js';
+import { type AccountName,type AccountRole } from '../model/account.js';
+import { FreezeService } from './freeze.js';
 
 const repository = new InMemoryAccountRepository();
 const verifyRepository = new InMemoryAccountVerifyTokenRepository();
@@ -22,7 +22,7 @@ class DummyClock implements Clock {
 const registerService: RegisterAccountService = new RegisterAccountService({
   repository,
   idGenerator: new SnowflakeIDGenerator(1, new DummyClock()),
-  passwordEncoder: new ScryptPasswordEncoder(),
+  passwordEncoder: new Argon2idPasswordEncoder(),
   sendNotification: new DummySendNotificationService(),
   verifyTokenService: new TokenVerifyService(verifyRepository),
 });
@@ -37,38 +37,41 @@ const exampleInput = {
   role: 'normal' as AccountRole,
 };
 
-Deno.test('set account freeze', async () => {
-  const res = await registerService.handle(
-    exampleInput.name,
-    exampleInput.mail,
-    exampleInput.nickname,
-    exampleInput.passphrase,
-    exampleInput.bio,
-    exampleInput.role,
-  );
-  if (Result.isErr(res)) return;
+describe("FreezeService", () => {
+  it('set account freeze', async () => {
+    const res = await registerService.handle(
+      exampleInput.name,
+      exampleInput.mail,
+      exampleInput.nickname,
+      exampleInput.passphrase,
+      exampleInput.bio,
+      exampleInput.role,
+    );
+    if (Result.isErr(res)) return;
 
-  await freezeService.setFreeze(exampleInput.name);
+    await freezeService.setFreeze(exampleInput.name);
 
-  assertEquals(res[1].getFrozen, 'frozen');
-  assertNotEquals(res[1].getFrozen, 'normal');
-  repository.reset();
-});
+    expect(res[1].getFrozen).toBe('frozen');
+    expect(res[1].getFrozen).not.toBe('normal');
+    repository.reset();
+  });
 
-Deno.test('unset account freeze', async () => {
-  const res = await registerService.handle(
-    exampleInput.name,
-    exampleInput.mail,
-    exampleInput.nickname,
-    exampleInput.passphrase,
-    exampleInput.bio,
-    exampleInput.role,
-  );
-  if (Result.isErr(res)) return;
+  it('unset account freeze', async () => {
+    const res = await registerService.handle(
+      exampleInput.name,
+      exampleInput.mail,
+      exampleInput.nickname,
+      exampleInput.passphrase,
+      exampleInput.bio,
+      exampleInput.role,
+    );
+    if (Result.isErr(res)) return;
 
-  await freezeService.undoFreeze(exampleInput.name);
+    await freezeService.undoFreeze(exampleInput.name);
 
-  assertEquals(res[1].getFrozen, 'normal');
-  assertNotEquals(res[1].getFrozen, 'frozen');
-  repository.reset();
-});
+    expect(res[1].getFrozen).toBe('normal');
+    expect(res[1].getFrozen).not.toBe('frozen');
+    repository.reset();
+  });
+
+})

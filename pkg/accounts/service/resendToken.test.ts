@@ -1,14 +1,14 @@
-import { Option } from 'mini-fn';
+import {describe, it, expect} from "vitest";
+import { Option } from '@mikuroxina/mini-fn';
 import {
   InMemoryAccountRepository,
   InMemoryAccountVerifyTokenRepository,
-} from '../adaptor/repository/dummy.ts';
-import { ResendVerifyTokenService } from './resendToken.ts';
-import { assertEquals } from 'std/assert';
-import { TokenVerifyService } from './tokenVerify.ts';
-import { DummySendNotificationService } from './sendNotification.ts';
-import { Account, AccountID } from '../model/account.ts';
-import { ID } from '../../id/type.ts';
+} from '../adaptor/repository/dummy.js';
+import { ResendVerifyTokenService } from './resendToken.js';
+import { TokenVerifyService } from './tokenVerify.js';
+import { DummySendNotificationService } from './sendNotification.js';
+import { Account, type AccountID } from '../model/account.js';
+import { type ID } from '../../id/type.js';
 
 const repository = new InMemoryAccountRepository();
 repository.create(
@@ -30,25 +30,27 @@ const verifyRepository = new InMemoryAccountVerifyTokenRepository();
 const tokenVerifyService = new TokenVerifyService(verifyRepository);
 const sendNotificationService = new DummySendNotificationService();
 
-Deno.test('resend verify token', async () => {
-  const service = new ResendVerifyTokenService(
-    repository,
-    tokenVerifyService,
-    sendNotificationService,
-  );
-  const actual = await service.handle('@john@example.com');
-  assertEquals(Option.isNone(actual), true);
-});
+describe('ResendVerifyTokenService', () => {
+  it('resend verify token', async () => {
+    const service = new ResendVerifyTokenService(
+      repository,
+      tokenVerifyService,
+      sendNotificationService,
+    );
+    const actual = await service.handle('@john@example.com');
+    expect(Option.isNone(actual)).toBe(true);
+  });
 
-Deno.test('when account not found', async () => {
-  const service = new ResendVerifyTokenService(
-    repository,
-    tokenVerifyService,
-    sendNotificationService,
-  );
-  const actual = await service.handle('@a@example.com');
+  it('when account not found', async () => {
+    const service = new ResendVerifyTokenService(
+      repository,
+      tokenVerifyService,
+      sendNotificationService,
+    );
+    const actual = await service.handle('@a@example.com');
 
-  assertEquals(Option.isSome(actual), true);
-  if (Option.isNone(actual)) return;
-  assertEquals(actual[1], new Error('AccountNotFoundError'));
+    expect(Option.isSome(actual)).toBe(true);
+    if (Option.isNone(actual)) return;
+    expect(actual[1]).toStrictEqual(new Error('AccountNotFoundError'));
+  });
 });

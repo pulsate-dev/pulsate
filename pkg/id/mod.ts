@@ -1,4 +1,4 @@
-import { Result } from 'mini-fn';
+import { Result } from '@mikuroxina/mini-fn';
 import type { ID } from './type.ts';
 
 export interface Clock {

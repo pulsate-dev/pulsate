@@ -1,11 +1,11 @@
-import { ID } from '../../id/type.ts';
+import type { ID } from '../../id/type.ts';
 import {
   AccountAlreadyDeletedError,
   AccountAlreadyFrozenError,
   AccountBioLengthError,
   AccountDateInvalidError,
   AccountNickNameLengthError,
-} from './account.errors.ts';
+} from './account.errors.js';
 
 export type AccountID = string;
 export type AccountName = `@${string}@${string}`;
