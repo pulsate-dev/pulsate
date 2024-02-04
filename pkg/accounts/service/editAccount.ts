@@ -53,7 +53,7 @@ export class EditAccountService {
       account.setNickName(nickname);
       return Result.ok(true);
     } catch (e) {
-      return Result.err(e as unknown as Error);;
+      return Result.err(e as unknown as Error);
     }
   }
 
@@ -82,7 +82,7 @@ export class EditAccountService {
 
     try {
       account.setPassphraseHash(
-        this.passwordEncoder.EncodePasword(newPassphrase),
+        await this.passwordEncoder.EncodePassword(newPassphrase),
       );
       return Result.ok(true);
     } catch (e) {

@@ -1,17 +1,18 @@
-import { type PasswordEncoder, ScryptPasswordEncoder } from './mod.js';
-import { assertEquals } from 'std/assert';
+import {Argon2idPasswordEncoder, type PasswordEncoder} from './mod.js';
+import {describe, expect, it} from "vitest";
 
-const encoder: PasswordEncoder = new ScryptPasswordEncoder();
+const encoder: PasswordEncoder = new Argon2idPasswordEncoder();
 const raw = 'じゃすた・いぐざんぽぅ';
 
-Deno.test('verify password with bcrypt', async () => {
-  const encoded = await encoder.EncodePasword(raw);
-  console.log(encoded);
-  const actual = await encoder.IsMatchPassword(raw, encoded);
-  assertEquals(actual, true);
-});
+describe('ScryptPasswordEncoder', () => {
+  it('verify password with bcrypt', async () => {
+    const encoded = await encoder.EncodePassword(raw);
+    const actual = await encoder.IsMatchPassword(raw, encoded);
+    expect(actual).toBe(true);
+  });
 
-Deno.test('when verify failed, it returns false', () => {
-  const res = encoder.IsMatchPassword(raw, '');
-  assertEquals(res, false);
+  it('when verify failed, it returns false', async () => {
+    const res = await encoder.IsMatchPassword(raw, '');
+    expect(res).toBe(false);
+  });
 });

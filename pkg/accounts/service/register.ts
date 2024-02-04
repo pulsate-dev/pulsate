@@ -55,7 +55,7 @@ export class RegisterAccountService {
       );
     }
 
-    const passphraseHash = this.passwordEncoder.EncodePasword(passphrase);
+    const passphraseHash = await this.passwordEncoder.EncodePassword(passphrase);
 
     const generatedID = this.snowflakeIDGenerator.generate<AccountID>();
     if (Result.isErr(generatedID)) {
