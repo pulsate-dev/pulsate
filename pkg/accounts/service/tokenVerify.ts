@@ -1,9 +1,9 @@
-import { Option, Result } from 'mini-fn';
+import { Option, Result } from '@mikuroxina/mini-fn';
 import { encodeBase64 } from 'std/encoding/base64';
-import { AccountVerifyTokenRepository } from '../model/repository.ts';
-import { ID } from '../../id/type.ts';
-import { AccountID } from '../model/account.ts';
-import { Clock } from '../../id/mod.ts';
+import { type AccountVerifyTokenRepository } from '../model/repository.js';
+import { type ID } from '../../id/type.js';
+import { type AccountID } from '../model/account.js';
+import { type Clock } from '../../id/mod.js';
 
 class DateClock implements Clock {
   Now(): bigint {

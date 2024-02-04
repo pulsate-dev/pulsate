@@ -1,5 +1,5 @@
-import { Option } from 'mini-fn';
-import { TokenGenerator } from './tokenGenerator.ts';
+import { Option } from '@mikuroxina/mini-fn';
+import { TokenGenerator } from './tokenGenerator.js';
 import { assertEquals, assertFalse } from 'std/assert';
 
 const generator = await TokenGenerator.new();

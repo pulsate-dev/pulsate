@@ -1,16 +1,16 @@
-import { EtagVerifyService } from './etagGenerateVerify.ts';
+import { EtagVerifyService } from './etagGenerateVerify.js';
 import { assertEquals } from 'std/assert';
 import {
   InMemoryAccountRepository,
   InMemoryAccountVerifyTokenRepository,
-} from '../adaptor/repository/dummy.ts';
-import { Result } from 'mini-fn';
-import { RegisterAccountService } from './register.ts';
-import { Clock, SnowflakeIDGenerator } from '../../id/mod.ts';
-import { ScryptPasswordEncoder } from '../../password/mod.ts';
-import { DummySendNotificationService } from './sendNotification.ts';
-import { TokenVerifyService } from './tokenVerify.ts';
-import { AccountName, AccountRole } from '../model/account.ts';
+} from '../adaptor/repository/dummy.js';
+import { Result } from '@mikuroxina/mini-fn';
+import { RegisterAccountService } from './register.js';
+import { type Clock, SnowflakeIDGenerator } from '../../id/mod.js';
+import { ScryptPasswordEncoder } from '../../password/mod.js';
+import { DummySendNotificationService } from './sendNotification.js';
+import { TokenVerifyService } from './tokenVerify.js';
+import { type AccountName,type AccountRole } from '../model/account.js';
 
 class DummyClock implements Clock {
   Now(): bigint {

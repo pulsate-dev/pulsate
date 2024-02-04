@@ -1,6 +1,6 @@
 import { Hono } from 'hono';
-import { accounts } from './pkg/accounts/mod.ts';
-import { apiReference } from 'scalar/hono-api-reference';
+import { accounts } from './pkg/accounts/mod.js';
+import { apiReference } from '@scalar/hono-api-reference';
 
 const app = new Hono();
 

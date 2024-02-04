@@ -1,14 +1,14 @@
-import { Option } from 'mini-fn';
+import { Option } from '@mikuroxina/mini-fn';
 import {
   InMemoryAccountRepository,
   InMemoryAccountVerifyTokenRepository,
-} from '../adaptor/repository/dummy.ts';
-import { ResendVerifyTokenService } from './resendToken.ts';
+} from '../adaptor/repository/dummy.js';
+import { ResendVerifyTokenService } from './resendToken.js';
 import { assertEquals } from 'std/assert';
-import { TokenVerifyService } from './tokenVerify.ts';
-import { DummySendNotificationService } from './sendNotification.ts';
-import { Account, AccountID } from '../model/account.ts';
-import { ID } from '../../id/type.ts';
+import { TokenVerifyService } from './tokenVerify.js';
+import { DummySendNotificationService } from './sendNotification.js';
+import { Account, type AccountID } from '../model/account.js';
+import { type ID } from '../../id/type.js';
 
 const repository = new InMemoryAccountRepository();
 repository.create(

@@ -1,6 +1,6 @@
 import { assertEquals, assertFalse, assertNotEquals } from 'std/assert';
-import { Clock, SnowflakeIDGenerator } from './mod.ts';
-import { Result } from 'mini-fn';
+import { type Clock, SnowflakeIDGenerator } from './mod.js';
+import { Result } from '@mikuroxina/mini-fn';
 
 class DummyClock implements Clock {
   Now(): bigint {

@@ -2,6 +2,7 @@
   "name": "pulsate",
   "version": "0.0.1",
   "description": "",
+  "type": "module",
   "main": "main.ts",
   "scripts": {
     "build": "tsc -p .",
@@ -11,6 +12,12 @@
   "author": "",
   "license": "Apache-2.0",
   "dependencies": {
+    "@hono/swagger-ui": "^0.2.1",
+    "@hono/zod-openapi": "^0.9.6",
+    "@mikuroxina/mini-fn": "^5.5.1",
+    "@scalar/hono-api-reference": "^0.3.39",
+    "hono": "^3.12.10",
+    "jose": "^5.2.1",
     "typescript": "^5.3.3"
   }
 }

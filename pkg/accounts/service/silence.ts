@@ -1,5 +1,5 @@
-import { Option, Result } from 'mini-fn';
-import { AccountRepository } from '../model/repository.ts';
+import { Option, Result } from '@mikuroxina/mini-fn';
+import { type AccountRepository } from '../model/repository.js';
 
 export class SilenceService {
   private readonly accountRepository: AccountRepository;
@@ -20,7 +20,7 @@ export class SilenceService {
       account[1].setSilence();
       return Result.ok(true);
     } catch (e) {
-      return Result.err(e);
+      return Result.err(e as unknown as Error);
     }
   }
 
@@ -36,7 +36,7 @@ export class SilenceService {
       account[1].undoSilence();
       return Result.ok(true);
     } catch (e) {
-      return Result.err(e);
+      return Result.err(e as unknown as Error);
     }
   }
 }

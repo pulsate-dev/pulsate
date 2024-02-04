@@ -1,17 +1,17 @@
 import {
   InMemoryAccountRepository,
   InMemoryAccountVerifyTokenRepository,
-} from '../adaptor/repository/dummy.ts';
-import { Clock, SnowflakeIDGenerator } from '../../id/mod.ts';
-import { ScryptPasswordEncoder } from '../../password/mod.ts';
-import { RegisterAccountService } from './register.ts';
-import { DummySendNotificationService } from './sendNotification.ts';
-import { TokenVerifyService } from './tokenVerify.ts';
-import { EtagVerifyService } from './etagGenerateVerify.ts';
-import { EditAccountService } from './editAccount.ts';
+} from '../adaptor/repository/dummy.js';
+import { type Clock, SnowflakeIDGenerator } from '../../id/mod.js';
+import { ScryptPasswordEncoder } from '../../password/mod.js';
+import { RegisterAccountService } from './register.js';
+import { DummySendNotificationService } from './sendNotification.js';
+import { TokenVerifyService } from './tokenVerify.js';
+import { EtagVerifyService } from './etagGenerateVerify.js';
+import { EditAccountService } from './editAccount.js';
 
-import { AccountName, AccountRole } from '../model/account.ts';
-import { Result } from 'mini-fn';
+import { type AccountName, type AccountRole } from '../model/account.js';
+import { Result } from '@mikuroxina/mini-fn';
 import { assertEquals } from 'std/assert';
 
 const repository = new InMemoryAccountRepository();

@@ -1,7 +1,7 @@
-import { Option, Result } from 'mini-fn';
-import { EtagVerifyService } from './etagGenerateVerify.ts';
-import { AccountRepository } from '../model/repository.ts';
-import { PasswordEncoder } from '../../password/mod.ts';
+import { Option, Result } from '@mikuroxina/mini-fn';
+import { EtagVerifyService } from './etagGenerateVerify.js';
+import { type AccountRepository } from '../model/repository.js';
+import { type PasswordEncoder } from '../../password/mod.js';
 
 export class EditAccountService {
   private readonly nicknameShortest = 1;
@@ -53,7 +53,7 @@ export class EditAccountService {
       account.setNickName(nickname);
       return Result.ok(true);
     } catch (e) {
-      return Result.err(e);
+      return Result.err(e as unknown as Error);;
     }
   }
 
@@ -86,7 +86,7 @@ export class EditAccountService {
       );
       return Result.ok(true);
     } catch (e) {
-      return Result.err(e);
+      return Result.err(e as unknown as Error);
     }
   }
 
@@ -119,7 +119,7 @@ export class EditAccountService {
       account.setMail(newEmail);
       return Result.ok(true);
     } catch (e) {
-      return Result.err(e);
+      return Result.err(e as unknown as Error);
     }
   }
 }

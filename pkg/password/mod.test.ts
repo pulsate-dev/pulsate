@@ -1,4 +1,4 @@
-import { PasswordEncoder, ScryptPasswordEncoder } from './mod.ts';
+import { type PasswordEncoder, ScryptPasswordEncoder } from './mod.js';
 import { assertEquals } from 'std/assert';
 
 const encoder: PasswordEncoder = new ScryptPasswordEncoder();

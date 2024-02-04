@@ -1,4 +1,4 @@
-import { z } from 'hono/zod-openapi';
+import { z } from '@hono/zod-openapi';
 
 export const CommonErrorResponseSchema = z.object({
   // ToDo: define error code list (oneOf)

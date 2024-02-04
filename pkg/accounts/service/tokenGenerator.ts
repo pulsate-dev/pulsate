@@ -1,4 +1,4 @@
-import { Option } from 'mini-fn';
+import { Option } from '@mikuroxina/mini-fn';
 import * as jose from 'jose';
 
 export class TokenGenerator {

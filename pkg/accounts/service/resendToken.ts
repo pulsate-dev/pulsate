@@ -1,7 +1,7 @@
-import { Option, Result } from 'mini-fn';
-import { AccountRepository } from '../model/repository.ts';
-import { SendNotificationService } from './sendNotification.ts';
-import { TokenVerifyService } from './tokenVerify.ts';
+import { Option, Result } from '@mikuroxina/mini-fn';
+import { type AccountRepository } from '../model/repository.js';
+import { type SendNotificationService } from './sendNotification.js';
+import { TokenVerifyService } from './tokenVerify.js';
 
 export class ResendVerifyTokenService {
   private readonly accountRepository: AccountRepository;

@@ -1,4 +1,4 @@
-import { OpenAPIHono } from 'hono/zod-openapi';
+import { OpenAPIHono } from '@hono/zod-openapi';
 import {
   CreateAccountRoute,
   FollowAccountRoute,
@@ -13,7 +13,7 @@ import {
   UnSilenceAccountRoute,
   UpdateAccountRoute,
   VerifyEmailRoute,
-} from './router.ts';
+} from './router.js';
 
 export const accounts = new OpenAPIHono();
 

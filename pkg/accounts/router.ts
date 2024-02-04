@@ -1,4 +1,4 @@
-import { createRoute, z } from 'hono/zod-openapi';
+import { createRoute, z } from '@hono/zod-openapi';
 import {
   CommonErrorResponseSchema,
   CreateAccountRequestSchema,
@@ -11,7 +11,7 @@ import {
   UpdateAccountRequestSchema,
   UpdateAccountResponseSchema,
   VerifyEmailRequestSchema,
-} from './adaptor/validator/schema.ts';
+} from './adaptor/validator/schema.js';
 
 export const CreateAccountRoute = createRoute({
   method: 'post',

@@ -1,6 +1,6 @@
 import { assertEquals, assertThrows } from 'std/assert';
-import { Account, AccountID, CreateAccountArgs } from './account.ts';
-import { ID } from '../../id/type.ts';
+import { Account, type AccountID,type CreateAccountArgs } from './account.js';
+import { type ID } from '../../id/type.js';
 
 const exampleInput: CreateAccountArgs = {
   id: '1' as ID<AccountID>,

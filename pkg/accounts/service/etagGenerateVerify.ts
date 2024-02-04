@@ -1,5 +1,5 @@
 import { encodeHex } from 'std/encoding/hex';
-import { Account } from '../model/account.ts';
+import { Account } from '../model/account.js';
 
 export class EtagVerifyService {
   /**

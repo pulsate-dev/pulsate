@@ -1,10 +1,10 @@
-import { Result } from 'mini-fn';
-import { ID } from '../../id/type.ts';
-import { InMemoryAccountVerifyTokenRepository } from '../adaptor/repository/dummy.ts';
-import { AccountID } from '../model/account.ts';
-import { TokenVerifyService } from './tokenVerify.ts';
+import { Result } from '@mikuroxina/mini-fn';
+import { type ID } from '../../id/type.js';
+import { InMemoryAccountVerifyTokenRepository } from '../adaptor/repository/dummy.js';
+import { type AccountID } from '../model/account.js';
+import { TokenVerifyService } from './tokenVerify.js';
 import { assertEquals } from 'std/assert';
-import { Clock } from '../../id/mod.ts';
+import { type Clock } from '../../id/mod.js';
 
 const repository = new InMemoryAccountVerifyTokenRepository();
 const service = new TokenVerifyService(repository);
