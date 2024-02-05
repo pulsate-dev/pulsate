@@ -83,8 +83,8 @@ Pulsateコミットメッセージは[Conventional commit](https://www.conventio
 ```
 
 - `type` は変更に対応する正しい `type` でなければなりません.
-  - 例えば, **新しい新機能の追加** は `feat`, ***バグの修正** は `fix` です.
-- 後方互換性を破壊するような変更を行う場合は,  `scope` を `!` に設定し,  `body` に破壊的な変更についての説明を追加しなければなりません.
+  - 例えば, **新しい新機能の追加** は `feat`, **\*バグの修正** は `fix` です.
+- 後方互換性を破壊するような変更を行う場合は, `scope` を `!` に設定し, `body` に破壊的な変更についての説明を追加しなければなりません.
   - 破壊的変更が必要な場合はまず Issue または Discussion でメンテナに連絡してください. **ほとんどの場合, そのような変更は望まれていません**.
 
 ## Deno
@@ -107,6 +107,7 @@ import_maps は `deno.jsonc` の `imports` に直接 URL を挿入すること�
 
 ```ts
 import { Hono } from 'hono';
+
 import { accounts } from './pkg/accounts/mod.ts';
 
 const app = new Hono();
@@ -124,7 +125,7 @@ Pulsate開発のためのスタイルガイド.
   - エディタやIDEによっては, 特別なプラグインをインストールする必要があります.
   - 詳細は[こちら](https://editorconfig.org/#download)をクリックしてください.
 
-----
+---
 
 - すべてのファイルは, 行末のスペースを削除しなければなりません.
   - Markdownの場合, 改行も意味するので削除する必要はありません.

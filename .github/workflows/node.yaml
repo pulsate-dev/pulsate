@@ -1,4 +1,4 @@
-name: Deno CI
+name: node CI
 
 on:
   push:
@@ -14,18 +14,25 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - uses: denoland/setup-deno@v1
+      - uses: actions/setup-node@v4
         with:
-          deno-version: "1.37.2"
+          node-version: "20.x"
+      - uses: pnpm/action-setup@v2
+        with:
+          version: "8"
+
+      - name: Run install
+        run: |
+          pnpm i --frozen-lockfile
 
       - name: Run fmt
         run: |
-          deno task fmt:check
+          pnpm format
 
       - name: Run lint
         run: |
-          deno task lint
+          pnpm lint
 
       - name: Run test
         run: |
-          deno task test
+          pnpm test
