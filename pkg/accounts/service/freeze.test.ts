@@ -1,16 +1,17 @@
-import {describe, it, expect} from "vitest";
 import { Result } from '@mikuroxina/mini-fn';
-import {type Clock, SnowflakeIDGenerator } from '../../id/mod.js';
+import { describe, it, expect } from 'vitest';
+
+import { type Clock, SnowflakeIDGenerator } from '../../id/mod.js';
 import { Argon2idPasswordEncoder } from '../../password/mod.js';
-import { DummySendNotificationService } from './sendNotification.js';
 import {
   InMemoryAccountRepository,
-  InMemoryAccountVerifyTokenRepository,
+  InMemoryAccountVerifyTokenRepository
 } from '../adaptor/repository/dummy.js';
-import { RegisterAccountService } from './register.js';
-import { TokenVerifyService } from './tokenVerify.js';
-import { type AccountName,type AccountRole } from '../model/account.js';
+import { type AccountName, type AccountRole } from '../model/account.js';
 import { FreezeService } from './freeze.js';
+import { RegisterAccountService } from './register.js';
+import { DummySendNotificationService } from './sendNotification.js';
+import { TokenVerifyService } from './tokenVerify.js';
 
 const repository = new InMemoryAccountRepository();
 const verifyRepository = new InMemoryAccountVerifyTokenRepository();
@@ -24,7 +25,7 @@ const registerService: RegisterAccountService = new RegisterAccountService({
   idGenerator: new SnowflakeIDGenerator(1, new DummyClock()),
   passwordEncoder: new Argon2idPasswordEncoder(),
   sendNotification: new DummySendNotificationService(),
-  verifyTokenService: new TokenVerifyService(verifyRepository),
+  verifyTokenService: new TokenVerifyService(verifyRepository)
 });
 const freezeService = new FreezeService(repository);
 
@@ -34,10 +35,10 @@ const exampleInput = {
   nickname: 'John Doe',
   passphrase: 'password',
   bio: 'Hello, World!',
-  role: 'normal' as AccountRole,
+  role: 'normal' as AccountRole
 };
 
-describe("FreezeService", () => {
+describe('FreezeService', () => {
   it('set account freeze', async () => {
     const res = await registerService.handle(
       exampleInput.name,
@@ -45,7 +46,7 @@ describe("FreezeService", () => {
       exampleInput.nickname,
       exampleInput.passphrase,
       exampleInput.bio,
-      exampleInput.role,
+      exampleInput.role
     );
     if (Result.isErr(res)) return;
 
@@ -63,7 +64,7 @@ describe("FreezeService", () => {
       exampleInput.nickname,
       exampleInput.passphrase,
       exampleInput.bio,
-      exampleInput.role,
+      exampleInput.role
     );
     if (Result.isErr(res)) return;
 
@@ -73,5 +74,4 @@ describe("FreezeService", () => {
     expect(res[1].getFrozen).not.toBe('frozen');
     repository.reset();
   });
-
-})
+});

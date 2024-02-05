@@ -1,4 +1,5 @@
 import { OpenAPIHono } from '@hono/zod-openapi';
+
 import {
   CreateAccountRoute,
   FollowAccountRoute,
@@ -12,7 +13,7 @@ import {
   UnFreezeAccountRoute,
   UnSilenceAccountRoute,
   UpdateAccountRoute,
-  VerifyEmailRoute,
+  VerifyEmailRoute
 } from './router.js';
 
 export const accounts = new OpenAPIHono();
@@ -21,8 +22,8 @@ accounts.doc('/accounts/doc.json', {
   openapi: '3.0.0',
   info: {
     title: 'Accounts API',
-    version: '0.1.0',
-  },
+    version: '0.1.0'
+  }
 });
 
 accounts.openapi(CreateAccountRoute, (c) => {
@@ -31,7 +32,7 @@ accounts.openapi(CreateAccountRoute, (c) => {
   return c.json({
     id: '103848392',
     name: name,
-    email: email,
+    email: email
   });
 });
 
@@ -61,7 +62,7 @@ accounts.openapi(GetAccountRoute, (c) => {
     header: 'https://example.com/images/header.png',
     followed_count: 200,
     following_count: 10,
-    note_count: 20000,
+    note_count: 20000
   });
 });
 

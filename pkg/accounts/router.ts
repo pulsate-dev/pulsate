@@ -1,4 +1,5 @@
 import { createRoute, z } from '@hono/zod-openapi';
+
 import {
   CommonErrorResponseSchema,
   CreateAccountRequestSchema,
@@ -10,7 +11,7 @@ import {
   ResendVerificationEmailRequestSchema,
   UpdateAccountRequestSchema,
   UpdateAccountResponseSchema,
-  VerifyEmailRequestSchema,
+  VerifyEmailRequestSchema
 } from './adaptor/validator/schema.js';
 
 export const CreateAccountRoute = createRoute({
@@ -21,37 +22,37 @@ export const CreateAccountRoute = createRoute({
     body: {
       content: {
         'application/json': {
-          schema: CreateAccountRequestSchema,
-        },
-      },
-    },
+          schema: CreateAccountRequestSchema
+        }
+      }
+    }
   },
   responses: {
     200: {
       description: 'OK',
       content: {
         'application/json': {
-          schema: CreateAccountResponseSchema,
-        },
-      },
+          schema: CreateAccountResponseSchema
+        }
+      }
     },
     400: {
       description: 'Bad Request',
       content: {
         'application/json': {
-          schema: CommonErrorResponseSchema,
-        },
-      },
+          schema: CommonErrorResponseSchema
+        }
+      }
     },
     409: {
       description: 'Conflict',
       content: {
         'application/json': {
-          schema: CommonErrorResponseSchema,
-        },
-      },
-    },
-  },
+          schema: CommonErrorResponseSchema
+        }
+      }
+    }
+  }
 });
 
 export const UpdateAccountRoute = createRoute({
@@ -64,59 +65,59 @@ export const UpdateAccountRoute = createRoute({
       name: z.string().min(3).max(64).openapi({
         example: 'example_man',
         description:
-          'Characters must be [A-Za-z0-9-\.] The first and last characters must be [A-Za-z0-9-\.]',
-      }),
+          'Characters must be [A-Za-z0-9-.] The first and last characters must be [A-Za-z0-9-.]'
+      })
     }),
     body: {
       content: {
         'application/json': {
-          schema: UpdateAccountRequestSchema,
-        },
-      },
-    },
+          schema: UpdateAccountRequestSchema
+        }
+      }
+    }
   },
   responses: {
     200: {
       description: 'OK',
       content: {
         'application/json': {
-          schema: UpdateAccountResponseSchema,
-        },
-      },
+          schema: UpdateAccountResponseSchema
+        }
+      }
     },
     202: {
       description: 'When email updated',
       content: {
         'application/json': {
-          schema: UpdateAccountResponseSchema,
-        },
-      },
+          schema: UpdateAccountResponseSchema
+        }
+      }
     },
     400: {
       description: 'Bad Request',
       content: {
         'application/json': {
-          schema: CommonErrorResponseSchema,
-        },
-      },
+          schema: CommonErrorResponseSchema
+        }
+      }
     },
     404: {
       description: 'Not Found',
       content: {
         'application/json': {
-          schema: CommonErrorResponseSchema,
-        },
-      },
+          schema: CommonErrorResponseSchema
+        }
+      }
     },
     412: {
       description: 'Precondition Failed',
       content: {
         'application/json': {
-          schema: CommonErrorResponseSchema,
-        },
-      },
-    },
-  },
+          schema: CommonErrorResponseSchema
+        }
+      }
+    }
+  }
 });
 
 export const FreezeAccountRoute = createRoute({
@@ -128,39 +129,39 @@ export const FreezeAccountRoute = createRoute({
       name: z.string().min(3).max(64).openapi({
         example: 'example_man',
         description:
-          'Characters must be [A-Za-z0-9-\.] The first and last characters must be [A-Za-z0-9-\.]',
-      }),
-    }),
+          'Characters must be [A-Za-z0-9-.] The first and last characters must be [A-Za-z0-9-.]'
+      })
+    })
   },
   responses: {
     204: {
-      description: 'No Content',
+      description: 'No Content'
     },
     400: {
       description: 'Bad Request',
       content: {
         'application/json': {
-          schema: CommonErrorResponseSchema,
-        },
-      },
+          schema: CommonErrorResponseSchema
+        }
+      }
     },
     403: {
       description: 'Forbidden',
       content: {
         'application/json': {
-          schema: CommonErrorResponseSchema,
-        },
-      },
+          schema: CommonErrorResponseSchema
+        }
+      }
     },
     404: {
       description: 'Not Found',
       content: {
         'application/json': {
-          schema: CommonErrorResponseSchema,
-        },
-      },
-    },
-  },
+          schema: CommonErrorResponseSchema
+        }
+      }
+    }
+  }
 });
 
 export const UnFreezeAccountRoute = createRoute({
@@ -172,39 +173,39 @@ export const UnFreezeAccountRoute = createRoute({
       name: z.string().min(3).max(64).openapi({
         example: 'example_man',
         description:
-          'Characters must be [A-Za-z0-9-\.] The first and last characters must be [A-Za-z0-9-\.]',
-      }),
-    }),
+          'Characters must be [A-Za-z0-9-.] The first and last characters must be [A-Za-z0-9-.]'
+      })
+    })
   },
   responses: {
     204: {
-      description: 'No Content',
+      description: 'No Content'
     },
     400: {
       description: 'Bad Request',
       content: {
         'application/json': {
-          schema: CommonErrorResponseSchema,
-        },
-      },
+          schema: CommonErrorResponseSchema
+        }
+      }
     },
     403: {
       description: 'Forbidden',
       content: {
         'application/json': {
-          schema: CommonErrorResponseSchema,
-        },
-      },
+          schema: CommonErrorResponseSchema
+        }
+      }
     },
     404: {
       description: 'Not Found',
       content: {
         'application/json': {
-          schema: CommonErrorResponseSchema,
-        },
-      },
-    },
-  },
+          schema: CommonErrorResponseSchema
+        }
+      }
+    }
+  }
 });
 
 export const ResendVerificationEmailRoute = createRoute({
@@ -216,46 +217,46 @@ export const ResendVerificationEmailRoute = createRoute({
       name: z.string().min(3).max(64).openapi({
         example: 'example_man',
         description:
-          'Characters must be [A-Za-z0-9-\.] The first and last characters must be [A-Za-z0-9-\.]',
-      }),
+          'Characters must be [A-Za-z0-9-.] The first and last characters must be [A-Za-z0-9-.]'
+      })
     }),
     body: {
       content: {
         'application/json': {
-          schema: ResendVerificationEmailRequestSchema,
-        },
-      },
-    },
+          schema: ResendVerificationEmailRequestSchema
+        }
+      }
+    }
   },
   responses: {
     204: {
-      description: 'No Content',
+      description: 'No Content'
     },
     400: {
       description: 'Bad Request',
       content: {
         'application/json': {
-          schema: CommonErrorResponseSchema,
-        },
-      },
+          schema: CommonErrorResponseSchema
+        }
+      }
     },
     403: {
       description: 'Forbidden',
       content: {
         'application/json': {
-          schema: CommonErrorResponseSchema,
-        },
-      },
+          schema: CommonErrorResponseSchema
+        }
+      }
     },
     404: {
       description: 'Not Found',
       content: {
         'application/json': {
-          schema: CommonErrorResponseSchema,
-        },
-      },
-    },
-  },
+          schema: CommonErrorResponseSchema
+        }
+      }
+    }
+  }
 });
 
 export const VerifyEmailRoute = createRoute({
@@ -267,38 +268,38 @@ export const VerifyEmailRoute = createRoute({
       name: z.string().min(3).max(64).openapi({
         example: 'example_man',
         description:
-          'Characters must be [A-Za-z0-9-\.] The first and last characters must be [A-Za-z0-9-\.]',
-      }),
+          'Characters must be [A-Za-z0-9-.] The first and last characters must be [A-Za-z0-9-.]'
+      })
     }),
     body: {
       content: {
         'application/json': {
-          schema: VerifyEmailRequestSchema,
-        },
-      },
-    },
+          schema: VerifyEmailRequestSchema
+        }
+      }
+    }
   },
   responses: {
     204: {
-      description: 'No Content',
+      description: 'No Content'
     },
     400: {
       description: 'Bad Request',
       content: {
         'application/json': {
-          schema: CommonErrorResponseSchema,
-        },
-      },
+          schema: CommonErrorResponseSchema
+        }
+      }
     },
     404: {
       description: 'Not Found',
       content: {
         'application/json': {
-          schema: CommonErrorResponseSchema,
-        },
-      },
-    },
-  },
+          schema: CommonErrorResponseSchema
+        }
+      }
+    }
+  }
 });
 
 export const LoginRoute = createRoute({
@@ -309,37 +310,37 @@ export const LoginRoute = createRoute({
     body: {
       content: {
         'application/json': {
-          schema: LoginRequestSchema,
-        },
-      },
-    },
+          schema: LoginRequestSchema
+        }
+      }
+    }
   },
   responses: {
     200: {
       description: 'OK',
       content: {
         'application/json': {
-          schema: UpdateAccountResponseSchema,
-        },
-      },
+          schema: UpdateAccountResponseSchema
+        }
+      }
     },
     400: {
       description: 'Bad Request',
       content: {
         'application/json': {
-          schema: CommonErrorResponseSchema,
-        },
-      },
+          schema: CommonErrorResponseSchema
+        }
+      }
     },
     403: {
       description: 'Forbidden',
       content: {
         'application/json': {
-          schema: CommonErrorResponseSchema,
-        },
-      },
-    },
-  },
+          schema: CommonErrorResponseSchema
+        }
+      }
+    }
+  }
 });
 
 export const RefreshRoute = createRoute({
@@ -350,29 +351,29 @@ export const RefreshRoute = createRoute({
     body: {
       content: {
         'application/json': {
-          schema: RefreshRequestSchema,
-        },
-      },
-    },
+          schema: RefreshRequestSchema
+        }
+      }
+    }
   },
   responses: {
     200: {
       description: 'OK',
       content: {
         'application/json': {
-          schema: UpdateAccountResponseSchema,
-        },
-      },
+          schema: UpdateAccountResponseSchema
+        }
+      }
     },
     400: {
       description: 'Bad Request',
       content: {
         'application/json': {
-          schema: CommonErrorResponseSchema,
-        },
-      },
-    },
-  },
+          schema: CommonErrorResponseSchema
+        }
+      }
+    }
+  }
 });
 
 export const GetAccountRoute = createRoute({
@@ -384,20 +385,20 @@ export const GetAccountRoute = createRoute({
       name: z.string().min(3).max(64).openapi({
         example: 'example_man',
         description:
-          'Characters must be [A-Za-z0-9-\.] The first and last characters must be [A-Za-z0-9-\.]',
-      }),
-    }),
+          'Characters must be [A-Za-z0-9-.] The first and last characters must be [A-Za-z0-9-.]'
+      })
+    })
   },
   responses: {
     200: {
       description: 'OK',
       content: {
         'application/json': {
-          schema: GetAccountResponseSchema,
-        },
-      },
-    },
-  },
+          schema: GetAccountResponseSchema
+        }
+      }
+    }
+  }
 });
 
 export const SilenceAccountRoute = createRoute({
@@ -409,39 +410,39 @@ export const SilenceAccountRoute = createRoute({
       name: z.string().min(3).max(64).openapi({
         example: 'example_man',
         description:
-          'Characters must be [A-Za-z0-9-\.] The first and last characters must be [A-Za-z0-9-\.]',
-      }),
+          'Characters must be [A-Za-z0-9-.] The first and last characters must be [A-Za-z0-9-.]'
+      })
     }),
     body: {
       content: {
         'application/json': {
           // empty body
-          schema: {},
-        },
-      },
-    },
+          schema: {}
+        }
+      }
+    }
   },
   responses: {
     204: {
-      description: 'No Content',
+      description: 'No Content'
     },
     403: {
       description: 'Forbidden',
       content: {
         'application/json': {
-          schema: CommonErrorResponseSchema,
-        },
-      },
+          schema: CommonErrorResponseSchema
+        }
+      }
     },
     404: {
       description: 'Not Found',
       content: {
         'application/json': {
-          schema: CommonErrorResponseSchema,
-        },
-      },
-    },
-  },
+          schema: CommonErrorResponseSchema
+        }
+      }
+    }
+  }
 });
 
 export const UnSilenceAccountRoute = createRoute({
@@ -453,39 +454,39 @@ export const UnSilenceAccountRoute = createRoute({
       name: z.string().min(3).max(64).openapi({
         example: 'example_man',
         description:
-          'Characters must be [A-Za-z0-9-\.] The first and last characters must be [A-Za-z0-9-\.]',
-      }),
+          'Characters must be [A-Za-z0-9-.] The first and last characters must be [A-Za-z0-9-.]'
+      })
     }),
     body: {
       content: {
         'application/json': {
           // empty body
-          schema: {},
-        },
-      },
-    },
+          schema: {}
+        }
+      }
+    }
   },
   responses: {
     204: {
-      description: 'No Content',
+      description: 'No Content'
     },
     403: {
       description: 'Forbidden',
       content: {
         'application/json': {
-          schema: CommonErrorResponseSchema,
-        },
-      },
+          schema: CommonErrorResponseSchema
+        }
+      }
     },
     404: {
       description: 'Not Found',
       content: {
         'application/json': {
-          schema: CommonErrorResponseSchema,
-        },
-      },
-    },
-  },
+          schema: CommonErrorResponseSchema
+        }
+      }
+    }
+  }
 });
 
 export const FollowAccountRoute = createRoute({
@@ -497,44 +498,44 @@ export const FollowAccountRoute = createRoute({
       name: z.string().min(3).max(64).openapi({
         example: 'example_man',
         description:
-          'Characters must be [A-Za-z0-9-\.] The first and last characters must be [A-Za-z0-9-\.]',
-      }),
+          'Characters must be [A-Za-z0-9-.] The first and last characters must be [A-Za-z0-9-.]'
+      })
     }),
     body: {
       content: {
         'application/json': {
           // empty body
-          schema: {},
-        },
-      },
-    },
+          schema: {}
+        }
+      }
+    }
   },
   responses: {
     201: {
       description: 'Accepted',
       content: {
         'application/json': {
-          schema: FollowAccountResponseSchema,
-        },
-      },
+          schema: FollowAccountResponseSchema
+        }
+      }
     },
     403: {
       description: 'Forbidden',
       content: {
         'application/json': {
-          schema: CommonErrorResponseSchema,
-        },
-      },
+          schema: CommonErrorResponseSchema
+        }
+      }
     },
     404: {
       description: 'Not Found',
       content: {
         'application/json': {
-          schema: CommonErrorResponseSchema,
-        },
-      },
-    },
-  },
+          schema: CommonErrorResponseSchema
+        }
+      }
+    }
+  }
 });
 
 export const UnFollowAccountRoute = createRoute({
@@ -546,37 +547,37 @@ export const UnFollowAccountRoute = createRoute({
       name: z.string().min(3).max(64).openapi({
         example: 'example_man',
         description:
-          'Characters must be [A-Za-z0-9-\.] The first and last characters must be [A-Za-z0-9-\.]',
-      }),
+          'Characters must be [A-Za-z0-9-.] The first and last characters must be [A-Za-z0-9-.]'
+      })
     }),
     body: {
       content: {
         'application/json': {
           // empty body
-          schema: {},
-        },
-      },
-    },
+          schema: {}
+        }
+      }
+    }
   },
   responses: {
     204: {
-      description: 'No Content',
+      description: 'No Content'
     },
     400: {
       description: 'Forbidden',
       content: {
         'application/json': {
-          schema: CommonErrorResponseSchema,
-        },
-      },
+          schema: CommonErrorResponseSchema
+        }
+      }
     },
     404: {
       description: 'Not Found',
       content: {
         'application/json': {
-          schema: CommonErrorResponseSchema,
-        },
-      },
-    },
-  },
+          schema: CommonErrorResponseSchema
+        }
+      }
+    }
+  }
 });

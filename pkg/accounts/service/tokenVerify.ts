@@ -1,8 +1,9 @@
 import { Option, Result } from '@mikuroxina/mini-fn';
-import { type AccountVerifyTokenRepository } from '../model/repository.js';
+
+import { type Clock } from '../../id/mod.js';
 import { type ID } from '../../id/type.js';
 import { type AccountID } from '../model/account.js';
-import { type Clock } from '../../id/mod.js';
+import { type AccountVerifyTokenRepository } from '../model/repository.js';
 
 class DateClock implements Clock {
   Now(): bigint {
@@ -25,13 +26,13 @@ export class TokenVerifyService {
    * @returns if success: void, if failure: Error
    */
   async generate(
-    accountID: ID<AccountID>,
+    accountID: ID<AccountID>
   ): Promise<Result.Result<Error, string>> {
     const verifyToken = crypto.getRandomValues(new Uint8Array(32));
 
     // expireDate: After 7 days
     const expireDate = new Date(
-      Number(this.clock.Now()) + 7 * 24 * 60 * 60 * 1000,
+      Number(this.clock.Now()) + 7 * 24 * 60 * 60 * 1000
     );
 
     const encodedToken = Buffer.from(verifyToken).toString('base64');
@@ -39,7 +40,7 @@ export class TokenVerifyService {
     const res = await this.repository.create(
       accountID,
       encodedToken,
-      expireDate,
+      expireDate
     );
     if (Result.isErr(res)) {
       return Result.err(res[1]);
@@ -56,7 +57,7 @@ export class TokenVerifyService {
    */
   async verify(
     accountID: ID<AccountID>,
-    token: string,
+    token: string
   ): Promise<Result.Result<Error, void>> {
     const res = await this.repository.findByID(accountID);
     if (Option.isNone(res)) {

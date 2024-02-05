@@ -1,6 +1,7 @@
 import { Option } from '@mikuroxina/mini-fn';
+import { describe, it, expect } from 'vitest';
+
 import { TokenGenerator } from './tokenGenerator.js';
-import {describe, it, expect} from "vitest";
 
 const generator = await TokenGenerator.new();
 
@@ -9,7 +10,7 @@ describe('TokenGenerator', () => {
     const token = await generator.generate(
       '',
       new Date(),
-      new Date('2099/12/31 12:59:59'),
+      new Date('2099/12/31 12:59:59')
     );
     if (Option.isNone(token)) {
       return;
@@ -22,7 +23,7 @@ describe('TokenGenerator', () => {
     const expired = await generator.generate(
       '',
       new Date('1970/01/01'),
-      new Date('1971/01/01'),
+      new Date('1971/01/01')
     );
     if (Option.isNone(expired)) return;
 

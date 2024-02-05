@@ -1,6 +1,7 @@
-import {describe, expect, it} from "vitest";
-import {Account, type AccountID, type CreateAccountArgs} from './account.js';
-import {type ID} from '../../id/type.js';
+import { describe, expect, it } from 'vitest';
+
+import { type ID } from '../../id/type.js';
+import { Account, type AccountID, type CreateAccountArgs } from './account.js';
 
 const exampleInput: CreateAccountArgs = {
   id: '1' as ID<AccountID>,
@@ -15,11 +16,10 @@ const exampleInput: CreateAccountArgs = {
   silenced: 'silenced',
   name: '@johndoe@social.example.com',
   updatedAt: new Date('2023-09-10T09:00:00.000Z'),
-  deletedAt: new Date('2023-09-10T10:00:00.000Z'),
+  deletedAt: new Date('2023-09-10T10:00:00.000Z')
 };
 
 describe('Account', () => {
-
   it('generate new instance', () => {
     const account = Account.new(exampleInput);
 

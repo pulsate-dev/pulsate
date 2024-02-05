@@ -1,7 +1,8 @@
 import { Option, Result } from '@mikuroxina/mini-fn';
-import { EtagVerifyService } from './etagGenerateVerify.js';
-import { type AccountRepository } from '../model/repository.js';
+
 import { type PasswordEncoder } from '../../password/mod.js';
+import { type AccountRepository } from '../model/repository.js';
+import type { EtagVerifyService } from './etagGenerateVerify.js';
 
 export class EditAccountService {
   private readonly nicknameShortest = 1;
@@ -18,7 +19,7 @@ export class EditAccountService {
   constructor(
     accountRepository: AccountRepository,
     etagVerifyService: EtagVerifyService,
-    passwordEncoder: PasswordEncoder,
+    passwordEncoder: PasswordEncoder
   ) {
     this.accountRepository = accountRepository;
     this.etagVerifyService = etagVerifyService;
@@ -28,7 +29,7 @@ export class EditAccountService {
   async editNickname(
     etag: string,
     name: string,
-    nickname: string,
+    nickname: string
   ): Promise<Result.Result<Error, boolean>> {
     const res = await this.accountRepository.findByName(name);
     if (Option.isNone(res)) {
@@ -60,7 +61,7 @@ export class EditAccountService {
   async editPassphrase(
     etag: string,
     name: string,
-    newPassphrase: string,
+    newPassphrase: string
   ): Promise<Result.Result<Error, boolean>> {
     const res = await this.accountRepository.findByName(name);
     if (Option.isNone(res)) {
@@ -82,7 +83,7 @@ export class EditAccountService {
 
     try {
       account.setPassphraseHash(
-        await this.passwordEncoder.EncodePassword(newPassphrase),
+        await this.passwordEncoder.EncodePassword(newPassphrase)
       );
       return Result.ok(true);
     } catch (e) {
@@ -93,7 +94,7 @@ export class EditAccountService {
   async editEmail(
     etag: string,
     name: string,
-    newEmail: string,
+    newEmail: string
   ): Promise<Result.Result<Error, boolean>> {
     const res = await this.accountRepository.findByName(name);
     if (Option.isNone(res)) {

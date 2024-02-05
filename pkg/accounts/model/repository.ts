@@ -1,6 +1,8 @@
-import { Option, Result } from '@mikuroxina/mini-fn';
-import { Account, type AccountID } from './account.js';
+import type { Option, Result } from '@mikuroxina/mini-fn';
+
 import { type ID } from '../../id/type.js';
+import type { Account } from './account.js';
+import { type AccountID } from './account.js';
 
 export interface AccountRepository {
   create(account: Account): Promise<Result.Result<Error, void>>;
@@ -12,10 +14,10 @@ export interface AccountVerifyTokenRepository {
   create(
     accountID: ID<AccountID>,
     token: string,
-    expire: Date,
+    expire: Date
   ): Promise<Result.Result<Error, void>>;
   // TODO(laminne): Consider create a type for token/expire
   findByID(
-    id: ID<AccountID>,
+    id: ID<AccountID>
   ): Promise<Option.Option<{ token: string; expire: Date }>>;
 }

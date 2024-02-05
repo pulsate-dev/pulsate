@@ -1,14 +1,15 @@
-import {describe, it, expect} from "vitest";
 import { Option } from '@mikuroxina/mini-fn';
+import { describe, it, expect } from 'vitest';
+
+import { type ID } from '../../id/type.js';
 import {
   InMemoryAccountRepository,
-  InMemoryAccountVerifyTokenRepository,
+  InMemoryAccountVerifyTokenRepository
 } from '../adaptor/repository/dummy.js';
-import { ResendVerifyTokenService } from './resendToken.js';
-import { TokenVerifyService } from './tokenVerify.js';
-import { DummySendNotificationService } from './sendNotification.js';
 import { Account, type AccountID } from '../model/account.js';
-import { type ID } from '../../id/type.js';
+import { ResendVerifyTokenService } from './resendToken.js';
+import { DummySendNotificationService } from './sendNotification.js';
+import { TokenVerifyService } from './tokenVerify.js';
 
 const repository = new InMemoryAccountRepository();
 repository.create(
@@ -23,8 +24,8 @@ repository.create(
     frozen: 'normal',
     silenced: 'normal',
     status: 'notActivated',
-    createdAt: new Date(),
-  }),
+    createdAt: new Date()
+  })
 );
 const verifyRepository = new InMemoryAccountVerifyTokenRepository();
 const tokenVerifyService = new TokenVerifyService(verifyRepository);
@@ -35,7 +36,7 @@ describe('ResendVerifyTokenService', () => {
     const service = new ResendVerifyTokenService(
       repository,
       tokenVerifyService,
-      sendNotificationService,
+      sendNotificationService
     );
     const actual = await service.handle('@john@example.com');
     expect(Option.isNone(actual)).toBe(true);
@@ -45,7 +46,7 @@ describe('ResendVerifyTokenService', () => {
     const service = new ResendVerifyTokenService(
       repository,
       tokenVerifyService,
-      sendNotificationService,
+      sendNotificationService
     );
     const actual = await service.handle('@a@example.com');
 

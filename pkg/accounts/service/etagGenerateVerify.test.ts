@@ -1,13 +1,17 @@
-import {afterEach, describe, expect, it} from "vitest";
-import {EtagVerifyService} from './etagGenerateVerify.js';
-import {InMemoryAccountRepository, InMemoryAccountVerifyTokenRepository,} from '../adaptor/repository/dummy.js';
-import {Result} from '@mikuroxina/mini-fn';
-import {RegisterAccountService} from './register.js';
-import {type Clock, SnowflakeIDGenerator} from '../../id/mod.js';
-import {Argon2idPasswordEncoder} from '../../password/mod.js';
-import {DummySendNotificationService} from './sendNotification.js';
-import {TokenVerifyService} from './tokenVerify.js';
-import {type AccountName, type AccountRole} from '../model/account.js';
+import { Result } from '@mikuroxina/mini-fn';
+import { afterEach, describe, expect, it } from 'vitest';
+
+import { type Clock, SnowflakeIDGenerator } from '../../id/mod.js';
+import { Argon2idPasswordEncoder } from '../../password/mod.js';
+import {
+  InMemoryAccountRepository,
+  InMemoryAccountVerifyTokenRepository
+} from '../adaptor/repository/dummy.js';
+import { type AccountName, type AccountRole } from '../model/account.js';
+import { EtagVerifyService } from './etagGenerateVerify.js';
+import { RegisterAccountService } from './register.js';
+import { DummySendNotificationService } from './sendNotification.js';
+import { TokenVerifyService } from './tokenVerify.js';
 
 class DummyClock implements Clock {
   Now(): bigint {
@@ -22,7 +26,7 @@ const registerService = new RegisterAccountService({
   idGenerator: new SnowflakeIDGenerator(1, new DummyClock()),
   passwordEncoder: new Argon2idPasswordEncoder(),
   sendNotification: new DummySendNotificationService(),
-  verifyTokenService: new TokenVerifyService(verifyRepository),
+  verifyTokenService: new TokenVerifyService(verifyRepository)
 });
 const etagVerifyService: EtagVerifyService = new EtagVerifyService();
 
@@ -32,11 +36,11 @@ const exampleInput = {
   nickname: 'John Doe',
   passphrase: 'password',
   bio: 'Hello, World!',
-  role: 'normal' as AccountRole,
+  role: 'normal' as AccountRole
 };
 
-describe("EtagVerifyService", () => {
-  afterEach(() => repository.reset())
+describe('EtagVerifyService', () => {
+  afterEach(() => repository.reset());
 
   it('success to verify etag', async () => {
     const res = await registerService.handle(
@@ -45,7 +49,7 @@ describe("EtagVerifyService", () => {
       exampleInput.nickname,
       exampleInput.passphrase,
       exampleInput.bio,
-      exampleInput.role,
+      exampleInput.role
     );
     const account = Result.unwrap(res);
 
@@ -61,11 +65,11 @@ describe("EtagVerifyService", () => {
       exampleInput.nickname,
       exampleInput.passphrase,
       exampleInput.bio,
-      exampleInput.role,
+      exampleInput.role
     );
     const account = Result.unwrap(res);
 
-    const etag = (await etagVerifyService.generate(account)) + '_invalid';
+    const etag = `${await etagVerifyService.generate(account)}_invalid`;
     const result = await etagVerifyService.verify(account, etag);
     expect(result).toBe(false);
   });
@@ -77,12 +81,11 @@ describe("EtagVerifyService", () => {
       exampleInput.nickname,
       exampleInput.passphrase,
       exampleInput.bio,
-      exampleInput.role,
+      exampleInput.role
     );
     const account = Result.unwrap(res);
 
     const etag = await etagVerifyService.generate(account);
     expect(etag.length).toBe(64);
   });
-})
-
+});

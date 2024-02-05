@@ -1,6 +1,7 @@
-import { describe, it, expect} from "vitest";
-import { type Clock, SnowflakeIDGenerator } from './mod.js';
 import { Result } from '@mikuroxina/mini-fn';
+import { describe, it, expect } from 'vitest';
+
+import { type Clock, SnowflakeIDGenerator } from './mod.js';
 
 class DummyClock implements Clock {
   Now(): bigint {

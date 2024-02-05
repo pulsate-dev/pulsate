@@ -9,8 +9,8 @@ A Guide to Pulsate's Security Policy.
 Below is the support status for each version of Pulsate.
 
 | Version | Release | Released | Active Support | Security Support |
-| --- | --- | --- | --- | --- |
-| v0 | Antenna | --- | --- | --- |
+| ------- | ------- | -------- | -------------- | ---------------- |
+| v0      | Antenna | ---      | ---            | ---              |
 
 ## Vulnerability Reporting
 
@@ -26,5 +26,4 @@ The reporting procedure is as follows.
 
 The advisory will be reviewed by the maintainer and released to the public.
 
-> [!WARNING]
-> **DO NOT PUBLISH EXTERNALLY** until full disclosure of the reported advisory has been made.
+> [!WARNING] > **DO NOT PUBLISH EXTERNALLY** until full disclosure of the reported advisory has been made.

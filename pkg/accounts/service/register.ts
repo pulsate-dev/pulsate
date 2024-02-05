@@ -1,15 +1,16 @@
 import { Option, Result } from '@mikuroxina/mini-fn';
+
+import type { SnowflakeIDGenerator } from '../../id/mod.js';
+import { type PasswordEncoder } from '../../password/mod.js';
 import {
   Account,
   type AccountID,
   type AccountName,
-  type AccountRole,
+  type AccountRole
 } from '../model/account.js';
 import { type AccountRepository } from '../model/repository.js';
-import { SnowflakeIDGenerator } from '../../id/mod.js';
-import { type PasswordEncoder } from '../../password/mod.js';
 import { type SendNotificationService } from './sendNotification.js';
-import { TokenVerifyService } from './tokenVerify.js';
+import type { TokenVerifyService } from './tokenVerify.js';
 
 export class AccountAlreadyExistsError extends Error {
   override readonly name = 'AccountAlreadyExistsError' as const;
@@ -46,16 +47,17 @@ export class RegisterAccountService {
     nickname: string,
     passphrase: string,
     bio: string,
-    role: AccountRole,
+    role: AccountRole
   ): Promise<Result.Result<Error, Account>> {
     // ToDo: verify with Captcha
     if (await this.isExists(mail, name)) {
       return Result.err(
-        new AccountAlreadyExistsError('account already exists'),
+        new AccountAlreadyExistsError('account already exists')
       );
     }
 
-    const passphraseHash = await this.passwordEncoder.EncodePassword(passphrase);
+    const passphraseHash =
+      await this.passwordEncoder.EncodePassword(passphrase);
 
     const generatedID = this.snowflakeIDGenerator.generate<AccountID>();
     if (Result.isErr(generatedID)) {
@@ -72,7 +74,7 @@ export class RegisterAccountService {
       frozen: 'normal',
       silenced: 'normal',
       status: 'notActivated',
-      createdAt: new Date(),
+      createdAt: new Date()
     });
     const res = await this.accountRepository.create(account);
     if (Result.isErr(res)) {
