@@ -5,7 +5,7 @@ import { type Clock, SnowflakeIDGenerator } from '../../id/mod.js';
 import { Argon2idPasswordEncoder } from '../../password/mod.js';
 import {
   InMemoryAccountRepository,
-  InMemoryAccountVerifyTokenRepository
+  InMemoryAccountVerifyTokenRepository,
 } from '../adaptor/repository/dummy.js';
 import { type AccountName, type AccountRole } from '../model/account.js';
 import { EditAccountService } from './editAccount.js';
@@ -26,13 +26,13 @@ const registerService: RegisterAccountService = new RegisterAccountService({
   idGenerator: new SnowflakeIDGenerator(1, new DummyClock()),
   passwordEncoder: new Argon2idPasswordEncoder(),
   sendNotification: new DummySendNotificationService(),
-  verifyTokenService: new TokenVerifyService(verifyRepository)
+  verifyTokenService: new TokenVerifyService(verifyRepository),
 });
 const etagVerifyService = new EtagVerifyService();
 const editAccountService = new EditAccountService(
   repository,
   etagVerifyService,
-  new Argon2idPasswordEncoder()
+  new Argon2idPasswordEncoder(),
 );
 
 const exampleInput = {
@@ -41,7 +41,7 @@ const exampleInput = {
   nickname: 'John Doe',
   passphrase: 'password',
   bio: 'Hello, World!',
-  role: 'normal' as AccountRole
+  role: 'normal' as AccountRole,
 };
 
 describe('EditAccountService', () => {
@@ -53,14 +53,14 @@ describe('EditAccountService', () => {
       exampleInput.nickname,
       exampleInput.passphrase,
       exampleInput.bio,
-      exampleInput.role
+      exampleInput.role,
     );
     const account = Result.unwrap(res);
     const etag = await etagVerifyService.generate(account);
     const updateRes = await editAccountService.editNickname(
       etag,
       exampleInput.name,
-      'new nickname'
+      'new nickname',
     );
     expect(Result.isErr(updateRes)).toBe(false);
     expect(updateRes[1]).toBe(true);
@@ -74,7 +74,7 @@ describe('EditAccountService', () => {
       exampleInput.nickname,
       exampleInput.passphrase,
       exampleInput.bio,
-      exampleInput.role
+      exampleInput.role,
     );
     const account = Result.unwrap(res);
     expect(Result.isErr(res)).toBe(false);
@@ -83,7 +83,7 @@ describe('EditAccountService', () => {
     const updateRes = await editAccountService.editNickname(
       etag,
       exampleInput.name,
-      ''
+      '',
     );
     expect(Result.isErr(updateRes)).toBe(true);
   });
@@ -95,7 +95,7 @@ describe('EditAccountService', () => {
       exampleInput.nickname,
       exampleInput.passphrase,
       exampleInput.bio,
-      exampleInput.role
+      exampleInput.role,
     );
     const account = Result.unwrap(res);
     expect(Result.isErr(res)).toBe(false);
@@ -104,7 +104,7 @@ describe('EditAccountService', () => {
     const updateRes = await editAccountService.editNickname(
       etag,
       exampleInput.name,
-      'a'.repeat(257)
+      'a'.repeat(257),
     );
     expect(Result.isErr(updateRes)).toBe(true);
   });
@@ -116,7 +116,7 @@ describe('EditAccountService', () => {
       exampleInput.nickname,
       exampleInput.passphrase,
       exampleInput.bio,
-      exampleInput.role
+      exampleInput.role,
     );
     const account = Result.unwrap(res);
     expect(Result.isErr(res)).toBe(false);
@@ -125,7 +125,7 @@ describe('EditAccountService', () => {
     const updateRes = await editAccountService.editNickname(
       etag,
       exampleInput.name,
-      'a'.repeat(256)
+      'a'.repeat(256),
     );
     expect(Result.isErr(updateRes)).toBe(false);
     expect(updateRes[1]).toBe(true);
@@ -139,7 +139,7 @@ describe('EditAccountService', () => {
       exampleInput.nickname,
       exampleInput.passphrase,
       exampleInput.bio,
-      exampleInput.role
+      exampleInput.role,
     );
     const account = Result.unwrap(res);
     expect(Result.isErr(res)).toBe(false);
@@ -148,7 +148,7 @@ describe('EditAccountService', () => {
     const updateRes = await editAccountService.editNickname(
       etag,
       exampleInput.name,
-      'a'
+      'a',
     );
     expect(Result.isErr(updateRes)).toBe(false);
     expect(updateRes[1]).toBe(true);
@@ -161,13 +161,13 @@ describe('EditAccountService', () => {
       exampleInput.nickname,
       exampleInput.passphrase,
       exampleInput.bio,
-      exampleInput.role
+      exampleInput.role,
     );
 
     const res = await editAccountService.editNickname(
       'invalid_etag',
       exampleInput.name,
-      'new nickname'
+      'new nickname',
     );
     expect(Result.isErr(res)).toBe(true);
   });
@@ -176,7 +176,7 @@ describe('EditAccountService', () => {
     const res = await editAccountService.editNickname(
       'invalid etag',
       'foo',
-      'new nickname'
+      'new nickname',
     );
     expect(Result.isErr(res)).toBe(true);
   });
@@ -188,7 +188,7 @@ describe('EditAccountService', () => {
       exampleInput.nickname,
       exampleInput.passphrase,
       exampleInput.bio,
-      exampleInput.role
+      exampleInput.role,
     );
     const account = Result.unwrap(res);
     const etag = await etagVerifyService.generate(account);
@@ -196,7 +196,7 @@ describe('EditAccountService', () => {
     const updateRes = await editAccountService.editPassphrase(
       etag,
       exampleInput.name,
-      'new password'
+      'new password',
     );
     expect(Result.isErr(updateRes)).toBe(false);
     expect(updateRes[1]).toBe(true);
@@ -209,7 +209,7 @@ describe('EditAccountService', () => {
       exampleInput.nickname,
       exampleInput.passphrase,
       exampleInput.bio,
-      exampleInput.role
+      exampleInput.role,
     );
     const account = Result.unwrap(res);
     expect(Result.isErr(res)).toBe(false);
@@ -219,7 +219,7 @@ describe('EditAccountService', () => {
     const updateRes = await editAccountService.editPassphrase(
       etag,
       exampleInput.name,
-      'a'.repeat(7)
+      'a'.repeat(7),
     );
     expect(Result.isErr(updateRes)).toBe(true);
   });
@@ -231,7 +231,7 @@ describe('EditAccountService', () => {
       exampleInput.nickname,
       exampleInput.passphrase,
       exampleInput.bio,
-      exampleInput.role
+      exampleInput.role,
     );
     const account = Result.unwrap(res);
     expect(Result.isErr(res)).toBe(false);
@@ -241,7 +241,7 @@ describe('EditAccountService', () => {
     const updateRes = await editAccountService.editPassphrase(
       etag,
       exampleInput.name,
-      'a'.repeat(513)
+      'a'.repeat(513),
     );
     expect(Result.isErr(updateRes)).toBe(true);
   });
@@ -253,7 +253,7 @@ describe('EditAccountService', () => {
       exampleInput.nickname,
       exampleInput.passphrase,
       exampleInput.bio,
-      exampleInput.role
+      exampleInput.role,
     );
     const account = Result.unwrap(res);
     expect(Result.isErr(res)).toBe(false);
@@ -263,7 +263,7 @@ describe('EditAccountService', () => {
     const updateRes = await editAccountService.editPassphrase(
       etag,
       exampleInput.name,
-      'a'.repeat(8)
+      'a'.repeat(8),
     );
     expect(Result.isErr(updateRes)).toBe(false);
     expect(updateRes[1]).toBe(true);
@@ -276,7 +276,7 @@ describe('EditAccountService', () => {
       exampleInput.nickname,
       exampleInput.passphrase,
       exampleInput.bio,
-      exampleInput.role
+      exampleInput.role,
     );
     const account = Result.unwrap(res);
     expect(Result.isErr(res)).toBe(false);
@@ -286,7 +286,7 @@ describe('EditAccountService', () => {
     const updateRes = await editAccountService.editPassphrase(
       etag,
       exampleInput.name,
-      'a'.repeat(512)
+      'a'.repeat(512),
     );
     expect(Result.isErr(updateRes)).toBe(false);
     expect(updateRes[1]).toBe(true);
@@ -299,13 +299,13 @@ describe('EditAccountService', () => {
       exampleInput.nickname,
       exampleInput.passphrase,
       exampleInput.bio,
-      exampleInput.role
+      exampleInput.role,
     );
 
     const res = await editAccountService.editPassphrase(
       'invalid_etag',
       exampleInput.name,
-      'new password'
+      'new password',
     );
     expect(Result.isErr(res)).toBe(true);
   });
@@ -314,7 +314,7 @@ describe('EditAccountService', () => {
     const res = await editAccountService.editPassphrase(
       'invalid etag',
       'foo',
-      'new password'
+      'new password',
     );
     expect(Result.isErr(res)).toBe(true);
   });
@@ -326,7 +326,7 @@ describe('EditAccountService', () => {
       exampleInput.nickname,
       exampleInput.passphrase,
       exampleInput.bio,
-      exampleInput.role
+      exampleInput.role,
     );
     const account = Result.unwrap(res);
     const etag = await etagVerifyService.generate(account);
@@ -334,7 +334,7 @@ describe('EditAccountService', () => {
     const updateRes = await editAccountService.editEmail(
       etag,
       exampleInput.name,
-      'pulsate@example.com'
+      'pulsate@example.com',
     );
     expect(Result.isErr(updateRes)).toBe(false);
     expect(updateRes[1]).toBe(true);
@@ -347,14 +347,14 @@ describe('EditAccountService', () => {
       exampleInput.nickname,
       exampleInput.passphrase,
       exampleInput.bio,
-      exampleInput.role
+      exampleInput.role,
     );
     Result.unwrap(res);
 
     const updateRes = await editAccountService.editEmail(
       'invalid_etag',
       exampleInput.name,
-      'pulsate@example.com'
+      'pulsate@example.com',
     );
     expect(Result.isErr(updateRes)).toBe(true);
   });
@@ -363,7 +363,7 @@ describe('EditAccountService', () => {
     const updateRes = await editAccountService.editEmail(
       'invalid etag',
       'foo',
-      'pulsate@pulsate.mail'
+      'pulsate@pulsate.mail',
     );
     expect(Result.isErr(updateRes)).toBe(true);
   });
@@ -375,7 +375,7 @@ describe('EditAccountService', () => {
       exampleInput.nickname,
       exampleInput.passphrase,
       exampleInput.bio,
-      exampleInput.role
+      exampleInput.role,
     );
     const account = Result.unwrap(res);
     expect(Result.isErr(res)).toBe(false);
@@ -384,7 +384,7 @@ describe('EditAccountService', () => {
     const updateRes = await editAccountService.editEmail(
       etag,
       exampleInput.name,
-      'a'.repeat(7)
+      'a'.repeat(7),
     );
     expect(Result.isErr(updateRes)).toBe(false);
     expect(updateRes[1]).toBe(true);
@@ -397,7 +397,7 @@ describe('EditAccountService', () => {
       exampleInput.nickname,
       exampleInput.passphrase,
       exampleInput.bio,
-      exampleInput.role
+      exampleInput.role,
     );
     const account = Result.unwrap(res);
     expect(Result.isErr(res)).toBe(false);
@@ -406,7 +406,7 @@ describe('EditAccountService', () => {
     const updateRes = await editAccountService.editEmail(
       etag,
       exampleInput.name,
-      'a'.repeat(8)
+      'a'.repeat(8),
     );
     expect(Result.isErr(updateRes)).toBe(false);
     expect(updateRes[1]).toBe(true);
@@ -419,7 +419,7 @@ describe('EditAccountService', () => {
       exampleInput.nickname,
       exampleInput.passphrase,
       exampleInput.bio,
-      exampleInput.role
+      exampleInput.role,
     );
     const account = Result.unwrap(res);
     expect(Result.isErr(res)).toBe(false);
@@ -428,7 +428,7 @@ describe('EditAccountService', () => {
     const updateRes = await editAccountService.editEmail(
       etag,
       exampleInput.name,
-      'a'.repeat(320)
+      'a'.repeat(320),
     );
     expect(Result.isErr(updateRes)).toBe(true);
   });
@@ -440,7 +440,7 @@ describe('EditAccountService', () => {
       exampleInput.nickname,
       exampleInput.passphrase,
       exampleInput.bio,
-      exampleInput.role
+      exampleInput.role,
     );
     const account = Result.unwrap(res);
     expect(Result.isErr(res)).toBe(false);
@@ -449,7 +449,7 @@ describe('EditAccountService', () => {
     const updateRes = await editAccountService.editEmail(
       etag,
       exampleInput.name,
-      'a'.repeat(319)
+      'a'.repeat(319),
     );
     expect(Result.isErr(updateRes)).toBe(false);
     expect(updateRes[1]).toBe(true);

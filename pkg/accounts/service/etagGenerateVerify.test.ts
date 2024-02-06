@@ -5,7 +5,7 @@ import { type Clock, SnowflakeIDGenerator } from '../../id/mod.js';
 import { Argon2idPasswordEncoder } from '../../password/mod.js';
 import {
   InMemoryAccountRepository,
-  InMemoryAccountVerifyTokenRepository
+  InMemoryAccountVerifyTokenRepository,
 } from '../adaptor/repository/dummy.js';
 import { type AccountName, type AccountRole } from '../model/account.js';
 import { EtagVerifyService } from './etagGenerateVerify.js';
@@ -26,7 +26,7 @@ const registerService = new RegisterAccountService({
   idGenerator: new SnowflakeIDGenerator(1, new DummyClock()),
   passwordEncoder: new Argon2idPasswordEncoder(),
   sendNotification: new DummySendNotificationService(),
-  verifyTokenService: new TokenVerifyService(verifyRepository)
+  verifyTokenService: new TokenVerifyService(verifyRepository),
 });
 const etagVerifyService: EtagVerifyService = new EtagVerifyService();
 
@@ -36,7 +36,7 @@ const exampleInput = {
   nickname: 'John Doe',
   passphrase: 'password',
   bio: 'Hello, World!',
-  role: 'normal' as AccountRole
+  role: 'normal' as AccountRole,
 };
 
 describe('EtagVerifyService', () => {
@@ -49,7 +49,7 @@ describe('EtagVerifyService', () => {
       exampleInput.nickname,
       exampleInput.passphrase,
       exampleInput.bio,
-      exampleInput.role
+      exampleInput.role,
     );
     const account = Result.unwrap(res);
 
@@ -65,7 +65,7 @@ describe('EtagVerifyService', () => {
       exampleInput.nickname,
       exampleInput.passphrase,
       exampleInput.bio,
-      exampleInput.role
+      exampleInput.role,
     );
     const account = Result.unwrap(res);
 
@@ -81,7 +81,7 @@ describe('EtagVerifyService', () => {
       exampleInput.nickname,
       exampleInput.passphrase,
       exampleInput.bio,
-      exampleInput.role
+      exampleInput.role,
     );
     const account = Result.unwrap(res);
 

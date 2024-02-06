@@ -14,10 +14,10 @@ export interface AccountVerifyTokenRepository {
   create(
     accountID: ID<AccountID>,
     token: string,
-    expire: Date
+    expire: Date,
   ): Promise<Result.Result<Error, void>>;
   // TODO(laminne): Consider create a type for token/expire
   findByID(
-    id: ID<AccountID>
+    id: ID<AccountID>,
   ): Promise<Option.Option<{ token: string; expire: Date }>>;
 }

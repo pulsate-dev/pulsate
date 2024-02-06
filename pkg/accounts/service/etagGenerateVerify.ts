@@ -21,7 +21,7 @@ export class EtagVerifyService {
     const src = `${account.getNickname}:${account.getMail}`;
     const digest = await crypto.subtle.digest(
       'SHA-256',
-      new TextEncoder().encode(src)
+      new TextEncoder().encode(src),
     );
     // fixme: maybe it returns hex string...?
     return Buffer.from(digest).toString('hex');

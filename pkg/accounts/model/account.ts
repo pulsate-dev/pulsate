@@ -4,7 +4,7 @@ import {
   AccountAlreadyFrozenError,
   AccountBioLengthError,
   AccountDateInvalidError,
-  AccountNickNameLengthError
+  AccountNickNameLengthError,
 } from './account.errors.js';
 
 export type AccountID = string;
@@ -267,7 +267,7 @@ export class Account {
       frozen: 'normal',
       silenced: 'normal',
       updatedAt: undefined,
-      deletedAt: undefined
+      deletedAt: undefined,
     });
   }
 

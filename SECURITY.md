@@ -26,4 +26,5 @@ The reporting procedure is as follows.
 
 The advisory will be reviewed by the maintainer and released to the public.
 
-> [!WARNING] > **DO NOT PUBLISH EXTERNALLY** until full disclosure of the reported advisory has been made.
+> [!WARNING]  
+> **DO NOT PUBLISH EXTERNALLY** until full disclosure of the reported advisory has been made.

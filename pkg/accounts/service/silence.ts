@@ -10,7 +10,7 @@ export class SilenceService {
   }
 
   async setSilence(
-    accountName: string
+    accountName: string,
   ): Promise<Result.Result<Error, boolean>> {
     const account = await this.accountRepository.findByName(accountName);
     if (Option.isNone(account)) {
@@ -26,7 +26,7 @@ export class SilenceService {
   }
 
   async undoSilence(
-    accountName: string
+    accountName: string,
   ): Promise<Result.Result<Error, boolean>> {
     const account = await this.accountRepository.findByName(accountName);
     if (Option.isNone(account)) {

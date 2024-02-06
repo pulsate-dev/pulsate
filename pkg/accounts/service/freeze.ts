@@ -24,7 +24,7 @@ export class FreezeService {
   }
 
   async undoFreeze(
-    accountName: string
+    accountName: string,
   ): Promise<Result.Result<Error, boolean>> {
     const account = await this.accountRepository.findByName(accountName);
     if (Option.isNone(account)) {

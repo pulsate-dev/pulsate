@@ -11,7 +11,7 @@ export class TokenGenerator {
     const { privateKey, publicKey } = (await crypto.subtle.generateKey(
       { name: 'ECDSA', namedCurve: 'P-256' },
       true,
-      ['sign', 'verify']
+      ['sign', 'verify'],
     )) as CryptoKeyPair;
     return new TokenGenerator(privateKey, publicKey);
   }
@@ -24,7 +24,7 @@ export class TokenGenerator {
   public async generate(
     subject: string,
     issuedAt: Date,
-    expiredAt: Date
+    expiredAt: Date,
   ): Promise<Option.Option<string>> {
     const token = await new jose.SignJWT()
       .setProtectedHeader({ alg: 'ES256' })

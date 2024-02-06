@@ -9,10 +9,10 @@ const compat = new FlatCompat();
 
 export default [
   {
-    files: ['src/**/**.ts']
+    files: ['src/**/**.ts'],
   },
   {
-    ignores: ['build/**', 'coverage/**', 'node_modules/**']
+    ignores: ['build/**', 'coverage/**', 'node_modules/**'],
   },
   // eslint:recommended
   js.configs.recommended,
@@ -22,18 +22,18 @@ export default [
     languageOptions: {
       parser: typeScriptESLintParser,
       parserOptions: {
-        project: './tsconfig.json'
+        project: './tsconfig.json',
       },
       globals: {
-        ...vitest.environments.env.globals
-      }
-    }
+        ...vitest.environments.env.globals,
+      },
+    },
   },
   {
     plugins: {
       '@typescript-eslint': typeScriptESLint,
-      vitest: vitest
-    }
+      vitest: vitest,
+    },
   },
   {
     rules: {
@@ -46,18 +46,18 @@ export default [
       '@typescript-eslint/consistent-type-imports': [
         'error',
         {
-          fixStyle: 'inline-type-imports'
-        }
+          fixStyle: 'inline-type-imports',
+        },
       ],
       '@typescript-eslint/array-type': [
         'error',
         {
           default: 'array',
-          readonly: 'array'
-        }
+          readonly: 'array',
+        },
       ],
       '@typescript-eslint/consistent-type-definitions': ['error', 'interface'],
-      '@typescript-eslint/no-confusing-non-null-assertion': 'error'
-    }
-  }
+      '@typescript-eslint/no-confusing-non-null-assertion': 'error',
+    },
+  },
 ];

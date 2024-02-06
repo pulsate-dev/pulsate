@@ -20,13 +20,13 @@ app.get('/doc.json', async (c) => {
     info: {
       description: '',
       title: 'Pulsate API Document',
-      version: '0.1.0'
+      version: '0.1.0',
     },
     components: {
       schemas: {},
-      parameters: {}
+      parameters: {},
     },
-    paths: {}
+    paths: {},
   };
 
   const res = modulePath.map(async (path) => {
@@ -37,11 +37,11 @@ app.get('/doc.json', async (c) => {
     const data = await res[v];
     openAPIBase.components.schemas = Object.assign(
       openAPIBase.components.schemas,
-      data.components.schemas
+      data.components.schemas,
     );
     openAPIBase.components.parameters = Object.assign(
       openAPIBase.components.parameters,
-      data.components.parameters
+      data.components.parameters,
     );
     openAPIBase.paths = Object.assign(openAPIBase.paths, data.paths);
   }
@@ -54,9 +54,9 @@ app.get(
   apiReference({
     pageTitle: 'Pulsate API',
     spec: {
-      url: '/doc.json'
-    }
-  })
+      url: '/doc.json',
+    },
+  }),
 );
 
 serve({ fetch: app.fetch, port: 3000 });

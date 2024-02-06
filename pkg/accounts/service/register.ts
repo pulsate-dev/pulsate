@@ -6,7 +6,7 @@ import {
   Account,
   type AccountID,
   type AccountName,
-  type AccountRole
+  type AccountRole,
 } from '../model/account.js';
 import { type AccountRepository } from '../model/repository.js';
 import { type SendNotificationService } from './sendNotification.js';
@@ -47,12 +47,12 @@ export class RegisterAccountService {
     nickname: string,
     passphrase: string,
     bio: string,
-    role: AccountRole
+    role: AccountRole,
   ): Promise<Result.Result<Error, Account>> {
     // ToDo: verify with Captcha
     if (await this.isExists(mail, name)) {
       return Result.err(
-        new AccountAlreadyExistsError('account already exists')
+        new AccountAlreadyExistsError('account already exists'),
       );
     }
 
@@ -74,7 +74,7 @@ export class RegisterAccountService {
       frozen: 'normal',
       silenced: 'normal',
       status: 'notActivated',
-      createdAt: new Date()
+      createdAt: new Date(),
     });
     const res = await this.accountRepository.create(account);
     if (Result.isErr(res)) {

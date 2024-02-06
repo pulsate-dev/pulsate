@@ -4,7 +4,7 @@ import { type ID } from '../../../id/type.js';
 import { type Account, type AccountID } from '../../model/account.js';
 import type {
   AccountRepository,
-  AccountVerifyTokenRepository
+  AccountVerifyTokenRepository,
 } from '../../model/repository.js';
 
 export class InMemoryAccountRepository implements AccountRepository {
@@ -50,14 +50,14 @@ export class InMemoryAccountVerifyTokenRepository
   create(
     accountID: ID<AccountID>,
     token: string,
-    expire: Date
+    expire: Date,
   ): Promise<Result.Result<Error, void>> {
     this.data.set(accountID.toString(), { token, expire });
     return Promise.resolve(Result.ok(undefined));
   }
 
   findByID(
-    id: ID<string>
+    id: ID<string>,
   ): Promise<Option.Option<{ token: string; expire: Date }>> {
     const data = this.data.get(id);
     if (!data) {

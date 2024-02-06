@@ -12,7 +12,7 @@ export class ResendVerifyTokenService {
   constructor(
     accountRepository: AccountRepository,
     tokenVerifyService: TokenVerifyService,
-    sendNotificationService: SendNotificationService
+    sendNotificationService: SendNotificationService,
   ) {
     this.accountRepository = accountRepository;
     this.tokenVerifyService = tokenVerifyService;
