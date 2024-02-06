@@ -1,6 +1,8 @@
-import { Option, Result } from '@mikuroxina/mini-fn';
-import { Account, type AccountID } from './account.js';
+import type { Option, Result } from '@mikuroxina/mini-fn';
+
 import { type ID } from '../../id/type.js';
+import type { Account } from './account.js';
+import { type AccountID } from './account.js';
 
 export interface AccountRepository {
   create(account: Account): Promise<Result.Result<Error, void>>;

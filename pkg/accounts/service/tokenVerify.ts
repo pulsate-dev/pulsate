@@ -1,8 +1,9 @@
 import { Option, Result } from '@mikuroxina/mini-fn';
-import { type AccountVerifyTokenRepository } from '../model/repository.js';
+
+import { type Clock } from '../../id/mod.js';
 import { type ID } from '../../id/type.js';
 import { type AccountID } from '../model/account.js';
-import { type Clock } from '../../id/mod.js';
+import { type AccountVerifyTokenRepository } from '../model/repository.js';
 
 class DateClock implements Clock {
   Now(): bigint {

@@ -1,4 +1,7 @@
 import { Option, Result } from '@mikuroxina/mini-fn';
+
+import type { SnowflakeIDGenerator } from '../../id/mod.js';
+import { type PasswordEncoder } from '../../password/mod.js';
 import {
   Account,
   type AccountID,
@@ -6,10 +9,8 @@ import {
   type AccountRole,
 } from '../model/account.js';
 import { type AccountRepository } from '../model/repository.js';
-import { SnowflakeIDGenerator } from '../../id/mod.js';
-import { type PasswordEncoder } from '../../password/mod.js';
 import { type SendNotificationService } from './sendNotification.js';
-import { TokenVerifyService } from './tokenVerify.js';
+import type { TokenVerifyService } from './tokenVerify.js';
 
 export class AccountAlreadyExistsError extends Error {
   override readonly name = 'AccountAlreadyExistsError' as const;
@@ -55,7 +56,8 @@ export class RegisterAccountService {
       );
     }
 
-    const passphraseHash = await this.passwordEncoder.EncodePassword(passphrase);
+    const passphraseHash =
+      await this.passwordEncoder.EncodePassword(passphrase);
 
     const generatedID = this.snowflakeIDGenerator.generate<AccountID>();
     if (Result.isErr(generatedID)) {

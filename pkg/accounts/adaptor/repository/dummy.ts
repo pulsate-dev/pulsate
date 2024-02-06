@@ -1,9 +1,11 @@
-import { type ID } from '../../../id/type.js';
-import { Account, type AccountID } from '../../model/account.js';
-import type {
-  AccountRepository, AccountVerifyTokenRepository,
-} from '../../model/repository.js';
 import { Option, Result } from '@mikuroxina/mini-fn';
+
+import { type ID } from '../../../id/type.js';
+import { type Account, type AccountID } from '../../model/account.js';
+import type {
+  AccountRepository,
+  AccountVerifyTokenRepository,
+} from '../../model/repository.js';
 
 export class InMemoryAccountRepository implements AccountRepository {
   private data: Set<Account>;
@@ -22,9 +24,7 @@ export class InMemoryAccountRepository implements AccountRepository {
   findByName(name: string): Promise<Option.Option<Account>> {
     const account = Array.from(this.data).find((a) => a.getName === name);
     if (!account) {
-      return Promise.resolve(
-        Option.none(),
-      );
+      return Promise.resolve(Option.none());
     }
     return Promise.resolve(Option.some(account));
   }
@@ -40,7 +40,8 @@ export class InMemoryAccountRepository implements AccountRepository {
 }
 
 export class InMemoryAccountVerifyTokenRepository
-  implements AccountVerifyTokenRepository {
+  implements AccountVerifyTokenRepository
+{
   private data: Map<string, { token: string; expire: Date }>;
   constructor() {
     this.data = new Map();

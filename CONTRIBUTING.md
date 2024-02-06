@@ -107,6 +107,7 @@ You can use dependencies by putting the key of `imports` in the actual source co
 
 ```ts
 import { Hono } from 'hono';
+
 import { accounts } from './pkg/accounts/mod.ts';
 
 const app = new Hono();
@@ -124,7 +125,7 @@ A style guide for Pulsate development.
   - Some editors and IDEs require special plug-ins to be installed.
   - For more details, click [here](https://editorconfig.org/#download).
 
-----
+---
 
 - All files must have spaces at the end of lines removed.
   - In the case of Markdown, it is not necessary to remove it because it also means a line break.
@@ -257,4 +258,3 @@ Here is how to roll back a migration one generation
 cd resources/db
 goose down
 ```
- 

@@ -5,7 +5,7 @@ export interface SendNotificationService {
 }
 
 export class DummySendNotificationService implements SendNotificationService {
-  Send(_: string, __: string): Promise<Result.Result<Error, void>> {
+  Send(): Promise<Result.Result<Error, void>> {
     return Promise.resolve(Result.ok(undefined));
   }
 }

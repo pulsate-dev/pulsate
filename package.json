@@ -7,7 +7,10 @@
   "scripts": {
     "build": "tsc -p .",
     "start": "node ./build/main.js",
-    "test": "vitest run"
+    "test": "vitest run",
+    "format": "prettier --write \"./**/*.{js,ts,md}\"",
+    "format:check": "prettier --check \"./**/*.{js,ts,md}\"",
+    "lint": "eslint . "
   },
   "keywords": [],
   "author": "",
@@ -24,7 +27,16 @@
     "typescript": "^5.3.3"
   },
   "devDependencies": {
+    "@eslint/eslintrc": "^3.0.0",
+    "@eslint/js": "^8.56.0",
+    "@trivago/prettier-plugin-sort-imports": "^4.3.0",
     "@types/node": "^20.11.16",
+    "@typescript-eslint/eslint-plugin": "^6.20.0",
+    "@typescript-eslint/parser": "^6.20.0",
+    "eslint": "^8.56.0",
+    "eslint-config-prettier": "^9.1.0",
+    "eslint-plugin-vitest": "^0.3.21",
+    "prettier": "^3.2.5",
     "vitest": "^1.2.2"
   }
 }

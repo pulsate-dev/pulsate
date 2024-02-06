@@ -1,14 +1,17 @@
-import {Result} from '@mikuroxina/mini-fn';
-import {type Clock, SnowflakeIDGenerator} from '../../id/mod.js';
-import {Argon2idPasswordEncoder} from '../../password/mod.js';
-import {DummySendNotificationService} from './sendNotification.js';
-import {InMemoryAccountRepository, InMemoryAccountVerifyTokenRepository,} from '../adaptor/repository/dummy.js';
-import {RegisterAccountService} from './register.js';
-import {TokenVerifyService} from './tokenVerify.js';
-import {type AccountName, type AccountRole} from '../model/account.js';
+import { Result } from '@mikuroxina/mini-fn';
+import { describe, it, expect } from 'vitest';
 
-import {SilenceService} from './silence.js';
-import {describe, expect} from "vitest";
+import { type Clock, SnowflakeIDGenerator } from '../../id/mod.js';
+import { Argon2idPasswordEncoder } from '../../password/mod.js';
+import {
+  InMemoryAccountRepository,
+  InMemoryAccountVerifyTokenRepository,
+} from '../adaptor/repository/dummy.js';
+import { type AccountName, type AccountRole } from '../model/account.js';
+import { RegisterAccountService } from './register.js';
+import { DummySendNotificationService } from './sendNotification.js';
+import { SilenceService } from './silence.js';
+import { TokenVerifyService } from './tokenVerify.js';
 
 const repository = new InMemoryAccountRepository();
 const verifyRepository = new InMemoryAccountVerifyTokenRepository();
@@ -37,7 +40,7 @@ const exampleInput = {
   role: 'normal' as AccountRole,
 };
 
-describe('SilenceService', it => {
+describe('SilenceService', () => {
   it('set account silence', async () => {
     const res = await registerService.handle(
       exampleInput.name,

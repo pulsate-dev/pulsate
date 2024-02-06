@@ -1,4 +1,5 @@
 import { Result } from '@mikuroxina/mini-fn';
+
 import type { ID } from './type.ts';
 
 export interface Clock {
@@ -43,7 +44,7 @@ export class SnowflakeIDGenerator {
     }
 
     if (this.lastTimeStamp === time) {
-      if ((this.incremental + 1n) > this.MAX_INCREMENTAL) {
+      if (this.incremental + 1n > this.MAX_INCREMENTAL) {
         return Result.err(new Error('increment overflow'));
       }
       this.incremental = (this.incremental + 1n) & this.MAX_INCREMENTAL;
@@ -53,9 +54,10 @@ export class SnowflakeIDGenerator {
 
     this.lastTimeStamp = time;
 
-    const id = timeFromEpoch <<
-        (this.WORKER_ID_BIT_LENGTH + this.INCREMENTAL_BIT_LENGTH) |
-      this.workerID << this.INCREMENTAL_BIT_LENGTH |
+    const id =
+      (timeFromEpoch <<
+        (this.WORKER_ID_BIT_LENGTH + this.INCREMENTAL_BIT_LENGTH)) |
+      (this.workerID << this.INCREMENTAL_BIT_LENGTH) |
       this.incremental;
 
     return Result.ok(id.toString() as ID<T>);

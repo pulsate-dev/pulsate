@@ -1,4 +1,5 @@
 import { Option, Result } from '@mikuroxina/mini-fn';
+
 import { type AccountRepository } from '../model/repository.js';
 
 export class FreezeService {

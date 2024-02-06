@@ -1,7 +1,8 @@
 import { Option, Result } from '@mikuroxina/mini-fn';
-import { EtagVerifyService } from './etagGenerateVerify.js';
-import { type AccountRepository } from '../model/repository.js';
+
 import { type PasswordEncoder } from '../../password/mod.js';
+import { type AccountRepository } from '../model/repository.js';
+import type { EtagVerifyService } from './etagGenerateVerify.js';
 
 export class EditAccountService {
   private readonly nicknameShortest = 1;

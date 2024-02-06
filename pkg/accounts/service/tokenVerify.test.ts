@@ -1,11 +1,11 @@
-import {Result} from '@mikuroxina/mini-fn';
-import {type ID} from '../../id/type.js';
-import {InMemoryAccountVerifyTokenRepository} from '../adaptor/repository/dummy.js';
-import {type AccountID} from '../model/account.js';
-import {TokenVerifyService} from './tokenVerify.js';
-import {describe, expect, it} from "vitest";
-import {type Clock} from '../../id/mod.js';
+import { Result } from '@mikuroxina/mini-fn';
+import { describe, expect, it } from 'vitest';
 
+import { type Clock } from '../../id/mod.js';
+import { type ID } from '../../id/type.js';
+import { InMemoryAccountVerifyTokenRepository } from '../adaptor/repository/dummy.js';
+import { type AccountID } from '../model/account.js';
+import { TokenVerifyService } from './tokenVerify.js';
 
 const repository = new InMemoryAccountVerifyTokenRepository();
 const service = new TokenVerifyService(repository);

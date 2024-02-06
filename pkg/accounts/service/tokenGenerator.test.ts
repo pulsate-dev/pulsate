@@ -1,6 +1,7 @@
 import { Option } from '@mikuroxina/mini-fn';
+import { describe, it, expect } from 'vitest';
+
 import { TokenGenerator } from './tokenGenerator.js';
-import {describe, it, expect} from "vitest";
 
 const generator = await TokenGenerator.new();
 
