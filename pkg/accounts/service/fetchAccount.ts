@@ -1,6 +1,6 @@
-import { Option, Result } from 'mini-fn';
-import { AccountRepository } from '../model/repository.ts';
-import { Account } from '../model/account.ts';
+import { Option, Result } from '@mikuroxina/mini-fn';
+import { AccountRepository } from '../model/repository.js';
+import { Account } from '../model/account.js';
 
 export class FetchAccountService {
   private accountRepository: AccountRepository;
@@ -19,7 +19,7 @@ export class FetchAccountService {
       const account = Option.unwrap(res);
       return Result.ok(account);
     } catch (e) {
-      return Result.err(e);
+      return Result.err(e as unknown as Error);
     }
   }
 }
