@@ -23,8 +23,8 @@ export class TokenGenerator {
 
   public async generate(
     subject: string,
-    issuedAt: Date,
-    expiredAt: Date,
+    issuedAt: number,
+    expiredAt: number,
   ): Promise<Option.Option<string>> {
     const token = await new jose.SignJWT()
       .setProtectedHeader({ alg: 'ES256' })
