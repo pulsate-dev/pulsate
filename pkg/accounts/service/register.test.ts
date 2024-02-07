@@ -1,33 +1,36 @@
-import { assertEquals } from 'std/assert';
-import { Clock, SnowflakeIDGenerator } from '../../id/mod.ts';
-import { ScryptPasswordEncoder } from '../../password/mod.ts';
+import { Result } from '@mikuroxina/mini-fn';
+import { describe, expect, it } from 'vitest';
+
+import { type Clock, SnowflakeIDGenerator } from '../../id/mod.js';
+import { Argon2idPasswordEncoder } from '../../password/mod.js';
 import {
   InMemoryAccountRepository,
   InMemoryAccountVerifyTokenRepository,
-} from '../adaptor/repository/dummy.ts';
-import { RegisterAccountService } from './register.ts';
-import { DummySendNotificationService } from './sendNotification.ts';
-import { TokenVerifyService } from './tokenVerify.ts';
-import { Result } from 'mini-fn';
-import { AccountRole } from '../model/account.ts';
+} from '../adaptor/repository/dummy.js';
+import { type AccountName, type AccountRole } from '../model/account.js';
+import { RegisterAccountService } from './register.js';
+import { DummySendNotificationService } from './sendNotification.js';
+import { TokenVerifyService } from './tokenVerify.js';
 
 const repository = new InMemoryAccountRepository();
 const verifyRepository = new InMemoryAccountVerifyTokenRepository();
+
 class DummyClock implements Clock {
   Now(): bigint {
     return BigInt(new Date('2023/9/10 00:00:00 UTC').getTime());
   }
 }
+
 const registerService: RegisterAccountService = new RegisterAccountService({
   repository,
   idGenerator: new SnowflakeIDGenerator(1, new DummyClock()),
-  passwordEncoder: new ScryptPasswordEncoder(),
+  passwordEncoder: new Argon2idPasswordEncoder(),
   sendNotification: new DummySendNotificationService(),
   verifyTokenService: new TokenVerifyService(verifyRepository),
 });
 
 const exampleInput = {
-  name: 'john_doe@example.com',
+  name: '@john_doe@example.com' as AccountName,
   mail: 'johndoe@example.com',
   nickname: 'John Doe',
   passphrase: 'password',
@@ -35,22 +38,24 @@ const exampleInput = {
   role: 'normal' as AccountRole,
 };
 
-Deno.test('register account', async () => {
-  const res = await registerService.handle(
-    exampleInput.name,
-    exampleInput.mail,
-    exampleInput.nickname,
-    exampleInput.passphrase,
-    exampleInput.bio,
-    exampleInput.role,
-  );
-  if (Result.isErr(res)) return;
+describe('RegisterAccountService', () => {
+  it('register account', async () => {
+    const res = await registerService.handle(
+      exampleInput.name,
+      exampleInput.mail,
+      exampleInput.nickname,
+      exampleInput.passphrase,
+      exampleInput.bio,
+      exampleInput.role,
+    );
+    if (Result.isErr(res)) return;
 
-  assertEquals(res[1].getName, exampleInput.name);
-  assertEquals(res[1].getMail, exampleInput.mail);
-  assertEquals(res[1].getNickname, exampleInput.nickname);
-  assertEquals(res[1].getBio, exampleInput.bio);
-  assertEquals(res[1].getRole, exampleInput.role);
-  assertEquals(res[1].getStatus, 'notActivated');
-  repository.reset();
+    expect(res[1].getName).toBe(exampleInput.name);
+    expect(res[1].getMail).toBe(exampleInput.mail);
+    expect(res[1].getNickname).toBe(exampleInput.nickname);
+    expect(res[1].getBio).toBe(exampleInput.bio);
+    expect(res[1].getRole).toBe(exampleInput.role);
+    expect(res[1].getStatus).toBe('notActivated');
+    repository.reset();
+  });
 });

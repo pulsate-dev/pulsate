@@ -1,13 +1,14 @@
-import { ID } from '../../id/type.ts';
+import type { ID } from '../../id/type.ts';
 import {
   AccountAlreadyDeletedError,
   AccountAlreadyFrozenError,
   AccountBioLengthError,
   AccountDateInvalidError,
   AccountNickNameLengthError,
-} from './account.errors.ts';
+} from './account.errors.js';
 
 export type AccountID = string;
+export type AccountName = `@${string}@${string}`;
 export type AccountRole = 'admin' | 'normal' | 'moderator';
 export type AccountStatus = 'active' | 'notActivated';
 export type AccountFrozen = 'frozen' | 'normal';
@@ -15,7 +16,7 @@ export type AccountSilenced = 'silenced' | 'normal';
 
 export interface CreateAccountArgs {
   id: ID<AccountID>;
-  name: string;
+  name: AccountName;
   mail: string;
   nickname: string;
   passphraseHash: string | undefined;
@@ -52,8 +53,8 @@ export class Account {
     return this.id;
   }
 
-  private readonly name: string;
-  get getName(): string {
+  private readonly name: AccountName;
+  get getName(): AccountName {
     return this.name;
   }
 
@@ -90,7 +91,7 @@ export class Account {
       throw new AccountAlreadyFrozenError('account already frozen');
     }
 
-    if ([...name].length > 128) {
+    if ([...name].length > 256) {
       throw new AccountNickNameLengthError('nickname length is too long');
     }
     this.nickname = name;

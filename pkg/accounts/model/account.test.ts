@@ -1,6 +1,7 @@
-import { assertEquals, assertThrows } from 'std/assert';
-import { Account, AccountID, CreateAccountArgs } from './account.ts';
-import { ID } from '../../id/type.ts';
+import { describe, expect, it } from 'vitest';
+
+import { type ID } from '../../id/type.js';
+import { Account, type AccountID, type CreateAccountArgs } from './account.js';
 
 const exampleInput: CreateAccountArgs = {
   id: '1' as ID<AccountID>,
@@ -13,89 +14,89 @@ const exampleInput: CreateAccountArgs = {
   status: 'active',
   frozen: 'frozen',
   silenced: 'silenced',
-  name: 'johndoe@social.example.com',
+  name: '@johndoe@social.example.com',
   updatedAt: new Date('2023-09-10T09:00:00.000Z'),
   deletedAt: new Date('2023-09-10T10:00:00.000Z'),
 };
 
-Deno.test('generate new instance', () => {
-  const account = Account.new(exampleInput);
+describe('Account', () => {
+  it('generate new instance', () => {
+    const account = Account.new(exampleInput);
 
-  assertEquals(account.getID, exampleInput.id);
-  assertEquals(account.getName, exampleInput.name);
-  assertEquals(account.getMail, exampleInput.mail);
-  assertEquals(account.getNickname, exampleInput.nickname);
-  assertEquals(account.getPassphraseHash, exampleInput.passphraseHash);
-  assertEquals(account.getBio, exampleInput.bio);
-  assertEquals(account.getRole, exampleInput.role);
-  assertEquals(account.getStatus, 'notActivated');
-  assertEquals(account.getCreatedAt, exampleInput.createdAt);
-  assertEquals(account.getUpdatedAt, undefined);
-  assertEquals(account.getDeletedAt, undefined);
-});
-
-Deno.test('account nickname must be less than 128', () => {
-  const name = 'a'.repeat(129);
-  const account = Account.new(exampleInput);
-  assertThrows(() => {
-    account.setNickName(name);
-  });
-});
-
-Deno.test('account bio must be less than 1024 chars', () => {
-  const bio = 'a'.repeat(1025);
-  const account = Account.new(exampleInput);
-  assertThrows(() => {
-    account.setBio(bio);
-  });
-});
-
-Deno.test('can’t change values when account is frozen', () => {
-  const account = Account.new(exampleInput);
-  account.setFreeze();
-
-  assertThrows(() => {
-    account.setBio('test');
+    expect(account.getID).toBe(exampleInput.id);
+    expect(account.getName).toBe(exampleInput.name);
+    expect(account.getMail).toBe(exampleInput.mail);
+    expect(account.getNickname).toBe(exampleInput.nickname);
+    expect(account.getPassphraseHash).toBe(exampleInput.passphraseHash);
+    expect(account.getBio).toBe(exampleInput.bio);
+    expect(account.getRole).toBe(exampleInput.role);
+    expect(account.getStatus).toBe('notActivated');
+    expect(account.getCreatedAt).toBe(exampleInput.createdAt);
+    expect(account.getUpdatedAt).toBe(undefined);
+    expect(account.getDeletedAt).toBe(undefined);
   });
 
-  assertThrows(() => {
-    account.setNickName('hello@example.com');
+  it('account nickname must be less than 256', () => {
+    const name = 'a'.repeat(257);
+    const account = Account.new(exampleInput);
+    expect(() => account.setNickName(name)).toThrow();
   });
 
-  assertThrows(() => {
-    account.setPassphraseHash('123');
+  it('account bio must be less than 1024 chars', () => {
+    const bio = 'a'.repeat(1025);
+    const account = Account.new(exampleInput);
+    expect(() => {
+      account.setBio(bio);
+    }).toThrow();
   });
 
-  assertThrows(() => {
-    account.setSilence();
+  it('can’t change values when account is frozen', () => {
+    const account = Account.new(exampleInput);
+    account.setFreeze();
+
+    expect(() => {
+      account.setBio('test');
+    }).toThrow();
+
+    expect(() => {
+      account.setNickName('hello@example.com');
+    }).toThrow();
+
+    expect(() => {
+      account.setPassphraseHash('123');
+    }).toThrow();
+
+    expect(() => {
+      account.setSilence();
+    }).toThrow();
+
+    expect(() => {
+      account.setMail('pulsate@example.com');
+    }).toThrow();
   });
 
-  assertThrows(() => {
-    account.setMail('pulsate@example.com');
-  });
-});
+  it('deleted account can’t change values', () => {
+    const account = Account.new(exampleInput);
+    account.setDeletedAt(new Date());
 
-Deno.test('deleted account can’t change values', () => {
-  const account = Account.new(exampleInput);
-  account.setDeletedAt(new Date());
+    expect(() => {
+      account.setBio('test');
+    }).toThrow();
 
-  assertThrows(() => {
-    account.setBio('test');
-  });
+    expect(() => {
+      account.setNickName('hello@example.com');
+    }).toThrow();
 
-  assertThrows(() => {
-    account.setNickName('hello@example.com');
-  });
+    expect(() => {
+      account.setPassphraseHash('123');
+    }).toThrow();
 
-  assertThrows(() => {
-    account.setPassphraseHash('123');
-  });
+    expect(() => {
+      account.setSilence();
+    }).toThrow();
 
-  assertThrows(() => {
-    account.setSilence();
-  });
-
-  assertThrows(() => {
-    account.setMail('pulsate@example.com');
+    expect(() => {
+      account.setMail('pulsate@example.com');
+    }).toThrow();
   });
 });

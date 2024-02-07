@@ -1,5 +1,6 @@
-import { Option, Result } from 'mini-fn';
-import { AccountRepository } from '../model/repository.ts';
+import { Option, Result } from '@mikuroxina/mini-fn';
+
+import { type AccountRepository } from '../model/repository.js';
 
 export class FreezeService {
   private readonly accountRepository: AccountRepository;
@@ -18,7 +19,7 @@ export class FreezeService {
       account[1].setFreeze();
       return Result.ok(true);
     } catch (e) {
-      return Result.err(e);
+      return Result.err(e as unknown as Error);
     }
   }
 
@@ -34,7 +35,7 @@ export class FreezeService {
       account[1].setUnfreeze();
       return Result.ok(true);
     } catch (e) {
-      return Result.err(e);
+      return Result.err(e as unknown as Error);
     }
   }
 }

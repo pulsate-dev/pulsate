@@ -1,6 +1,8 @@
+import { serve } from '@hono/node-server';
+import { apiReference } from '@scalar/hono-api-reference';
 import { Hono } from 'hono';
-import { accounts } from './pkg/accounts/mod.ts';
-import { apiReference } from 'scalar/hono-api-reference';
+
+import { accounts } from './pkg/accounts/mod.js';
 
 const app = new Hono();
 
@@ -14,21 +16,21 @@ app.get('/doc.json', async (c) => {
   const modulePath: string[] = ['accounts'];
   const basePath = 'http://localhost:3000/';
   const openAPIBase = {
-    'openapi': '3.0.0',
-    'info': {
-      'description': '',
-      'title': 'Pulsate API Document',
-      'version': '0.1.0',
+    openapi: '3.0.0',
+    info: {
+      description: '',
+      title: 'Pulsate API Document',
+      version: '0.1.0',
     },
-    'components': {
-      'schemas': {},
-      'parameters': {},
+    components: {
+      schemas: {},
+      parameters: {},
     },
-    'paths': {},
+    paths: {},
   };
 
   const res = modulePath.map(async (path) => {
-    return (await fetch(basePath + path + '/doc.json')).json();
+    return (await fetch(`${basePath}${path}/doc.json`)).json();
   });
 
   for (const v in res) {
@@ -57,4 +59,4 @@ app.get(
   }),
 );
 
-Deno.serve({ port: 3000 }, app.fetch);
+serve({ fetch: app.fetch, port: 3000 });

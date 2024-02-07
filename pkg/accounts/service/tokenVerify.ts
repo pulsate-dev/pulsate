@@ -1,9 +1,9 @@
-import { Option, Result } from 'mini-fn';
-import { encodeBase64 } from 'std/encoding/base64';
-import { AccountVerifyTokenRepository } from '../model/repository.ts';
-import { ID } from '../../id/type.ts';
-import { AccountID } from '../model/account.ts';
-import { Clock } from '../../id/mod.ts';
+import { Option, Result } from '@mikuroxina/mini-fn';
+
+import { type Clock } from '../../id/mod.js';
+import { type ID } from '../../id/type.js';
+import { type AccountID } from '../model/account.js';
+import { type AccountVerifyTokenRepository } from '../model/repository.js';
 
 class DateClock implements Clock {
   Now(): bigint {
@@ -35,7 +35,7 @@ export class TokenVerifyService {
       Number(this.clock.Now()) + 7 * 24 * 60 * 60 * 1000,
     );
 
-    const encodedToken = encodeBase64(verifyToken);
+    const encodedToken = Buffer.from(verifyToken).toString('base64');
 
     const res = await this.repository.create(
       accountID,

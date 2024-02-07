@@ -1,4 +1,4 @@
-import { Option } from 'mini-fn';
+import { Option } from '@mikuroxina/mini-fn';
 import * as jose from 'jose';
 
 export class TokenGenerator {
@@ -8,11 +8,11 @@ export class TokenGenerator {
   static async new() {
     // generate ECDSA P-256 Private/Public Key (For JWT alg: "ES256")
     // cf. https://datatracker.ietf.org/doc/html/rfc7518#section-3.1
-    const { privateKey, publicKey } = await crypto.subtle.generateKey(
+    const { privateKey, publicKey } = (await crypto.subtle.generateKey(
       { name: 'ECDSA', namedCurve: 'P-256' },
       true,
       ['sign', 'verify'],
-    ) as CryptoKeyPair;
+    )) as CryptoKeyPair;
     return new TokenGenerator(privateKey, publicKey);
   }
 
@@ -26,8 +26,11 @@ export class TokenGenerator {
     issuedAt: Date,
     expiredAt: Date,
   ): Promise<Option.Option<string>> {
-    const token = await new jose.SignJWT().setProtectedHeader({ alg: 'ES256' })
-      .setIssuedAt(issuedAt).setSubject(subject).setExpirationTime(expiredAt)
+    const token = await new jose.SignJWT()
+      .setProtectedHeader({ alg: 'ES256' })
+      .setIssuedAt(issuedAt)
+      .setSubject(subject)
+      .setExpirationTime(expiredAt)
       .sign(this.privateKey);
 
     return Option.some(token);

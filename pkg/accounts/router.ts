@@ -1,4 +1,5 @@
-import { createRoute, z } from 'hono/zod-openapi';
+import { createRoute, z } from '@hono/zod-openapi';
+
 import {
   CommonErrorResponseSchema,
   CreateAccountRequestSchema,
@@ -11,7 +12,7 @@ import {
   UpdateAccountRequestSchema,
   UpdateAccountResponseSchema,
   VerifyEmailRequestSchema,
-} from './adaptor/validator/schema.ts';
+} from './adaptor/validator/schema.js';
 
 export const CreateAccountRoute = createRoute({
   method: 'post',
@@ -64,7 +65,7 @@ export const UpdateAccountRoute = createRoute({
       name: z.string().min(3).max(64).openapi({
         example: 'example_man',
         description:
-          'Characters must be [A-Za-z0-9-\.] The first and last characters must be [A-Za-z0-9-\.]',
+          'Characters must be [A-Za-z0-9-.] The first and last characters must be [A-Za-z0-9-.]',
       }),
     }),
     body: {
@@ -128,7 +129,7 @@ export const FreezeAccountRoute = createRoute({
       name: z.string().min(3).max(64).openapi({
         example: 'example_man',
         description:
-          'Characters must be [A-Za-z0-9-\.] The first and last characters must be [A-Za-z0-9-\.]',
+          'Characters must be [A-Za-z0-9-.] The first and last characters must be [A-Za-z0-9-.]',
       }),
     }),
   },
@@ -172,7 +173,7 @@ export const UnFreezeAccountRoute = createRoute({
       name: z.string().min(3).max(64).openapi({
         example: 'example_man',
         description:
-          'Characters must be [A-Za-z0-9-\.] The first and last characters must be [A-Za-z0-9-\.]',
+          'Characters must be [A-Za-z0-9-.] The first and last characters must be [A-Za-z0-9-.]',
       }),
     }),
   },
@@ -216,7 +217,7 @@ export const ResendVerificationEmailRoute = createRoute({
       name: z.string().min(3).max(64).openapi({
         example: 'example_man',
         description:
-          'Characters must be [A-Za-z0-9-\.] The first and last characters must be [A-Za-z0-9-\.]',
+          'Characters must be [A-Za-z0-9-.] The first and last characters must be [A-Za-z0-9-.]',
       }),
     }),
     body: {
@@ -267,7 +268,7 @@ export const VerifyEmailRoute = createRoute({
       name: z.string().min(3).max(64).openapi({
         example: 'example_man',
         description:
-          'Characters must be [A-Za-z0-9-\.] The first and last characters must be [A-Za-z0-9-\.]',
+          'Characters must be [A-Za-z0-9-.] The first and last characters must be [A-Za-z0-9-.]',
       }),
     }),
     body: {
@@ -384,7 +385,7 @@ export const GetAccountRoute = createRoute({
       name: z.string().min(3).max(64).openapi({
         example: 'example_man',
         description:
-          'Characters must be [A-Za-z0-9-\.] The first and last characters must be [A-Za-z0-9-\.]',
+          'Characters must be [A-Za-z0-9-.] The first and last characters must be [A-Za-z0-9-.]',
       }),
     }),
   },
@@ -409,7 +410,7 @@ export const SilenceAccountRoute = createRoute({
       name: z.string().min(3).max(64).openapi({
         example: 'example_man',
         description:
-          'Characters must be [A-Za-z0-9-\.] The first and last characters must be [A-Za-z0-9-\.]',
+          'Characters must be [A-Za-z0-9-.] The first and last characters must be [A-Za-z0-9-.]',
       }),
     }),
     body: {
@@ -453,7 +454,7 @@ export const UnSilenceAccountRoute = createRoute({
       name: z.string().min(3).max(64).openapi({
         example: 'example_man',
         description:
-          'Characters must be [A-Za-z0-9-\.] The first and last characters must be [A-Za-z0-9-\.]',
+          'Characters must be [A-Za-z0-9-.] The first and last characters must be [A-Za-z0-9-.]',
       }),
     }),
     body: {
@@ -497,7 +498,7 @@ export const FollowAccountRoute = createRoute({
       name: z.string().min(3).max(64).openapi({
         example: 'example_man',
         description:
-          'Characters must be [A-Za-z0-9-\.] The first and last characters must be [A-Za-z0-9-\.]',
+          'Characters must be [A-Za-z0-9-.] The first and last characters must be [A-Za-z0-9-.]',
       }),
     }),
     body: {
@@ -546,7 +547,7 @@ export const UnFollowAccountRoute = createRoute({
       name: z.string().min(3).max(64).openapi({
         example: 'example_man',
         description:
-          'Characters must be [A-Za-z0-9-\.] The first and last characters must be [A-Za-z0-9-\.]',
+          'Characters must be [A-Za-z0-9-.] The first and last characters must be [A-Za-z0-9-.]',
       }),
     }),
     body: {
