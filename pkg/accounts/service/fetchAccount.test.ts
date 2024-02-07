@@ -1,16 +1,15 @@
-import { Clock, SnowflakeIDGenerator } from '../../id/mod.ts';
-import { ScryptPasswordEncoder } from '../../password/mod.ts';
+import { SnowflakeIDGenerator, type Clock } from '../../id/mod.js';
+import { Argon2idPasswordEncoder } from '../../password/mod.js';
 import {
   InMemoryAccountRepository,
   InMemoryAccountVerifyTokenRepository,
-} from '../adaptor/repository/dummy.ts';
-import { RegisterAccountService } from './register.ts';
-import { DummySendNotificationService } from './sendNotification.ts';
-import { TokenVerifyService } from './tokenVerify.ts';
-import { FetchAccountService } from './fetchAccount.ts';
-import { AccountRole } from '../model/account.ts';
-import { Result } from 'mini-fn';
-import { assertEquals } from 'std/assert';
+} from '../adaptor/repository/dummy.js';
+import { RegisterAccountService } from './register.js';
+import { DummySendNotificationService } from './sendNotification.js';
+import { TokenVerifyService } from './tokenVerify.js';
+import { FetchAccountService } from './fetchAccount.js';
+import type { AccountRole } from '../model/account.js';
+import { Result } from '@mikuroxina/mini-fn';
 
 const repository = new InMemoryAccountRepository();
 const verifyRepository = new InMemoryAccountVerifyTokenRepository();
@@ -22,7 +21,7 @@ class DummyClock implements Clock {
 const registerService: RegisterAccountService = new RegisterAccountService({
   repository,
   idGenerator: new SnowflakeIDGenerator(1, new DummyClock()),
-  passwordEncoder: new ScryptPasswordEncoder(),
+  passwordEncoder: new Argon2idPasswordEncoder,
   sendNotification: new DummySendNotificationService(),
   verifyTokenService: new TokenVerifyService(verifyRepository),
 });

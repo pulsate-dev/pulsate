@@ -1,6 +1,6 @@
 import { Option, Result } from '@mikuroxina/mini-fn';
-import { AccountRepository } from '../model/repository.js';
 import { Account } from '../model/account.js';
+import type { AccountRepository } from '../model/repository.js';
 
 export class FetchAccountService {
   private accountRepository: AccountRepository;
