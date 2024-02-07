@@ -1,7 +1,12 @@
 {
-  "deno.enable": true,
-  "deno.lint": true,
-  "deno.unstable": false,
-  "editor.defaultFormatter": "denoland.vscode-deno",
-  "markdown.extension.toc.levels": "2..6"
+  // editor settings
+  "editor.defaultFormatter": "esbenp.prettier-vscode",
+  "editor.formatOnSave": true,
+
+  // Markdown All in One settings
+  "markdown.extension.toc.levels": "2..6",
+
+  // prettier extension settings
+  "prettier.requireConfig": true,
+  "prettier.configPath": ".prettierrc"
 }

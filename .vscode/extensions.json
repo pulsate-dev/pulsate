@@ -1,6 +1,7 @@
 {
   "recommendations": [
-    "denoland.vscode-deno",
+    "esbenp.prettier-vscode",
+    "dbaeumer.vscode-eslint",
     "yzhang.markdown-all-in-one",
     "EditorConfig.EditorConfig"
   ]
