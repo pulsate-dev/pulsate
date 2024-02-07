@@ -38,7 +38,7 @@ describe('AuthenticationService', () => {
     const service = new AuthenticationService({
       accountRepository: accountRepository,
       tokenGenerator: tokenGenerator,
-      passwordEncoder: new Argon2idPasswordEncoder(),
+      passwordEncoder: encoder,
     });
 
     const result = await service.handle(

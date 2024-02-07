@@ -1,6 +1,8 @@
 import { Option } from '@mikuroxina/mini-fn';
 import * as jose from 'jose';
 
+import type { UNIXTimeFromEpoch } from '../../time/mod.js';
+
 export class TokenGenerator {
   private readonly privateKey: CryptoKey;
   private readonly publicKey: CryptoKey;
@@ -23,8 +25,8 @@ export class TokenGenerator {
 
   public async generate(
     subject: string,
-    issuedAt: number,
-    expiredAt: number,
+    issuedAt: UNIXTimeFromEpoch,
+    expiredAt: UNIXTimeFromEpoch,
   ): Promise<Option.Option<string>> {
     const token = await new jose.SignJWT()
       .setProtectedHeader({ alg: 'ES256' })

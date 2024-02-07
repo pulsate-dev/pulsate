@@ -1,6 +1,7 @@
 import { Option, Result } from '@mikuroxina/mini-fn';
 
 import type { PasswordEncoder } from '../../password/mod.js';
+import { addSecondsToDate, calculateDiffFromEpoch } from '../../time/mod.js';
 import type { AccountName } from '../model/account.js';
 import type { AccountRepository } from '../model/repository.js';
 import type { TokenGenerator } from './tokenGenerator.js';
@@ -14,7 +15,6 @@ export class AuthenticationService {
   private readonly accountRepository: AccountRepository;
   private readonly tokenGenerator: TokenGenerator;
   private readonly passwordEncoder: PasswordEncoder;
-  private readonly EPOCH = 1640995200000;
 
   constructor(args: {
     accountRepository: AccountRepository;
@@ -45,8 +45,8 @@ export class AuthenticationService {
 
     const authorizationToken = await this.tokenGenerator.generate(
       Option.unwrap(account).getName,
-      new Date().getTime() - this.EPOCH,
-      this.addSecondsToDate(new Date(), 900) - this.EPOCH,
+      calculateDiffFromEpoch(new Date()),
+      calculateDiffFromEpoch(addSecondsToDate(new Date(), 900)),
     );
 
     if (Option.isNone(authorizationToken)) {
@@ -55,8 +55,8 @@ export class AuthenticationService {
 
     const refreshToken = await this.tokenGenerator.generate(
       Option.unwrap(account).getName,
-      new Date().getTime() - this.EPOCH,
-      this.addSecondsToDate(new Date(), 2_592_000) - this.EPOCH,
+      calculateDiffFromEpoch(new Date()),
+      calculateDiffFromEpoch(addSecondsToDate(new Date(), 2_592_000)),
     );
 
     if (Option.isNone(refreshToken)) {
@@ -67,9 +67,5 @@ export class AuthenticationService {
       authorizationToken: Option.unwrap(authorizationToken),
       refreshToken: Option.unwrap(refreshToken),
     });
-  }
-
-  private addSecondsToDate(baseDate: Date, add: number): number {
-    return new Date(baseDate.getTime() + add * 1000).getTime();
   }
 }
