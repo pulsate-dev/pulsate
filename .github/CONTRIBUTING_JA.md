@@ -8,8 +8,6 @@ Pulsate Project への貢献に関するガイド.
 - [Pull Requests](#pull-requests)
   - [レビュー](#レビュー)
 - [コミットメッセージ](#コミットメッセージ)
-- [Deno](#deno)
-  - [依存関係の追加](#依存関係の追加)
 - [スタイルガイド](#スタイルガイド)
   - [TypeScript](#typescript)
     - [null と undefined](#null-と-undefined)
@@ -87,41 +85,11 @@ Pulsateコミットメッセージは[Conventional commit](https://www.conventio
 - 後方互換性を破壊するような変更を行う場合は, `scope` を `!` に設定し, `body` に破壊的な変更についての説明を追加しなければなりません.
   - 破壊的変更が必要な場合はまず Issue または Discussion でメンテナに連絡してください. **ほとんどの場合, そのような変更は望まれていません**.
 
-## Deno
-
-### 依存関係の追加
-
-Denoの依存関係を追加するにはimport_mapsを使用してください. **ソースコードに直接 URL は追加しないでください**.
-
-import_maps は `deno.jsonc` の `imports` に直接 URL を挿入することで定義できます.
-
-```json
-"imports": {
-  "std/assert": "https://deno.land/std@0.205.0/assert/mod.ts",
-  "hono": "https://deno.land/x/hono@v3.8.2/mod.ts",
-  "mini-fn": "npm:@mikuroxina/mini-fn"
-}
-```
-
-実際のソースコードに`imports`のキーを入れることで依存関係を使うことができます.
-
-```ts
-import { Hono } from 'hono';
-
-import { accounts } from './pkg/accounts/mod.ts';
-
-const app = new Hono();
-
-app.route('/accounts', accounts);
-
-Deno.serve({ port: 3000 }, app.fetch);
-```
-
 ## スタイルガイド
 
 Pulsate開発のためのスタイルガイド.
 
-- これらの設定は deno fmt,.editorconfigによって統一されています.
+- これらの設定は Prettier, ESLint, .editorconfig によって統一されています.
   - エディタやIDEによっては, 特別なプラグインをインストールする必要があります.
   - 詳細は[こちら](https://editorconfig.org/#download)をクリックしてください.
 
