@@ -1,5 +1,5 @@
 import { Result } from '@mikuroxina/mini-fn';
-import { describe, expect, it } from 'vitest';
+import { afterEach, describe, expect, it } from 'vitest';
 
 import type { ID } from '../../id/type.js';
 import { InMemoryAccountRepository } from '../adaptor/repository/dummy.js';
@@ -40,7 +40,6 @@ describe('FetchAccountService', () => {
     expect(account[1].getSilenced).toBe('normal');
     expect(account[1].getStatus).toBe('notActivated');
     expect(account[1].getCreatedAt).toBeInstanceOf(Date);
-    repository.reset();
   });
 
   it("fetch account info doesn't exist", async () => {
@@ -50,6 +49,7 @@ describe('FetchAccountService', () => {
     );
 
     expect(Result.isErr(account)).toBe(true);
-    repository.reset();
   });
+
+  afterEach(() => repository.reset());
 });
