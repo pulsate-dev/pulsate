@@ -271,7 +271,7 @@ export class Account {
     });
   }
 
-  public reconstruct(arg: CreateAccountArgs) {
+  public static reconstruct(arg: CreateAccountArgs) {
     return new Account(arg);
   }
 }

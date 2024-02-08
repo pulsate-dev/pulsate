@@ -1,16 +1,13 @@
 import { Result } from '@mikuroxina/mini-fn';
 
-import type { ID } from './type.ts';
+import { OFFSET_FROM_UNIX_EPOCH } from '../time/mod.js';
+import type { ID } from './type.js';
 
 export interface Clock {
   Now(): bigint;
 }
 
 export class SnowflakeIDGenerator {
-  /**
-   * Pulsate Epoch 2022 January 1st 00:00:0.000UTC
-   */
-  private readonly EPOCH = 1640995200000n;
   private readonly WORKER_ID_BIT_LENGTH = 10n;
   private readonly INCREMENTAL_BIT_LENGTH = 12n;
   private readonly MAX_WORKER_ID = (1n << this.WORKER_ID_BIT_LENGTH) - 1n;
@@ -37,13 +34,13 @@ export class SnowflakeIDGenerator {
    * @returns SnowflakeID (string)
    */
   public generate<T>(): Result.Result<Error, ID<T>> {
-    const time = this.clock.Now();
-    const timeFromEpoch = time - this.EPOCH;
+    const now = this.clock.Now();
+    const timeFromEpoch = now - OFFSET_FROM_UNIX_EPOCH;
     if (timeFromEpoch < 0) {
       return Result.err(new Error('invalid date'));
     }
 
-    if (this.lastTimeStamp === time) {
+    if (this.lastTimeStamp === now) {
       if (this.incremental + 1n > this.MAX_INCREMENTAL) {
         return Result.err(new Error('increment overflow'));
       }
@@ -52,7 +49,7 @@ export class SnowflakeIDGenerator {
       this.incremental = 0n;
     }
 
-    this.lastTimeStamp = time;
+    this.lastTimeStamp = now;
 
     const id =
       (timeFromEpoch <<
