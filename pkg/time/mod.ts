@@ -11,6 +11,6 @@ export function addSecondsToDate(date: Date, seconds: number): Date {
   return new Date(date.getTime() + seconds * 1000);
 }
 
-export function calculateDiffFromEpoch(date: Date): PulsateTime {
+export function convertTo(date: Date): PulsateTime {
   return Number(BigInt(date.getTime()) - OFFSET_FROM_UNIX_EPOCH) as PulsateTime;
 }

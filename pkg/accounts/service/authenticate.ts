@@ -1,7 +1,7 @@
 import { Option, Result } from '@mikuroxina/mini-fn';
 
 import type { PasswordEncoder } from '../../password/mod.js';
-import { addSecondsToDate, calculateDiffFromEpoch } from '../../time/mod.js';
+import { addSecondsToDate, convertTo } from '../../time/mod.js';
 import type { AccountName } from '../model/account.js';
 import type { AccountRepository } from '../model/repository.js';
 import type { TokenGenerator } from './tokenGenerator.js';
@@ -45,8 +45,8 @@ export class AuthenticationService {
 
     const authorizationToken = await this.tokenGenerator.generate(
       Option.unwrap(account).getName,
-      calculateDiffFromEpoch(new Date()),
-      calculateDiffFromEpoch(addSecondsToDate(new Date(), 900)),
+      convertTo(new Date()),
+      convertTo(addSecondsToDate(new Date(), 900)),
     );
 
     if (Option.isNone(authorizationToken)) {
@@ -55,8 +55,8 @@ export class AuthenticationService {
 
     const refreshToken = await this.tokenGenerator.generate(
       Option.unwrap(account).getName,
-      calculateDiffFromEpoch(new Date()),
-      calculateDiffFromEpoch(addSecondsToDate(new Date(), 2_592_000)),
+      convertTo(new Date()),
+      convertTo(addSecondsToDate(new Date(), 2_592_000)),
     );
 
     if (Option.isNone(refreshToken)) {
