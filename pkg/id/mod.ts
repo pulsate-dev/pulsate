@@ -34,13 +34,13 @@ export class SnowflakeIDGenerator {
    * @returns SnowflakeID (string)
    */
   public generate<T>(): Result.Result<Error, ID<T>> {
-    const time = this.clock.Now();
-    const timeFromEpoch = time - EPOCH;
+    const now = this.clock.Now();
+    const timeFromEpoch = now - EPOCH;
     if (timeFromEpoch < 0) {
       return Result.err(new Error('invalid date'));
     }
 
-    if (this.lastTimeStamp === time) {
+    if (this.lastTimeStamp === now) {
       if (this.incremental + 1n > this.MAX_INCREMENTAL) {
         return Result.err(new Error('increment overflow'));
       }
@@ -49,7 +49,7 @@ export class SnowflakeIDGenerator {
       this.incremental = 0n;
     }
 
-    this.lastTimeStamp = time;
+    this.lastTimeStamp = now;
 
     const id =
       (timeFromEpoch <<

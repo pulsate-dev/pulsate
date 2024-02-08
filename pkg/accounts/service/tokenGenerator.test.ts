@@ -11,7 +11,7 @@ describe('TokenGenerator', () => {
     const token = await generator.generate(
       '',
       calculateDiffFromEpoch(new Date()),
-      calculateDiffFromEpoch(new Date('2099/12/31 12:59:59')),
+      calculateDiffFromEpoch(new Date('2099-12-31T12:59:59Z')),
     );
     if (Option.isNone(token)) {
       return;
@@ -23,8 +23,8 @@ describe('TokenGenerator', () => {
   it('if token expired', async () => {
     const expired = await generator.generate(
       '',
-      calculateDiffFromEpoch(new Date('2022/01/01')),
-      calculateDiffFromEpoch(new Date('2022/01/02')),
+      calculateDiffFromEpoch(new Date('2022-01-01T00:00:00Z')),
+      calculateDiffFromEpoch(new Date('2022-01-02T00:00:00Z')),
     );
     if (Option.isNone(expired)) return;
 
