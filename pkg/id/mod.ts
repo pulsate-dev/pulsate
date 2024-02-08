@@ -1,6 +1,6 @@
 import { Result } from '@mikuroxina/mini-fn';
 
-import { OffsetFromUnixEpoch } from '../time/mod.js';
+import { OFFSET_FROM_UNIX_EPOCH } from '../time/mod.js';
 import type { ID } from './type.js';
 
 export interface Clock {
@@ -35,7 +35,7 @@ export class SnowflakeIDGenerator {
    */
   public generate<T>(): Result.Result<Error, ID<T>> {
     const now = this.clock.Now();
-    const timeFromEpoch = now - OffsetFromUnixEpoch;
+    const timeFromEpoch = now - OFFSET_FROM_UNIX_EPOCH;
     if (timeFromEpoch < 0) {
       return Result.err(new Error('invalid date'));
     }
