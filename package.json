@@ -11,6 +11,9 @@
     "name": "pulsate-dev",
     "email": "info@pulsate.dev"
   },
+  "engines": {
+    "node": ">=20.11.0"
+  },
   "scripts": {
     "build": "tsc -p .",
     "start": "node ./build/main.js",
