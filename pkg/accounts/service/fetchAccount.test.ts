@@ -25,6 +25,8 @@ repository.create(
 const fetchAccountService = new FetchAccountService(repository);
 
 describe('FetchAccountService', () => {
+  afterEach(() => repository.reset());
+
   it('fetch account info', async () => {
     const account = await fetchAccountService.fetchAccount('@john@example.com');
     if (Result.isErr(account)) return;
@@ -50,6 +52,4 @@ describe('FetchAccountService', () => {
 
     expect(Result.isErr(account)).toBe(true);
   });
-
-  afterEach(() => repository.reset());
 });

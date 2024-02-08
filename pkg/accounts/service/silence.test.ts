@@ -1,80 +1,49 @@
-import { Result } from '@mikuroxina/mini-fn';
-import { describe, it, expect } from 'vitest';
+import { Option } from '@mikuroxina/mini-fn';
+import { describe, it, expect, afterEach } from 'vitest';
 
-import { type Clock, SnowflakeIDGenerator } from '../../id/mod.js';
-import { Argon2idPasswordEncoder } from '../../password/mod.js';
-import {
-  InMemoryAccountRepository,
-  InMemoryAccountVerifyTokenRepository,
-} from '../adaptor/repository/dummy.js';
-import { type AccountName, type AccountRole } from '../model/account.js';
-import { RegisterAccountService } from './register.js';
-import { DummySendNotificationService } from './sendNotification.js';
+import type { ID } from '../../id/type.js';
+import { InMemoryAccountRepository } from '../adaptor/repository/dummy.js';
+import { Account, type AccountID } from '../model/account.js';
 import { SilenceService } from './silence.js';
-import { TokenVerifyService } from './tokenVerify.js';
 
 const repository = new InMemoryAccountRepository();
-const verifyRepository = new InMemoryAccountVerifyTokenRepository();
-
-class DummyClock implements Clock {
-  Now(): bigint {
-    return BigInt(new Date('2023/9/10 00:00:00 UTC').getTime());
-  }
-}
-
-const registerService: RegisterAccountService = new RegisterAccountService({
-  repository,
-  idGenerator: new SnowflakeIDGenerator(1, new DummyClock()),
-  passwordEncoder: new Argon2idPasswordEncoder(),
-  sendNotification: new DummySendNotificationService(),
-  verifyTokenService: new TokenVerifyService(verifyRepository),
-});
+repository.create(
+  Account.new({
+    id: '1' as ID<AccountID>,
+    name: '@john@example.com',
+    mail: 'johndoe@example.com',
+    nickname: 'John Doe',
+    passphraseHash: 'hash',
+    bio: '',
+    role: 'normal',
+    frozen: 'normal',
+    silenced: 'normal',
+    status: 'notActivated',
+    createdAt: new Date(),
+  }),
+);
 const silenceService = new SilenceService(repository);
 
-const exampleInput = {
-  name: '@john_doe@example.com' as AccountName,
-  mail: 'johndoe@example.com',
-  nickname: 'John Doe',
-  passphrase: 'password',
-  bio: 'Hello, World!',
-  role: 'normal' as AccountRole,
-};
-
 describe('SilenceService', () => {
+  afterEach(() => repository.reset());
+
   it('set account silence', async () => {
-    const res = await registerService.handle(
-      exampleInput.name,
-      exampleInput.mail,
-      exampleInput.nickname,
-      exampleInput.passphrase,
-      exampleInput.bio,
-      exampleInput.role,
-    );
-    if (Result.isErr(res)) return;
+    const account = await repository.findByName('@john@example.com');
+    if (Option.isNone(account)) return;
 
-    await silenceService.setSilence(exampleInput.name);
+    await silenceService.setSilence('@john@example.com');
 
-    expect(res[1].getSilenced).toBe('silenced');
-    expect(res[1].getSilenced).not.toBe('normal');
-    repository.reset();
+    expect(account[1].getSilenced).toBe('silenced');
+    expect(account[1].getSilenced).not.toBe('normal');
   });
 
   it('unset account silence', async () => {
-    const res = await registerService.handle(
-      exampleInput.name,
-      exampleInput.mail,
-      exampleInput.nickname,
-      exampleInput.passphrase,
-      exampleInput.bio,
-      exampleInput.role,
-    );
-    if (Result.isErr(res)) return;
+    const account = await repository.findByName('@john@example.com');
+    if (Option.isNone(account)) return;
 
-    await silenceService.setSilence(exampleInput.name);
-    await silenceService.undoSilence(exampleInput.name);
+    await silenceService.undoSilence('@john@example.com');
 
-    expect(res[1].getSilenced).toBe('normal');
-    expect(res[1].getSilenced).not.toBe('silenced');
-    repository.reset();
+    expect(account[1].getSilenced).toBe('normal');
+    expect(account[1].getSilenced).not.toBe('silenced');
   });
 });
