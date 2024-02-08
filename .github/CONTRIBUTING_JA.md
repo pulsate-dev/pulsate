@@ -8,6 +8,9 @@ Pulsate Project への貢献に関するガイド.
 - [Pull Requests](#pull-requests)
   - [レビュー](#レビュー)
 - [コミットメッセージ](#コミットメッセージ)
+- [開発環境](#開発環境)
+  - [Node.js のバージョン固定・インストール](#nodejs-のバージョン固定インストール)
+  - [パッケージのインストール](#パッケージのインストール)
 - [スタイルガイド](#スタイルガイド)
   - [TypeScript](#typescript)
     - [null と undefined](#null-と-undefined)
@@ -84,6 +87,41 @@ Pulsateコミットメッセージは[Conventional commit](https://www.conventio
   - 例えば, **新しい新機能の追加** は `feat`, **バグの修正** は `fix` です.
 - 後方互換性を破壊するような変更を行う場合は, `scope` を `!` に設定し, `body` に破壊的な変更についての説明を追加しなければなりません.
   - 破壊的変更が必要な場合はまず Issue または Discussion でメンテナに連絡してください. **ほとんどの場合, そのような変更は望まれていません**.
+
+## 開発環境
+
+Pulsate は以下のような開発環境を想定しています.
+
+- [Node.js](https://nodejs.org) v20.x
+- [Pnpm (pnpm)](https://pnpm.io/ja/) v8.x
+
+### Node.js のバージョン固定・インストール
+
+Pulsate で開発するためには, 事前に以下のようなツールを使用して Node.js のバージョンを固定する必要があります.
+
+- [mise](https://mise.jdx.dev/) (推奨)
+  - asdf と互換性を持つバージョン管理ツールです. 何か不都合がない限りは mise を使用することを推奨します.
+- [asdf](https://asdf-vm.com/)
+  - `.tool-versions` ファイルにより, asdf で Node.js のバージョンを固定することもできます.
+
+> [!WARNING]
+> Pulsate の必要動作環境である Node.js v20.x 以外のバージョンを使用している場合は互換性維持のため `pnpm run` などのコマンドが利用できません. バージョンを固定してから開発に取り組んでください.
+
+mise を使用する場合の手順は以下の通りです:
+
+1. mise をインストールします. 詳しくは [mise のインストールガイド](https://mise.jdx.dev/getting-started.html) を参照してください.
+2. **Pulsate のルートディレクトリ上** で `mise install` を実行します.
+3. `node --version` を実行して, Node.js のバージョンが `20.x` 系統であることを確認してください.
+
+### パッケージのインストール
+
+Pulsate は [pnpm](https://pnpm.io/ja/) を使用してパッケージを管理しています. 以下のコマンドを実行してパッケージをインストールしてください.
+
+```sh
+# pnpm が有効になって居ない場合:
+corepack enable pnpm
+pnpm install
+```
 
 ## スタイルガイド
 

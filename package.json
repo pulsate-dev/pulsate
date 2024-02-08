@@ -1,9 +1,19 @@
 {
   "name": "pulsate",
   "version": "0.0.1",
-  "description": "",
+  "description": "Easy-to-change, faster, developer friendly next generation decentralized social media.",
   "type": "module",
-  "main": "main.ts",
+  "main": "./build/main.js",
+  "license": "Apache-2.0",
+  "keywords": [],
+  "packageManager": "pnpm@8.15.1",
+  "author": {
+    "name": "pulsate-dev",
+    "email": "info@pulsate.dev"
+  },
+  "engines": {
+    "node": ">=20.11.0"
+  },
   "scripts": {
     "build": "tsc -p .",
     "start": "node ./build/main.js",
@@ -13,9 +23,6 @@
     "lint": "eslint . ",
     "postinstall": "lefthook install"
   },
-  "keywords": [],
-  "author": "",
-  "license": "Apache-2.0",
   "dependencies": {
     "@hono/node-server": "^1.7.0",
     "@hono/swagger-ui": "^0.2.1",

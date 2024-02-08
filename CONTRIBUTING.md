@@ -8,6 +8,9 @@ A guide on how to participate in this project.
 - [Pull Requests](#pull-requests)
   - [Review](#review)
 - [Commit Message](#commit-message)
+- [Development Environment](#development-environment)
+  - [Fixing and installing the Node.js version](#fixing-and-installing-the-nodejs-version)
+  - [Install the package](#install-the-package)
 - [Style Guide](#style-guide)
   - [TypeScript](#typescript)
     - [null and undefined](#null-and-undefined)
@@ -84,6 +87,42 @@ Pulsate commit messages must follow [conventional commit](https://www.convention
   - For example, **Add new feature** is `feat`, **Fix bug** is `fix`.
 - If you make any backward-compatibility-breaking changes, you must set `scope` to `!` and add a description of the destructive change to `body`.
   - Please contact the maintainer via Issue or Discussion once you make such a change. In most cases, such changes are not desired.
+
+## Development Environment
+
+Pulsate assumes the following development environment.
+
+- [Node.js](https://nodejs.org) v20.x
+- [Pnpm (pnpm)](https://pnpm.io/ja/) v8.x
+
+### Fixing and installing the Node.js version
+
+In order to develop with Pulsate, you need to fix the version of Node.js using the following tools.
+
+- [mise](https://mise.jdx.dev/) (recommended)
+  - This is a version control tool compatible with asdf. It is recommended to use mise unless there is some inconvenience.
+- [asdf](https://asdf-vm.com/)
+  - With `.tool-versions` file, you can also fix the version of Node.js with asdf.
+
+> [!WARNING]
+> If you are using a version of Node.js other than v20.x, which is the required environment for Pulsate, commands such as `pnpm run` will not be available to maintain compatibility. Please fix your version before starting development.
+
+To use mise, follow these steps:
+
+1. Install mise. See [mise installation guide](https://mise.jdx.dev/getting-started.html) for details.
+2. Run `mise install` in the **Pulsate root directory**.
+3. Run `node --version` and make sure your Node.js version is `20.x`.
+
+### Install the package
+
+Pulsate uses [pnpm](https://pnpm.io/ja/) to manage packages. Run the following command to install the package.
+
+```sh
+# If pnpm is not enabled:
+
+corepack enable pnpm
+pnpm install
+```
 
 ## Style Guide
 
