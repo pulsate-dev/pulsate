@@ -14,6 +14,7 @@ A guide on how to participate in this project.
 - [Style Guide](#style-guide)
   - [TypeScript](#typescript)
     - [null and undefined](#null-and-undefined)
+    - [any and unknown](#any-and-unknown)
     - [Quote marks](#quote-marks)
     - [Arrays](#arrays)
 - [Database Schema Migration](#database-schema-migration)
@@ -160,27 +161,53 @@ The basic naming conventions follow the [TypeScript Coding guidelines](https://g
 
 #### null and undefined
 
-Do not use either null or undefined if possible.
+In Pulsate, we use a functional programming library called `mini-fn`.
+
+`mini-fn` has a union type called `Option<T>`, so you don't need to consider whether to use `T | undefined` or `T | null`.
+
+Since there are dedicated functions for handling this union type, we actively use them when dealing with `null` or `undefined`.
 
 ```ts
-// Good
-let foo: { x: number, y?: number } = { x: 123 };
+/* Type guards. Necessary for TypeScript to narrow down types in code branches. */
 
-// Bad
-let foo = { x: 123, y: undefined };
+// At this point, `res` is of type `Option<Account>` and it's not certain whether a value exists.
+const res = await this.accountRepository.findByName(name);
+// Use a type guard to determine if a value exists in `res`. If not, return an error.
+if (Option.isNone(res)) {
+  return Result.err(new Error('account not found'));
+}
+// Confirm `res` as `account`.
+const account = Option.unwrap(res);
 ```
 
-Use undefined if it must be used or its use cannot be avoided for some reason.
-
-**DO NOT** use null.
+When defining fields, such as in interfaces, avoid using both `null` and `undefined`, and instead use `?` instead.
 
 ```ts
 // Good
-return undefined;
+interface Foo {
+  x?: string;
+  y?: string;
+}
 
 // Bad
-return null;
-const a = "apple" as any;
+interface Foo {
+  x: string | undefined;
+  y: string | null;
+}
+```
+
+#### any and unknown
+
+Avoid using `any`, and use `unknown` instead.
+
+If you are working with a typed API that returns `any`, immediately assert it to `unknown`.
+
+```ts
+// Good
+const foo = 'apple' as unknown
+
+// Bad
+const foo = 'apple' as any
 ```
 
 #### Quote marks
@@ -213,7 +240,7 @@ We migrate our database schema using [goose](https://github.com/pressly/goose). 
 
 ### Creating a New Migration File
 
-All migration files should be saved under the `resources/db` directory.  
+All migration files should be saved under the `resources/db` directory.
 Follow the steps below to create a new migration file.
 
 ```bash

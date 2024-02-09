@@ -14,6 +14,7 @@ Pulsate Project への貢献に関するガイド.
 - [スタイルガイド](#スタイルガイド)
   - [TypeScript](#typescript)
     - [null と undefined](#null-と-undefined)
+    - [any と unknown](#any-と-unknown)
     - [引用符](#引用符)
     - [配列](#配列)
 - [データベーススキーマのマイグレーション](#データベーススキーマのマイグレーション)
@@ -159,27 +160,52 @@ Pulsate開発のためのスタイルガイド.
 
 #### null と undefined
 
-可能であれば, `null` も `undefined` も使わないでください.
+Pulsate では `mini-fn` と呼ばれる関数型プログラミングライブラリを使用しています.
+
+`mini-fn` には `Option<T>` という直和型があり, `T | undefined` にすべきか, `T | null` にすべきかを考える必要はありません.
+
+その直和型を扱うための専用関数が用意されているため, `null` や `undefined` を扱う場合は積極的に使用します.
 
 ```ts
-// Good
-let foo: { x: number, y?: number } = { x: 123 };
+/* 型ガード. TypeScript がコードの分岐で型を確定させるために必要. */
 
-// Bad
-let foo = { x: 123, y: undefined };
+// この状態の `res` は `Option<Account>` という型で値が存在するかどうかが確定していない.
+const res = await this.accountRepository.findByName(name);
+// `res` に値が存在するか型ガードで確定させる. 存在しなければエラー.
+if (Option.isNone(res)) {
+  return Result.err(new Error('account not found'));
+}
+// `res` を `account` として確定.
+const account = Option.unwrap(res);
 ```
 
-何らかの理由により使用しないといけない・使用を回避できない場合は `undefined` を使用してください.
-
-**`null` は絶対に使用しないでください.**
+インターフェイスなどでフィールドを定義する必要がある場合. `null` , `undefined` どちらも使用せず, `?` を使用します.
 
 ```ts
 // Good
-return undefined;
+interface Foo {
+  x?: string;
+}
+
+// 悪い例
+interface Foo {
+  x: string | undefined;
+  y: string | null;
+}
+```
+
+#### any と unknown
+
+`any` は使用せず, `unknown` を使用します.
+
+`any` が返ってくる型付けの API を使用する場合は, 即座に `unknown` に型アサーションしてください.
+
+```ts
+// Good
+const foo = 'apple' as unknown
 
 // Bad
-return null;
-const a = "apple" as any;
+const foo = 'apple' as any
 ```
 
 #### 引用符
@@ -225,17 +251,17 @@ goose create add_some_column sql
 ```sql
 -- +goose Up
 CREATE TABLE IF NOT EXISTS account (
-	id VARCHAR(255) PRIMARY KEY,
-	name VARCHAR(128) NOT NULL,
-	nickname VARCHAR(255),
-	mail VARCHAR(128),
-	passphrase_hash VARCHAR(255),
-	bio TEXT NOT NULL DEFAULT '',
-	role INT NOT NULL DEFAULT 0,
-	status INT NOT NULL DEFAULT 0,
-	created_at DATETIME(6) NOT NULL,
-	updated_at DATETIME(6) DEFAULT NULL,
-	deleted_at DATETIME(6) DEFAULT NULL
+  id VARCHAR(255) PRIMARY KEY,
+  name VARCHAR(128) NOT NULL,
+  nickname VARCHAR(255),
+  mail VARCHAR(128),
+  passphrase_hash VARCHAR(255),
+  bio TEXT NOT NULL DEFAULT '',
+  role INT NOT NULL DEFAULT 0,
+  status INT NOT NULL DEFAULT 0,
+  created_at DATETIME(6) NOT NULL,
+  updated_at DATETIME(6) DEFAULT NULL,
+  deleted_at DATETIME(6) DEFAULT NULL
 );
 -- +goose Down
 DROP TABLE IF EXISTS account;
