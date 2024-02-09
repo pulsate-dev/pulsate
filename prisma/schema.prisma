@@ -1,0 +1,148 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model account {
+  id              String @id
+  name            String
+  mail            String
+  passphrase_hash String
+  bio             String @default("")
+  role            Int    @default(0)
+  status          Int    @default(0)
+
+  created_at           DateTime               @default(now())
+  updated_at           DateTime?              @updatedAt
+  deleted_at           DateTime?
+  following            following[]            @relation("following")
+  followed             following[]            @relation("followed")
+  note                 note[]
+  reaction             reaction[]
+  bookmark             bookmark[]
+  list_member          list_member[]
+  medium               medium[]
+  account_verify_token account_verify_token[]
+  list                 list[]
+}
+
+model following {
+  from    account @relation("followed", fields: [from_id], references: [id])
+  from_id String
+  to      account @relation("following", fields: [to_id], references: [id])
+  to_id   String
+  state   Int     @default(1)
+
+  created_at DateTime  @default(now())
+  updated_at DateTime? @updatedAt
+  deleted_at DateTime?
+
+  @@id([from_id, to_id])
+}
+
+model note {
+  id         String  @id
+  text       String  @db.Text
+  visibility Int     @default(0)
+  author     account @relation(fields: [author_id], references: [id])
+  author_id  String
+  renote_id  String?
+  renote     note?   @relation("renote", fields: [renote_id], references: [id])
+
+  created_at      DateTime          @default(now())
+  deleted_at      DateTime?
+  renotes         note[]            @relation("renote")
+  reaction        reaction[]
+  bookmark        bookmark[]
+  note_attachment note_attachment[]
+}
+
+model reaction {
+  reacted_by_id String
+  reacted_by    account @relation(fields: [reacted_by_id], references: [id])
+  reacted_to_id String
+  reacted_to    note    @relation(fields: [reacted_to_id], references: [id])
+  body          String
+
+  created_at DateTime  @default(now())
+  deleted_at DateTime?
+
+  @@id([reacted_by_id, reacted_to_id])
+}
+
+model bookmark {
+  note_id    String
+  note       note    @relation(fields: [note_id], references: [id])
+  account_id String
+  account    account @relation(fields: [account_id], references: [id])
+
+  created_at DateTime  @default(now())
+  deleted_at DateTime?
+
+  @@id([note_id, account_id])
+}
+
+model list {
+  id         String  @id
+  title      String
+  visibility Int     @default(0)
+  account_id String
+  account    account @relation(fields: [account_id], references: [id])
+
+  created_at  DateTime      @default(now())
+  deleted_at  DateTime?
+  list_member list_member[]
+}
+
+model list_member {
+  list_id   String
+  list      list    @relation(fields: [list_id], references: [id])
+  member_id String
+  member    account @relation(fields: [member_id], references: [id])
+
+  created_at DateTime  @default(now())
+  deleted_at DateTime?
+
+  @@id([list_id, member_id])
+}
+
+model medium {
+  id              String            @id
+  name            String
+  mime            String
+  author_id       String
+  author          account           @relation(fields: [author_id], references: [id])
+  url             String
+  created_at      DateTime          @default(now())
+  deleted_at      DateTime?
+  note_attachment note_attachment[]
+}
+
+model note_attachment {
+  medum_id String
+  medum    medium @relation(fields: [medum_id], references: [id])
+  note_id  String
+  note     note   @relation(fields: [note_id], references: [id])
+
+  alt        String
+  created_at DateTime  @default(now())
+  deleted_at DateTime?
+
+  @@id([medum_id, note_id])
+}
+
+model account_verify_token {
+  account_id String
+  account    account  @relation(fields: [account_id], references: [id])
+  token      String
+  expires_at DateTime
+
+  @@id([account_id, token])
+}
