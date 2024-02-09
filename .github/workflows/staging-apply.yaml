@@ -75,12 +75,12 @@ jobs:
 
       - id: "auth"
         name: Authenticate to Google Cloud
-        uses: "google-github-actions/auth@v1"
+        uses: "google-github-actions/auth@v2"
         with:
           workload_identity_provider: "projects/1065320521129/locations/global/workloadIdentityPools/github/providers/github-provider"
           service_account: "github-actions@pulsate-staging-400117.iam.gserviceaccount.com"
 
-      - uses: "google-github-actions/setup-gcloud@v1"
+      - uses: "google-github-actions/setup-gcloud@v2"
         with:
           version: ">= 363.0.0"
 
@@ -88,7 +88,7 @@ jobs:
         run: |
           gcloud --quiet auth configure-docker
 
-      - uses: "google-github-actions/get-gke-credentials@v1"
+      - uses: "google-github-actions/get-gke-credentials@v2"
         with:
           cluster_name: ${{ env.GKE_CLUSTER }}
           location: ${{ env.GKE_ZONE }}
