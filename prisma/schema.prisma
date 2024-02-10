@@ -12,7 +12,8 @@ datasource db {
 
 model account {
   id              String @id
-  name            String
+  name            String @unique
+  nickname        String
   mail            String
   passphrase_hash String
   bio             String @default("")
@@ -126,16 +127,16 @@ model medium {
 }
 
 model note_attachment {
-  medum_id String
-  medum    medium @relation(fields: [medum_id], references: [id])
-  note_id  String
-  note     note   @relation(fields: [note_id], references: [id])
+  medium_id String
+  medum     medium @relation(fields: [medium_id], references: [id])
+  note_id   String
+  note      note   @relation(fields: [note_id], references: [id])
 
   alt        String
   created_at DateTime  @default(now())
   deleted_at DateTime?
 
-  @@id([medum_id, note_id])
+  @@id([medium_id, note_id])
 }
 
 model account_verify_token {
