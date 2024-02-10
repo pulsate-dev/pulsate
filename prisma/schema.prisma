@@ -131,7 +131,7 @@ model medium {
 
 model note_attachment {
   medium_id String
-  medum     medium @relation(fields: [medium_id], references: [id])
+  medium    medium @relation(fields: [medium_id], references: [id])
   note_id   String
   note      note   @relation(fields: [note_id], references: [id])
 

@@ -41,15 +41,10 @@ describe('AuthenticationService', () => {
       passwordEncoder: encoder,
     });
 
-    const result = Result.unwrap(await service.handle(
-      '@test@example.com',
-      'じゃすた・いぐざんぽぅ',
-    ));
-    expect(
-      await tokenGenerator.verify(result.authorizationToken),
-    ).toBe(true);
-    expect(
-      await tokenGenerator.verify(result.refreshToken),
-    ).toBe(true);
+    const result = Result.unwrap(
+      await service.handle('@test@example.com', 'じゃすた・いぐざんぽぅ'),
+    );
+    expect(await tokenGenerator.verify(result.authorizationToken)).toBe(true);
+    expect(await tokenGenerator.verify(result.refreshToken)).toBe(true);
   });
 });
