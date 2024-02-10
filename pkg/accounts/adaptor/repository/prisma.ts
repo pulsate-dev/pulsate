@@ -33,11 +33,7 @@ interface AccountPrismaArgs {
 }
 
 export class PrismaAccountRepository implements AccountRepository {
-  readonly prisma: PrismaClient;
-
-  constructor(prisma: PrismaClient) {
-    this.prisma = prisma;
-  }
+  constructor(private readonly prisma: PrismaClient) {}
 
   async create(account: Account): Promise<Result.Result<Error, void>> {
     try {
@@ -54,75 +50,58 @@ export class PrismaAccountRepository implements AccountRepository {
   }
 
   async findByMail(mail: string): Promise<Option.Option<Account>> {
-    try {
-      const res = await this.prisma.account.findUnique({
-        where: {
-          mail: mail,
-        },
-      });
-      if (!res) {
-        return Option.none();
-      }
-      return Option.some(this.fromPrismaArgs(res));
-    } catch (e) {
+    const res = await this.prisma.account.findUnique({
+      where: {
+        mail: mail,
+      },
+    });
+    if (!res) {
       return Option.none();
     }
+    return Option.some(this.fromPrismaArgs(res));
   }
 
   async findByName(name: string): Promise<Option.Option<Account>> {
-    try {
-      const res = await this.prisma.account.findUnique({
-        where: {
-          name: name,
-        },
-      });
-      if (!res) {
-        return Option.none();
-      }
-      return Option.some(this.fromPrismaArgs(res));
-    } catch (e) {
+    const res = await this.prisma.account.findUnique({
+      where: {
+        name: name,
+      },
+    });
+    if (!res) {
       return Option.none();
     }
+    return Option.some(this.fromPrismaArgs(res));
   }
 
   private toPrismaArgs(account: Account): AccountPrismaArgs {
-    const role = ((role: AccountRole) => {
-      switch (role) {
-        case 'normal':
-          return 0;
-        case 'moderator':
-          return 1;
-        case 'admin':
-          return 2;
-      }
-    })(account.getRole);
+    const role = (
+      {
+        normal: 0,
+        moderator: 1,
+        admin: 2,
+      } satisfies Record<AccountRole, number>
+    )[account.getRole];
 
-    const status = ((status: AccountStatus) => {
-      switch (status) {
-        case 'active':
-          return 0;
-        case 'notActivated':
-          return 1;
-      }
-    })(account.getStatus);
+    const status = (
+      {
+        active: 0,
+        notActivated: 1,
+      } satisfies Record<AccountStatus, number>
+    )[account.getStatus];
 
-    const frozen = ((frozen: AccountFrozen) => {
-      switch (frozen) {
-        case 'frozen':
-          return 1;
-        case 'normal':
-          return 0;
-      }
-    })(account.getFrozen);
+    const frozen = (
+      {
+        normal: 0,
+        frozen: 1,
+      } satisfies Record<AccountFrozen, number>
+    )[account.getFrozen];
 
-    const silenced = ((silenced: AccountSilenced) => {
-      switch (silenced) {
-        case 'silenced':
-          return 1;
-        case 'normal':
-          return 0;
-      }
-    })(account.getSilenced);
+    const silenced = (
+      {
+        normal: 0,
+        silenced: 1,
+      } satisfies Record<AccountSilenced, number>
+    )[account.getSilenced];
 
     return {
       id: account.getID,
@@ -142,6 +121,39 @@ export class PrismaAccountRepository implements AccountRepository {
   }
 
   private fromPrismaArgs(args: AccountPrismaArgs): Account {
+    const role =
+      (
+        {
+          0: 'normal',
+          1: 'moderator',
+          2: 'admin',
+        } satisfies Record<number, AccountRole>
+      )[args.role] ?? 'normal';
+
+    const status =
+      (
+        {
+          0: 'active',
+          1: 'notActivated',
+        } satisfies Record<number, AccountStatus>
+      )[args.status] ?? 'active';
+
+    const frozen =
+      (
+        {
+          0: 'normal',
+          1: 'frozen',
+        } satisfies Record<number, AccountFrozen>
+      )[args.frozen] ?? 'normal';
+
+    const silenced =
+      (
+        {
+          1: 'silenced',
+          0: 'normal',
+        } satisfies Record<number, AccountSilenced>
+      )[args.silenced] ?? 'normal';
+
     return Account.reconstruct({
       id: args.id as ID<AccountID>,
       name: args.name as AccountName,
@@ -150,48 +162,10 @@ export class PrismaAccountRepository implements AccountRepository {
       passphraseHash:
         args.passphrase_hash === null ? undefined : args.passphrase_hash,
       bio: args.bio,
-      role: ((role: number) => {
-        switch (role) {
-          case 0:
-            return 'normal';
-          case 1:
-            return 'moderator';
-          case 2:
-            return 'admin';
-          default:
-            return 'normal';
-        }
-      })(args.role),
-      frozen: ((frozen: number) => {
-        switch (frozen) {
-          case 0:
-            return 'normal';
-          case 1:
-            return 'frozen';
-          default:
-            return 'normal';
-        }
-      })(args.frozen),
-      silenced: ((silenced: number) => {
-        switch (silenced) {
-          case 0:
-            return 'normal';
-          case 1:
-            return 'silenced';
-          default:
-            return 'normal';
-        }
-      })(args.silenced),
-      status: ((status: number) => {
-        switch (status) {
-          case 0:
-            return 'active';
-          case 1:
-            return 'notActivated';
-          default:
-            return 'active';
-        }
-      })(args.status),
+      role: role,
+      frozen: frozen,
+      silenced: silenced,
+      status: status,
       createdAt: args.created_at,
       deletedAt: args.deleted_at === null ? undefined : args.deleted_at,
       updatedAt: args.updated_at === null ? undefined : args.updated_at,
@@ -230,22 +204,18 @@ export class PrismaAccountVerifyTokenRepository
   async findByID(
     id: ID<AccountID>,
   ): Promise<Option.Option<{ token: string; expire: Date }>> {
-    try {
-      const res = await this.prisma.account_verify_token.findUnique({
-        where: {
-          account_id: id,
-        },
-      });
+    const res = await this.prisma.account_verify_token.findUnique({
+      where: {
+        account_id: id,
+      },
+    });
 
-      if (!res) {
-        return Option.none();
-      }
-      return Option.some({
-        token: res.token,
-        expire: res.expires_at,
-      });
-    } catch (e) {
+    if (!res) {
       return Option.none();
     }
+    return Option.some({
+      token: res.token,
+      expire: res.expires_at,
+    });
   }
 }
