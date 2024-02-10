@@ -11,18 +11,21 @@ datasource db {
 }
 
 model account {
-  id              String @id
-  name            String @unique
+  id              String  @id
+  name            String  @unique
   nickname        String
-  mail            String
-  passphrase_hash String
-  bio             String @default("")
-  role            Int    @default(0)
-  status          Int    @default(0)
+  mail            String  @unique
+  passphrase_hash String?
+  bio             String  @default("")
+  role            Int     @default(0)
+  frozen          Int     @default(0)
+  silenced        Int     @default(0)
+  status          Int     @default(0)
 
-  created_at           DateTime               @default(now())
-  updated_at           DateTime?              @updatedAt
-  deleted_at           DateTime?
+  created_at DateTime  @default(now())
+  updated_at DateTime? @updatedAt
+  deleted_at DateTime?
+
   following            following[]            @relation("following")
   followed             following[]            @relation("followed")
   note                 note[]
@@ -140,10 +143,8 @@ model note_attachment {
 }
 
 model account_verify_token {
-  account_id String
+  account_id String   @id
   account    account  @relation(fields: [account_id], references: [id])
   token      String
   expires_at DateTime
-
-  @@id([account_id, token])
 }

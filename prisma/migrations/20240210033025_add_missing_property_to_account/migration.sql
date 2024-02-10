@@ -1,0 +1,4 @@
+-- AlterTable
+ALTER TABLE "account" ADD COLUMN     "frozen" INTEGER NOT NULL DEFAULT 0,
+ADD COLUMN     "silenced" INTEGER NOT NULL DEFAULT 0,
+ALTER COLUMN "passphrase_hash" DROP NOT NULL;
