@@ -176,11 +176,7 @@ export class PrismaAccountRepository implements AccountRepository {
 export class PrismaAccountVerifyTokenRepository
   implements AccountVerifyTokenRepository
 {
-  private readonly prisma: PrismaClient;
-
-  constructor(prisma: PrismaClient) {
-    this.prisma = prisma;
-  }
+  constructor(private readonly prisma: PrismaClient) {}
 
   async create(
     accountID: ID<AccountID>,
