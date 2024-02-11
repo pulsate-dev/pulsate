@@ -1,0 +1,14 @@
+services:
+  db:
+    image: postgres:15
+    container_name: db
+    ports:
+      - "5432:5432"
+    volumes:
+      - db_data:/var/lib/postgresql/data
+    environment:
+      - POSTGRES_USER=pulsate
+      - POSTGRES_PASSWORD=pulsate_db_pass
+
+volumes:
+  db_data:

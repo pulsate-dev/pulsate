@@ -6,3 +6,5 @@
 # Built application files
 build/
 node_modules/
+.env
+.hooks/
