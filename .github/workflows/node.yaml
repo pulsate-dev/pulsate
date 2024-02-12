@@ -42,7 +42,8 @@ jobs:
         run: |
           pnpm test:coverage
 
-      - name: upload coverage to codecov
-        uses: codecov/codecov-action@v3
+      - name: Upload coverage to codecov
+        uses: codecov/codecov-action@v4
         with:
           files: ./coverage/coverage-final.json
+          token: ${{ secrets.CODECOV_TOKEN }}
