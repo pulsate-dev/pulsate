@@ -32,7 +32,7 @@ jobs:
 
       - name: Run fmt
         run: |
-          pnpm format
+          pnpm format:check
 
       - name: Run lint
         run: |
