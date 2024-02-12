@@ -8,6 +8,12 @@ export interface CreateAccountFollowArgs {
   deletedAt: Date | undefined;
 }
 
+/*
+ *
+ * ID: 1  -follow-> ID: 2
+ * => fromID: 1, targetID: 2
+ *
+ * */
 export class AccountFollow {
   // 必要な情報: フォロー元のアカウントID, フォロー先のアカウントID, created, deleted
   private constructor(args: CreateAccountFollowArgs) {
