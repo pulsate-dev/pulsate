@@ -40,7 +40,7 @@ jobs:
 
       - name: Run test
         run: |
-          pnpm test
+          pnpm test:coverage
 
       - name: upload coverage to codecov
         uses: codecov/codecov-action@v3
