@@ -21,3 +21,20 @@ export interface AccountVerifyTokenRepository {
     id: ID<AccountID>,
   ): Promise<Option.Option<{ token: string; expire: Date }>>;
 }
+
+export interface AccountFollowRepository {
+  follow(
+    accountID: ID<AccountID>,
+    targetID: ID<AccountID>,
+  ): Promise<Result.Result<Error, void>>;
+  unfollow(
+    accountID: ID<AccountID>,
+    targetID: ID<AccountID>,
+  ): Promise<Result.Result<Error, void>>;
+  isFollowing(
+    accountID: ID<AccountID>,
+    targetID: ID<AccountID>,
+  ): Promise<boolean>;
+  fetchFollowers(accountID: ID<AccountID>): Promise<Account[]>;
+  fetchFollowing(accountID: ID<AccountID>): Promise<Account[]>;
+}
