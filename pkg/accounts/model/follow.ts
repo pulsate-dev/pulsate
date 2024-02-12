@@ -5,7 +5,7 @@ export interface CreateAccountFollowArgs {
   fromID: ID<AccountID>;
   targetID: ID<AccountID>;
   createdAt: Date;
-  deletedAt: Date | undefined;
+  deletedAt?: Date;
 }
 
 /*
