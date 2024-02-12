@@ -18,10 +18,12 @@
     "build": "tsc -p .",
     "start": "node ./build/main.js",
     "test": "vitest run",
+    "test:coverage": "vitest run --coverage",
     "format": "prettier --write \"./**/*.{js,ts,md}\"",
     "format:check": "prettier --check \"./**/*.{js,ts,md}\"",
     "lint": "eslint . ",
-    "postinstall": "lefthook install"
+    "postinstall": "lefthook install",
+    "clean": "rm -rf ./build/*"
   },
   "dependencies": {
     "@hono/node-server": "^1.7.0",
@@ -43,6 +45,7 @@
     "@types/node": "^20.11.16",
     "@typescript-eslint/eslint-plugin": "^6.20.0",
     "@typescript-eslint/parser": "^6.20.0",
+    "@vitest/coverage-v8": "^1.2.2",
     "eslint": "^8.56.0",
     "eslint-config-prettier": "^9.1.0",
     "eslint-plugin-vitest": "^0.3.21",

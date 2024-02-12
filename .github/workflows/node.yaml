@@ -32,7 +32,7 @@ jobs:
 
       - name: Run fmt
         run: |
-          pnpm format
+          pnpm format:check
 
       - name: Run lint
         run: |
@@ -40,4 +40,10 @@ jobs:
 
       - name: Run test
         run: |
-          pnpm test
+          pnpm test:coverage
+
+      - name: Upload coverage to codecov
+        uses: codecov/codecov-action@v4
+        with:
+          files: ./coverage/coverage-final.json
+          token: ${{ secrets.CODECOV_TOKEN }}
