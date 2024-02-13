@@ -11,9 +11,11 @@ import type {
 
 export class InMemoryAccountRepository implements AccountRepository {
   private data: Set<Account>;
+
   constructor() {
     this.data = new Set();
   }
+
   create(account: Account): Promise<Result.Result<Error, void>> {
     this.data.add(account);
     return Promise.resolve(Result.ok(undefined));
@@ -45,6 +47,7 @@ export class InMemoryAccountVerifyTokenRepository
   implements AccountVerifyTokenRepository
 {
   private data: Map<string, { token: string; expire: Date }>;
+
   constructor() {
     this.data = new Map();
   }
@@ -74,18 +77,19 @@ export class InMemoryAccountFollowRepository
   implements AccountFollowRepository
 {
   private readonly data: Set<AccountFollow>;
+
   constructor(data?: AccountFollow[]) {
     this.data = new Set(data);
   }
 
-  async fetchFollowers(
+  async fetchAllFollowers(
     accountID: ID<AccountID>,
   ): Promise<Result.Result<Error, AccountFollow[]>> {
     const res = [...this.data].filter((f) => f.getTargetID() === accountID);
     return Result.ok(res);
   }
 
-  async fetchFollowing(
+  async fetchAllFollowing(
     accountID: ID<AccountID>,
   ): Promise<Result.Result<Error, AccountFollow[]>> {
     const res = [...this.data].filter((f) => f.getFromID() === accountID);
@@ -110,5 +114,33 @@ export class InMemoryAccountFollowRepository
 
     this.data.delete(follow);
     return Result.ok(undefined);
+  }
+
+  async fetchOrderedFollowers(
+    accountID: ID<AccountID>,
+    limit: number,
+  ): Promise<Result.Result<Error, AccountFollow[]>> {
+    return Result.ok(
+      [...this.data]
+        .sort((a, b) => {
+          return a.getCreatedAt().getTime() - b.getCreatedAt().getTime();
+        })
+        .filter((f) => f.getTargetID() === accountID)
+        .slice(0, limit),
+    );
+  }
+
+  async fetchOrderedFollowing(
+    accountID: ID<AccountID>,
+    limit: number,
+  ): Promise<Result.Result<Error, AccountFollow[]>> {
+    return Result.ok(
+      [...this.data]
+        .sort((a, b) => {
+          return a.getCreatedAt().getTime() - b.getCreatedAt().getTime();
+        })
+        .filter((f) => f.getFromID() === accountID)
+        .slice(0, limit),
+    );
   }
 }

@@ -29,10 +29,18 @@ export interface AccountFollowRepository {
     fromID: ID<AccountID>,
     targetID: ID<AccountID>,
   ): Promise<Result.Result<Error, void>>;
-  fetchFollowers(
+  fetchAllFollowers(
     accountID: ID<AccountID>,
   ): Promise<Result.Result<Error, AccountFollow[]>>;
-  fetchFollowing(
+  fetchAllFollowing(
     accountID: ID<AccountID>,
+  ): Promise<Result.Result<Error, AccountFollow[]>>;
+  fetchOrderedFollowers(
+    accountID: ID<AccountID>,
+    limit: number,
+  ): Promise<Result.Result<Error, AccountFollow[]>>;
+  fetchOrderedFollowing(
+    accountID: ID<AccountID>,
+    limit: number,
   ): Promise<Result.Result<Error, AccountFollow[]>>;
 }
