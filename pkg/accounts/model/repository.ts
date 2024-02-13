@@ -3,6 +3,7 @@ import type { Option, Result } from '@mikuroxina/mini-fn';
 import { type ID } from '../../id/type.js';
 import type { Account } from './account.js';
 import { type AccountID } from './account.js';
+import type { AccountFollow } from './follow.js';
 
 export interface AccountRepository {
   create(account: Account): Promise<Result.Result<Error, void>>;
@@ -20,4 +21,26 @@ export interface AccountVerifyTokenRepository {
   findByID(
     id: ID<AccountID>,
   ): Promise<Option.Option<{ token: string; expire: Date }>>;
+}
+
+export interface AccountFollowRepository {
+  follow(follow: AccountFollow): Promise<Result.Result<Error, void>>;
+  unfollow(
+    fromID: ID<AccountID>,
+    targetID: ID<AccountID>,
+  ): Promise<Result.Result<Error, void>>;
+  fetchAllFollowers(
+    accountID: ID<AccountID>,
+  ): Promise<Result.Result<Error, AccountFollow[]>>;
+  fetchAllFollowing(
+    accountID: ID<AccountID>,
+  ): Promise<Result.Result<Error, AccountFollow[]>>;
+  fetchOrderedFollowers(
+    accountID: ID<AccountID>,
+    limit: number,
+  ): Promise<Result.Result<Error, AccountFollow[]>>;
+  fetchOrderedFollowing(
+    accountID: ID<AccountID>,
+    limit: number,
+  ): Promise<Result.Result<Error, AccountFollow[]>>;
 }
