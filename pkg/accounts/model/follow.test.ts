@@ -1,3 +1,4 @@
+import { Option } from '@mikuroxina/mini-fn';
 import { describe, expect, it } from 'vitest';
 
 import type { ID } from '../../id/type.js';
@@ -18,6 +19,6 @@ describe('AccountFollow', () => {
     expect(follow.getFromID).toBe(exampleInput.fromID);
     expect(follow.getTargetID).toBe(exampleInput.targetID);
     expect(follow.getCreatedAt).toBe(exampleInput.createdAt);
-    expect(follow.getDeletedAt).toBe(undefined);
+    expect(follow.getDeletedAt).toStrictEqual(Option.none());
   });
 });

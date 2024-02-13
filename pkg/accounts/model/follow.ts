@@ -1,3 +1,5 @@
+import { Option } from '@mikuroxina/mini-fn';
+
 import type { ID } from '../../id/type.js';
 import type { AccountID } from './account.js';
 
@@ -20,7 +22,9 @@ export class AccountFollow {
     this.fromID = args.fromID;
     this.targetID = args.targetID;
     this.createdAt = args.createdAt;
-    this.deletedAt = args.deletedAt;
+    this.deletedAt = !args.deletedAt
+      ? Option.none()
+      : Option.some(args.deletedAt);
   }
 
   public static new(args: Omit<CreateAccountFollowArgs, 'deletedAt'>) {
@@ -49,15 +53,15 @@ export class AccountFollow {
     return this.createdAt;
   }
 
-  private deletedAt: Date | undefined;
+  private deletedAt: Option.Option<Date>;
 
-  get getDeletedAt(): Date | undefined {
+  get getDeletedAt(): Option.Option<Date> {
     return this.deletedAt;
   }
   public setDeletedAt(deletedAt: Date) {
     if (this.createdAt > deletedAt) {
       throw new Error('deletedAt must be later than createdAt');
     }
-    this.deletedAt = deletedAt;
+    this.deletedAt = Option.some(deletedAt);
   }
 }
