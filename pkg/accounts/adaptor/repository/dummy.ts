@@ -74,7 +74,7 @@ export class InMemoryAccountFollowRepository
   implements AccountFollowRepository
 {
   private readonly data: Set<AccountFollow>;
-  constructor(data: AccountFollow[]) {
+  constructor(data?: AccountFollow[]) {
     this.data = new Set(data);
   }
 
