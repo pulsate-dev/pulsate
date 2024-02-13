@@ -1,6 +1,7 @@
 import { Option, Result } from '@mikuroxina/mini-fn';
 
 import { type PasswordEncoder } from '../../password/mod.js';
+import type { AccountName } from '../model/account.js';
 import { type AccountRepository } from '../model/repository.js';
 import type { EtagVerifyService } from './etagGenerateVerify.js';
 
@@ -28,7 +29,7 @@ export class EditAccountService {
 
   async editNickname(
     etag: string,
-    name: string,
+    name: AccountName,
     nickname: string,
   ): Promise<Result.Result<Error, boolean>> {
     const res = await this.accountRepository.findByName(name);
@@ -60,7 +61,7 @@ export class EditAccountService {
 
   async editPassphrase(
     etag: string,
-    name: string,
+    name: AccountName,
     newPassphrase: string,
   ): Promise<Result.Result<Error, boolean>> {
     const res = await this.accountRepository.findByName(name);
@@ -93,7 +94,7 @@ export class EditAccountService {
 
   async editEmail(
     etag: string,
-    name: string,
+    name: AccountName,
     newEmail: string,
   ): Promise<Result.Result<Error, boolean>> {
     const res = await this.accountRepository.findByName(name);
@@ -118,6 +119,28 @@ export class EditAccountService {
 
     try {
       account.setMail(newEmail);
+      return Result.ok(true);
+    } catch (e) {
+      return Result.err(e as unknown as Error);
+    }
+  }
+
+  async editBio(etag: string, name: AccountName, bio: string) {
+    const res = await this.accountRepository.findByName(name);
+    if (Option.isNone(res)) {
+      return Result.err(new Error('account not found'));
+    }
+    const account = Option.unwrap(res);
+
+    const match = await this.etagVerifyService.verify(account, etag);
+    if (!match) {
+      return Result.err(new Error('etag not match'));
+    }
+
+    // ToDo(laminne): bio length check
+
+    try {
+      account.setBio(bio);
       return Result.ok(true);
     } catch (e) {
       return Result.err(e as unknown as Error);
