@@ -22,9 +22,15 @@ export class AccountFollow {
     this.fromID = args.fromID;
     this.targetID = args.targetID;
     this.createdAt = args.createdAt;
-    this.deletedAt = !args.deletedAt
-      ? Option.none()
-      : Option.some(args.deletedAt);
+    if (!args.deletedAt) {
+      this.deletedAt = Option.none();
+      return;
+    }
+    if (args.deletedAt > args.createdAt) {
+      throw new Error('deletedAt must be later than createdAt');
+    }
+
+    this.deletedAt = Option.some(args.deletedAt);
   }
 
   public static new(args: Omit<CreateAccountFollowArgs, 'deletedAt'>) {
@@ -58,6 +64,7 @@ export class AccountFollow {
   get getDeletedAt(): Option.Option<Date> {
     return this.deletedAt;
   }
+
   public setDeletedAt(deletedAt: Date) {
     if (this.createdAt > deletedAt) {
       throw new Error('deletedAt must be later than createdAt');
