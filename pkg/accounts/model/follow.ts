@@ -43,25 +43,25 @@ export class AccountFollow {
 
   private readonly fromID: ID<AccountID>;
 
-  getFromID(): ID<AccountID> {
+  public getFromID(): ID<AccountID> {
     return this.fromID;
   }
 
   private readonly targetID: ID<AccountID>;
 
-  get getTargetID(): ID<AccountID> {
+  public getTargetID(): ID<AccountID> {
     return this.targetID;
   }
 
   private readonly createdAt: Date;
 
-  get getCreatedAt(): Date {
+  public getCreatedAt(): Date {
     return this.createdAt;
   }
 
   private deletedAt: Option.Option<Date>;
 
-  get getDeletedAt(): Option.Option<Date> {
+  public getDeletedAt(): Option.Option<Date> {
     return this.deletedAt;
   }
 
