@@ -5,9 +5,7 @@ import type { AccountID } from '../model/account.js';
 import type { AccountFollowRepository } from '../model/repository.js';
 
 export class UnfollowService {
-  private readonly followRepository: AccountFollowRepository;
-
-  constructor(followRepository: AccountFollowRepository) {
+  constructor(private readonly followRepository: AccountFollowRepository) {
     this.followRepository = followRepository;
   }
 
