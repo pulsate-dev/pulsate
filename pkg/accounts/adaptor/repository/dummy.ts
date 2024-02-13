@@ -122,10 +122,10 @@ export class InMemoryAccountFollowRepository
   ): Promise<Result.Result<Error, AccountFollow[]>> {
     return Result.ok(
       [...this.data]
+        .filter((f) => f.getTargetID() === accountID)
         .sort((a, b) => {
           return a.getCreatedAt().getTime() - b.getCreatedAt().getTime();
         })
-        .filter((f) => f.getTargetID() === accountID)
         .slice(0, limit),
     );
   }
@@ -136,10 +136,10 @@ export class InMemoryAccountFollowRepository
   ): Promise<Result.Result<Error, AccountFollow[]>> {
     return Result.ok(
       [...this.data]
+        .filter((f) => f.getFromID() === accountID)
         .sort((a, b) => {
           return a.getCreatedAt().getTime() - b.getCreatedAt().getTime();
         })
-        .filter((f) => f.getFromID() === accountID)
         .slice(0, limit),
     );
   }
