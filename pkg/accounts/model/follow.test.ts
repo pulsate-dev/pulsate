@@ -16,9 +16,9 @@ describe('AccountFollow', () => {
 
     const follow = AccountFollow.new(exampleInput);
 
-    expect(follow.getFromID).toBe(exampleInput.fromID);
-    expect(follow.getTargetID).toBe(exampleInput.targetID);
-    expect(follow.getCreatedAt).toBe(exampleInput.createdAt);
-    expect(follow.getDeletedAt).toStrictEqual(Option.none());
+    expect(follow.getFromID()).toBe(exampleInput.fromID);
+    expect(follow.getTargetID()).toBe(exampleInput.targetID);
+    expect(follow.getCreatedAt()).toBe(exampleInput.createdAt);
+    expect(follow.getDeletedAt()).toStrictEqual(Option.none());
   });
 });

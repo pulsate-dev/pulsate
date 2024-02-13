@@ -81,14 +81,14 @@ export class InMemoryAccountFollowRepository
   async fetchFollowers(
     accountID: ID<AccountID>,
   ): Promise<Result.Result<Error, AccountFollow[]>> {
-    const res = [...this.data].filter((f) => f.getTargetID === accountID);
+    const res = [...this.data].filter((f) => f.getTargetID() === accountID);
     return Result.ok(res);
   }
 
   async fetchFollowing(
     accountID: ID<AccountID>,
   ): Promise<Result.Result<Error, AccountFollow[]>> {
-    const res = [...this.data].filter((f) => f.getFromID === accountID);
+    const res = [...this.data].filter((f) => f.getFromID() === accountID);
     return Result.ok(res);
   }
 
@@ -102,7 +102,7 @@ export class InMemoryAccountFollowRepository
     targetID: ID<AccountID>,
   ): Promise<Result.Result<Error, void>> {
     const follow = [...this.data].find(
-      (f) => f.getFromID === accountID && f.getTargetID === targetID,
+      (f) => f.getFromID() === accountID && f.getTargetID() === targetID,
     );
     if (!follow) {
       return Result.err(new Error('Not found'));
