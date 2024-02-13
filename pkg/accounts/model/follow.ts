@@ -37,7 +37,7 @@ export class AccountFollow {
 
   private readonly fromID: ID<AccountID>;
 
-  get getFromID(): ID<AccountID> {
+  getFromID(): ID<AccountID> {
     return this.fromID;
   }
 
