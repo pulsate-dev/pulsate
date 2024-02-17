@@ -47,7 +47,6 @@ describe('InactiveAccount', () => {
     expect(account.getPassphraseHash).toBe(exampleActivateArgs.passphraseHash);
     expect(account.getBio).toBe(exampleActivateArgs.bio);
     expect(account.getRole).toBe(exampleActivateArgs.role);
-    // expect(account.getStatus).toBe('active'); NOTE: This line will be removed when account status was removed.
     expect(account.getCreatedAt).toBe(exampleActivateArgs.createdAt);
     expect(account.getUpdatedAt).toBe(undefined);
     expect(account.getDeletedAt).toBe(undefined);
