@@ -53,4 +53,12 @@ describe('InactiveAccount', () => {
       inactiveAccount.activate();
     }).toThrow();
   });
+
+  it('get account property', () => {
+    const account = InactiveAccount.new(exampleInput);
+
+    expect(account.getID).toBe(exampleInput.id);
+    expect(account.getName).toBe(exampleInput.name);
+    expect(account.getMail).toBe(exampleInput.mail);
+  });
 });
