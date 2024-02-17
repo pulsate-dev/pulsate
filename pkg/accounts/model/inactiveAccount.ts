@@ -20,6 +20,18 @@ export class InactiveAccount {
     return this.activated;
   }
 
+  get getID(): string {
+    return this.createAccountArgs.id;
+  }
+
+  get getName(): string {
+    return this.createAccountArgs.name;
+  }
+
+  get getMail(): string {
+    return this.createAccountArgs.mail;
+  }
+
   private createAccountArgs: CreateAccountArgs;
   public activate(): Account {
     if (this.isActivated) {
