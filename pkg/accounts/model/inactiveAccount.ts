@@ -1,4 +1,23 @@
-import { Account, type CreateAccountArgs } from './account.js';
+import type { ID } from '../../id/type.js';
+import {
+  Account,
+  type AccountID,
+  type AccountName,
+  type CreateAccountArgs,
+} from './account.js';
+
+export interface CreateInactiveAccountArgs {
+  id: ID<AccountID>;
+  name: AccountName;
+  mail: string;
+  activated: boolean;
+}
+
+export interface ActivateArgs
+  extends Omit<
+    CreateAccountArgs,
+    keyof Omit<CreateInactiveAccountArgs, 'activated'>
+  > {}
 
 export class AlreadyActivatedError extends Error {
   constructor(message?: string) {
@@ -10,9 +29,11 @@ export class AlreadyActivatedError extends Error {
 }
 
 export class InactiveAccount {
-  constructor(arg: CreateAccountArgs) {
-    this.activated = false;
-    this.createAccountArgs = arg;
+  constructor(arg: CreateInactiveAccountArgs) {
+    this.id = arg.id;
+    this.name = arg.name;
+    this.mail = arg.mail;
+    this.activated = arg.activated;
   }
 
   private activated: boolean;
@@ -20,29 +41,36 @@ export class InactiveAccount {
     return this.activated;
   }
 
+  private readonly id: ID<AccountID>;
   get getID(): string {
-    return this.createAccountArgs.id;
+    return this.id;
   }
 
+  private readonly name: AccountName;
   get getName(): string {
-    return this.createAccountArgs.name;
+    return this.name;
   }
 
+  private readonly mail: string;
   get getMail(): string {
-    return this.createAccountArgs.mail;
+    return this.mail;
   }
 
-  private createAccountArgs: CreateAccountArgs;
-  public activate(): Account {
+  public activate(args: ActivateArgs): Account {
     if (this.isActivated) {
       throw new AlreadyActivatedError();
     }
 
     this.activated = true;
-    return Account.new(this.createAccountArgs);
+    return Account.new({
+      id: this.id,
+      name: this.name,
+      mail: this.mail,
+      ...args,
+    });
   }
 
-  static new(arg: CreateAccountArgs): InactiveAccount {
+  static new(arg: CreateInactiveAccountArgs): InactiveAccount {
     return new InactiveAccount(arg);
   }
 }
