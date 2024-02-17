@@ -4,11 +4,18 @@ import { type ID } from '../../id/type.js';
 import type { Account } from './account.js';
 import { type AccountID } from './account.js';
 import type { AccountFollow } from './follow.js';
+import type { InactiveAccount } from './inactiveAccount.js';
 
 export interface AccountRepository {
   create(account: Account): Promise<Result.Result<Error, void>>;
   findByName(name: string): Promise<Option.Option<Account>>;
   findByMail(mail: string): Promise<Option.Option<Account>>;
+}
+
+export interface InactiveAccountRepository {
+  create(account: InactiveAccount): Promise<Result.Result<Error, void>>;
+  findByName(name: string): Promise<Option.Option<InactiveAccount>>;
+  findByMail(mail: string): Promise<Option.Option<InactiveAccount>>;
 }
 
 export interface AccountVerifyTokenRepository {
