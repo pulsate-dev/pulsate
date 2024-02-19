@@ -8,7 +8,9 @@ import type { TokenGenerator } from './tokenGenerator.js';
 
 export interface TokenPair {
   authorizationToken: string;
+  authorizationTokenExpiresIn: number;
   refreshToken: string;
+  refreshTokenExpiresIn: number;
 }
 
 export class AuthenticationService {
@@ -65,7 +67,9 @@ export class AuthenticationService {
 
     return Result.ok({
       authorizationToken: Option.unwrap(authorizationToken),
+      authorizationTokenExpiresIn: convertTo(addSecondsToDate(new Date(), 900)),
       refreshToken: Option.unwrap(refreshToken),
+      refreshTokenExpiresIn: convertTo(addSecondsToDate(new Date(), 2_592_000)),
     });
   }
 }
