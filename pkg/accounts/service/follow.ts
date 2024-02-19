@@ -1,22 +1,34 @@
-import { Result } from '@mikuroxina/mini-fn';
+import { Option, Result } from '@mikuroxina/mini-fn';
 
-import type { ID } from '../../id/type.js';
-import type { AccountID } from '../model/account.js';
+import type { AccountName } from '../model/account.js';
 import { AccountFollow } from '../model/follow.js';
-import type { AccountFollowRepository } from '../model/repository.js';
+import type {
+  AccountFollowRepository,
+  AccountRepository,
+} from '../model/repository.js';
 
 export class FollowService {
-  constructor(private readonly followRepository: AccountFollowRepository) {
-    this.followRepository = followRepository;
-  }
+  constructor(
+    private readonly followRepository: AccountFollowRepository,
+    private readonly accountRepository: AccountRepository,
+  ) {}
 
   async handle(
-    fromID: ID<AccountID>,
-    targetID: ID<AccountID>,
+    from: AccountName,
+    target: AccountName,
   ): Promise<Result.Result<Error, AccountFollow>> {
+    const fromAccount = await this.accountRepository.findByName(from);
+    if (Option.isNone(fromAccount)) {
+      return Result.err(new Error('from account not found'));
+    }
+    const targetAccount = await this.accountRepository.findByName(target);
+    if (Option.isNone(targetAccount)) {
+      return Result.err(new Error('target account not found'));
+    }
+
     const follow = AccountFollow.new({
-      fromID: fromID,
-      targetID: targetID,
+      fromID: fromAccount[1].getID,
+      targetID: targetAccount[1].getID,
       createdAt: new Date(),
     });
 

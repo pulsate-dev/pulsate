@@ -1,5 +1,6 @@
 import { Option, Result } from '@mikuroxina/mini-fn';
 
+import type { AccountName } from '../model/account.js';
 import { type AccountRepository } from '../model/repository.js';
 
 export class FreezeService {
@@ -9,7 +10,9 @@ export class FreezeService {
     this.accountRepository = accountRepository;
   }
 
-  async setFreeze(accountName: string): Promise<Result.Result<Error, boolean>> {
+  async setFreeze(
+    accountName: AccountName,
+  ): Promise<Result.Result<Error, boolean>> {
     const account = await this.accountRepository.findByName(accountName);
     if (Option.isNone(account)) {
       return Result.err(new Error('account not found'));
@@ -24,7 +27,7 @@ export class FreezeService {
   }
 
   async undoFreeze(
-    accountName: string,
+    accountName: AccountName,
   ): Promise<Result.Result<Error, boolean>> {
     const account = await this.accountRepository.findByName(accountName);
     if (Option.isNone(account)) {
