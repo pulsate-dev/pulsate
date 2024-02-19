@@ -26,7 +26,7 @@ const registerService: RegisterAccountService = new RegisterAccountService({
   idGenerator: new SnowflakeIDGenerator(1, new DummyClock()),
   passwordEncoder: new Argon2idPasswordEncoder(),
   sendNotification: new DummySendNotificationService(),
-  verifyTokenService: new TokenVerifyService(verifyRepository),
+  verifyTokenService: new TokenVerifyService(verifyRepository, repository),
 });
 
 const exampleInput = {

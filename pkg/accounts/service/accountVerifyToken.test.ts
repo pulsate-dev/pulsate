@@ -3,21 +3,43 @@ import { describe, expect, it } from 'vitest';
 
 import { type Clock } from '../../id/mod.js';
 import { type ID } from '../../id/type.js';
-import { InMemoryAccountVerifyTokenRepository } from '../adaptor/repository/dummy.js';
-import { type AccountID } from '../model/account.js';
+import {
+  InMemoryAccountRepository,
+  InMemoryAccountVerifyTokenRepository,
+} from '../adaptor/repository/dummy.js';
+import { Account, type AccountID } from '../model/account.js';
 import { TokenVerifyService } from './accountVerifyToken.js';
 
 const repository = new InMemoryAccountVerifyTokenRepository();
-const service = new TokenVerifyService(repository);
+const accountRepository = new InMemoryAccountRepository();
+await accountRepository.create(
+  Account.reconstruct({
+    id: '1' as ID<AccountID>,
+    name: '@johndoe@example.com',
+    nickname: '',
+    mail: '',
+    bio: '',
+    frozen: 'normal',
+    role: 'normal',
+    silenced: 'normal',
+    status: 'active',
+    passphraseHash: undefined,
+    createdAt: new Date(),
+    updatedAt: undefined,
+    deletedAt: undefined,
+  }),
+);
+
+const service = new TokenVerifyService(repository, accountRepository);
 
 describe('TokenVerifyService', () => {
   it('generate/verify account verify token', async () => {
-    const token = await service.generate('1' as ID<AccountID>);
+    const token = await service.generate('@johndoe@example.com');
     if (Result.isErr(token)) {
       return;
     }
 
-    const verify = await service.verify('1' as ID<AccountID>, token[1]);
+    const verify = await service.verify('@johndoe@example.com', token[1]);
     if (Result.isErr(verify)) {
       return;
     }
@@ -33,20 +55,24 @@ describe('TokenVerifyService', () => {
   }
 
   it('expired token', async () => {
-    const dummyService = new TokenVerifyService(repository, new DateClock());
-    const token = await dummyService.generate('1' as ID<AccountID>);
+    const dummyService = new TokenVerifyService(
+      repository,
+      accountRepository,
+      new DateClock(),
+    );
+    const token = await dummyService.generate('@johndoe@example.com');
     if (Result.isErr(token)) {
       return;
     }
-    const verify = await dummyService.verify('1' as ID<AccountID>, token[1]);
+    const verify = await dummyService.verify('@johndoe@example.com', token[1]);
 
     expect(Result.isOk(token)).toBe(true);
     expect(Result.isOk(verify)).toBe(false);
   });
 
   it('invalid token', async () => {
-    const token = await service.generate('1' as ID<AccountID>);
-    const verify = await service.verify('1' as ID<AccountID>, 'abcde');
+    const token = await service.generate('@johndoe@example.com');
+    const verify = await service.verify('@johndoe@example.com', 'abcde');
 
     expect(Result.isOk(token)).toBe(true);
     expect(Result.isOk(verify)).toBe(false);

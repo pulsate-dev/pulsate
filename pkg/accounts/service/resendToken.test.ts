@@ -12,7 +12,7 @@ import { ResendVerifyTokenService } from './resendToken.js';
 import { DummySendNotificationService } from './sendNotification.js';
 
 const repository = new InMemoryAccountRepository();
-repository.create(
+await repository.create(
   Account.new({
     id: '1' as ID<AccountID>,
     name: '@john@example.com',
@@ -28,7 +28,28 @@ repository.create(
   }),
 );
 const verifyRepository = new InMemoryAccountVerifyTokenRepository();
-const tokenVerifyService = new TokenVerifyService(verifyRepository);
+const accountRepository = new InMemoryAccountRepository();
+await accountRepository.create(
+  Account.reconstruct({
+    id: '1' as ID<AccountID>,
+    name: '@john@example.com',
+    bio: '',
+    frozen: 'normal',
+    mail: '',
+    nickname: '',
+    role: 'normal',
+    silenced: 'normal',
+    status: 'active',
+    passphraseHash: undefined,
+    createdAt: new Date(),
+    deletedAt: undefined,
+    updatedAt: undefined,
+  }),
+);
+const tokenVerifyService = new TokenVerifyService(
+  verifyRepository,
+  accountRepository,
+);
 const sendNotificationService = new DummySendNotificationService();
 
 describe('ResendVerifyTokenService', () => {

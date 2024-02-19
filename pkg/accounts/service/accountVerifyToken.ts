@@ -1,9 +1,11 @@
 import { Option, Result } from '@mikuroxina/mini-fn';
 
 import { type Clock } from '../../id/mod.js';
-import { type ID } from '../../id/type.js';
-import { type AccountID } from '../model/account.js';
-import { type AccountVerifyTokenRepository } from '../model/repository.js';
+import { type AccountName } from '../model/account.js';
+import {
+  type AccountRepository,
+  type AccountVerifyTokenRepository,
+} from '../model/repository.js';
 
 class DateClock implements Clock {
   Now(): bigint {
@@ -13,20 +15,26 @@ class DateClock implements Clock {
 
 export class TokenVerifyService {
   private readonly repository: AccountVerifyTokenRepository;
+  private readonly accountRepository: AccountRepository;
   private readonly clock: Clock;
 
-  constructor(repository: AccountVerifyTokenRepository, clock?: Clock) {
+  constructor(
+    repository: AccountVerifyTokenRepository,
+    accountRepository: AccountRepository,
+    clock?: Clock,
+  ) {
     this.repository = repository;
+    this.accountRepository = accountRepository;
     this.clock = clock ?? new DateClock();
   }
 
   /**
    * Generate a token for account mail address verification.
-   * @param accountID
+   * @param accountName
    * @returns if success: void, if failure: Error
    */
   async generate(
-    accountID: ID<AccountID>,
+    accountName: AccountName,
   ): Promise<Result.Result<Error, string>> {
     const verifyToken = crypto.getRandomValues(new Uint8Array(32));
 
@@ -37,8 +45,13 @@ export class TokenVerifyService {
 
     const encodedToken = Buffer.from(verifyToken).toString('base64');
 
+    const account = await this.accountRepository.findByName(accountName);
+    if (Option.isNone(account)) {
+      return Result.err(new Error('Account not found'));
+    }
+
     const res = await this.repository.create(
-      accountID,
+      account[1].getID,
       encodedToken,
       expireDate,
     );
@@ -51,15 +64,20 @@ export class TokenVerifyService {
 
   /**
    * Verify a token for account mail address verification.
-   * @param accountID
+   * @param accountName
    * @param token
    * @returns if success: void, if failure: Error
    */
   async verify(
-    accountID: ID<AccountID>,
+    accountName: AccountName,
     token: string,
   ): Promise<Result.Result<Error, void>> {
-    const res = await this.repository.findByID(accountID);
+    const account = await this.accountRepository.findByName(accountName);
+    if (Option.isNone(account)) {
+      return Result.err(new Error('Account not found'));
+    }
+
+    const res = await this.repository.findByID(account[1].getID);
     if (Option.isNone(res)) {
       // ToDo(laminne): Consider whether to create an error type (e.g. AccountNotFoundError)
       return Result.err(new Error('Account not found'));
