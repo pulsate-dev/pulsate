@@ -8,9 +8,9 @@ import {
   InMemoryAccountVerifyTokenRepository,
 } from '../adaptor/repository/dummy.js';
 import { type AccountName, type AccountRole } from '../model/account.js';
+import { TokenVerifyService } from './accountVerifyToken.js';
 import { RegisterAccountService } from './register.js';
 import { DummySendNotificationService } from './sendNotification.js';
-import { TokenVerifyService } from './tokenVerify.js';
 
 const repository = new InMemoryAccountRepository();
 const verifyRepository = new InMemoryAccountVerifyTokenRepository();

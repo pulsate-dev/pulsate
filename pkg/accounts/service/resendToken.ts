@@ -1,8 +1,9 @@
 import { Option, Result } from '@mikuroxina/mini-fn';
 
+import type { AccountName } from '../model/account.js';
 import { type AccountRepository } from '../model/repository.js';
+import type { TokenVerifyService } from './accountVerifyToken.js';
 import { type SendNotificationService } from './sendNotification.js';
-import type { TokenVerifyService } from './tokenVerify.js';
 
 export class ResendVerifyTokenService {
   private readonly accountRepository: AccountRepository;
@@ -19,7 +20,7 @@ export class ResendVerifyTokenService {
     this.sendNotificationService = sendNotificationService;
   }
 
-  async handle(name: string): Promise<Option.Option<Error>> {
+  async handle(name: AccountName): Promise<Option.Option<Error>> {
     const account = await this.accountRepository.findByName(name);
     if (Option.isNone(account)) {
       return Option.some(new Error('AccountNotFoundError'));

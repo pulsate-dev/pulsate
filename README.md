@@ -11,15 +11,6 @@
   </p>
 </p>
 
-Pulsate is the next generation of distributed social networking in the
-[ActivityPub](#what-is-a-activitypub) implementation and is easy to modify,
-fast, and developer and user friendly.
-
-> [!IMPORTANT]\
-> Pulsate is currently in the development phase, in a pre-alpha stage. The
-> official release build may be missing some features or may have unforeseen
-> defects.
-
 <p align="center">
   <!-- TODO: Insert Pulsate Screenshot -->
   <br />
@@ -33,18 +24,27 @@ fast, and developer and user friendly.
   <a href="https://link.pulsate.dev/x">
     <img src="https://img.shields.io/badge/Follow_me!-black?logo=x&logoColor=white">
   </a>
-  <a href="http://www.apache.org/licenses/">
+  <a href="https://www.apache.org/licenses/">
     <img src="https://img.shields.io/static/v1?label=Licence&message=Apache-2.0&color=BF485A" />
   </a>
 </p>
 
-- [What is a ActivityPub?](#what-is-a-activitypub)
+Pulsate is the next generation of distributed social networking in the
+[ActivityPub](#what-is-a-activitypub) implementation and is easy to modify,
+fast, and developer and user-friendly.
+
+> [!IMPORTANT]\
+> Pulsate is currently in the development phase, in a pre-alpha stage. The
+> official release build may be missing some features or may have unforeseen
+> defects.
+
+- [What is ActivityPub?](#what-is-activitypub)
 - [Developer Guide](#developer-guide)
 - [Security Policy](#security-policy)
 - [License](#license)
 - [Community \& Related Sites](#community--related-sites)
 
-## What is a ActivityPub?
+## What is ActivityPub?
 
 ActivityPub is an open-source, decentralized social networking protocol. It
 provides a standardized model for the communication of applications, allowing
@@ -75,13 +75,12 @@ report vulnerabilities, and support status.
 Pulsate is open source software distributed under **Apache 2.0**.
 
 Please check
-[Apache Software Foundation's official web site](https://www.apache.org/licenses/),
+[Apache Software Foundation's official website](https://www.apache.org/licenses/),
 [license file](./LICENSE) for more information.
 
 ## Community & Related Sites
 
-- [Pulsate Community Discussions (pulsate-dev/community)](https://link.pulsate.dev/community)
 - [Website](https://pulsate.dev/)
-- [Discord Server](https://link.pulsate.dev/discord)
+- [Discord](https://link.pulsate.dev/discord)
 - [X](https://link.pulsate.dev/x)
 - [YouTube](https://link.pulsate.dev/youtube)

@@ -1,5 +1,5 @@
 import { Option } from '@mikuroxina/mini-fn';
-import { describe, it, expect } from 'vitest';
+import { describe, expect, it } from 'vitest';
 
 import { type ID } from '../../id/type.js';
 import {
@@ -7,9 +7,9 @@ import {
   InMemoryAccountVerifyTokenRepository,
 } from '../adaptor/repository/dummy.js';
 import { Account, type AccountID } from '../model/account.js';
+import { TokenVerifyService } from './accountVerifyToken.js';
 import { ResendVerifyTokenService } from './resendToken.js';
 import { DummySendNotificationService } from './sendNotification.js';
-import { TokenVerifyService } from './tokenVerify.js';
 
 const repository = new InMemoryAccountRepository();
 repository.create(
