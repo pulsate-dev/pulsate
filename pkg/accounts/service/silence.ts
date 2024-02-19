@@ -1,5 +1,6 @@
 import { Option, Result } from '@mikuroxina/mini-fn';
 
+import { type AccountName } from '../model/account.js';
 import { type AccountRepository } from '../model/repository.js';
 
 export class SilenceService {
@@ -10,7 +11,7 @@ export class SilenceService {
   }
 
   async setSilence(
-    accountName: string,
+    accountName: AccountName,
   ): Promise<Result.Result<Error, boolean>> {
     const account = await this.accountRepository.findByName(accountName);
     if (Option.isNone(account)) {
@@ -26,7 +27,7 @@ export class SilenceService {
   }
 
   async undoSilence(
-    accountName: string,
+    accountName: AccountName,
   ): Promise<Result.Result<Error, boolean>> {
     const account = await this.accountRepository.findByName(accountName);
     if (Option.isNone(account)) {

@@ -9,8 +9,8 @@ import {
   type AccountRole,
 } from '../model/account.js';
 import { type AccountRepository } from '../model/repository.js';
+import type { TokenVerifyService } from './accountVerifyToken.js';
 import { type SendNotificationService } from './sendNotification.js';
-import type { TokenVerifyService } from './tokenVerify.js';
 
 export class AccountAlreadyExistsError extends Error {
   override readonly name = 'AccountAlreadyExistsError' as const;
