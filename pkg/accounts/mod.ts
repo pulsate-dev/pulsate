@@ -169,7 +169,7 @@ accounts.openapi(VerifyEmailRoute, async (c) => {
   const name = c.req.param('name');
   const { token } = c.req.valid('json');
 
-  const res = await controller.verifyEmail(name as AccountName, token);
+  const res = await controller.verifyEmail(name, token);
   if (Result.isErr(res)) {
     return c.json({ error: res[1].message }, { status: 400 });
   }

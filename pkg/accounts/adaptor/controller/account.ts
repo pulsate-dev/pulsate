@@ -169,10 +169,13 @@ export class AccountController {
   }
 
   async verifyEmail(
-    name: AccountName,
+    name: string,
     token: string,
   ): Promise<Result.Result<Error, void>> {
-    const res = await this.tokenVerifyService.verify(name, token);
+    const res = await this.tokenVerifyService.verify(
+      name as AccountName,
+      token,
+    );
     if (Result.isErr(res)) {
       return res;
     }

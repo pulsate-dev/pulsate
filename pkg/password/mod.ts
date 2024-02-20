@@ -11,7 +11,7 @@ export interface PasswordEncoder {
 export class Argon2idPasswordEncoder implements PasswordEncoder {
   async encodePassword(raw: string) {
     return await hash(raw, {
-      type: argon2id,
+      type: ARGON2_ID,
     });
   }
 

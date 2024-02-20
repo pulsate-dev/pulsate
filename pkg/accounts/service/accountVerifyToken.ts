@@ -14,17 +14,12 @@ class DateClock implements Clock {
 }
 
 export class TokenVerifyService {
-  private readonly repository: AccountVerifyTokenRepository;
-  private readonly accountRepository: AccountRepository;
   private readonly clock: Clock;
-
   constructor(
-    repository: AccountVerifyTokenRepository,
-    accountRepository: AccountRepository,
+    private readonly repository: AccountVerifyTokenRepository,
+    private readonly accountRepository: AccountRepository,
     clock?: Clock,
   ) {
-    this.repository = repository;
-    this.accountRepository = accountRepository;
     this.clock = clock ?? new DateClock();
   }
 
