@@ -27,8 +27,8 @@ export class FollowService {
     }
 
     const follow = AccountFollow.new({
-      fromID: fromAccount[1].getID,
-      targetID: targetAccount[1].getID,
+      fromID: fromAccount[1].getID(),
+      targetID: targetAccount[1].getID(),
       createdAt: new Date(),
     });
 

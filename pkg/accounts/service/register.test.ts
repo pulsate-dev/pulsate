@@ -50,12 +50,12 @@ describe('RegisterAccountService', () => {
     );
     if (Result.isErr(res)) return;
 
-    expect(res[1].getName).toBe(exampleInput.name);
-    expect(res[1].getMail).toBe(exampleInput.mail);
-    expect(res[1].getNickname).toBe(exampleInput.nickname);
-    expect(res[1].getBio).toBe(exampleInput.bio);
-    expect(res[1].getRole).toBe(exampleInput.role);
-    expect(res[1].getStatus).toBe('notActivated');
+    expect(res[1].getName()).toBe(exampleInput.name);
+    expect(res[1].getMail()).toBe(exampleInput.mail);
+    expect(res[1].getNickname()).toBe(exampleInput.nickname);
+    expect(res[1].getBio()).toBe(exampleInput.bio);
+    expect(res[1].getRole()).toBe(exampleInput.role);
+    expect(res[1].getStatus()).toBe('notActivated');
     repository.reset();
   });
 });

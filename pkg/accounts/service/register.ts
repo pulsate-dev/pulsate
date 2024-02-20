@@ -81,7 +81,7 @@ export class RegisterAccountService {
       return Result.err(res[1]);
     }
 
-    const token = await this.tokenVerifyService.generate(account.getID);
+    const token = await this.tokenVerifyService.generate(account.getID());
     if (Result.isErr(token)) {
       return Result.err(token[1]);
     }
