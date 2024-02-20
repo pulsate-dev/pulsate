@@ -16,7 +16,7 @@ const repository = new InMemoryAccountRepository();
 const verifyRepository = new InMemoryAccountVerifyTokenRepository();
 
 class DummyClock implements Clock {
-  Now(): bigint {
+  now(): bigint {
     return BigInt(new Date('2023/9/10 00:00:00 UTC').getTime());
   }
 }

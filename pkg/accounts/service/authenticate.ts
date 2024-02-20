@@ -35,7 +35,7 @@ export class AuthenticationService {
       return Result.err(new Error('Account not found'));
     }
 
-    const isMatch = await this.passwordEncoder.IsMatchPassword(
+    const isMatch = await this.passwordEncoder.isMatchPassword(
       passphrase,
       Option.unwrap(account).getPassphraseHash ?? '',
     );

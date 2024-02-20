@@ -35,7 +35,7 @@ export class ResendVerifyTokenService {
       return Option.some(token[1]);
     }
 
-    this.sendNotificationService.Send(account[1].getMail, token[1]);
+    this.sendNotificationService.send(account[1].getMail, token[1]);
 
     return Option.none();
   }

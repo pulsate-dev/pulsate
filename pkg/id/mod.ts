@@ -4,7 +4,7 @@ import { OFFSET_FROM_UNIX_EPOCH } from '../time/mod.js';
 import type { ID } from './type.js';
 
 export interface Clock {
-  Now(): bigint;
+  now(): bigint;
 }
 
 export class SnowflakeIDGenerator {
@@ -34,7 +34,7 @@ export class SnowflakeIDGenerator {
    * @returns SnowflakeID (string)
    */
   public generate<T>(): Result.Result<Error, ID<T>> {
-    const now = this.clock.Now();
+    const now = this.clock.now();
     const timeFromEpoch = now - OFFSET_FROM_UNIX_EPOCH;
     if (timeFromEpoch < 0) {
       return Result.err(new Error('invalid date'));

@@ -57,7 +57,7 @@ export class RegisterAccountService {
     }
 
     const passphraseHash =
-      await this.passwordEncoder.EncodePassword(passphrase);
+      await this.passwordEncoder.encodePassword(passphrase);
 
     const generatedID = this.snowflakeIDGenerator.generate<AccountID>();
     if (Result.isErr(generatedID)) {
@@ -87,7 +87,7 @@ export class RegisterAccountService {
     }
 
     // ToDo: Notification Body
-    this.sendNotificationService.Send(mail, `token: ${token[1]}`);
+    this.sendNotificationService.send(mail, `token: ${token[1]}`);
     return Result.ok(account);
   }
 
