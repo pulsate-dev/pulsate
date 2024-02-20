@@ -1,7 +1,7 @@
 import { hash, verify } from 'argon2';
 
 export type EncodedPassword = string;
-const argon2id = 2;
+const ARGON2_ID = 2;
 
 export interface PasswordEncoder {
   encodePassword(raw: string): Promise<EncodedPassword>;
