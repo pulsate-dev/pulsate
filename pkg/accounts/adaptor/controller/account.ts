@@ -72,7 +72,7 @@ export class AccountController {
     );
 
     if (Result.isErr(res)) {
-      return Result.err(res[1]);
+      return res;
     }
 
     return Result.ok({
@@ -101,7 +101,7 @@ export class AccountController {
         args.nickname,
       );
       if (Result.isErr(res)) {
-        return Result.err(res[1]);
+        return res;
       }
     }
     if (args.passphrase) {
@@ -111,7 +111,7 @@ export class AccountController {
         args.passphrase,
       );
       if (Result.isErr(res)) {
-        return Result.err(res[1]);
+        return res;
       }
     }
     if (args.email) {
@@ -121,7 +121,7 @@ export class AccountController {
         args.email,
       );
       if (Result.isErr(res)) {
-        return Result.err(res[1]);
+        return res;
       }
     }
 
@@ -138,7 +138,7 @@ export class AccountController {
       name as AccountName,
     );
     if (Result.isErr(res)) {
-      return Result.err(res[1]);
+      return res;
     }
 
     return Result.ok({
@@ -153,7 +153,7 @@ export class AccountController {
   async freezeAccount(name: string): Promise<Result.Result<Error, void>> {
     const res = await this.freezeService.setFreeze(name as AccountName);
     if (Result.isErr(res)) {
-      return Result.err(res[1]);
+      return res;
     }
 
     return Result.ok(undefined);
@@ -162,7 +162,7 @@ export class AccountController {
   async unFreezeAccount(name: string): Promise<Result.Result<Error, void>> {
     const res = await this.freezeService.undoFreeze(name as AccountName);
     if (Result.isErr(res)) {
-      return Result.err(res[1]);
+      return res;
     }
 
     return Result.ok(undefined);
@@ -174,7 +174,7 @@ export class AccountController {
   ): Promise<Result.Result<Error, void>> {
     const res = await this.tokenVerifyService.verify(name, token);
     if (Result.isErr(res)) {
-      return Result.err(res[1]);
+      return res;
     }
 
     return Result.ok(undefined);
@@ -187,7 +187,7 @@ export class AccountController {
       name as AccountName,
     );
     if (Result.isErr(res)) {
-      return Result.err(res[1]);
+      return res;
     }
 
     return Result.ok({
@@ -215,7 +215,7 @@ export class AccountController {
       passphrase,
     );
     if (Result.isErr(res)) {
-      return Result.err(res[1]);
+      return res;
     }
 
     return Result.ok({
@@ -228,7 +228,7 @@ export class AccountController {
     // ToDo: check user's permission
     const res = await this.silenceService.setSilence(name as AccountName);
     if (Result.isErr(res)) {
-      return Result.err(res[1]);
+      return res;
     }
 
     return Result.ok(undefined);
@@ -238,7 +238,7 @@ export class AccountController {
     // ToDo: check user's permission
     const res = await this.silenceService.undoSilence(name as AccountName);
     if (Result.isErr(res)) {
-      return Result.err(res[1]);
+      return res;
     }
 
     return Result.ok(undefined);
@@ -251,7 +251,7 @@ export class AccountController {
       name as AccountName,
     );
     if (Result.isErr(res)) {
-      return Result.err(res[1]);
+      return res;
     }
 
     return Result.ok(undefined);

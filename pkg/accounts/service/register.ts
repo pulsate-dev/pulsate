@@ -81,13 +81,13 @@ export class RegisterAccountService {
       return Result.err(res[1]);
     }
 
-    const token = await this.tokenVerifyService.generate(account.getID);
+    const token = await this.tokenVerifyService.generate(account.getName);
     if (Result.isErr(token)) {
       return Result.err(token[1]);
     }
 
     // ToDo: Notification Body
-    this.sendNotificationService.Send(mail, `token: ${token[1]}`);
+    await this.sendNotificationService.Send(mail, `token: ${token[1]}`);
     return Result.ok(account);
   }
 
