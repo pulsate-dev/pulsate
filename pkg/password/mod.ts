@@ -4,18 +4,18 @@ export type EncodedPassword = string;
 const argon2id = 2;
 
 export interface PasswordEncoder {
-  EncodePassword(raw: string): Promise<EncodedPassword>;
-  IsMatchPassword(raw: string, encoded: EncodedPassword): Promise<boolean>;
+  encodePassword(raw: string): Promise<EncodedPassword>;
+  isMatchPassword(raw: string, encoded: EncodedPassword): Promise<boolean>;
 }
 
 export class Argon2idPasswordEncoder implements PasswordEncoder {
-  async EncodePassword(raw: string) {
+  async encodePassword(raw: string) {
     return await hash(raw, {
       type: argon2id,
     });
   }
 
-  async IsMatchPassword(
+  async isMatchPassword(
     raw: string,
     encoded: EncodedPassword,
   ): Promise<boolean> {

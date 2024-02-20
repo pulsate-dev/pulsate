@@ -8,7 +8,7 @@ import {
 } from '../model/repository.js';
 
 class DateClock implements Clock {
-  Now(): bigint {
+  now(): bigint {
     return BigInt(Date.now());
   }
 }
@@ -40,7 +40,7 @@ export class TokenVerifyService {
 
     // expireDate: After 7 days
     const expireDate = new Date(
-      Number(this.clock.Now()) + 7 * 24 * 60 * 60 * 1000,
+      Number(this.clock.now()) + 7 * 24 * 60 * 60 * 1000,
     );
 
     const encodedToken = Buffer.from(verifyToken).toString('base64');
@@ -51,7 +51,7 @@ export class TokenVerifyService {
     }
 
     const res = await this.repository.create(
-      account[1].getID,
+      account[1].getID(),
       encodedToken,
       expireDate,
     );
@@ -77,7 +77,7 @@ export class TokenVerifyService {
       return Result.err(new Error('Account not found'));
     }
 
-    const res = await this.repository.findByID(account[1].getID);
+    const res = await this.repository.findByID(account[1].getID());
     if (Option.isNone(res)) {
       // ToDo(laminne): Consider whether to create an error type (e.g. AccountNotFoundError)
       return Result.err(new Error('Account not found'));

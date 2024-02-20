@@ -46,7 +46,7 @@ describe('EditAccountService', () => {
     );
     expect(Result.isErr(updateRes)).toBe(false);
     expect(updateRes[1]).toBe(true);
-    expect(account[1].getNickname).toBe('new nickname');
+    expect(account[1].getNickname()).toBe('new nickname');
   });
 
   it('should be fail to update nickname when nickname shorter more than 1', async () => {
@@ -87,7 +87,7 @@ describe('EditAccountService', () => {
     );
     expect(Result.isErr(updateRes)).toBe(false);
     expect(updateRes[1]).toBe(true);
-    expect(account[1].getNickname).toBe('a'.repeat(256));
+    expect(account[1].getNickname()).toBe('a'.repeat(256));
   });
 
   it('should be success to update nickname when nickname 1', async () => {

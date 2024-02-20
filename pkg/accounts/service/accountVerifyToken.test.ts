@@ -49,7 +49,7 @@ describe('TokenVerifyService', () => {
   });
 
   class DateClock implements Clock {
-    Now(): bigint {
+    now(): bigint {
       return 0n;
     }
   }

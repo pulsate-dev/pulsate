@@ -1,11 +1,11 @@
 import { Result } from '@mikuroxina/mini-fn';
 
 export interface SendNotificationService {
-  Send(to: string, body: string): Promise<Result.Result<Error, void>>;
+  send(to: string, body: string): Promise<Result.Result<Error, void>>;
 }
 
 export class DummySendNotificationService implements SendNotificationService {
-  Send(): Promise<Result.Result<Error, void>> {
+  send(): Promise<Result.Result<Error, void>> {
     return Promise.resolve(Result.ok(undefined));
   }
 }

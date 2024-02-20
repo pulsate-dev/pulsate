@@ -76,9 +76,9 @@ export class AccountController {
     }
 
     return Result.ok({
-      id: res[1].getID,
-      name: res[1].getName,
-      email: res[1].getMail,
+      id: res[1].getID(),
+      name: res[1].getName(),
+      email: res[1].getMail(),
     });
   }
 
@@ -142,11 +142,11 @@ export class AccountController {
     }
 
     return Result.ok({
-      id: res[1].getID,
-      email: res[1].getMail,
-      name: res[1].getName as string,
-      nickname: res[1].getNickname,
-      bio: res[1].getBio,
+      id: res[1].getID(),
+      email: res[1].getMail(),
+      name: res[1].getName() as string,
+      nickname: res[1].getNickname(),
+      bio: res[1].getBio(),
     });
   }
 
@@ -191,11 +191,11 @@ export class AccountController {
     }
 
     return Result.ok({
-      id: res[1].getID,
-      email: res[1].getMail,
-      name: res[1].getName as string,
-      nickname: res[1].getNickname,
-      bio: res[1].getBio,
+      id: res[1].getID(),
+      email: res[1].getMail(),
+      name: res[1].getName() as string,
+      nickname: res[1].getNickname(),
+      bio: res[1].getBio(),
       // ToDo: fill the following fields
       avatar: '',
       header: '',

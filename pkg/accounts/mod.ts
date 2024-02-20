@@ -45,7 +45,7 @@ const accountFollowRepository = new InMemoryAccountFollowRepository();
 const accountVerifyTokenRepository = new InMemoryAccountVerifyTokenRepository();
 const tokenGenerator = await TokenGenerator.new();
 class Clock {
-  Now() {
+  now() {
     return BigInt(Date.now());
   }
 }
