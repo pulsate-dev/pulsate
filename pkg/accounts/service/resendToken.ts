@@ -30,12 +30,12 @@ export class ResendVerifyTokenService {
       return Option.some(new Error('AccountAlreadyVerifiedError'));
     }
 
-    const token = await this.tokenVerifyService.generate(account[1].getID());
+    const token = await this.tokenVerifyService.generate(account[1].getName());
     if (Result.isErr(token)) {
       return Option.some(token[1]);
     }
 
-    this.sendNotificationService.send(account[1].getMail(), token[1]);
+    await this.sendNotificationService.send(account[1].getMail(), token[1]);
 
     return Option.none();
   }

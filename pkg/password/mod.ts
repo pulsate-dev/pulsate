@@ -1,7 +1,7 @@
-// import { genSalt, hash, verify } from 'scrypt';
-import { argon2id, hash, verify } from 'argon2';
+import { hash, verify } from 'argon2';
 
 export type EncodedPassword = string;
+const ARGON2_ID = 2;
 
 export interface PasswordEncoder {
   encodePassword(raw: string): Promise<EncodedPassword>;
@@ -11,7 +11,7 @@ export interface PasswordEncoder {
 export class Argon2idPasswordEncoder implements PasswordEncoder {
   async encodePassword(raw: string) {
     return await hash(raw, {
-      type: argon2id,
+      type: ARGON2_ID,
     });
   }
 
@@ -20,7 +20,7 @@ export class Argon2idPasswordEncoder implements PasswordEncoder {
     encoded: EncodedPassword,
   ): Promise<boolean> {
     try {
-      return await verify(encoded, raw, { type: argon2id });
+      return await verify(encoded, raw, { type: 2 });
     } catch {
       return false;
     }

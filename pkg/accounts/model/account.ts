@@ -58,7 +58,7 @@ export class Account {
     return this.name;
   }
 
-  private createdAt: Date;
+  private readonly createdAt: Date;
   getCreatedAt(): Date {
     return this.createdAt;
   }
