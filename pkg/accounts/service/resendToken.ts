@@ -26,16 +26,16 @@ export class ResendVerifyTokenService {
       return Option.some(new Error('AccountNotFoundError'));
     }
 
-    if (account[1].getStatus !== 'notActivated') {
+    if (account[1].getStatus() !== 'notActivated') {
       return Option.some(new Error('AccountAlreadyVerifiedError'));
     }
 
-    const token = await this.tokenVerifyService.generate(account[1].getID);
+    const token = await this.tokenVerifyService.generate(account[1].getID());
     if (Result.isErr(token)) {
       return Option.some(token[1]);
     }
 
-    this.sendNotificationService.Send(account[1].getMail, token[1]);
+    this.sendNotificationService.send(account[1].getMail(), token[1]);
 
     return Option.none();
   }

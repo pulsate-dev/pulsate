@@ -31,17 +31,17 @@ describe('FetchAccountService', () => {
     const account = await fetchAccountService.fetchAccount('@john@example.com');
     if (Result.isErr(account)) return;
 
-    expect(account[1].getID).toBe('1');
-    expect(account[1].getName).toBe('@john@example.com');
-    expect(account[1].getMail).toBe('johndoe@example.com');
-    expect(account[1].getNickname).toBe('John Doe');
-    expect(account[1].getPassphraseHash).toBe('hash');
-    expect(account[1].getBio).toBe('');
-    expect(account[1].getRole).toBe('normal');
-    expect(account[1].getFrozen).toBe('normal');
-    expect(account[1].getSilenced).toBe('normal');
-    expect(account[1].getStatus).toBe('notActivated');
-    expect(account[1].getCreatedAt).toBeInstanceOf(Date);
+    expect(account[1].getID()).toBe('1');
+    expect(account[1].getName()).toBe('@john@example.com');
+    expect(account[1].getMail()).toBe('johndoe@example.com');
+    expect(account[1].getNickname()).toBe('John Doe');
+    expect(account[1].getPassphraseHash()).toBe('hash');
+    expect(account[1].getBio()).toBe('');
+    expect(account[1].getRole()).toBe('normal');
+    expect(account[1].getFrozen()).toBe('normal');
+    expect(account[1].getSilenced()).toBe('normal');
+    expect(account[1].getStatus()).toBe('notActivated');
+    expect(account[1].getCreatedAt()).toBeInstanceOf(Date);
   });
 
   it("fetch account info doesn't exist", async () => {

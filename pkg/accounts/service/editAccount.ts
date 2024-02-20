@@ -83,7 +83,7 @@ export class EditAccountService {
 
     try {
       account.setPassphraseHash(
-        await this.passwordEncoder.EncodePassword(newPassphrase),
+        await this.passwordEncoder.encodePassword(newPassphrase),
       );
       return Result.ok(true);
     } catch (e) {

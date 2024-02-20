@@ -6,7 +6,7 @@ import { type AccountID } from '../model/account.js';
 import { type AccountVerifyTokenRepository } from '../model/repository.js';
 
 class DateClock implements Clock {
-  Now(): bigint {
+  now(): bigint {
     return BigInt(Date.now());
   }
 }
@@ -32,7 +32,7 @@ export class TokenVerifyService {
 
     // expireDate: After 7 days
     const expireDate = new Date(
-      Number(this.clock.Now()) + 7 * 24 * 60 * 60 * 1000,
+      Number(this.clock.now()) + 7 * 24 * 60 * 60 * 1000,
     );
 
     const encodedToken = Buffer.from(verifyToken).toString('base64');

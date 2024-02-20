@@ -26,8 +26,8 @@ export class UnfollowService {
     }
 
     const res = await this.followRepository.unfollow(
-      fromAccount[1].getID,
-      targetAccount[1].getID,
+      fromAccount[1].getID(),
+      targetAccount[1].getID(),
     );
     if (Result.isErr(res)) {
       return Option.some(res[1]);

@@ -82,43 +82,43 @@ export class PrismaAccountRepository implements AccountRepository {
         moderator: 1,
         admin: 2,
       } satisfies Record<AccountRole, number>
-    )[account.getRole];
+    )[account.getRole()];
 
     const status = (
       {
         active: 0,
         notActivated: 1,
       } satisfies Record<AccountStatus, number>
-    )[account.getStatus];
+    )[account.getStatus()];
 
     const frozen = (
       {
         normal: 0,
         frozen: 1,
       } satisfies Record<AccountFrozen, number>
-    )[account.getFrozen];
+    )[account.getFrozen()];
 
     const silenced = (
       {
         normal: 0,
         silenced: 1,
       } satisfies Record<AccountSilenced, number>
-    )[account.getSilenced];
+    )[account.getSilenced()];
 
     return {
-      id: account.getID,
-      name: account.getName,
-      nickname: account.getNickname,
-      mail: account.getMail,
-      passphrase_hash: account.getPassphraseHash ?? '',
-      bio: account.getBio,
+      id: account.getID(),
+      name: account.getName(),
+      nickname: account.getNickname(),
+      mail: account.getMail(),
+      passphrase_hash: account.getPassphraseHash() ?? '',
+      bio: account.getBio(),
       role: role,
       frozen: frozen,
       silenced: silenced,
       status: status,
-      created_at: account.getCreatedAt,
-      updated_at: !account.getUpdatedAt ? null : account.getUpdatedAt,
-      deleted_at: !account.getDeletedAt ? null : account.getDeletedAt,
+      created_at: account.getCreatedAt(),
+      updated_at: account.getUpdatedAt() ?? null,
+      deleted_at: account.getDeletedAt() ?? null,
     };
   }
 
