@@ -10,7 +10,7 @@ export interface CreateNoteArgs {
   id: ID<NoteID>;
   content: string;
   visibility: NoteVisibility;
-  cwComment: string;
+  contentsWarningComment: string;
   sendTo: Option.Option<ID<AccountID>>;
   createdAt: Date;
   updatedAt: Option.Option<Date>;
@@ -22,7 +22,7 @@ export class Note {
     this.id = arg.id;
     this.content = arg.content;
     this.visibility = arg.visibility;
-    this.cwComment = arg.cwComment;
+    this.contentsWarningComment = arg.contentsWarningComment;
     this.sendTo = arg.sendTo;
     this.createdAt = arg.createdAt;
     this.updatedAt = arg.updatedAt;
@@ -63,9 +63,9 @@ export class Note {
     return this.visibility;
   }
 
-  private readonly cwComment: string;
+  private readonly contentsWarningComment: string;
   getCwComment(): string {
-    return this.cwComment;
+    return this.contentsWarningComment;
   }
 
   private readonly sendTo: Option.Option<ID<AccountID>>;

@@ -9,7 +9,7 @@ const exampleInput: CreateNoteArgs = {
   content: 'hello world!',
   createdAt: new Date('2023-09-10T00:00:00.000Z'),
   visibility: 'PUBLIC',
-  cwComment: '',
+  contentsWarningComment: '',
   sendTo: Option.none(),
   updatedAt: Option.none(),
   deletedAt: Option.none(),
@@ -22,7 +22,7 @@ describe('Note', () => {
     expect(note.getID()).toBe(exampleInput.id);
     expect(note.getContent()).toBe(exampleInput.content);
     expect(note.getVisibility()).toBe(exampleInput.visibility);
-    expect(note.getCwComment()).toBe(exampleInput.cwComment);
+    expect(note.getCwComment()).toBe(exampleInput.contentsWarningComment);
     expect(note.getCreatedAt()).toBe(exampleInput.createdAt);
     expect(note.getUpdatedAt()).toStrictEqual(Option.none());
     expect(note.getDeletedAt()).toStrictEqual(Option.none());
