@@ -3,10 +3,12 @@ import { Option, Result } from '@mikuroxina/mini-fn';
 import { type ID } from '../../../id/type.js';
 import { type Account, type AccountID } from '../../model/account.js';
 import { type AccountFollow } from '../../model/follow.js';
+import type { InactiveAccount } from '../../model/inactiveAccount.js';
 import type {
   AccountFollowRepository,
   AccountRepository,
   AccountVerifyTokenRepository,
+  InactiveAccountRepository,
 } from '../../model/repository.js';
 
 export class InMemoryAccountRepository implements AccountRepository {
@@ -142,5 +144,41 @@ export class InMemoryAccountFollowRepository
         })
         .slice(0, limit),
     );
+  }
+}
+
+export class InMemoryInactiveAccountRepository
+  implements InactiveAccountRepository
+{
+  private data: Set<InactiveAccount>;
+
+  constructor() {
+    this.data = new Set();
+  }
+
+  create(account: InactiveAccount): Promise<Result.Result<Error, void>> {
+    this.data.add(account);
+    return Promise.resolve(Result.ok(undefined));
+  }
+
+  reset(): void {
+    this.data.clear();
+  }
+
+  findByName(name: string): Promise<Option.Option<InactiveAccount>> {
+    const account = Array.from(this.data).find((a) => a.getName === name);
+    if (!account) {
+      return Promise.resolve(Option.none());
+    }
+    return Promise.resolve(Option.some(account));
+  }
+
+  findByMail(mail: string): Promise<Option.Option<InactiveAccount>> {
+    const account = Array.from(this.data).find((a) => a.getMail === mail);
+    if (!account) {
+      return Promise.resolve(Option.none());
+    }
+
+    return Promise.resolve(Option.some(account));
   }
 }
