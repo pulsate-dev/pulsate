@@ -39,16 +39,18 @@ describe('InactiveAccount', () => {
     const inactiveAccount = InactiveAccount.new(exampleInput);
     const account = inactiveAccount.activate(exampleActivateArgs);
 
-    expect(account.getID).toBe(exampleInput.id);
-    expect(account.getName).toBe(exampleInput.name);
-    expect(account.getMail).toBe(exampleInput.mail);
-    expect(account.getNickname).toBe(exampleActivateArgs.nickname);
-    expect(account.getPassphraseHash).toBe(exampleActivateArgs.passphraseHash);
-    expect(account.getBio).toBe(exampleActivateArgs.bio);
-    expect(account.getRole).toBe(exampleActivateArgs.role);
-    expect(account.getCreatedAt).toBe(exampleActivateArgs.createdAt);
-    expect(account.getUpdatedAt).toBe(undefined);
-    expect(account.getDeletedAt).toBe(undefined);
+    expect(account.getID()).toBe(exampleInput.id);
+    expect(account.getName()).toBe(exampleInput.name);
+    expect(account.getMail()).toBe(exampleInput.mail);
+    expect(account.getNickname()).toBe(exampleActivateArgs.nickname);
+    expect(account.getPassphraseHash()).toBe(
+      exampleActivateArgs.passphraseHash,
+    );
+    expect(account.getBio()).toBe(exampleActivateArgs.bio);
+    expect(account.getRole()).toBe(exampleActivateArgs.role);
+    expect(account.getCreatedAt()).toBe(exampleActivateArgs.createdAt);
+    expect(account.getUpdatedAt()).toBe(undefined);
+    expect(account.getDeletedAt()).toBe(undefined);
 
     expect(inactiveAccount.isActivated).toBe(true);
   });
