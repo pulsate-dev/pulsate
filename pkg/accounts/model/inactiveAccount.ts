@@ -10,7 +10,6 @@ export interface CreateInactiveAccountArgs {
   id: ID<AccountID>;
   name: AccountName;
   mail: string;
-  activated: boolean;
 }
 
 export interface ActivateArgs
@@ -33,7 +32,7 @@ export class InactiveAccount {
     this.id = arg.id;
     this.name = arg.name;
     this.mail = arg.mail;
-    this.activated = arg.activated;
+    this.activated = false;
   }
 
   private activated: boolean;
