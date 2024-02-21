@@ -1,8 +1,10 @@
+import { Option } from '@mikuroxina/mini-fn';
+
 import type { AccountID } from '../../accounts/model/account.js';
 import type { ID } from '../../id/type.js';
 
 export type NoteID = string;
-export type NoteVisibility = 'public' | 'home' | 'followers' | 'direct';
+export type NoteVisibility = 'PUBLIC' | 'HOME' | 'FOLLOWERS' | 'DIRECT';
 
 export interface CreateNoteArgs {
   id: ID<NoteID>;
@@ -10,10 +12,10 @@ export interface CreateNoteArgs {
   visibility: NoteVisibility;
   attachmentFileIDs: string[];
   cwComment: string;
-  sendTo?: ID<AccountID>;
+  sendTo: Option.Option<ID<AccountID>>;
   createdAt: Date;
-  updatedAt?: Date;
-  deletedAt?: Date;
+  updatedAt: Option.Option<Date>;
+  deletedAt: Option.Option<Date>;
 }
 
 export class Note {
@@ -39,11 +41,15 @@ export class Note {
     if ([...arg.content].length === 0 && arg.attachmentFileIDs.length === 0) {
       throw new Error('No contents');
     }
-    if (arg.visibility === 'direct' && !arg.sendTo) {
+    if (arg.visibility === 'DIRECT' && Option.isNone(arg.sendTo)) {
       throw new Error('No destination');
     }
 
-    return new Note(arg);
+    return new Note({
+      ...arg,
+      updatedAt: Option.none(),
+      deletedAt: Option.none(),
+    });
   }
 
   static reconstruct(arg: CreateNoteArgs) {
@@ -74,8 +80,8 @@ export class Note {
     return this.cwComment;
   }
 
-  private readonly sendTo: ID<AccountID> | undefined;
-  getSendTo(): ID<AccountID> | undefined {
+  private readonly sendTo: Option.Option<ID<AccountID>>;
+  getSendTo(): Option.Option<ID<AccountID>> {
     return this.sendTo;
   }
 
@@ -84,19 +90,19 @@ export class Note {
     return this.createdAt;
   }
 
-  private readonly updatedAt: Date | undefined;
-  getUpdatedAt(): Date | undefined {
+  private readonly updatedAt: Option.Option<Date>;
+  getUpdatedAt(): Option.Option<Date> {
     return this.updatedAt;
   }
 
-  private deletedAt: Date | undefined;
-  getDeletedAt(): Date | undefined {
+  private deletedAt: Option.Option<Date>;
+  getDeletedAt(): Option.Option<Date> {
     return this.deletedAt;
   }
   setDeletedAt(deletedAt: Date) {
     if (this.createdAt > deletedAt) {
       throw new Error('deletedAt must be after createdAt');
     }
-    this.deletedAt = deletedAt;
+    this.deletedAt = Option.some(deletedAt);
   }
 }

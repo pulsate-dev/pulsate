@@ -1,3 +1,4 @@
+import { Option } from '@mikuroxina/mini-fn';
 import { describe, expect, it } from 'vitest';
 
 import type { ID } from '../../id/type.js';
@@ -7,9 +8,12 @@ const exampleInput: CreateNoteArgs = {
   id: '1' as ID<NoteID>,
   content: 'hello world!',
   createdAt: new Date('2023-09-10T00:00:00.000Z'),
-  visibility: 'public',
+  visibility: 'PUBLIC',
   attachmentFileIDs: ['11938472'],
   cwComment: '',
+  sendTo: Option.none(),
+  updatedAt: Option.none(),
+  deletedAt: Option.none(),
 };
 
 describe('Note', () => {
@@ -29,24 +33,28 @@ describe('Note', () => {
   it('note content must be less than 3000', () => {
     expect(() =>
       Note.new({ ...exampleInput, content: 'a'.repeat(3001) }),
-    ).toThrow();
+    ).toThrow('Too long content');
   });
 
   it('note content must not be empty without an attachment', () => {
     expect(() =>
       Note.new({ ...exampleInput, content: '', attachmentFileIDs: [] }),
-    ).toThrow();
+    ).toThrow('No contents');
   });
 
   it('note attachments must be less than 16', () => {
     expect(() =>
       Note.new({ ...exampleInput, attachmentFileIDs: new Array(17).fill('1') }),
-    ).toThrow();
+    ).toThrow('Too many attachments');
   });
 
   it("when visibility is direct, sendTo can't be empty", () => {
     expect(() =>
-      Note.new({ ...exampleInput, visibility: 'direct', sendTo: undefined }),
-    ).toThrow();
+      Note.new({
+        ...exampleInput,
+        visibility: 'DIRECT',
+        sendTo: Option.none(),
+      }),
+    ).toThrow('No destination');
   });
 });
