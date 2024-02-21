@@ -32,7 +32,7 @@ const exampleActivateArgs: CreateAccountArgs = {
 describe('InactiveAccount', () => {
   it('generate new instance', () => {
     const account = InactiveAccount.new(exampleInput);
-    expect(account.isActivated).toBe(false);
+    expect(account.isActivated()).toBe(false);
   });
 
   it('activate account', () => {
@@ -52,7 +52,7 @@ describe('InactiveAccount', () => {
     expect(account.getUpdatedAt()).toBe(undefined);
     expect(account.getDeletedAt()).toBe(undefined);
 
-    expect(inactiveAccount.isActivated).toBe(true);
+    expect(inactiveAccount.isActivated()).toBe(true);
   });
 
   it('already activated', () => {
@@ -67,8 +67,8 @@ describe('InactiveAccount', () => {
   it('get account property', () => {
     const account = InactiveAccount.new(exampleInput);
 
-    expect(account.getID).toBe(exampleInput.id);
-    expect(account.getName).toBe(exampleInput.name);
-    expect(account.getMail).toBe(exampleInput.mail);
+    expect(account.getID()).toBe(exampleInput.id);
+    expect(account.getName()).toBe(exampleInput.name);
+    expect(account.getMail()).toBe(exampleInput.mail);
   });
 });
