@@ -7,6 +7,7 @@ import {
   FollowAccountResponseSchema,
   GetAccountResponseSchema,
   LoginRequestSchema,
+  LoginResponseSchema,
   RefreshRequestSchema,
   ResendVerificationEmailRequestSchema,
   UpdateAccountRequestSchema,
@@ -320,7 +321,7 @@ export const LoginRoute = createRoute({
       description: 'OK',
       content: {
         'application/json': {
-          schema: UpdateAccountResponseSchema,
+          schema: LoginResponseSchema,
         },
       },
     },
@@ -395,6 +396,14 @@ export const GetAccountRoute = createRoute({
       content: {
         'application/json': {
           schema: GetAccountResponseSchema,
+        },
+      },
+    },
+    404: {
+      description: 'Not Found',
+      content: {
+        'application/json': {
+          schema: CommonErrorResponseSchema,
         },
       },
     },

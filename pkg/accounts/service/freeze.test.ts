@@ -34,8 +34,8 @@ describe('FreezeService', () => {
 
     await freezeService.setFreeze('@john@example.com');
 
-    expect(account[1].getFrozen).toBe('frozen');
-    expect(account[1].getFrozen).not.toBe('normal');
+    expect(account[1].getFrozen()).toBe('frozen');
+    expect(account[1].getFrozen()).not.toBe('normal');
   });
 
   it('unset account freeze', async () => {
@@ -44,7 +44,7 @@ describe('FreezeService', () => {
 
     await freezeService.undoFreeze('@john@example.com');
 
-    expect(account[1].getFrozen).toBe('normal');
-    expect(account[1].getFrozen).not.toBe('frozen');
+    expect(account[1].getFrozen()).toBe('normal');
+    expect(account[1].getFrozen()).not.toBe('frozen');
   });
 });

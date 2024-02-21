@@ -49,30 +49,30 @@ export class Account {
 
   // 不変
   private readonly id: ID<AccountID>;
-  get getID(): ID<AccountID> {
+  getID(): ID<AccountID> {
     return this.id;
   }
 
   private readonly name: AccountName;
-  get getName(): AccountName {
+  getName(): AccountName {
     return this.name;
   }
 
-  private createdAt: Date;
-  get getCreatedAt(): Date {
+  private readonly createdAt: Date;
+  getCreatedAt(): Date {
     return this.createdAt;
   }
 
   // 可変
   private mail: string;
-  get getMail(): string {
+  getMail(): string {
     return this.mail;
   }
   public setMail(mail: string) {
     if (this.isDeleted()) {
       throw new AccountAlreadyDeletedError('account already deleted');
     }
-    if (this.getFrozen === 'frozen') {
+    if (this.getFrozen() === 'frozen') {
       throw new AccountAlreadyFrozenError('account already frozen');
     }
 
@@ -80,14 +80,14 @@ export class Account {
   }
 
   private nickname: string;
-  get getNickname(): string {
+  getNickname(): string {
     return this.nickname;
   }
   public setNickName(name: string) {
     if (this.isDeleted()) {
       throw new AccountAlreadyDeletedError('account already deleted');
     }
-    if (this.getFrozen === 'frozen') {
+    if (this.getFrozen() === 'frozen') {
       throw new AccountAlreadyFrozenError('account already frozen');
     }
 
@@ -98,14 +98,14 @@ export class Account {
   }
 
   private passphraseHash: string | undefined;
-  get getPassphraseHash(): string | undefined {
+  getPassphraseHash(): string | undefined {
     return this.passphraseHash;
   }
   public setPassphraseHash(hash: string) {
     if (this.isDeleted()) {
       throw new AccountAlreadyDeletedError('account already deleted');
     }
-    if (this.getFrozen === 'frozen') {
+    if (this.getFrozen() === 'frozen') {
       throw new AccountAlreadyFrozenError('account already frozen');
     }
 
@@ -113,14 +113,14 @@ export class Account {
   }
 
   private bio: string;
-  get getBio(): string {
+  getBio(): string {
     return this.bio;
   }
   public setBio(bio: string) {
     if (this.isDeleted()) {
       throw new AccountAlreadyDeletedError('account already deleted');
     }
-    if (this.getFrozen === 'frozen') {
+    if (this.getFrozen() === 'frozen') {
       throw new AccountAlreadyFrozenError('account already frozen');
     }
 
@@ -131,14 +131,14 @@ export class Account {
   }
 
   private role: AccountRole;
-  get getRole(): AccountRole {
+  getRole(): AccountRole {
     return this.role;
   }
   public toAdmin() {
     if (this.isDeleted()) {
       throw new AccountAlreadyDeletedError('account already deleted');
     }
-    if (this.getFrozen === 'frozen') {
+    if (this.getFrozen() === 'frozen') {
       throw new AccountAlreadyFrozenError('account already frozen');
     }
 
@@ -148,7 +148,7 @@ export class Account {
     if (this.isDeleted()) {
       throw new AccountAlreadyDeletedError('account already deleted');
     }
-    if (this.getFrozen === 'frozen') {
+    if (this.getFrozen() === 'frozen') {
       throw new AccountAlreadyFrozenError('account already frozen');
     }
 
@@ -158,7 +158,7 @@ export class Account {
     if (this.isDeleted()) {
       throw new AccountAlreadyDeletedError('account already deleted');
     }
-    if (this.getFrozen === 'frozen') {
+    if (this.getFrozen() === 'frozen') {
       throw new AccountAlreadyFrozenError('account already frozen');
     }
 
@@ -166,7 +166,7 @@ export class Account {
   }
 
   private frozen: AccountFrozen;
-  get getFrozen(): AccountFrozen {
+  getFrozen(): AccountFrozen {
     return this.frozen;
   }
   public setFreeze() {
@@ -185,14 +185,14 @@ export class Account {
   }
 
   private silenced: AccountSilenced;
-  get getSilenced(): AccountSilenced {
+  getSilenced(): AccountSilenced {
     return this.silenced;
   }
   public setSilence() {
     if (this.isDeleted()) {
       throw new AccountAlreadyDeletedError('account already deleted');
     }
-    if (this.getFrozen === 'frozen') {
+    if (this.getFrozen() === 'frozen') {
       throw new AccountAlreadyFrozenError('account already frozen');
     }
 
@@ -202,7 +202,7 @@ export class Account {
     if (this.isDeleted()) {
       throw new AccountAlreadyDeletedError('account already deleted');
     }
-    if (this.getFrozen === 'frozen') {
+    if (this.getFrozen() === 'frozen') {
       throw new AccountAlreadyFrozenError('account already frozen');
     }
 
@@ -210,21 +210,21 @@ export class Account {
   }
 
   private status: AccountStatus;
-  get getStatus(): AccountStatus {
+  getStatus(): AccountStatus {
     return this.status;
   }
   public activate() {
     if (this.isDeleted()) {
       throw new AccountAlreadyDeletedError('account already deleted');
     }
-    if (this.getFrozen === 'frozen') {
+    if (this.getFrozen() === 'frozen') {
       throw new AccountAlreadyFrozenError('account already frozen');
     }
     this.status = 'active';
   }
 
   private updatedAt: Date | undefined;
-  get getUpdatedAt(): Date | undefined {
+  getUpdatedAt(): Date | undefined {
     return this.updatedAt;
   }
   public setUpdatedAt(at: Date) {
@@ -235,7 +235,7 @@ export class Account {
   }
 
   private deletedAt: Date | undefined;
-  get getDeletedAt(): Date | undefined {
+  getDeletedAt(): Date | undefined {
     return this.deletedAt;
   }
   public setDeletedAt(at: Date) {

@@ -1,5 +1,5 @@
 import { Option } from '@mikuroxina/mini-fn';
-import { describe, it, expect } from 'vitest';
+import { describe, expect, it } from 'vitest';
 
 import { type ID } from '../../id/type.js';
 import {
@@ -7,12 +7,12 @@ import {
   InMemoryAccountVerifyTokenRepository,
 } from '../adaptor/repository/dummy.js';
 import { Account, type AccountID } from '../model/account.js';
+import { TokenVerifyService } from './accountVerifyToken.js';
 import { ResendVerifyTokenService } from './resendToken.js';
 import { DummySendNotificationService } from './sendNotification.js';
-import { TokenVerifyService } from './tokenVerify.js';
 
 const repository = new InMemoryAccountRepository();
-repository.create(
+await repository.create(
   Account.new({
     id: '1' as ID<AccountID>,
     name: '@john@example.com',
@@ -28,7 +28,28 @@ repository.create(
   }),
 );
 const verifyRepository = new InMemoryAccountVerifyTokenRepository();
-const tokenVerifyService = new TokenVerifyService(verifyRepository);
+const accountRepository = new InMemoryAccountRepository();
+await accountRepository.create(
+  Account.reconstruct({
+    id: '1' as ID<AccountID>,
+    name: '@john@example.com',
+    bio: '',
+    frozen: 'normal',
+    mail: '',
+    nickname: '',
+    role: 'normal',
+    silenced: 'normal',
+    status: 'active',
+    passphraseHash: undefined,
+    createdAt: new Date(),
+    deletedAt: undefined,
+    updatedAt: undefined,
+  }),
+);
+const tokenVerifyService = new TokenVerifyService(
+  verifyRepository,
+  accountRepository,
+);
 const sendNotificationService = new DummySendNotificationService();
 
 describe('ResendVerifyTokenService', () => {

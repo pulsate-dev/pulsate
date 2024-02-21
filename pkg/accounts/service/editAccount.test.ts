@@ -1,5 +1,5 @@
 import { Option, Result } from '@mikuroxina/mini-fn';
-import { describe, it, expect, afterEach } from 'vitest';
+import { afterEach, describe, expect, it } from 'vitest';
 
 import type { ID } from '../../id/type.js';
 import { Argon2idPasswordEncoder } from '../../password/mod.js';
@@ -46,7 +46,7 @@ describe('EditAccountService', () => {
     );
     expect(Result.isErr(updateRes)).toBe(false);
     expect(updateRes[1]).toBe(true);
-    expect(account[1].getNickname).toBe('new nickname');
+    expect(account[1].getNickname()).toBe('new nickname');
   });
 
   it('should be fail to update nickname when nickname shorter more than 1', async () => {
@@ -87,7 +87,7 @@ describe('EditAccountService', () => {
     );
     expect(Result.isErr(updateRes)).toBe(false);
     expect(updateRes[1]).toBe(true);
-    expect(account[1].getNickname).toBe('a'.repeat(256));
+    expect(account[1].getNickname()).toBe('a'.repeat(256));
   });
 
   it('should be success to update nickname when nickname 1', async () => {
@@ -120,7 +120,7 @@ describe('EditAccountService', () => {
   it('should be fail to update nickname when account not found', async () => {
     const res = await editAccountService.editNickname(
       'invalid etag',
-      'foo',
+      '@foo@example.com',
       'new nickname',
     );
     expect(Result.isErr(res)).toBe(true);
@@ -206,7 +206,7 @@ describe('EditAccountService', () => {
   it('should be fail to update passphrase when account not found', async () => {
     const res = await editAccountService.editPassphrase(
       'invalid etag',
-      'foo',
+      '@john@example.com',
       'new password',
     );
     expect(Result.isErr(res)).toBe(true);
@@ -241,7 +241,7 @@ describe('EditAccountService', () => {
   it('should be fail to update email when account not found', async () => {
     const updateRes = await editAccountService.editEmail(
       'invalid etag',
-      'foo',
+      '@john@example.com',
       'pulsate@pulsate.mail',
     );
     expect(Result.isErr(updateRes)).toBe(true);
@@ -300,5 +300,21 @@ describe('EditAccountService', () => {
     );
     expect(Result.isErr(updateRes)).toBe(false);
     expect(updateRes[1]).toBe(true);
+  });
+
+  it('should be success to update bio', async () => {
+    const account = await repository.findByName('@john@example.com');
+    if (Option.isNone(account)) return;
+
+    const etag = await etagVerifyService.generate(account[1]);
+    const updateRes = await editAccountService.editBio(
+      etag,
+      '@john@example.com',
+      'new bio',
+    );
+
+    expect(Result.isErr(updateRes)).toBe(false);
+    expect(updateRes[1]).toBe(true);
+    expect(account[1].getBio).toBe('new bio');
   });
 });

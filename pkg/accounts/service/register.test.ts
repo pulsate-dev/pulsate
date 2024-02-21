@@ -8,15 +8,15 @@ import {
   InMemoryAccountVerifyTokenRepository,
 } from '../adaptor/repository/dummy.js';
 import { type AccountName, type AccountRole } from '../model/account.js';
+import { TokenVerifyService } from './accountVerifyToken.js';
 import { RegisterAccountService } from './register.js';
 import { DummySendNotificationService } from './sendNotification.js';
-import { TokenVerifyService } from './tokenVerify.js';
 
 const repository = new InMemoryAccountRepository();
 const verifyRepository = new InMemoryAccountVerifyTokenRepository();
 
 class DummyClock implements Clock {
-  Now(): bigint {
+  now(): bigint {
     return BigInt(new Date('2023/9/10 00:00:00 UTC').getTime());
   }
 }
@@ -26,7 +26,7 @@ const registerService: RegisterAccountService = new RegisterAccountService({
   idGenerator: new SnowflakeIDGenerator(1, new DummyClock()),
   passwordEncoder: new Argon2idPasswordEncoder(),
   sendNotification: new DummySendNotificationService(),
-  verifyTokenService: new TokenVerifyService(verifyRepository),
+  verifyTokenService: new TokenVerifyService(verifyRepository, repository),
 });
 
 const exampleInput = {
@@ -50,12 +50,12 @@ describe('RegisterAccountService', () => {
     );
     if (Result.isErr(res)) return;
 
-    expect(res[1].getName).toBe(exampleInput.name);
-    expect(res[1].getMail).toBe(exampleInput.mail);
-    expect(res[1].getNickname).toBe(exampleInput.nickname);
-    expect(res[1].getBio).toBe(exampleInput.bio);
-    expect(res[1].getRole).toBe(exampleInput.role);
-    expect(res[1].getStatus).toBe('notActivated');
+    expect(res[1].getName()).toBe(exampleInput.name);
+    expect(res[1].getMail()).toBe(exampleInput.mail);
+    expect(res[1].getNickname()).toBe(exampleInput.nickname);
+    expect(res[1].getBio()).toBe(exampleInput.bio);
+    expect(res[1].getRole()).toBe(exampleInput.role);
+    expect(res[1].getStatus()).toBe('notActivated');
     repository.reset();
   });
 });

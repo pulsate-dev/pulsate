@@ -9,8 +9,8 @@ import {
   type AccountRole,
 } from '../model/account.js';
 import { type AccountRepository } from '../model/repository.js';
+import type { TokenVerifyService } from './accountVerifyToken.js';
 import { type SendNotificationService } from './sendNotification.js';
-import type { TokenVerifyService } from './tokenVerify.js';
 
 export class AccountAlreadyExistsError extends Error {
   override readonly name = 'AccountAlreadyExistsError' as const;
@@ -57,7 +57,7 @@ export class RegisterAccountService {
     }
 
     const passphraseHash =
-      await this.passwordEncoder.EncodePassword(passphrase);
+      await this.passwordEncoder.encodePassword(passphrase);
 
     const generatedID = this.snowflakeIDGenerator.generate<AccountID>();
     if (Result.isErr(generatedID)) {
@@ -81,13 +81,14 @@ export class RegisterAccountService {
       return Result.err(res[1]);
     }
 
-    const token = await this.tokenVerifyService.generate(account.getID);
+    const token = await this.tokenVerifyService.generate(account.getName());
     if (Result.isErr(token)) {
       return Result.err(token[1]);
     }
 
     // ToDo: Notification Body
-    this.sendNotificationService.Send(mail, `token: ${token[1]}`);
+    await this.sendNotificationService.send(mail, `token: ${token[1]}`);
+
     return Result.ok(account);
   }
 

@@ -28,7 +28,7 @@ export class InMemoryAccountRepository implements AccountRepository {
   }
 
   findByName(name: string): Promise<Option.Option<Account>> {
-    const account = Array.from(this.data).find((a) => a.getName === name);
+    const account = Array.from(this.data).find((a) => a.getName() === name);
     if (!account) {
       return Promise.resolve(Option.none());
     }
@@ -36,7 +36,7 @@ export class InMemoryAccountRepository implements AccountRepository {
   }
 
   findByMail(mail: string): Promise<Option.Option<Account>> {
-    const account = Array.from(this.data).find((a) => a.getMail === mail);
+    const account = Array.from(this.data).find((a) => a.getMail() === mail);
     if (!account) {
       return Promise.resolve(Option.none());
     }

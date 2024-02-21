@@ -35,16 +35,16 @@ export class AuthenticationService {
       return Result.err(new Error('Account not found'));
     }
 
-    const isMatch = await this.passwordEncoder.IsMatchPassword(
+    const isMatch = await this.passwordEncoder.isMatchPassword(
       passphrase,
-      Option.unwrap(account).getPassphraseHash ?? '',
+      Option.unwrap(account).getPassphraseHash() ?? '',
     );
     if (!isMatch) {
       return Result.err(new Error('Password is incorrect'));
     }
 
     const authorizationToken = await this.tokenGenerator.generate(
-      Option.unwrap(account).getName,
+      Option.unwrap(account).getName(),
       convertTo(new Date()),
       convertTo(addSecondsToDate(new Date(), 900)),
     );
@@ -54,7 +54,7 @@ export class AuthenticationService {
     }
 
     const refreshToken = await this.tokenGenerator.generate(
-      Option.unwrap(account).getName,
+      Option.unwrap(account).getName(),
       convertTo(new Date()),
       convertTo(addSecondsToDate(new Date(), 2_592_000)),
     );

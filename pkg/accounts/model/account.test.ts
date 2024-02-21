@@ -23,17 +23,17 @@ describe('Account', () => {
   it('generate new instance', () => {
     const account = Account.new(exampleInput);
 
-    expect(account.getID).toBe(exampleInput.id);
-    expect(account.getName).toBe(exampleInput.name);
-    expect(account.getMail).toBe(exampleInput.mail);
-    expect(account.getNickname).toBe(exampleInput.nickname);
-    expect(account.getPassphraseHash).toBe(exampleInput.passphraseHash);
-    expect(account.getBio).toBe(exampleInput.bio);
-    expect(account.getRole).toBe(exampleInput.role);
-    expect(account.getStatus).toBe('notActivated');
-    expect(account.getCreatedAt).toBe(exampleInput.createdAt);
-    expect(account.getUpdatedAt).toBe(undefined);
-    expect(account.getDeletedAt).toBe(undefined);
+    expect(account.getID()).toBe(exampleInput.id);
+    expect(account.getName()).toBe(exampleInput.name);
+    expect(account.getMail()).toBe(exampleInput.mail);
+    expect(account.getNickname()).toBe(exampleInput.nickname);
+    expect(account.getPassphraseHash()).toBe(exampleInput.passphraseHash);
+    expect(account.getBio()).toBe(exampleInput.bio);
+    expect(account.getRole()).toBe(exampleInput.role);
+    expect(account.getStatus()).toBe('notActivated');
+    expect(account.getCreatedAt()).toBe(exampleInput.createdAt);
+    expect(account.getUpdatedAt()).toBe(undefined);
+    expect(account.getDeletedAt()).toBe(undefined);
   });
 
   it('account nickname must be less than 256', () => {
