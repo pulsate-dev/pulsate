@@ -11,7 +11,6 @@ const exampleInput: CreateInactiveAccountArgs = {
   id: '1' as ID<AccountID>,
   name: '@johndoe@social.example.com',
   mail: 'test@mail.example.com',
-  activated: false,
 };
 
 const exampleActivateArgs: CreateAccountArgs = {
