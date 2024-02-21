@@ -35,27 +35,27 @@ export class InactiveAccount {
   }
 
   private activated: boolean;
-  get isActivated(): boolean {
+  isActivated(): boolean {
     return this.activated;
   }
 
   private readonly id: ID<AccountID>;
-  get getID(): string {
+  getID(): string {
     return this.id;
   }
 
   private readonly name: AccountName;
-  get getName(): string {
+  getName(): string {
     return this.name;
   }
 
   private readonly mail: string;
-  get getMail(): string {
+  getMail(): string {
     return this.mail;
   }
 
   public activate(args: ActivateArgs): Account {
-    if (this.isActivated) {
+    if (this.isActivated()) {
       throw new AlreadyActivatedError();
     }
 
