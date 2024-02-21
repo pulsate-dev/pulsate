@@ -26,8 +26,8 @@ describe('Note', () => {
     expect(note.getAttachmentFileIDs()).toBe(exampleInput.attachmentFileIDs);
     expect(note.getCwComment()).toBe(exampleInput.cwComment);
     expect(note.getCreatedAt()).toBe(exampleInput.createdAt);
-    expect(note.getUpdatedAt()).toBe(undefined);
-    expect(note.getDeletedAt()).toBe(undefined);
+    expect(note.getUpdatedAt()).toStrictEqual(Option.none());
+    expect(note.getDeletedAt()).toStrictEqual(Option.none());
   });
 
   it('note content must be less than 3000', () => {
