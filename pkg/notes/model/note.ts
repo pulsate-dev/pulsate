@@ -10,7 +10,6 @@ export interface CreateNoteArgs {
   id: ID<NoteID>;
   content: string;
   visibility: NoteVisibility;
-  attachmentFileIDs: string[];
   cwComment: string;
   sendTo: Option.Option<ID<AccountID>>;
   createdAt: Date;
@@ -23,7 +22,6 @@ export class Note {
     this.id = arg.id;
     this.content = arg.content;
     this.visibility = arg.visibility;
-    this.attachmentFileIDs = arg.attachmentFileIDs;
     this.cwComment = arg.cwComment;
     this.sendTo = arg.sendTo;
     this.createdAt = arg.createdAt;
@@ -32,14 +30,8 @@ export class Note {
   }
 
   static new(arg: Omit<CreateNoteArgs, 'updatedAt' | 'deletedAt'>) {
-    if (arg.attachmentFileIDs.length > 16) {
-      throw new Error('Too many attachments');
-    }
     if ([...arg.content].length > 3000) {
       throw new Error('Too long contents');
-    }
-    if ([...arg.content].length === 0 && arg.attachmentFileIDs.length === 0) {
-      throw new Error('No contents');
     }
     if (arg.visibility === 'DIRECT' && Option.isNone(arg.sendTo)) {
       throw new Error('No destination');
@@ -69,10 +61,6 @@ export class Note {
   private readonly visibility: NoteVisibility;
   getVisibility(): NoteVisibility {
     return this.visibility;
-  }
-  private readonly attachmentFileIDs: string[];
-  getAttachmentFileIDs(): string[] {
-    return this.attachmentFileIDs;
   }
 
   private readonly cwComment: string;

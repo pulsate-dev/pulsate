@@ -9,7 +9,6 @@ const exampleInput: CreateNoteArgs = {
   content: 'hello world!',
   createdAt: new Date('2023-09-10T00:00:00.000Z'),
   visibility: 'PUBLIC',
-  attachmentFileIDs: ['11938472'],
   cwComment: '',
   sendTo: Option.none(),
   updatedAt: Option.none(),
@@ -23,7 +22,6 @@ describe('Note', () => {
     expect(note.getID()).toBe(exampleInput.id);
     expect(note.getContent()).toBe(exampleInput.content);
     expect(note.getVisibility()).toBe(exampleInput.visibility);
-    expect(note.getAttachmentFileIDs()).toBe(exampleInput.attachmentFileIDs);
     expect(note.getCwComment()).toBe(exampleInput.cwComment);
     expect(note.getCreatedAt()).toBe(exampleInput.createdAt);
     expect(note.getUpdatedAt()).toStrictEqual(Option.none());
@@ -34,18 +32,6 @@ describe('Note', () => {
     expect(() =>
       Note.new({ ...exampleInput, content: 'a'.repeat(3001) }),
     ).toThrow('Too long content');
-  });
-
-  it('note content must not be empty without an attachment', () => {
-    expect(() =>
-      Note.new({ ...exampleInput, content: '', attachmentFileIDs: [] }),
-    ).toThrow('No contents');
-  });
-
-  it('note attachments must be less than 16', () => {
-    expect(() =>
-      Note.new({ ...exampleInput, attachmentFileIDs: new Array(17).fill('1') }),
-    ).toThrow('Too many attachments');
   });
 
   it("when visibility is direct, sendTo can't be empty", () => {
