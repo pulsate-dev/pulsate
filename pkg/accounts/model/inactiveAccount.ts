@@ -12,11 +12,10 @@ export interface CreateInactiveAccountArgs {
   mail: string;
 }
 
-export interface ActivateArgs
-  extends Omit<
-    CreateAccountArgs,
-    keyof Omit<CreateInactiveAccountArgs, 'activated'>
-  > {}
+export type ActivateArgs = Omit<
+  CreateAccountArgs,
+  keyof Omit<CreateInactiveAccountArgs, 'activated'>
+>;
 
 export class AlreadyActivatedError extends Error {
   constructor(message?: string) {
