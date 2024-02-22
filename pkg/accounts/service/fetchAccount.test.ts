@@ -7,7 +7,7 @@ import { Account, type AccountID } from '../model/account.js';
 import { FetchAccountService } from './fetchAccount.js';
 
 const repository = new InMemoryAccountRepository();
-repository.create(
+await repository.create(
   Account.new({
     id: '1' as ID<AccountID>,
     name: '@john@example.com',
