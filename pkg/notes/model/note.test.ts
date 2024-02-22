@@ -6,6 +6,7 @@ import { type CreateNoteArgs, Note, type NoteID } from './note.js';
 
 const exampleInput: CreateNoteArgs = {
   id: '1' as ID<NoteID>,
+  authorID: '2' as ID<'account'>,
   content: 'hello world!',
   createdAt: new Date('2023-09-10T00:00:00.000Z'),
   visibility: 'PUBLIC',
@@ -20,6 +21,7 @@ describe('Note', () => {
     const note = Note.new(exampleInput);
 
     expect(note.getID()).toBe(exampleInput.id);
+    expect(note.getAuthorID()).toBe(exampleInput.authorID);
     expect(note.getContent()).toBe(exampleInput.content);
     expect(note.getVisibility()).toBe(exampleInput.visibility);
     expect(note.getCwComment()).toBe(exampleInput.contentsWarningComment);

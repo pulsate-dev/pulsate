@@ -8,6 +8,7 @@ export type NoteVisibility = 'PUBLIC' | 'HOME' | 'FOLLOWERS' | 'DIRECT';
 
 export interface CreateNoteArgs {
   id: ID<NoteID>;
+  authorID: ID<AccountID>;
   content: string;
   visibility: NoteVisibility;
   contentsWarningComment: string;
@@ -20,6 +21,7 @@ export interface CreateNoteArgs {
 export class Note {
   private constructor(arg: CreateNoteArgs) {
     this.id = arg.id;
+    this.authorID = arg.authorID;
     this.content = arg.content;
     this.visibility = arg.visibility;
     this.contentsWarningComment = arg.contentsWarningComment;
@@ -51,6 +53,11 @@ export class Note {
   private readonly id: ID<NoteID>;
   getID(): ID<NoteID> {
     return this.id;
+  }
+
+  private readonly authorID: ID<AccountID>;
+  getAuthorID(): ID<AccountID> {
+    return this.authorID;
   }
 
   private readonly content: string;
