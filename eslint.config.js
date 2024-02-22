@@ -58,6 +58,7 @@ export default [
       ],
       '@typescript-eslint/consistent-type-definitions': ['error', 'interface'],
       '@typescript-eslint/no-confusing-non-null-assertion': 'error',
+      '@typescript-eslint/no-floating-promises': 'error',
     },
   },
 ];

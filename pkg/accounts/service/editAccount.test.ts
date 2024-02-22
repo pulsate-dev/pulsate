@@ -9,7 +9,7 @@ import { EditAccountService } from './editAccount.js';
 import { EtagVerifyService } from './etagGenerateVerify.js';
 
 const repository = new InMemoryAccountRepository();
-repository.create(
+await repository.create(
   Account.new({
     id: '1' as ID<AccountID>,
     name: '@john@example.com',

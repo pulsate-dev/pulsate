@@ -1,5 +1,5 @@
 import { Option } from '@mikuroxina/mini-fn';
-import { describe, it, expect, afterEach } from 'vitest';
+import { afterEach, describe, expect, it } from 'vitest';
 
 import type { ID } from '../../id/type.js';
 import { InMemoryAccountRepository } from '../adaptor/repository/dummy.js';
@@ -7,7 +7,7 @@ import { Account, type AccountID } from '../model/account.js';
 import { SilenceService } from './silence.js';
 
 const repository = new InMemoryAccountRepository();
-repository.create(
+await repository.create(
   Account.new({
     id: '1' as ID<AccountID>,
     name: '@john@example.com',
