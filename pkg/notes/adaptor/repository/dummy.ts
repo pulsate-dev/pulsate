@@ -6,14 +6,14 @@ import { type Note, type NoteID } from '../../model/note.js';
 import type { NoteRepository } from '../../model/repository.js';
 
 export class InMemoryNoteRepository implements NoteRepository {
-  private readonly data: Set<Note>;
+  private readonly notes: Map<ID<NoteID>, Note>;
 
-  constructor(notes?: Note[]) {
-    this.data = !notes ? new Set() : new Set(notes);
+  constructor(notes: Note[] = []) {
+    this.notes = new Map(notes.map((note) => [note.getID(), note]));
   }
 
   async create(note: Note): Promise<Result.Result<Error, void>> {
-    this.data.add(note);
+    this.notes.set(note.getID(), note);
     return Result.ok(undefined);
   }
 
@@ -23,7 +23,7 @@ export class InMemoryNoteRepository implements NoteRepository {
       return Result.err(new Error('note not found'));
     }
 
-    this.data.delete(Option.unwrap(target));
+    this.notes.delete(Option.unwrap(target).getID());
     return Result.ok(undefined);
   }
 
@@ -31,7 +31,9 @@ export class InMemoryNoteRepository implements NoteRepository {
     authorID: ID<AccountID>,
     limit: number,
   ): Promise<Option.Option<Note[]>> {
-    const res = [...this.data].filter((note) => note.getID() === authorID);
+    const res = [...this.notes.values()].filter(
+      (note) => note.getID() === authorID,
+    );
     if (res.length === 0) {
       return Promise.resolve(Option.none());
     }
@@ -45,7 +47,7 @@ export class InMemoryNoteRepository implements NoteRepository {
   }
 
   findByID(id: ID<NoteID>): Promise<Option.Option<Note>> {
-    const res = [...this.data].find((note) => note.getID() === id);
+    const res = this.notes.get(id);
     if (!res) {
       return Promise.resolve(Option.none());
     }
