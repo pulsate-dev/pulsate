@@ -18,8 +18,8 @@ dependencies:
     specifier: ^5.5.1
     version: 5.5.1
   '@prisma/client':
-    specifier: 5.10.0
-    version: 5.10.0(prisma@5.9.1)
+    specifier: 5.10.1
+    version: 5.10.1(prisma@5.9.1)
   '@scalar/hono-api-reference':
     specifier: ^0.3.39
     version: 0.3.39(@codemirror/lang-html@6.4.8)(@codemirror/lang-java@6.0.1)(@codemirror/lang-javascript@6.2.1)(@codemirror/lang-json@6.0.1)(@codemirror/lang-python@6.1.4)(@codemirror/language@6.10.1)(@codemirror/legacy-modes@6.3.3)(@codemirror/state@6.4.0)(@codemirror/view@6.23.1)(@lezer/common@1.2.1)(@lezer/highlight@1.2.0)(@lezer/lr@1.4.0)(@uiw/codemirror-themes@4.21.21)(codemirror@6.0.1)(hono@3.12.10)(nanoid@5.0.5)(postcss@8.4.33)(typescript@5.3.3)(unified@11.0.4)(vue@3.4.15)
@@ -912,8 +912,8 @@ packages:
     engines: {node: '>=10'}
     dev: false
 
-  /@prisma/client@5.10.0(prisma@5.9.1):
-    resolution: {integrity: sha512-JQqKYpKplsAaPDk0RVKBsN4ly6AWJys6Hkjh9PJMgtdY0IME1C0aHckyGUhHpenmOO2J6liPDDm1svSrzce8BQ==}
+  /@prisma/client@5.10.1(prisma@5.9.1):
+    resolution: {integrity: sha512-4R8Vp6sSwVJSnOxw8WU1WSLqE/G3WJy1xA05XvW87cINoB1hEY7endw5Ppy6TrIBCCtHQim2lqfHkbPvv+i7bQ==}
     engines: {node: '>=16.13'}
     requiresBuild: true
     peerDependencies:
