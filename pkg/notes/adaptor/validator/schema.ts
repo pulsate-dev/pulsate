@@ -60,7 +60,7 @@ export const CreateNoteResponseSchema = z.object({
     description: 'Author account ID',
   }),
   created_at: z.string().openapi({
-    // example: '2021-01-01T00:00:00Z',
-    // description: 'Note created date',
+    example: '2021-01-01T00:00:00Z',
+    description: 'Note created date',
   }),
 });
