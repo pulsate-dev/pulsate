@@ -26,6 +26,29 @@ describe('CreateNoteService', () => {
     );
 
     expect(Result.isOk(res)).toBe(true);
-    console.log(res[1]);
+  });
+
+  it('note content must be less than 3000 chars', async () => {
+    const res = await createNoteService.handle(
+      'a'.repeat(3001),
+      '',
+      Option.none(),
+      '1' as ID<AccountID>,
+      'PUBLIC',
+    );
+
+    expect(Result.isErr(res)).toBe(true);
+  });
+
+  it('note visibility DIRECT must have a destination', async () => {
+    const res = await createNoteService.handle(
+      'Hello world',
+      '',
+      Option.none(),
+      '1' as ID<AccountID>,
+      'DIRECT',
+    );
+
+    expect(Result.isErr(res)).toBe(true);
   });
 });
