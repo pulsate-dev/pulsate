@@ -7,7 +7,7 @@ import { InMemoryNoteRepository } from './adaptor/repository/dummy.js';
 import { CreateNoteRoute } from './router.js';
 import { CreateNoteService } from './service/create.js';
 
-const notes = new OpenAPIHono();
+export const noteHandlers = new OpenAPIHono();
 const noteRepository = new InMemoryNoteRepository();
 const idGenerator = new SnowflakeIDGenerator(0, {
   now: () => BigInt(Date.now()),
@@ -15,7 +15,7 @@ const idGenerator = new SnowflakeIDGenerator(0, {
 const createNoteService = new CreateNoteService(noteRepository, idGenerator);
 const controller = new NoteController(createNoteService);
 
-notes.doc('/notes/doc.json', {
+noteHandlers.doc('/notes/doc.json', {
   openapi: '3.0.0',
   info: {
     title: 'Notes API',
@@ -23,7 +23,7 @@ notes.doc('/notes/doc.json', {
   },
 });
 
-notes.openapi(CreateNoteRoute, async (c) => {
+noteHandlers.openapi(CreateNoteRoute, async (c) => {
   const { content, visibility, contents_warning_comment, send_to } =
     c.req.valid('json');
   const res = await controller.createNote(
