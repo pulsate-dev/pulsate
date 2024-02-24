@@ -10,7 +10,9 @@ import { CreateNoteService } from './create.js';
 const noteRepository = new InMemoryNoteRepository();
 const createNoteService = new CreateNoteService(
   noteRepository,
-  new SnowflakeIDGenerator(0, { now: () => BigInt(Date.now()) }),
+  new SnowflakeIDGenerator(0, {
+    now: () => BigInt(Date.UTC(2023, 9, 10, 0, 0)),
+  }),
 );
 
 describe('CreateNoteService', () => {
