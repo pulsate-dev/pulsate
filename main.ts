@@ -3,6 +3,7 @@ import { apiReference } from '@scalar/hono-api-reference';
 import { Hono } from 'hono';
 
 import { accounts } from './pkg/accounts/mod.js';
+import { noteHandlers } from './pkg/notes/mod.js';
 
 const app = new Hono();
 
@@ -10,10 +11,11 @@ const app = new Hono();
 All routes must be "/"
 (The "/" account cannot be written in the library specification.
  */
+app.route('/', noteHandlers);
 app.route('/', accounts);
 
 app.get('/doc.json', async (c) => {
-  const modulePath: string[] = ['accounts'];
+  const modulePath: string[] = ['accounts', 'notes'];
   const basePath = 'http://localhost:3000/';
   const openAPIBase = {
     openapi: '3.0.0',
