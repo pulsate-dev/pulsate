@@ -29,8 +29,17 @@ await accountRepository.create(
     deletedAt: undefined,
   }),
 );
+const mockClock = {
+  now(): bigint {
+    return 0n;
+  },
+};
 
-const service = new TokenVerifyService(repository, accountRepository);
+const service = new TokenVerifyService(
+  repository,
+  accountRepository,
+  mockClock,
+);
 
 describe('TokenVerifyService', () => {
   it('generate/verify account verify token', async () => {

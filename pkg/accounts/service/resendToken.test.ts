@@ -46,9 +46,16 @@ await accountRepository.create(
     updatedAt: undefined,
   }),
 );
+const mockClock = {
+  now(): bigint {
+    return 0n;
+  },
+};
+
 const tokenVerifyService = new TokenVerifyService(
   verifyRepository,
   accountRepository,
+  mockClock,
 );
 const sendNotificationService = new DummySendNotificationService();
 
