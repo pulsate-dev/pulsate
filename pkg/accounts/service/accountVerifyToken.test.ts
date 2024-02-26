@@ -29,7 +29,7 @@ await accountRepository.create(
     deletedAt: undefined,
   }),
 );
-const mockClock = new MockClock(new Date('2023/9/10 00:00:00 UTC'));
+const mockClock = new MockClock(new Date('2023-09-10T00:00:00Z'));
 
 const service = new TokenVerifyService(
   repository,
