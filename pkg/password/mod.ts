@@ -1,7 +1,6 @@
-import { hash, verify } from 'argon2';
+import { hash, verify, argon2id } from 'argon2';
 
 export type EncodedPassword = string;
-const ARGON2_ID = 2;
 
 export interface PasswordEncoder {
   encodePassword(raw: string): Promise<EncodedPassword>;
@@ -11,7 +10,7 @@ export interface PasswordEncoder {
 export class Argon2idPasswordEncoder implements PasswordEncoder {
   async encodePassword(raw: string) {
     return await hash(raw, {
-      type: ARGON2_ID,
+      type: argon2id,
     });
   }
 
@@ -20,7 +19,7 @@ export class Argon2idPasswordEncoder implements PasswordEncoder {
     encoded: EncodedPassword,
   ): Promise<boolean> {
     try {
-      return await verify(encoded, raw, { type: 2 });
+      return await verify(encoded, raw);
     } catch {
       return false;
     }
