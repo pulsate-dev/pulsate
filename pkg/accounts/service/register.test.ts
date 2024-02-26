@@ -21,12 +21,22 @@ class DummyClock implements Clock {
   }
 }
 
+const mockClock = {
+  now(): bigint {
+    return BigInt(new Date('2023/9/10 00:00:00 UTC').getTime());
+  },
+};
+
 const registerService: RegisterAccountService = new RegisterAccountService({
   repository,
   idGenerator: new SnowflakeIDGenerator(1, new DummyClock()),
   passwordEncoder: new Argon2idPasswordEncoder(),
   sendNotification: new DummySendNotificationService(),
-  verifyTokenService: new TokenVerifyService(verifyRepository, repository),
+  verifyTokenService: new TokenVerifyService(
+    verifyRepository,
+    repository,
+    mockClock,
+  ),
 });
 
 const exampleInput = {

@@ -46,9 +46,16 @@ await accountRepository.create(
     updatedAt: undefined,
   }),
 );
+const mockClock = {
+  now(): bigint {
+    return BigInt(new Date('2023/9/10 00:00:00 UTC').getTime());
+  },
+};
+
 const tokenVerifyService = new TokenVerifyService(
   verifyRepository,
   accountRepository,
+  mockClock,
 );
 const sendNotificationService = new DummySendNotificationService();
 

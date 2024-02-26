@@ -7,21 +7,12 @@ import {
   type AccountVerifyTokenRepository,
 } from '../model/repository.js';
 
-class DateClock implements Clock {
-  now(): bigint {
-    return BigInt(Date.now());
-  }
-}
-
 export class TokenVerifyService {
-  private readonly clock: Clock;
   constructor(
     private readonly repository: AccountVerifyTokenRepository,
     private readonly accountRepository: AccountRepository,
-    clock?: Clock,
-  ) {
-    this.clock = clock ?? new DateClock();
-  }
+    private readonly clock: Clock,
+  ) {}
 
   /**
    * Generate a token for account mail address verification.
