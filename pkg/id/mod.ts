@@ -7,6 +7,13 @@ export interface Clock {
   now(): bigint;
 }
 
+export class MockClock implements Clock {
+  constructor(private readonly time: Date) {}
+  now(): bigint {
+    return BigInt(this.time.getTime());
+  }
+}
+
 export class SnowflakeIDGenerator {
   private readonly WORKER_ID_BIT_LENGTH = 10n;
   private readonly INCREMENTAL_BIT_LENGTH = 12n;
