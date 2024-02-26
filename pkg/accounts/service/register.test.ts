@@ -1,7 +1,7 @@
 import { Result } from '@mikuroxina/mini-fn';
 import { describe, expect, it } from 'vitest';
 
-import { type Clock, SnowflakeIDGenerator } from '../../id/mod.js';
+import { SnowflakeIDGenerator, MockClock } from '../../id/mod.js';
 import { Argon2idPasswordEncoder } from '../../password/mod.js';
 import {
   InMemoryAccountRepository,
@@ -14,22 +14,11 @@ import { DummySendNotificationService } from './sendNotification.js';
 
 const repository = new InMemoryAccountRepository();
 const verifyRepository = new InMemoryAccountVerifyTokenRepository();
-
-class DummyClock implements Clock {
-  now(): bigint {
-    return BigInt(new Date('2023/9/10 00:00:00 UTC').getTime());
-  }
-}
-
-const mockClock = {
-  now(): bigint {
-    return BigInt(new Date('2023/9/10 00:00:00 UTC').getTime());
-  },
-};
+const mockClock = new MockClock(new Date('2023/9/10 00:00:00 UTC'));
 
 const registerService: RegisterAccountService = new RegisterAccountService({
   repository,
-  idGenerator: new SnowflakeIDGenerator(1, new DummyClock()),
+  idGenerator: new SnowflakeIDGenerator(1, mockClock),
   passwordEncoder: new Argon2idPasswordEncoder(),
   sendNotification: new DummySendNotificationService(),
   verifyTokenService: new TokenVerifyService(
