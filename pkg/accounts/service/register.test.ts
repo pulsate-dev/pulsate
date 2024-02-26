@@ -23,7 +23,7 @@ class DummyClock implements Clock {
 
 const mockClock = {
   now(): bigint {
-    return 0n;
+    return BigInt(new Date('2023/9/10 00:00:00 UTC').getTime());
   },
 };
 
