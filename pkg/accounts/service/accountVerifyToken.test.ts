@@ -1,7 +1,7 @@
 import { Result } from '@mikuroxina/mini-fn';
 import { describe, expect, it } from 'vitest';
 
-import { type Clock } from '../../id/mod.js';
+import { MockClock } from '../../id/mod.js';
 import { type ID } from '../../id/type.js';
 import {
   InMemoryAccountRepository,
@@ -29,11 +29,7 @@ await accountRepository.create(
     deletedAt: undefined,
   }),
 );
-const mockClock = {
-  now(): bigint {
-    return BigInt(new Date('2023/9/10 00:00:00 UTC').getTime());
-  },
-};
+const mockClock = new MockClock(new Date('2023-09-10T00:00:00Z'));
 
 const service = new TokenVerifyService(
   repository,
@@ -57,17 +53,11 @@ describe('TokenVerifyService', () => {
     expect(Result.isOk(verify)).toBe(true);
   });
 
-  class DateClock implements Clock {
-    now(): bigint {
-      return 0n;
-    }
-  }
-
   it('expired token', async () => {
     const dummyService = new TokenVerifyService(
       repository,
       accountRepository,
-      new DateClock(),
+      mockClock,
     );
     const token = await dummyService.generate('@johndoe@example.com');
     if (Result.isErr(token)) {

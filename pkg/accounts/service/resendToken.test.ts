@@ -1,6 +1,7 @@
 import { Option } from '@mikuroxina/mini-fn';
 import { describe, expect, it } from 'vitest';
 
+import { MockClock } from '../../id/mod.js';
 import { type ID } from '../../id/type.js';
 import {
   InMemoryAccountRepository,
@@ -46,11 +47,7 @@ await accountRepository.create(
     updatedAt: undefined,
   }),
 );
-const mockClock = {
-  now(): bigint {
-    return BigInt(new Date('2023/9/10 00:00:00 UTC').getTime());
-  },
-};
+const mockClock = new MockClock(new Date('2023-09-10T00:00:00Z'));
 
 const tokenVerifyService = new TokenVerifyService(
   verifyRepository,
