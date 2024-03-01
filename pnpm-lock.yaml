@@ -22,7 +22,7 @@ dependencies:
     version: 5.10.2(prisma@5.10.2)
   '@scalar/hono-api-reference':
     specifier: ^0.3.39
-    version: 0.3.57(hono@3.12.12)(postcss@8.4.35)(typescript@5.3.3)(unified@11.0.4)(vue@3.4.21)(yjs@13.6.13)
+    version: 0.3.57(hono@3.12.12)(postcss@8.4.35)(typescript@5.3.3)(unified@11.0.4)(vue@3.4.21)(yjs@13.6.14)
   argon2:
     specifier: ^0.40.0
     version: 0.40.1
@@ -72,7 +72,7 @@ devDependencies:
     version: 0.3.22(@typescript-eslint/eslint-plugin@6.21.0)(eslint@8.57.0)(typescript@5.3.3)(vitest@1.3.1)
   lefthook:
     specifier: ^1.6.1
-    version: 1.6.2
+    version: 1.6.3
   prettier:
     specifier: ^3.2.5
     version: 3.2.5
@@ -1047,7 +1047,7 @@ packages:
     dev: true
     optional: true
 
-  /@scalar/api-client@0.12.6(typescript@5.3.3)(vue@3.4.21)(yjs@13.6.13):
+  /@scalar/api-client@0.12.6(typescript@5.3.3)(vue@3.4.21)(yjs@13.6.14):
     resolution: {integrity: sha512-XO0s9jlRjo/IWYC2vSJeFV2m7jxTLX/5WsX9w9forzh2iZNo2qU0E1vZOZ69s7wjkb18r3a60+ewjtZx7lZMog==}
     engines: {node: '>=18'}
     peerDependencies:
@@ -1056,7 +1056,7 @@ packages:
       '@headlessui/vue': 1.7.19(vue@3.4.21)
       '@scalar/components': 0.2.5(typescript@5.3.3)
       '@scalar/themes': 0.5.8(vue@3.4.21)
-      '@scalar/use-codemirror': 0.8.6(vue@3.4.21)(yjs@13.6.13)
+      '@scalar/use-codemirror': 0.8.6(vue@3.4.21)(yjs@13.6.14)
       '@scalar/use-modal': 0.2.8(@headlessui/vue@1.7.19)(vue@3.4.21)
       '@vueuse/core': 10.8.0(vue@3.4.21)
       axios: 1.6.7
@@ -1072,7 +1072,7 @@ packages:
       - yjs
     dev: false
 
-  /@scalar/api-reference@1.17.4(postcss@8.4.35)(typescript@5.3.3)(unified@11.0.4)(vue@3.4.21)(yjs@13.6.13):
+  /@scalar/api-reference@1.17.4(postcss@8.4.35)(typescript@5.3.3)(unified@11.0.4)(vue@3.4.21)(yjs@13.6.14):
     resolution: {integrity: sha512-wxeO8TpGj++QK4g3WQBEUkptaWrvStgWFQDwp/AEPfS0d03rngHz9FmUFTUOlE+WfcHh61mGTw7IIP3fRYIgrA==}
     engines: {node: '>=18'}
     peerDependencies:
@@ -1081,10 +1081,10 @@ packages:
     dependencies:
       '@floating-ui/vue': 1.0.6(vue@3.4.21)
       '@headlessui/vue': 1.7.19(vue@3.4.21)
-      '@scalar/api-client': 0.12.6(typescript@5.3.3)(vue@3.4.21)(yjs@13.6.13)
+      '@scalar/api-client': 0.12.6(typescript@5.3.3)(vue@3.4.21)(yjs@13.6.14)
       '@scalar/components': 0.2.5(typescript@5.3.3)
       '@scalar/snippetz': 0.1.5
-      '@scalar/swagger-editor': 0.10.8(typescript@5.3.3)(vue@3.4.21)(yjs@13.6.13)
+      '@scalar/swagger-editor': 0.10.8(typescript@5.3.3)(vue@3.4.21)(yjs@13.6.14)
       '@scalar/swagger-parser': 0.5.18(openapi-types@12.1.3)
       '@scalar/themes': 0.5.8(vue@3.4.21)
       '@scalar/use-modal': 0.2.8(@headlessui/vue@1.7.19)(vue@3.4.21)
@@ -1141,13 +1141,13 @@ packages:
       - typescript
     dev: false
 
-  /@scalar/hono-api-reference@0.3.57(hono@3.12.12)(postcss@8.4.35)(typescript@5.3.3)(unified@11.0.4)(vue@3.4.21)(yjs@13.6.13):
+  /@scalar/hono-api-reference@0.3.57(hono@3.12.12)(postcss@8.4.35)(typescript@5.3.3)(unified@11.0.4)(vue@3.4.21)(yjs@13.6.14):
     resolution: {integrity: sha512-fXPmrO+5ZW1Vu0G7VgHj2g47LEG+sMAsUGXQwK54FV4OmeYsZhcQSLb1C4w9R00KswoaeV1panN7nlxAgY4Etw==}
     engines: {node: '>=18'}
     peerDependencies:
       hono: ^3.0.0
     dependencies:
-      '@scalar/api-reference': 1.17.4(postcss@8.4.35)(typescript@5.3.3)(unified@11.0.4)(vue@3.4.21)(yjs@13.6.13)
+      '@scalar/api-reference': 1.17.4(postcss@8.4.35)(typescript@5.3.3)(unified@11.0.4)(vue@3.4.21)(yjs@13.6.14)
       hono: 3.12.12
     transitivePeerDependencies:
       - '@vue/composition-api'
@@ -1193,7 +1193,7 @@ packages:
       '@scalar/snippetz-plugin-node-undici': 0.1.5
     dev: false
 
-  /@scalar/swagger-editor@0.10.8(typescript@5.3.3)(vue@3.4.21)(yjs@13.6.13):
+  /@scalar/swagger-editor@0.10.8(typescript@5.3.3)(vue@3.4.21)(yjs@13.6.14):
     resolution: {integrity: sha512-dqQJnmG1fAc13AX07ccBGPYuoZ25KWA4XkcvpF7WW3wLo/pHZ7BjGT56KCjKRqxRycOl4fNrxNnKudiNC76DvA==}
     engines: {node: '>=18'}
     peerDependencies:
@@ -1201,7 +1201,7 @@ packages:
     dependencies:
       '@scalar/components': 0.2.5(typescript@5.3.3)
       '@scalar/themes': 0.5.8(vue@3.4.21)
-      '@scalar/use-codemirror': 0.8.6(vue@3.4.21)(yjs@13.6.13)
+      '@scalar/use-codemirror': 0.8.6(vue@3.4.21)(yjs@13.6.14)
       '@vueuse/core': 10.8.0(vue@3.4.21)
       vue: 3.4.21(typescript@5.3.3)
     transitivePeerDependencies:
@@ -1229,7 +1229,7 @@ packages:
       vue: 3.4.21(typescript@5.3.3)
     dev: false
 
-  /@scalar/use-codemirror@0.8.6(vue@3.4.21)(yjs@13.6.13):
+  /@scalar/use-codemirror@0.8.6(vue@3.4.21)(yjs@13.6.14):
     resolution: {integrity: sha512-8wtB1khnm7k/MvjsN6NQa2LAJJH2e/7m0fQ+6DgIgV56D5Ka9ZVeGKUvqCboDKHyrSkODj/GaWA8AnEX9NRVOg==}
     engines: {node: '>=18'}
     peerDependencies:
@@ -1249,8 +1249,8 @@ packages:
       '@uiw/codemirror-themes': 4.21.24(@codemirror/language@6.10.1)(@codemirror/state@6.4.1)(@codemirror/view@6.24.1)
       codemirror: 6.0.1(@lezer/common@1.2.1)
       vue: 3.4.21(typescript@5.3.3)
-      y-codemirror.next: 0.3.2(@codemirror/state@6.4.1)(@codemirror/view@6.24.1)(yjs@13.6.13)
-      yjs: 13.6.13
+      y-codemirror.next: 0.3.2(@codemirror/state@6.4.1)(@codemirror/view@6.24.1)(yjs@13.6.14)
+      yjs: 13.6.14
     dev: false
 
   /@scalar/use-modal@0.2.8(@headlessui/vue@1.7.19)(vue@3.4.21):
@@ -2963,83 +2963,83 @@ packages:
       json-buffer: 3.0.1
     dev: true
 
-  /lefthook-darwin-arm64@1.6.2:
-    resolution: {integrity: sha512-0q9WsTe6hSw670K+R7O+ZNkjiGCYVPX8gFylSn6i3WQlL2ZHG1wTIBkZOn6SJUQJHxdQXBNXtQeQiz30YYEIZg==}
+  /lefthook-darwin-arm64@1.6.3:
+    resolution: {integrity: sha512-HKfrTFXi0IysCdCkD/dzVXzIIYMgizuouwxF4CoVORyrlcmdV+dWnX0b/nG57a4V96alIkd4DCfRzd0onSJWeg==}
     cpu: [arm64]
     os: [darwin]
     requiresBuild: true
     dev: true
     optional: true
 
-  /lefthook-darwin-x64@1.6.2:
-    resolution: {integrity: sha512-55PEfD/6dWgPgbq5a8qqYyIEu6Z3+sEUZzeatKjCXcf9qswPT/0i0zN2ka0KjkFtIDtLVHR36ZkaZumbo0imdA==}
+  /lefthook-darwin-x64@1.6.3:
+    resolution: {integrity: sha512-aCdLgZr2foViFMDP26XnHVcdGTNmvgcxb3szbL/rEEkIR2uX/QHSIaSJ2AaQV6i7VK6M/prwWz5izi9z0BHHFw==}
     cpu: [x64]
     os: [darwin]
     requiresBuild: true
     dev: true
     optional: true
 
-  /lefthook-freebsd-arm64@1.6.2:
-    resolution: {integrity: sha512-kCnhB+QqhlzrK8uxj7t/JcpEBuDTLQxUZQQsy/zCTiJlHIF1w2KRL5Dsf2X3X1TdRNQy9Wam0WB13i1i9mTdWw==}
+  /lefthook-freebsd-arm64@1.6.3:
+    resolution: {integrity: sha512-T3yFsnCZuIg7iEnyIz8ALIb1XGuvx4uoDfQS5kswgdXaolDG79mRnUSzw2vBZzsdcQ5E86i5vBLkEui/zOcSKA==}
     cpu: [arm64]
     os: [freebsd]
     requiresBuild: true
     dev: true
     optional: true
 
-  /lefthook-freebsd-x64@1.6.2:
-    resolution: {integrity: sha512-dsYfgteDjJgAc+q59/Fwh69hH1oj+3haSpX2qBP28E6I2d2ozxJ97aEbhrOFLjkx/VEVzwDGscbOET5xtYpkWw==}
+  /lefthook-freebsd-x64@1.6.3:
+    resolution: {integrity: sha512-ooIyM1/SgpCmoHXA+MiUBB826OZAxRlLyajcIVEoHcTevOZbitS3cna/JTQc3OeFaCKJsEpgIXUIywXvpVxqNQ==}
     cpu: [x64]
     os: [freebsd]
     requiresBuild: true
     dev: true
     optional: true
 
-  /lefthook-linux-arm64@1.6.2:
-    resolution: {integrity: sha512-+TvJfJ1YrxJy5Psgn2SlKz7jy0H2B137ceknCkrD5wMxs0MJ2aHf3uAgXXyOqJiJ514REH7cq1RUgghxrIHGTg==}
+  /lefthook-linux-arm64@1.6.3:
+    resolution: {integrity: sha512-A66CWQ83pIwjssiTV0Mo1RiXWf2+9cGGZNg++abkaV+dbYWQWIv8k5abIoBOEmDDOxVE8ZSjrPsnEcnoHUaZqw==}
     cpu: [arm64]
     os: [linux]
     requiresBuild: true
     dev: true
     optional: true
 
-  /lefthook-linux-x64@1.6.2:
-    resolution: {integrity: sha512-KJyL6ZXObAMNiRuakEvlfREiiIGdLPJYqf6LMwmxbaWzE+KQFKE877SHCxeGNZl7FfE+GbipHt7onTdoL1T2Hw==}
+  /lefthook-linux-x64@1.6.3:
+    resolution: {integrity: sha512-VE2fm8EvWxPZldW4/Frwh6NwmS4XNBBVqonN2jRnXRcEvj+H4VkpQa/MRjNgq0vfxKr7r73D/5G9D5674Y3HDQ==}
     cpu: [x64]
     os: [linux]
     requiresBuild: true
     dev: true
     optional: true
 
-  /lefthook-windows-arm64@1.6.2:
-    resolution: {integrity: sha512-l7ljwsl0fryQRWTehlu/HCjSOaytV/a8fY5APp1R+NNKZsTzyEBhnf+s88wVbFWPE2ZpUHQ6sAeurxVlX+VMhQ==}
+  /lefthook-windows-arm64@1.6.3:
+    resolution: {integrity: sha512-h5M4Lssq1QIFB8RGlAAN4fNHcuG86FwFv29qbwcwdOC5c95g2c9yA2ZmdciAc/afjp/4Xx0nhAvrHIrZ0uw4uA==}
     cpu: [arm64]
     os: [win32]
     requiresBuild: true
     dev: true
     optional: true
 
-  /lefthook-windows-x64@1.6.2:
-    resolution: {integrity: sha512-gxr/zeoGK/gLJUsjS5DKJz9pDGQFkAQFvPC7qmbFR4lo7kUShlu8HMSCAXG/+VR1nxfdbIdUDLmF8d8SkJ64lw==}
+  /lefthook-windows-x64@1.6.3:
+    resolution: {integrity: sha512-X4HDfYR/zQat3Yj9v0uWp2s3OxGm523A+auSeQK42ICdjMSbA62qDraglMfY4YMCRmaTzVKUy97PQgzDwRfVJA==}
     cpu: [x64]
     os: [win32]
     requiresBuild: true
     dev: true
     optional: true
 
-  /lefthook@1.6.2:
-    resolution: {integrity: sha512-QLDCh1hqfTiO1/Rsa/bZNznhMdEnAdOwnLfivTiZbrrPIVn4MrIMZJR+o1XyEe4a9+rXWMebbSMox4PDLaKwIg==}
+  /lefthook@1.6.3:
+    resolution: {integrity: sha512-3GE/+hzW0XYLBUOOUASRhbEOdYsiOAKMTZ7LiEQdKcSWHvMu7lofmp/WYTnnH1oRwsEE3ay58m5WO3CJcXv/qA==}
     hasBin: true
     requiresBuild: true
     optionalDependencies:
-      lefthook-darwin-arm64: 1.6.2
-      lefthook-darwin-x64: 1.6.2
-      lefthook-freebsd-arm64: 1.6.2
-      lefthook-freebsd-x64: 1.6.2
-      lefthook-linux-arm64: 1.6.2
-      lefthook-linux-x64: 1.6.2
-      lefthook-windows-arm64: 1.6.2
-      lefthook-windows-x64: 1.6.2
+      lefthook-darwin-arm64: 1.6.3
+      lefthook-darwin-x64: 1.6.3
+      lefthook-freebsd-arm64: 1.6.3
+      lefthook-freebsd-x64: 1.6.3
+      lefthook-linux-arm64: 1.6.3
+      lefthook-linux-x64: 1.6.3
+      lefthook-windows-arm64: 1.6.3
+      lefthook-windows-x64: 1.6.3
     dev: true
 
   /levn@0.4.1:
@@ -4551,7 +4551,7 @@ packages:
     resolution: {integrity: sha512-l4Sp/DRseor9wL6EvV2+TuQn63dMkPjZ/sp9XkghTEbV9KlPS1xUsZ3u7/IQO4wxtcFB4bgpQPRcR3QCvezPcQ==}
     dev: true
 
-  /y-codemirror.next@0.3.2(@codemirror/state@6.4.1)(@codemirror/view@6.24.1)(yjs@13.6.13):
+  /y-codemirror.next@0.3.2(@codemirror/state@6.4.1)(@codemirror/view@6.24.1)(yjs@13.6.14):
     resolution: {integrity: sha512-3ksMXoietzNkrgluG9ut+5q4PNHCS6sQ+mHd44hNX1s7TBe4iDgOOIswfY3oLsdamZLAUPr+TnRdYgYuNDs7Qg==}
     peerDependencies:
       '@codemirror/state': ^6.0.0
@@ -4561,7 +4561,7 @@ packages:
       '@codemirror/state': 6.4.1
       '@codemirror/view': 6.24.1
       lib0: 0.2.89
-      yjs: 13.6.13
+      yjs: 13.6.14
     dev: false
 
   /yallist@4.0.0:
@@ -4573,8 +4573,8 @@ packages:
     engines: {node: '>= 14'}
     dev: false
 
-  /yjs@13.6.13:
-    resolution: {integrity: sha512-iVWZ1zyMb29OZEQT9VNsDGTMb/YFVlJMDox6DpyJN6lqDso1yam16l6bVrGJ1hyu/LyNeLa4hhFRzCBFzAvNeg==}
+  /yjs@13.6.14:
+    resolution: {integrity: sha512-D+7KcUr0j+vBCUSKXXEWfA+bG4UQBviAwP3gYBhkstkgwy5+8diOPMx0iqLIOxNo/HxaREUimZRxqHGAHCL2BQ==}
     engines: {node: '>=16.0.0', npm: '>=8.0.0'}
     dependencies:
       lib0: 0.2.90
