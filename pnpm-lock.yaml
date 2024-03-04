@@ -22,7 +22,7 @@ dependencies:
     version: 5.10.2(prisma@5.10.2)
   '@scalar/hono-api-reference':
     specifier: ^0.3.39
-    version: 0.3.63(hono@3.12.12)(postcss@8.4.35)(typescript@5.3.3)(unified@11.0.4)(vue@3.4.21)(yjs@13.6.14)
+    version: 0.3.64(hono@3.12.12)(postcss@8.4.35)(typescript@5.3.3)(unified@11.0.4)(vue@3.4.21)(yjs@13.6.14)
   argon2:
     specifier: ^0.40.0
     version: 0.40.1
@@ -1053,14 +1053,14 @@ packages:
     dev: true
     optional: true
 
-  /@scalar/api-client@0.12.12(typescript@5.3.3)(vue@3.4.21)(yjs@13.6.14):
-    resolution: {integrity: sha512-+R0H2LFVGgi5XrGJgqUXCfh7MXpPKU0nEm+FaBZuAAE4n4sn2huSw1jEjlsB7+UxhEGLPaQV1kyQwLS9DhcFgw==}
+  /@scalar/api-client@0.12.13(typescript@5.3.3)(vue@3.4.21)(yjs@13.6.14):
+    resolution: {integrity: sha512-plOs+WInn57fhAVDKVJdtgHPjFyqDx9rmnfaKcy7w7fuJAyeH5t4LRwxsKkTKzHRal8MFK9T4zPsp99suYJ1Gg==}
     engines: {node: '>=18'}
     peerDependencies:
       vue: ^3.3.0
     dependencies:
       '@headlessui/vue': 1.7.19(vue@3.4.21)
-      '@scalar/components': 0.4.0(typescript@5.3.3)
+      '@scalar/components': 0.4.1(typescript@5.3.3)
       '@scalar/themes': 0.5.10(vue@3.4.21)
       '@scalar/use-codemirror': 0.8.8(vue@3.4.21)(yjs@13.6.14)
       '@scalar/use-modal': 0.2.8(@headlessui/vue@1.7.19)(vue@3.4.21)
@@ -1078,8 +1078,8 @@ packages:
       - yjs
     dev: false
 
-  /@scalar/api-reference@1.17.12(postcss@8.4.35)(typescript@5.3.3)(unified@11.0.4)(vue@3.4.21)(yjs@13.6.14):
-    resolution: {integrity: sha512-Rzb7l+9eQyz6nOXwUn53xC1X17CHOrAEQ/w0H7CVWWzGaj+UD0mn/kGUvZ/CmuWRYZLyC6w19sxx4OTBMnUsJA==}
+  /@scalar/api-reference@1.17.13(postcss@8.4.35)(typescript@5.3.3)(unified@11.0.4)(vue@3.4.21)(yjs@13.6.14):
+    resolution: {integrity: sha512-o0DAW4I20QwGnyKVCOb/nwEP5w2n1B8xMKSBYuyyrL/cqBrvaSzvsMiAlgsSP0AqmKiIJGfq/sCpH02Bd3sQMw==}
     engines: {node: '>=18'}
     peerDependencies:
       unified: ^11.0.0
@@ -1087,15 +1087,15 @@ packages:
     dependencies:
       '@floating-ui/vue': 1.0.6(vue@3.4.21)
       '@headlessui/vue': 1.7.19(vue@3.4.21)
-      '@scalar/api-client': 0.12.12(typescript@5.3.3)(vue@3.4.21)(yjs@13.6.14)
-      '@scalar/components': 0.4.0(typescript@5.3.3)
+      '@scalar/api-client': 0.12.13(typescript@5.3.3)(vue@3.4.21)(yjs@13.6.14)
+      '@scalar/components': 0.4.1(typescript@5.3.3)
       '@scalar/snippetz': 0.1.5
-      '@scalar/swagger-editor': 0.10.13(typescript@5.3.3)(vue@3.4.21)(yjs@13.6.14)
+      '@scalar/swagger-editor': 0.10.14(typescript@5.3.3)(vue@3.4.21)(yjs@13.6.14)
       '@scalar/swagger-parser': 0.5.19(openapi-types@12.1.3)
       '@scalar/themes': 0.5.10(vue@3.4.21)
       '@scalar/use-modal': 0.2.8(@headlessui/vue@1.7.19)(vue@3.4.21)
       '@scalar/use-tooltip': 0.5.11(vue@3.4.21)
-      '@unhead/schema': 1.8.10
+      '@unhead/schema': 1.8.11
       '@vcarl/remark-headings': 0.1.0
       '@vueuse/core': 10.9.0(vue@3.4.21)
       '@xmldom/xmldom': 0.8.10
@@ -1116,7 +1116,7 @@ packages:
       remark-parse: 11.0.0
       remark-rehype: 11.1.0
       remark-stringify: 11.0.0
-      unhead: 1.8.10
+      unhead: 1.8.11
       unified: 11.0.4
       vue: 3.4.21(typescript@5.3.3)
       vue-sonner: 1.1.1
@@ -1129,8 +1129,8 @@ packages:
       - yjs
     dev: false
 
-  /@scalar/components@0.4.0(typescript@5.3.3):
-    resolution: {integrity: sha512-zWMbTIjb8du7g5eynrzTffdLZKW+SJVNFkoqHORiSCgzNstHsM4eVHfzkjoBqIwO45Wi89OC2UP3DebTS/R8Dg==}
+  /@scalar/components@0.4.1(typescript@5.3.3):
+    resolution: {integrity: sha512-VgMBVvoS0427EDIexFaHzrS4lA0RKCzRMGFlyElOXpnVCdqS6Ujed6X9ZE1IH4DiC74t9hN+CQPt9X6KKxU2oA==}
     engines: {node: '>=18'}
     dependencies:
       '@headlessui/vue': 1.7.19(vue@3.4.21)
@@ -1147,13 +1147,13 @@ packages:
       - typescript
     dev: false
 
-  /@scalar/hono-api-reference@0.3.63(hono@3.12.12)(postcss@8.4.35)(typescript@5.3.3)(unified@11.0.4)(vue@3.4.21)(yjs@13.6.14):
-    resolution: {integrity: sha512-6Tl8a3ec3ba01csNHQuv1PLjOL9GSW9E6CNX3rXhMyzQ5oP5GUIoxqBz5yFFm95umyA9XC4Z8B4VHL118qxjBg==}
+  /@scalar/hono-api-reference@0.3.64(hono@3.12.12)(postcss@8.4.35)(typescript@5.3.3)(unified@11.0.4)(vue@3.4.21)(yjs@13.6.14):
+    resolution: {integrity: sha512-NCFAsyJSokpVDJMnOKk6xbTEKDwuo68gYyBOSUITQqnxkhlrfmqFRL5598j33VritJXC6vwBwoGDVB3WGGsGFw==}
     engines: {node: '>=18'}
     peerDependencies:
       hono: ^3.0.0 || ^4.0.0
     dependencies:
-      '@scalar/api-reference': 1.17.12(postcss@8.4.35)(typescript@5.3.3)(unified@11.0.4)(vue@3.4.21)(yjs@13.6.14)
+      '@scalar/api-reference': 1.17.13(postcss@8.4.35)(typescript@5.3.3)(unified@11.0.4)(vue@3.4.21)(yjs@13.6.14)
       hono: 3.12.12
     transitivePeerDependencies:
       - '@vue/composition-api'
@@ -1199,13 +1199,13 @@ packages:
       '@scalar/snippetz-plugin-node-undici': 0.1.5
     dev: false
 
-  /@scalar/swagger-editor@0.10.13(typescript@5.3.3)(vue@3.4.21)(yjs@13.6.14):
-    resolution: {integrity: sha512-kAmC5Ns2Xyb8F3FkhONtU8gE5OPlUvrZhn1wGraMWOfHAmUu8NAZsmi0UNxh2qZb0we7mEuOHCrHyD3RV6Aufw==}
+  /@scalar/swagger-editor@0.10.14(typescript@5.3.3)(vue@3.4.21)(yjs@13.6.14):
+    resolution: {integrity: sha512-NUPc/qNjCQtn7H6lc2WGDdbBucrbWPTQdubr926dUtHtiRJeS4fEkPf6HMelC7ym9sSvMsV0OuDUXw11C4NEcA==}
     engines: {node: '>=18'}
     peerDependencies:
       vue: ^3.3.0
     dependencies:
-      '@scalar/components': 0.4.0(typescript@5.3.3)
+      '@scalar/components': 0.4.1(typescript@5.3.3)
       '@scalar/themes': 0.5.10(vue@3.4.21)
       '@scalar/use-codemirror': 0.8.8(vue@3.4.21)(yjs@13.6.14)
       '@vueuse/core': 10.9.0(vue@3.4.21)
@@ -1531,24 +1531,24 @@ packages:
   /@ungap/structured-clone@1.2.0:
     resolution: {integrity: sha512-zuVdFrMJiuCDQUMCzQaD6KL28MjnqqN8XnAqiEq9PNm/hCPTSGfrXCOfwj1ow4LFb/tNymJPwsNbVePc1xFqrQ==}
 
-  /@unhead/dom@1.8.10:
-    resolution: {integrity: sha512-dBeDbHrBjeU+eVgMsD91TGEazb1dwLrY0x/ve01CldMCmm+WcRu++SUW7s1QX84mzGH2EgFz78o1OPn6jpV3zw==}
+  /@unhead/dom@1.8.11:
+    resolution: {integrity: sha512-B5Bae4Y+6/2oDlfNJwEuf1kApyM4pmZ01VReWcVDYAdZpkD7eZZoVZnF945MluaMb6SMvGIXejcSUXTH/BOWaQ==}
     dependencies:
-      '@unhead/schema': 1.8.10
-      '@unhead/shared': 1.8.10
+      '@unhead/schema': 1.8.11
+      '@unhead/shared': 1.8.11
     dev: false
 
-  /@unhead/schema@1.8.10:
-    resolution: {integrity: sha512-cy8RGOPkwOVY5EmRoCgGV8AqLjy/226xBVTY54kBct02Om3hBdpB9FZa9frM910pPUXMI8PNmFgABO23O7IdJA==}
+  /@unhead/schema@1.8.11:
+    resolution: {integrity: sha512-Aok9sZcVznJxjBRF/v2LKaeoqgYU/9kuyknYhf3M13byrdp3dLD6qcUvnLC98PrPVy7CMfOov4kXHoI/DRY5MQ==}
     dependencies:
       hookable: 5.5.3
       zhead: 2.2.4
     dev: false
 
-  /@unhead/shared@1.8.10:
-    resolution: {integrity: sha512-pEFryAs3EmV+ShDQx2ZBwUnt5l3RrMrXSMZ50oFf+MImKZNARVvD4+3I8fEI9wZh+Zq0JYG3UAfzo51MUP+Juw==}
+  /@unhead/shared@1.8.11:
+    resolution: {integrity: sha512-Mz3pAJUq160mPXYFNUalfyEDQ0a6eRIbMlJFQ7HNy8shM+4kbeKgInoaa2EaFF8zRrhYvuLJZhyLk5kFINSmBg==}
     dependencies:
-      '@unhead/schema': 1.8.10
+      '@unhead/schema': 1.8.11
     dev: false
 
   /@vcarl/remark-headings@0.1.0:
@@ -1646,7 +1646,7 @@ packages:
       '@vue/compiler-ssr': 3.4.21
       '@vue/shared': 3.4.21
       estree-walker: 2.0.2
-      magic-string: 0.30.7
+      magic-string: 0.30.8
       postcss: 8.4.35
       source-map-js: 1.0.2
     dev: false
@@ -3016,6 +3016,14 @@ packages:
     engines: {node: '>=12'}
     dependencies:
       '@jridgewell/sourcemap-codec': 1.4.15
+    dev: true
+
+  /magic-string@0.30.8:
+    resolution: {integrity: sha512-ISQTe55T2ao7XtlAStud6qwYPZjE4GK1S/BeVPus4jrq6JuOnQ00YKQC581RWhR122W7msZV263KzVeLoqidyQ==}
+    engines: {node: '>=12'}
+    dependencies:
+      '@jridgewell/sourcemap-codec': 1.4.15
+    dev: false
 
   /magicast@0.3.3:
     resolution: {integrity: sha512-ZbrP1Qxnpoes8sz47AM0z08U+jW6TyRgZzcWy3Ma3vDhJttwMwAFDMMQFobwdBxByBD46JYmxRzeF7w2+wJEuw==}
@@ -4113,12 +4121,12 @@ packages:
     resolution: {integrity: sha512-JlCMO+ehdEIKqlFxk6IfVoAUVmgz7cU7zD/h9XZ0qzeosSHmUJVOzSQvvYSYWXkFXC+IfLKSIffhv0sVZup6pA==}
     dev: true
 
-  /unhead@1.8.10:
-    resolution: {integrity: sha512-dth8FvZkLriO5ZWWOBIYBNSfGiwJtKcqpPWpSOk/Z0e2jdlgwoZEWZHFyte0EKvmbZxKcsWNMqIuv7dEmS5yZQ==}
+  /unhead@1.8.11:
+    resolution: {integrity: sha512-g1coK+pRv+RbeD4+hK76FV6Y++i5jY99CftKyP1ARQcLCbz0ri6+vBpWMS4d+h7x0DfWSCGm/wWkPQ1WXWHfRA==}
     dependencies:
-      '@unhead/dom': 1.8.10
-      '@unhead/schema': 1.8.10
-      '@unhead/shared': 1.8.10
+      '@unhead/dom': 1.8.11
+      '@unhead/schema': 1.8.11
+      '@unhead/shared': 1.8.11
       hookable: 5.5.3
     dev: false
 
