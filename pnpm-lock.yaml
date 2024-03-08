@@ -13,7 +13,7 @@ dependencies:
     version: 0.2.1(hono@3.12.12)
   '@hono/zod-openapi':
     specifier: ^0.9.6
-    version: 0.9.6(hono@3.12.12)(zod@3.22.4)
+    version: 0.9.7(hono@3.12.12)(zod@3.22.4)
   '@mikuroxina/mini-fn':
     specifier: ^5.5.1
     version: 5.6.0
@@ -132,7 +132,7 @@ packages:
     peerDependencies:
       zod: ^3.20.2
     dependencies:
-      openapi3-ts: 4.2.1
+      openapi3-ts: 4.2.2
       zod: 3.22.4
     dev: false
 
@@ -718,8 +718,8 @@ packages:
       hono: 3.12.12
     dev: false
 
-  /@hono/zod-openapi@0.9.6(hono@3.12.12)(zod@3.22.4):
-    resolution: {integrity: sha512-MLF8xpd4fEwbEaylFqAt1qci4wOTXu3oq3BKb01trccapYfodP50VCO0YDNBQTyMT/Iapq6GMO4+RAIFBgG5WQ==}
+  /@hono/zod-openapi@0.9.7(hono@3.12.12)(zod@3.22.4):
+    resolution: {integrity: sha512-jcAPZRRb3Gb49og0miACF7FncYJqWvNqeO/uS7PJ6FB07lRgiVyzrJ3jyghStT3F7L8VS6HGeaMmNx5j/SVi4g==}
     engines: {node: '>=16.0.0'}
     peerDependencies:
       hono: '>=3.11.3'
@@ -3547,10 +3547,10 @@ packages:
     resolution: {integrity: sha512-N4YtSYJqghVu4iek2ZUvcN/0aqH1kRDuNqzcycDxhOUpg7GdvLa2F3DgS6yBNhInhv2r/6I0Flkn7CqL8+nIcw==}
     dev: false
 
-  /openapi3-ts@4.2.1:
-    resolution: {integrity: sha512-KL1mKwkZii5ce+tb24KCUmQHyWB/oanG5fzUY35UB+wenWJv4Kr/IWBntpn5R8ODiJcxx13ZDophcpHnLGeIOw==}
+  /openapi3-ts@4.2.2:
+    resolution: {integrity: sha512-+9g4actZKeb3czfi9gVQ4Br2Ju3KwhCAQJBNaKgye5KggqcBLIhFHH+nIkcm0BUX00TrAJl6dH4JWgM4G4JWrw==}
     dependencies:
-      yaml: 2.3.4
+      yaml: 2.4.1
     dev: false
 
   /optionator@0.9.3:
@@ -4442,9 +4442,10 @@ packages:
     resolution: {integrity: sha512-3wdGidZyq5PB084XLES5TpOSRA3wjXAlIWMhum2kRcv/41Sn2emQ0dycQW4uZXLejwKvg6EsvbdlVL+FYEct7A==}
     dev: true
 
-  /yaml@2.3.4:
-    resolution: {integrity: sha512-8aAvwVUSHpfEqTQ4w/KMlf3HcRdt50E5ODIQJBw1fQ5RL34xabzxtUlzTXVqc4rkZsPbvrXKWnABCD7kWSmocA==}
+  /yaml@2.4.1:
+    resolution: {integrity: sha512-pIXzoImaqmfOrL7teGUBt/T7ZDnyeGBWyXQBvOVhLkWLN37GXv8NMLK406UY6dS51JfcQHsmcW5cJ441bHg6Lg==}
     engines: {node: '>= 14'}
+    hasBin: true
     dev: false
 
   /yjs@13.6.14:
