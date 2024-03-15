@@ -30,7 +30,7 @@
     "@hono/swagger-ui": "^0.2.1",
     "@hono/zod-openapi": "^0.9.6",
     "@mikuroxina/mini-fn": "^5.5.1",
-    "@prisma/client": "5.10.2",
+    "@prisma/client": "5.11.0",
     "@scalar/hono-api-reference": "^0.4.0",
     "argon2": "^0.40.0",
     "hono": "^3.12.10",
