@@ -19,18 +19,18 @@ export class AccountModule {
     if (Result.isErr(res)) {
       return res;
     }
-
+    const unwrapped = Result.unwrap(res);
     const account = Account.new({
-      id: Result.unwrap(res).id as ID<AccountID>,
-      mail: Result.unwrap(res).email,
-      name: Result.unwrap(res).name as AccountName,
-      nickname: Result.unwrap(res).nickname,
-      bio: Result.unwrap(res).bio,
-      role: Result.unwrap(res).role,
-      frozen: Result.unwrap(res).frozen,
-      silenced: Result.unwrap(res).silenced,
-      status: Result.unwrap(res).status,
-      createdAt: Result.unwrap(res).created_at,
+      id: unwrapped.id as ID<AccountID>,
+      mail: unwrapped.email,
+      name: unwrapped.name as AccountName,
+      nickname: unwrapped.nickname,
+      bio: unwrapped.bio,
+      role: unwrapped.role,
+      frozen: unwrapped.frozen,
+      silenced: unwrapped.silenced,
+      status: unwrapped.status,
+      createdAt: unwrapped.created_at,
       passphraseHash: undefined,
     });
 
