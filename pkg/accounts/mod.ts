@@ -185,7 +185,17 @@ accounts.openapi(GetAccountRoute, async (c) => {
     return c.json({ error: res[1].message }, { status: 404 });
   }
 
-  return c.json(res[1]);
+  return c.json({
+    id: res[1].id,
+    name: res[1].name,
+    nickname: res[1].nickname,
+    bio: res[1].bio,
+    avatar: '',
+    header: '',
+    followed_count: res[1].followed_count,
+    following_count: res[1].following_count,
+    note_count: res[1].note_count,
+  });
 });
 
 accounts.openapi(LoginRoute, async (c) => {
