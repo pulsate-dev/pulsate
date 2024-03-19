@@ -13,7 +13,7 @@ export const CreateAccountRequestSchema = z
   .object({
     // ToDo: 文字種制約/先頭,末尾制約の実装
     name: z.string().min(1).max(64).openapi({
-      example: 'example_man',
+      example: '@example_man@example.com',
       description:
         'Characters must be [A-Za-z0-9-.] The first and last characters must be [A-Za-z0-9-.]',
     }),
@@ -178,8 +178,12 @@ export const RefreshResponseSchema = z
 export const GetAccountResponseSchema = z
   .object({
     id: z.string().openapi({
-      description: 'acocunt ID',
+      description: 'account ID',
       example: '38477395',
+    }),
+    email: z.string().optional().openapi({
+      description: 'account email address (internal)',
+      example: 'johndoe@example.com',
     }),
     name: z.string().min(8).max(512).openapi({
       description: 'account name',
@@ -220,6 +224,26 @@ export const GetAccountResponseSchema = z
     note_count: z.number().openapi({
       description: 'note count',
       example: 100,
+    }),
+    role: z.string().optional().openapi({
+      description: 'account role (internal)',
+      example: 'normal',
+    }),
+    status: z.string().optional().openapi({
+      description: 'account status (internal)',
+      example: 'active',
+    }),
+    frozen: z.string().optional().openapi({
+      description: 'account frozen status (internal)',
+      example: 'normal',
+    }),
+    silenced: z.string().optional().openapi({
+      description: 'account silenced status (internal)',
+      example: 'normal',
+    }),
+    created_at: z.date().optional().openapi({
+      description: 'account created at (internal)',
+      example: '2021-01-01T00:00:00Z',
     }),
   })
   .openapi('GetAccountResponse');

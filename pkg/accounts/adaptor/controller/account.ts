@@ -14,6 +14,7 @@ import type { SilenceService } from '../../service/silence.js';
 import { type UnfollowService } from '../../service/unfollow.js';
 import {
   type CreateAccountResponseSchema,
+  type GetAccountResponseSchema,
   type LoginResponseSchema,
   type UpdateAccountResponseSchema,
 } from '../validator/schema.js';
@@ -182,7 +183,9 @@ export class AccountController {
     return Result.ok(undefined);
   }
 
-  async getAccount(name: string) {
+  async getAccount(
+    name: string,
+  ): Promise<Result.Result<Error, z.infer<typeof GetAccountResponseSchema>>> {
     const res = await this.fetchAccountService.fetchAccount(
       name as AccountName,
     );
