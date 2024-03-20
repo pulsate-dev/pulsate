@@ -182,7 +182,8 @@ export const GetAccountResponseSchema = z
       example: '38477395',
     }),
     email: z.string().optional().openapi({
-      description: 'account email address (internal)',
+      description:
+        'account email address (only when logged in to an account with viewing privileges)',
       example: 'johndoe@example.com',
     }),
     name: z.string().min(8).max(512).openapi({
@@ -226,23 +227,28 @@ export const GetAccountResponseSchema = z
       example: 100,
     }),
     role: z.string().optional().openapi({
-      description: 'account role (internal)',
+      description:
+        'account role (only when logged in to an account with viewing privileges)',
       example: 'normal',
     }),
     status: z.string().optional().openapi({
-      description: 'account status (internal)',
+      description:
+        'account status (only when logged in to an account with viewing privileges)',
       example: 'active',
     }),
     frozen: z.string().optional().openapi({
-      description: 'account frozen status (internal)',
+      description:
+        'account frozen status (only when logged in to an account with viewing privileges)',
       example: 'normal',
     }),
     silenced: z.string().optional().openapi({
-      description: 'account silenced status (internal)',
+      description:
+        'account silenced status (only when logged in to an account with viewing privileges)',
       example: 'normal',
     }),
     created_at: z.date().optional().openapi({
-      description: 'account created at (internal)',
+      description:
+        'account created at (only when logged in to an account with viewing privileges)',
       example: '2021-01-01T00:00:00Z',
     }),
   })
