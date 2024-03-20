@@ -205,6 +205,11 @@ export class AccountController {
       followed_count: 0,
       following_count: 0,
       note_count: 0,
+      created_at: res[1].getCreatedAt(),
+      role: res[1].getRole(),
+      frozen: res[1].getFrozen(),
+      status: res[1].getStatus(),
+      silenced: res[1].getSilenced(),
     });
   }
 
