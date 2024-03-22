@@ -57,7 +57,9 @@ describe('FetchAccountService', () => {
     const account = await fetchAccountService.fetchAccountByID(
       '1' as ID<AccountID>,
     );
-    if (Result.isErr(account)) return;
+    if (Result.isErr(account)) {
+      return;
+    }
 
     expect(account[1]).toStrictEqual(
       Account.new({

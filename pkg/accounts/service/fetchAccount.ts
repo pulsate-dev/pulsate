@@ -29,15 +29,6 @@ export class FetchAccountService {
     id: ID<AccountID>,
   ): Promise<Result.Result<Error, Account>> {
     const res = await this.accountRepository.findByID(id);
-    if (Option.isNone(res)) {
-      return Result.err(new Error('AccountNotFoundError'));
-    }
-
-    try {
-      const account = Option.unwrap(res);
-      return Result.ok(account);
-    } catch (e) {
-      return Result.err(e as unknown as Error);
-    }
+    return Option.okOr(new Error('AccountNotFoundError'))(res);
   }
 }

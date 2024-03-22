@@ -8,11 +8,6 @@ export class FetchNoteService {
   constructor(private readonly noteRepository: NoteRepository) {}
 
   async fetchNoteByID(noteID: ID<NoteID>): Promise<Option.Option<Note>> {
-    const note = await this.noteRepository.findByID(noteID);
-    if (Option.isNone(note)) {
-      return Option.none();
-    }
-
-    return note;
+    return await this.noteRepository.findByID(noteID);
   }
 }
