@@ -1,4 +1,4 @@
-import { Option } from '@mikuroxina/mini-fn';
+import { type Option } from '@mikuroxina/mini-fn';
 
 import type { ID } from '../../id/type.js';
 import { type Note, type NoteID } from '../model/note.js';
