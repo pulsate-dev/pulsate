@@ -1,4 +1,4 @@
-import type { ID } from '../../id/type.ts';
+import type { ID } from '../../id/type.js';
 import {
   AccountAlreadyDeletedError,
   AccountAlreadyFrozenError,

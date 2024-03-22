@@ -34,8 +34,6 @@ const noteRepository = new InMemoryNoteRepository();
 const idGenerator = new SnowflakeIDGenerator(0, {
   now: () => BigInt(Date.now()),
 });
-const createNoteService = new CreateNoteService(noteRepository, idGenerator);
-const fetchNoteService = new FetchNoteService(noteRepository);
 
 // Account
 const accountRepository = new InMemoryAccountRepository();
@@ -48,7 +46,7 @@ class Clock {
   }
 }
 const passwordEncoder = new Argon2idPasswordEncoder();
-export const accountController = new AccountController({
+const accountController = new AccountController({
   authenticationService: new AuthenticationService({
     accountRepository: accountRepository,
     tokenGenerator: tokenGenerator,
@@ -95,6 +93,9 @@ export const accountController = new AccountController({
 });
 
 const accountModule = new AccountModule(accountController);
+// Note
+const createNoteService = new CreateNoteService(noteRepository, idGenerator);
+const fetchNoteService = new FetchNoteService(noteRepository, accountModule);
 const controller = new NoteController(
   createNoteService,
   fetchNoteService,

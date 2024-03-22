@@ -14,8 +14,8 @@ import type {
 export class InMemoryAccountRepository implements AccountRepository {
   private data: Set<Account>;
 
-  constructor() {
-    this.data = new Set();
+  constructor(accounts: Account[] = []) {
+    this.data = new Set(accounts);
   }
 
   create(account: Account): Promise<Result.Result<Error, void>> {
