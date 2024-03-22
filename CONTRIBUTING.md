@@ -147,6 +147,12 @@ A style guide for Pulsate development.
 
 The basic naming conventions follow the [TypeScript Coding guidelines](https://github.com/microsoft/TypeScript/wiki/Coding-guidelines).
 
+Acronyms and contractions of compound words are counted as one word. For example, for `UUUID`, use `Uuid`. For `HTTPS`, use `Https`.
+
+In cases where the word is a single character, such as `X_CONTENT`, the `_` is omitted and `XCONTENT` is used.
+
+Also, in situations where `camelCase` should be used, it is counted as a single word. For example, the name of a variable representing an account ID is `accountId`.
+
 - The variable and function name is `camelCase`.
 - The class name is `PascalCase`.
   - The class member and method name is `camelCase`.
@@ -161,32 +167,31 @@ The basic naming conventions follow the [TypeScript Coding guidelines](https://g
 
 #### null and undefined
 
-In Pulsate, we use a functional programming library called `mini-fn`.
+Pulsate uses a functional programming library called `mini-fn`.
 
-`mini-fn` has a union type called `Option<T>`, so you don't need to consider whether to use `T | undefined` or `T | null`.
+`mini-fn` has a direct sum type `Option<T>`, so you don't have to think whether the type should be `T | undefined` or `T | null`.
 
-Since there are dedicated functions for handling this union type, we actively use them when dealing with `null` or `undefined`.
+There is a dedicated function to handle the direct sum type, so you can use `Option` or `Result` instead if you want to handle `null` or `undefined` types.
 
 ```ts
-/* Type guards. Necessary for TypeScript to narrow down types in code branches. */
+/* Type Guard. Required for TypeScript to determine the type at code branches. */
 
-// At this point, `res` is of type `Option<Account>` and it's not certain whether a value exists.
+// The `res` in this state is of type `Option<Account>` and it is not determined whether the value exists or not.
 const res = await this.accountRepository.findByName(name);
-// Use a type guard to determine if a value exists in `res`. If not, return an error.
+// Check whether the value `res` exists or not by type guarding. If not, it is an error.
 if (Option.isNone(res)) {
   return Result.err(new Error('account not found'));
 }
-// Confirm `res` as `account`.
+// Fix `res` as `account`.
 const account = Option.unwrap(res);
 ```
 
-When defining fields, such as in interfaces, avoid using both `null` and `undefined`, and instead use `?` instead.
+If you need to define a property whose value may not exist. Do not use `null` or `undefined`, but use `?`.
 
 ```ts
 // Good
 interface Foo {
   x?: string;
-  y?: string;
 }
 
 // Bad
@@ -198,9 +203,9 @@ interface Foo {
 
 #### any and unknown
 
-Avoid using `any`, and use `unknown` instead.
+Do not use `any`, use `unknown`.
 
-If you are working with a typed API that returns `any`, immediately assert it to `unknown`.
+If you use an API with typing that returns `any`, immediately make a type assertion to `unknown`.
 
 ```ts
 // Good

@@ -13,6 +13,7 @@ Pulsate Project への貢献に関するガイド.
   - [パッケージのインストール](#パッケージのインストール)
 - [スタイルガイド](#スタイルガイド)
   - [TypeScript](#typescript)
+    - [命名規則](#命名規則)
     - [null と undefined](#null-と-undefined)
     - [any と unknown](#any-と-unknown)
     - [引用符](#引用符)
@@ -146,6 +147,14 @@ Pulsate開発のためのスタイルガイド.
 
 基本的な命名規則は[TypeScript Coding guidelines](https://github.com/microsoft/TypeScript/wiki/Coding-guidelines)に従っています.
 
+アクロニムや短縮形の複合語は1語と数えます. 例えば `UUID` では `Uuid` を. `HTTPS` では `Https` とします.
+
+`X_CONTENT` など単語が1文字になるケースでは `_` を除いて `XCONTENT` とします.
+
+また, `camelCase` を使うべき状況でも1語として数えます. 例えばアカウントIDを表す変数名は `accountId` とします.
+
+#### 命名規則
+
 - 変数名と関数名は `camelCase`.
 - クラス名は `PascalCase`.
   - クラスメンバ名とメソッド名は `camelCase`.
@@ -164,7 +173,7 @@ Pulsate では `mini-fn` と呼ばれる関数型プログラミングライブ�
 
 `mini-fn` には `Option<T>` という直和型があり, `T | undefined` にすべきか, `T | null` にすべきかを考える必要はありません.
 
-その直和型を扱うための専用関数が用意されているため, `null` や `undefined` を扱う場合は積極的に使用します.
+その直和型を扱うための専用関数が用意されているため, `null` や `undefined` を扱う場合は代わりに `Option` や `Result` を使用します.
 
 ```ts
 /* 型ガード. TypeScript がコードの分岐で型を確定させるために必要. */
@@ -179,7 +188,7 @@ if (Option.isNone(res)) {
 const account = Option.unwrap(res);
 ```
 
-インターフェイスなどでフィールドを定義する必要がある場合. `null` , `undefined` どちらも使用せず, `?` を使用します.
+値が存在しない可能性があるプロパティを定義する必要がある場合. `null`, `undefined` どちらも使用せず, `?` を使用します.
 
 ```ts
 // Good
@@ -187,7 +196,7 @@ interface Foo {
   x?: string;
 }
 
-// 悪い例
+// Bad
 interface Foo {
   x: string | undefined;
   y: string | null;
