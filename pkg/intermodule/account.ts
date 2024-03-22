@@ -40,4 +40,30 @@ export class AccountModule {
 
     return Result.ok(account);
   }
+
+  async fetchAccountByID(
+    id: ID<AccountID>,
+  ): Promise<Result.Result<Error, Account>> {
+    const res = await this.controller.getAccountByID(id);
+
+    if (Result.isErr(res)) {
+      return res;
+    }
+    const unwrapped = Result.unwrap(res);
+    const account = Account.new({
+      id: unwrapped.id as ID<AccountID>,
+      mail: unwrapped.email as string,
+      name: unwrapped.name as AccountName,
+      nickname: unwrapped.nickname,
+      bio: unwrapped.bio,
+      role: unwrapped.role as AccountRole,
+      frozen: unwrapped.frozen as AccountFrozen,
+      silenced: unwrapped.silenced as AccountSilenced,
+      status: unwrapped.status as AccountStatus,
+      createdAt: unwrapped.created_at as Date,
+      passphraseHash: undefined,
+    });
+
+    return Result.ok(account);
+  }
 }

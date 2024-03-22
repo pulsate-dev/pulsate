@@ -9,6 +9,7 @@ import type { InactiveAccount } from './inactiveAccount.js';
 export interface AccountRepository {
   create(account: Account): Promise<Result.Result<Error, void>>;
   findByName(name: string): Promise<Option.Option<Account>>;
+  findByID(id: ID<AccountID>): Promise<Option.Option<Account>>;
   findByMail(mail: string): Promise<Option.Option<Account>>;
 }
 

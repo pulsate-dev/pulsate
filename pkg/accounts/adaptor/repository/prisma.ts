@@ -2,15 +2,15 @@ import { Option, Result } from '@mikuroxina/mini-fn';
 import { type PrismaClient } from '@prisma/client';
 
 import type { ID } from '../../../id/type.js';
-import type {
-  AccountFrozen,
-  AccountID,
-  AccountName,
-  AccountRole,
-  AccountSilenced,
-  AccountStatus,
+import {
+  Account,
+  type AccountFrozen,
+  type AccountID,
+  type AccountName,
+  type AccountRole,
+  type AccountSilenced,
+  type AccountStatus,
 } from '../../model/account.js';
-import { Account } from '../../model/account.js';
 import { AccountFollow } from '../../model/follow.js';
 import type {
   AccountFollowRepository,
@@ -49,6 +49,19 @@ export class PrismaAccountRepository implements AccountRepository {
     }
 
     return Result.ok(undefined);
+  }
+
+  async findByID(id: ID<AccountID>): Promise<Option.Option<Account>> {
+    const res = await this.prisma.account.findUnique({
+      where: {
+        id: id,
+      },
+    });
+    if (!res) {
+      return Option.none();
+    }
+
+    return Option.some(this.fromPrismaArgs(res));
   }
 
   async findByMail(mail: string): Promise<Option.Option<Account>> {
