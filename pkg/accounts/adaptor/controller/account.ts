@@ -1,7 +1,8 @@
 import { type z } from '@hono/zod-openapi';
 import { Option, Result } from '@mikuroxina/mini-fn';
 
-import { type AccountName } from '../../model/account.js';
+import type { ID } from '../../../id/type.js';
+import { type AccountID, type AccountName } from '../../model/account.js';
 import type { TokenVerifyService } from '../../service/accountVerifyToken.js';
 import type { AuthenticationService } from '../../service/authenticate.js';
 import type { EditAccountService } from '../../service/editAccount.js';
@@ -188,6 +189,36 @@ export class AccountController {
   ): Promise<Result.Result<Error, z.infer<typeof GetAccountResponseSchema>>> {
     const res = await this.fetchAccountService.fetchAccount(
       name as AccountName,
+    );
+    if (Result.isErr(res)) {
+      return res;
+    }
+
+    return Result.ok({
+      id: res[1].getID(),
+      email: res[1].getMail(),
+      name: res[1].getName() as string,
+      nickname: res[1].getNickname(),
+      bio: res[1].getBio(),
+      // ToDo: fill the following fields
+      avatar: '',
+      header: '',
+      followed_count: 0,
+      following_count: 0,
+      note_count: 0,
+      created_at: res[1].getCreatedAt(),
+      role: res[1].getRole(),
+      frozen: res[1].getFrozen(),
+      status: res[1].getStatus(),
+      silenced: res[1].getSilenced(),
+    });
+  }
+
+  async getAccountByID(
+    id: string,
+  ): Promise<Result.Result<Error, z.infer<typeof GetAccountResponseSchema>>> {
+    const res = await this.fetchAccountService.fetchAccountByID(
+      id as ID<AccountID>,
     );
     if (Result.isErr(res)) {
       return res;

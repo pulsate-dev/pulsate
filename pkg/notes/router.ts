@@ -1,9 +1,10 @@
-import { createRoute } from '@hono/zod-openapi';
+import { createRoute, z } from '@hono/zod-openapi';
 
 import { CommonErrorResponseSchema } from '../accounts/adaptor/validator/schema.js';
 import {
   CreateNoteRequestSchema,
   CreateNoteResponseSchema,
+  GetNoteResponseSchema,
 } from './adaptor/validator/schema.js';
 
 export const CreateNoteRoute = createRoute({
@@ -45,5 +46,37 @@ export const CreateNoteRoute = createRoute({
       },
     },
     // ToDo: Define 404 (Attachment not found/Send to Account not found)
+  },
+});
+
+export const GetNoteRoute = createRoute({
+  method: 'get',
+  tags: ['notes'],
+  path: '/notes/:id',
+  request: {
+    params: z.object({
+      id: z.string().openapi({
+        description: 'Note ID',
+        example: '1',
+      }),
+    }),
+  },
+  responses: {
+    200: {
+      description: 'OK',
+      content: {
+        'application/json': {
+          schema: GetNoteResponseSchema,
+        },
+      },
+    },
+    404: {
+      description: 'Note not found',
+      content: {
+        'application/json': {
+          schema: CommonErrorResponseSchema,
+        },
+      },
+    },
   },
 });

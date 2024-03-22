@@ -52,4 +52,38 @@ describe('FetchAccountService', () => {
 
     expect(Result.isErr(account)).toBe(true);
   });
+
+  it('fetch account by ID', async () => {
+    const account = await fetchAccountService.fetchAccountByID(
+      '1' as ID<AccountID>,
+    );
+    if (Result.isErr(account)) {
+      return;
+    }
+
+    expect(account[1]).toStrictEqual(
+      Account.new({
+        id: '1' as ID<AccountID>,
+        name: '@john@example.com',
+        mail: 'johndoe@example.com',
+        nickname: 'John Doe',
+        passphraseHash: 'hash',
+        bio: '',
+        role: 'normal',
+        frozen: 'normal',
+        silenced: 'normal',
+        status: 'notActivated',
+        createdAt: new Date(),
+      }),
+    );
+  });
+
+  it("fetch account by ID doesn't exist", async () => {
+    // `2` is not registered.
+    const account = await fetchAccountService.fetchAccountByID(
+      '2' as ID<AccountID>,
+    );
+
+    expect(Result.isErr(account)).toBe(true);
+  });
 });
