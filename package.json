@@ -17,6 +17,7 @@
   "scripts": {
     "build": "tsc -p .",
     "build:prisma": "prisma generate",
+    "clean": "rm -r ./build",
     "start": "node ./build/main.js",
     "test": "vitest run",
     "test:coverage": "vitest run --coverage",
@@ -24,8 +25,7 @@
     "format:check": "prettier --check \"./**/*.{js,ts,md}\"",
     "lint": "eslint . ",
     "prepare": "pnpm run build:prisma",
-    "postinstall": "lefthook install",
-    "clean": "rm -rf ./build/*"
+    "postinstall": "lefthook install"
   },
   "dependencies": {
     "@hono/node-server": "^1.7.0",
