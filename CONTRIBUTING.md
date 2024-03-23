@@ -14,6 +14,7 @@ A guide on how to participate in this project.
 - [Style Guide](#style-guide)
   - [TypeScript](#typescript)
     - [null and undefined](#null-and-undefined)
+    - [any and unknown](#any-and-unknown)
     - [Quote marks](#quote-marks)
     - [Arrays](#arrays)
 - [Database Schema Migration](#database-schema-migration)
@@ -146,6 +147,12 @@ A style guide for Pulsate development.
 
 The basic naming conventions follow the [TypeScript Coding guidelines](https://github.com/microsoft/TypeScript/wiki/Coding-guidelines).
 
+Acronyms and contractions of compound words are counted as one word. For example, for `UUUID`, use `Uuid`. For `HTTPS`, use `Https`.
+
+In cases where the word is a single character, such as `X_CONTENT`, the `_` is omitted and `XCONTENT` is used.
+
+Also, in situations where `camelCase` should be used, it is counted as a single word. For example, the name of a variable representing an account ID is `accountId`.
+
 - The variable and function name is `camelCase`.
 - The class name is `PascalCase`.
   - The class member and method name is `camelCase`.
@@ -160,27 +167,52 @@ The basic naming conventions follow the [TypeScript Coding guidelines](https://g
 
 #### null and undefined
 
-Do not use either null or undefined if possible.
+Pulsate uses a functional programming library called `mini-fn`.
+
+`mini-fn` has a direct sum type `Option<T>`, so you don't have to think whether the type should be `T | undefined` or `T | null`.
+
+There is a dedicated function to handle the direct sum type, so you can use `Option` or `Result` instead if you want to handle `null` or `undefined` types.
 
 ```ts
-// Good
-let foo: { x: number, y?: number } = { x: 123 };
+/* Type Guard. Required for TypeScript to determine the type at code branches. */
 
-// Bad
-let foo = { x: 123, y: undefined };
+// The `res` in this state is of type `Option<Account>` and it is not determined whether the value exists or not.
+const res = await this.accountRepository.findByName(name);
+// Check whether the value `res` exists or not by type guarding. If not, it is an error.
+if (Option.isNone(res)) {
+  return Result.err(new Error('account not found'));
+}
+// Fix `res` as `account`.
+const account = Option.unwrap(res);
 ```
 
-Use undefined if it must be used or its use cannot be avoided for some reason.
-
-**DO NOT** use null.
+If you need to define a property whose value may not exist. Do not use `null` or `undefined`, but use `?`.
 
 ```ts
 // Good
-return undefined;
+interface Foo {
+  x?: string;
+}
 
 // Bad
-return null;
-const a = "apple" as any;
+interface Foo {
+  x: string | undefined;
+  y: string | null;
+}
+```
+
+#### any and unknown
+
+Do not use `any`, use `unknown`.
+
+If you use an API with typing that returns `any`, immediately make a type assertion to `unknown`.
+
+```ts
+// Good
+const foo = 'apple' as unknown
+
+// Bad
+const foo = 'apple' as any
 ```
 
 #### Quote marks
@@ -213,7 +245,7 @@ We migrate our database schema using [goose](https://github.com/pressly/goose). 
 
 ### Creating a New Migration File
 
-All migration files should be saved under the `resources/db` directory.  
+All migration files should be saved under the `resources/db` directory.
 Follow the steps below to create a new migration file.
 
 ```bash
