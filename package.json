@@ -16,12 +16,14 @@
   },
   "scripts": {
     "build": "tsc -p .",
+    "build:prisma": "prisma generate",
     "start": "node ./build/main.js",
     "test": "vitest run",
     "test:coverage": "vitest run --coverage",
     "format": "prettier --write \"./**/*.{js,ts,md}\"",
     "format:check": "prettier --check \"./**/*.{js,ts,md}\"",
     "lint": "eslint . ",
+    "prepare": "pnpm run build:prisma",
     "postinstall": "lefthook install",
     "clean": "rm -rf ./build/*"
   },
