@@ -19,15 +19,15 @@ export interface CreateAccountArgs {
   name: AccountName;
   mail: string;
   nickname: string;
-  passphraseHash: string | undefined;
+  passphraseHash?: string;
   bio: string;
   role: AccountRole;
   frozen: AccountFrozen;
   silenced: AccountSilenced;
   status: AccountStatus;
   createdAt: Date;
-  updatedAt: Date | undefined;
-  deletedAt: Date | undefined;
+  updatedAt?: Date;
+  deletedAt?: Date;
 }
 
 export class Account {
@@ -97,7 +97,7 @@ export class Account {
     this.nickname = name;
   }
 
-  private passphraseHash: string | undefined;
+  private passphraseHash?: string;
   getPassphraseHash(): string | undefined {
     return this.passphraseHash;
   }
@@ -223,7 +223,7 @@ export class Account {
     this.status = 'active';
   }
 
-  private updatedAt: Date | undefined;
+  private updatedAt?: Date;
   getUpdatedAt(): Date | undefined {
     return this.updatedAt;
   }
@@ -234,7 +234,7 @@ export class Account {
     this.updatedAt = at;
   }
 
-  private deletedAt: Date | undefined;
+  private deletedAt?: Date;
   getDeletedAt(): Date | undefined {
     return this.deletedAt;
   }
