@@ -11,6 +11,7 @@ A guide on how to participate in this project.
 - [Development Environment](#development-environment)
   - [Fixing and installing the Node.js version](#fixing-and-installing-the-nodejs-version)
   - [Install the package](#install-the-package)
+  - [Generate and update Prisma Client](#generate-and-update-prisma-client)
 - [Style Guide](#style-guide)
   - [TypeScript](#typescript)
     - [null and undefined](#null-and-undefined)
@@ -124,6 +125,18 @@ Pulsate uses [pnpm](https://pnpm.io/ja/) to manage packages. Run the following c
 corepack enable pnpm
 pnpm install
 ```
+
+### Generate and update Prisma Client
+
+To generate a Prisma Client from a defined Prisma schema, execute the following command. (Originally defined in the `prepare` script, this is done automatically when updating dependencies.)
+
+```sh
+pnpm build:prisma
+```
+
+This command will create a Prisma Client in `node_modules/.prisma/client`. You can import the client from here when you want to use it.
+
+If you change the model, you can update the Prisma Client by running this command again.
 
 ## Style Guide
 
