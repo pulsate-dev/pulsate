@@ -22,7 +22,7 @@ dependencies:
     version: 5.11.0(prisma@5.11.0)
   '@scalar/hono-api-reference':
     specifier: ^0.4.0
-    version: 0.4.8(hono@3.12.12)(postcss@8.4.38)(typescript@5.4.2)(unified@11.0.4)(vue@3.4.21)(yjs@13.6.14)
+    version: 0.4.9(hono@3.12.12)(postcss@8.4.38)(typescript@5.4.2)(unified@11.0.4)(vue@3.4.21)(yjs@13.6.14)
   argon2:
     specifier: ^0.40.0
     version: 0.40.1
@@ -1250,8 +1250,8 @@ packages:
       - yjs
     dev: false
 
-  /@scalar/api-reference@1.20.0(postcss@8.4.38)(typescript@5.4.2)(unified@11.0.4)(vue@3.4.21)(yjs@13.6.14):
-    resolution: {integrity: sha512-zwXyI5L5xhDbVVXbPQRntGWe91+mIENgz3ThtKOdOoFLr0EDPvrSi+TEbGSLTjJRmvRUdt4uGygmbUAwBtLHVQ==}
+  /@scalar/api-reference@1.20.1(postcss@8.4.38)(typescript@5.4.2)(unified@11.0.4)(vue@3.4.21)(yjs@13.6.14):
+    resolution: {integrity: sha512-oP6R1NCRJ8k9EQ7F9FSdxR9LSv4hek0VupNsAAihq2pJv+zRmPBe7XUMM/nuT1Y5AI+rGNrLrJm3WSPffI85pg==}
     engines: {node: '>=18'}
     peerDependencies:
       unified: ^11.0.0
@@ -1325,13 +1325,13 @@ packages:
       - typescript
     dev: false
 
-  /@scalar/hono-api-reference@0.4.8(hono@3.12.12)(postcss@8.4.38)(typescript@5.4.2)(unified@11.0.4)(vue@3.4.21)(yjs@13.6.14):
-    resolution: {integrity: sha512-bSHoEV+T8FcosKHIXcdlQVYPQzxrSBGaeyUAJO5I/78FZ4bP7Z3T9QB8CWGHcL4CBW29KhTTyvXWLCntEe2clg==}
+  /@scalar/hono-api-reference@0.4.9(hono@3.12.12)(postcss@8.4.38)(typescript@5.4.2)(unified@11.0.4)(vue@3.4.21)(yjs@13.6.14):
+    resolution: {integrity: sha512-PMTFpABMqJL08f4XSF7/rVpg8jrSi8W3KWZx5P2d1EAw1VTOYdWXK9+/6IBj2gzkVXKJQ1ElS1c1RafrPixTPA==}
     engines: {node: '>=18'}
     peerDependencies:
       hono: ^3.0.0 || ^4.0.0
     dependencies:
-      '@scalar/api-reference': 1.20.0(postcss@8.4.38)(typescript@5.4.2)(unified@11.0.4)(vue@3.4.21)(yjs@13.6.14)
+      '@scalar/api-reference': 1.20.1(postcss@8.4.38)(typescript@5.4.2)(unified@11.0.4)(vue@3.4.21)(yjs@13.6.14)
       hono: 3.12.12
     transitivePeerDependencies:
       - '@vue/composition-api'
@@ -1370,7 +1370,7 @@ packages:
       jsonpointer: 5.0.1
       leven: 4.0.0
       openapi-types: 12.1.3
-      vite: 5.2.2(@types/node@20.11.30)
+      vite: 5.2.3(@types/node@20.11.30)
       yaml: 2.4.1
     transitivePeerDependencies:
       - less
@@ -4582,8 +4582,8 @@ packages:
       fsevents: 2.3.3
     dev: true
 
-  /vite@5.2.2(@types/node@20.11.30):
-    resolution: {integrity: sha512-FWZbz0oSdLq5snUI0b6sULbz58iXFXdvkZfZWR/F0ZJuKTSPO7v72QPXt6KqYeMFb0yytNp6kZosxJ96Nr/wDQ==}
+  /vite@5.2.3(@types/node@20.11.30):
+    resolution: {integrity: sha512-+i1oagbvkVIhEy9TnEV+fgXsng13nZM90JQbrcPrf6DvW2mXARlz+DK7DLiDP+qeKoD1FCVx/1SpFL1CLq9Mhw==}
     engines: {node: ^18.0.0 || >=20.0.0}
     hasBin: true
     peerDependencies:
