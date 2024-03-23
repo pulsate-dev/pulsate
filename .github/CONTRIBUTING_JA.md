@@ -11,6 +11,7 @@ Pulsate Project への貢献に関するガイド.
 - [開発環境](#開発環境)
   - [Node.js のバージョン固定・インストール](#nodejs-のバージョン固定インストール)
   - [パッケージのインストール](#パッケージのインストール)
+  - [Prisma Client の生成と更新](#prisma-client-の生成と更新)
 - [スタイルガイド](#スタイルガイド)
   - [TypeScript](#typescript)
     - [命名規則](#命名規則)
@@ -124,6 +125,18 @@ Pulsate は [pnpm](https://pnpm.io/ja/) を使用してパッケージを管理�
 corepack enable pnpm
 pnpm install
 ```
+
+### Prisma Client の生成と更新
+
+定義された Prisma schema から Prisma Client を生成するには以下のコマンドを実行します. (本来は `prepare` スクリプトで定義されているため依存関係の更新時に自動で実行されます.)
+
+```sh
+pnpm build:prisma
+```
+
+このコマンドを実行すると `node_modules/.prisma/client` に Prisma Client が生成されます. 使用する際はここからインポートする形になります.
+
+モデルなどを変更した場合は再度このコマンドを実行することで Prisma Client を更新できます.
 
 ## スタイルガイド
 
