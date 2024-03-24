@@ -8,6 +8,7 @@
     "rootDir": ".",
     "moduleResolution": "Node16",
     "newLine": "lf",
+    "noEmit": true,
 
     "incremental": true,
     "removeComments": true,
