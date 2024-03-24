@@ -1,5 +1,5 @@
 import { Option } from '@mikuroxina/mini-fn';
-import { describe, expect, it } from 'vitest';
+import { afterEach, describe, expect, it } from 'vitest';
 
 import { MockClock } from '../../id/mod.js';
 import { type ID } from '../../id/type.js';
@@ -57,6 +57,8 @@ const tokenVerifyService = new TokenVerifyService(
 const sendNotificationService = new DummySendNotificationService();
 
 describe('ResendVerifyTokenService', () => {
+  afterEach(() => repository.reset());
+
   it('resend verify token', async () => {
     const service = new ResendVerifyTokenService(
       repository,

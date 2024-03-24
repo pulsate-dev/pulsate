@@ -1,5 +1,5 @@
 import { Option } from '@mikuroxina/mini-fn';
-import { describe, expect, it } from 'vitest';
+import { afterEach, describe, expect, it } from 'vitest';
 
 import { AccountController } from '../../accounts/adaptor/controller/account.js';
 import {
@@ -159,6 +159,8 @@ const accountModule = new AccountModule(accountController);
 const service = new FetchNoteService(repository, accountModule);
 
 describe('FetchNoteService', () => {
+  afterEach(() => accountRepository.reset());
+
   it('should fetch notes', async () => {
     const res = await service.fetchNoteByID('1' as ID<NoteID>);
 
