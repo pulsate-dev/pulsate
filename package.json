@@ -15,7 +15,7 @@
     "node": ">=20.11.0"
   },
   "scripts": {
-    "build": "esbuild {.,pkg/**}/*.ts --platform=node --outdir=build --sourcemap",
+    "build": "node build.js",
     "check": "tsc -p .",
     "build:prisma": "prisma generate",
     "clean": "rm -r ./build",
