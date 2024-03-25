@@ -13,7 +13,7 @@ dependencies:
     version: 0.2.1(hono@3.12.12)
   '@hono/zod-openapi':
     specifier: ^0.9.6
-    version: 0.9.8(hono@3.12.12)(zod@3.22.4)
+    version: 0.9.9(hono@3.12.12)(zod@3.22.4)
   '@mikuroxina/mini-fn':
     specifier: ^5.5.1
     version: 5.6.0
@@ -900,8 +900,8 @@ packages:
       hono: 3.12.12
     dev: false
 
-  /@hono/zod-openapi@0.9.8(hono@3.12.12)(zod@3.22.4):
-    resolution: {integrity: sha512-NS6lvQEGnsjyQkp+aQjMARREz3WGf19y0+RiiJMVrihWlmKbGaJkPuOWpfFQG6FU9q+FVUyUCryXK+3J07GPAw==}
+  /@hono/zod-openapi@0.9.9(hono@3.12.12)(zod@3.22.4):
+    resolution: {integrity: sha512-Icak3c8WKNS1gFDWmYs2zJ7ra3js9lDeAXNPf5h3fa0SnJQcjcCrLaG6EZPPAbW92HRwCDeQt8yA/ZVp17HPFg==}
     engines: {node: '>=16.0.0'}
     peerDependencies:
       hono: '>=3.11.3'
