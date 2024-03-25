@@ -30,7 +30,8 @@
   },
   "include": [
     "**/*.ts",
-    "./eslint.config.js"
+    "./eslint.config.js",
+    "./build.js"
   ],
   "exclude": [
     "node_modules"
