@@ -15,7 +15,8 @@
     "node": ">=20.11.0"
   },
   "scripts": {
-    "build": "tsc -p .",
+    "build": "node build.js",
+    "check": "tsc -p .",
     "build:prisma": "prisma generate",
     "clean": "rm -r ./build",
     "start": "node ./build/main.js",
@@ -48,10 +49,14 @@
     "@typescript-eslint/eslint-plugin": "^6.20.0",
     "@typescript-eslint/parser": "^6.20.0",
     "@vitest/coverage-v8": "^1.2.2",
+    "esbuild": "^0.20.2",
     "eslint": "^8.56.0",
     "eslint-config-prettier": "^9.1.0",
     "eslint-plugin-vitest": "^0.3.21",
     "globals": "^15.0.0",
+    "glob": "^10.3.10",
+    "ignore": "^5.3.1",
+    "kleur": "^4.1.5",
     "lefthook": "^1.6.1",
     "prettier": "^3.2.5",
     "vitest": "^1.2.2"

@@ -8,6 +8,7 @@
     "rootDir": ".",
     "moduleResolution": "Node16",
     "newLine": "lf",
+    "noEmit": true,
 
     "incremental": true,
     "removeComments": true,
@@ -29,7 +30,8 @@
   },
   "include": [
     "**/*.ts",
-    "./eslint.config.js"
+    "./eslint.config.js",
+    "./build.js"
   ],
   "exclude": [
     "node_modules"
