@@ -4,6 +4,7 @@ import typeScriptESLint from '@typescript-eslint/eslint-plugin';
 import typeScriptESLintParser from '@typescript-eslint/parser';
 import eslintConfigPrettier from 'eslint-config-prettier';
 import vitest from 'eslint-plugin-vitest';
+import globals from 'globals';
 
 const compat = new FlatCompat();
 
@@ -25,6 +26,7 @@ export default [
         project: './tsconfig.json',
       },
       globals: {
+        ...globals.node,
         ...vitest.environments.env.globals,
       },
     },
