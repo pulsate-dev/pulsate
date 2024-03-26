@@ -1,4 +1,3 @@
-/* global console, process */
 import esbuild from 'esbuild';
 import * as glob from 'glob';
 import ignore from 'ignore';
