@@ -12,7 +12,7 @@ export default [
     files: ['src/**/**.ts'],
   },
   {
-    ignores: ['build/**', 'coverage/**', 'node_modules/**'],
+    ignores: ['build', 'coverage', 'node_modules'],
   },
   // eslint:recommended
   js.configs.recommended,
