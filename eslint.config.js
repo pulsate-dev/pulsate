@@ -9,7 +9,7 @@ const compat = new FlatCompat();
 
 export default [
   {
-    files: ['src/**/**.ts'],
+    files: ['**/*.{js,ts}'],
   },
   {
     ignores: ['build', 'coverage', 'node_modules'],
