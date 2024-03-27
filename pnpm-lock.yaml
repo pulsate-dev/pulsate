@@ -46,6 +46,9 @@ devDependencies:
   '@eslint/js':
     specifier: ^8.56.0
     version: 8.57.0
+  '@ls-lint/ls-lint':
+    specifier: ^2.2.3
+    version: 2.2.3
   '@trivago/prettier-plugin-sort-imports':
     specifier: ^4.3.0
     version: 4.3.0(prettier@3.2.5)
@@ -1048,6 +1051,13 @@ packages:
       '@lezer/highlight': 1.2.0
       '@lezer/lr': 1.4.0
     dev: false
+
+  /@ls-lint/ls-lint@2.2.3:
+    resolution: {integrity: sha512-ekM12jNm/7O2I/hsRv9HvYkRdfrHpiV1epVuI2NP+eTIcEgdIdKkKCs9KgQydu/8R5YXTov9aHdOgplmCHLupw==}
+    cpu: [x64, arm64, s390x]
+    os: [darwin, linux, win32]
+    hasBin: true
+    dev: true
 
   /@mikuroxina/mini-fn@5.6.0:
     resolution: {integrity: sha512-59ITWAiOseYGQfX1CoKU83rdxkuhTDG5VcXvGX/a1rd6OvcrwcfFBukFjffqsNbwLkPVR5sLa4aECfaxTuyeLw==}
