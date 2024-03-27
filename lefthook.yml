@@ -1,8 +1,11 @@
 pre-commit:
   commands:
-    check:
+    check:format:
       glob: '*.{js,ts,md}'
       run: pnpm run format:check
+    check:filename:
+      glob: '*.{js,ts}'
+      run: pnpm run check:filename
     lint:
       glob: '*.{js,ts,md}'
       run: pnpm run lint
