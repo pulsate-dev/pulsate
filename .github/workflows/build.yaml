@@ -1,4 +1,4 @@
-name: node CI
+name: Build
 
 on:
   push:
