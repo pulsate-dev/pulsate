@@ -16,8 +16,8 @@
   },
   "scripts": {
     "build": "node build.js",
-    "check": "tsc -p .",
     "build:prisma": "prisma generate",
+    "check:type": "tsc -p .",
     "clean": "rm -r ./build",
     "start": "node ./build/main.js",
     "test": "vitest run",
