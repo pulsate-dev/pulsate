@@ -179,6 +179,7 @@ Pulsate開発のためのスタイルガイド.
 - 名前空間名は `PascalCase`.
 
 - ファイル名は `camelCase` で作成する必要があります.
+  - 1語になる場合は `lowercase` を使用してください.
 
 #### null と undefined
 
