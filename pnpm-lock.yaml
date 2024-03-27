@@ -14,6 +14,9 @@ dependencies:
   '@hono/zod-openapi':
     specifier: ^0.9.6
     version: 0.9.9(hono@3.12.12)(zod@3.22.4)
+  '@ls-lint/ls-lint':
+    specifier: ^2.2.3
+    version: 2.2.3
   '@mikuroxina/mini-fn':
     specifier: ^5.5.1
     version: 5.6.0
@@ -1047,6 +1050,13 @@ packages:
       '@lezer/common': 1.2.1
       '@lezer/highlight': 1.2.0
       '@lezer/lr': 1.4.0
+    dev: false
+
+  /@ls-lint/ls-lint@2.2.3:
+    resolution: {integrity: sha512-ekM12jNm/7O2I/hsRv9HvYkRdfrHpiV1epVuI2NP+eTIcEgdIdKkKCs9KgQydu/8R5YXTov9aHdOgplmCHLupw==}
+    cpu: [x64, arm64, s390x]
+    os: [darwin, linux, win32]
+    hasBin: true
     dev: false
 
   /@mikuroxina/mini-fn@5.6.0:
