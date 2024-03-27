@@ -177,6 +177,7 @@ Also, in situations where `camelCase` should be used, it is counted as a single 
 - The namespace name is `PascalCase`.
 
 - The file name should be in `camelCase`.
+  - Use `lowercase` for a single word.
 
 #### null and undefined
 
