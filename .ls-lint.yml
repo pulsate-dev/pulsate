@@ -1,8 +1,9 @@
 ls:
-  .js: camelCase
-  .ts: camelCase
+  .ts: camelCase | lowercase | regex:^[a-z]+(?:[A-Z][a-z]*)+(\.test)?
 
 ignore:
   - node_modules
+  - coverage
+  - build
   - vite.config.ts
-  - eslint.config.ts
+  - eslint.config.js
