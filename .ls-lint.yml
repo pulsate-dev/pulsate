@@ -1,0 +1,8 @@
+ls:
+  .js: camelCase
+  .ts: camelCase
+
+ignore:
+  - node_modules
+  - vite.config.ts
+  - eslint.config.ts
