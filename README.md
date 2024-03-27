@@ -15,8 +15,8 @@
   <!-- TODO: Insert Pulsate Screenshot -->
   <br />
   <br />
-  <a href="https://github.com/pulsate-dev/pulsate/actions/workflows/node.yaml">
-    <img src="https://github.com/pulsate-dev/pulsate/actions/workflows/node.yaml/badge.svg">
+  <a href="https://github.com/pulsate-dev/pulsate/actions/workflows/ci.yaml">
+    <img src="https://github.com/pulsate-dev/pulsate/actions/workflows/ci.yaml/badge.svg">
   </a>
   <a href="https://link.pulsate.dev/discord">
     <img src="https://img.shields.io/discord/1155472831744856164?label=Discord&color=5865F2">
