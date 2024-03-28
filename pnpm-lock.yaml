@@ -29,6 +29,9 @@ dependencies:
   hono:
     specifier: ^3.12.10
     version: 3.12.12
+  iterator-helpers-polyfill:
+    specifier: ^2.3.3
+    version: 2.3.3
   jose:
     specifier: ^5.2.1
     version: 5.2.3
@@ -3134,6 +3137,11 @@ packages:
       html-escaper: 2.0.2
       istanbul-lib-report: 3.0.1
     dev: true
+
+  /iterator-helpers-polyfill@2.3.3:
+    resolution: {integrity: sha512-hStP36YeAkwkzQ3cvse12rl+NeTWGQNmdIqDoApxxWwVeJ2jDzgD0/nKQgf6tNoXx9bYWCdRmJnnABINq7cPew==}
+    engines: {chrome: '>=63', firefox: '>=57', node: '>=10.0.0', safari: '>=11'}
+    dev: false
 
   /jackspeak@2.3.6:
     resolution: {integrity: sha512-N3yCS/NegsOBokc8GAdM8UcmfsKiSS8cipheD/nivzr700H+nsMOxJjQnvwOcRYVuFkdH0wGUvW2WbXGmrZGbQ==}

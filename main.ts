@@ -1,9 +1,13 @@
 import { serve } from '@hono/node-server';
 import { apiReference } from '@scalar/hono-api-reference';
 import { Hono } from 'hono';
+// installs polyfill into global
+import * as ihp from 'iterator-helpers-polyfill';
 
 import { accounts } from './pkg/accounts/mod.js';
 import { noteHandlers } from './pkg/notes/mod.js';
+
+ihp.installIntoGlobal();
 
 const app = new Hono();
 
