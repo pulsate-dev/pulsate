@@ -60,7 +60,7 @@ Before submitting a pull request, please check the following points:
   - If you want to submit a PR in progress, [please submit it as "Draft"](https://docs.github.com/pull-requests/collaborating-with-pull-requests/proposing-changes-to-your-work-with-pull-requests/changing-the-stage-of-a-pull-request).
 - Pull request title conforms to [Conventional Commits](#commit-message)
 
-If you are sure, run "deno fmt" to format the code.
+After finishing, please run `pnpm format` to format the code. (If you are using VSCode, it will be formatted automatically.)
 
 Once it has been reviewed and approved by the Pulsate maintainer, it can be merged.
 
