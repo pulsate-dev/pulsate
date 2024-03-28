@@ -61,7 +61,7 @@ Pulsateにプルリクエストを提出するには, **なぜこの変更が必
   - 進行中のPRを投稿したい場合は, ["Draft" として投稿してください](https://docs.github.com/ja/pull-requests/collaborating-with-pull-requests/proposing-changes-to-your-work-with-pull-requests/changing-the-stage-of-a-pull-request).
 - プルリクエストのタイトルは[Conventional Commits](#コミットメッセージ)に準拠してください.
 
-完了次第 `deno fmt` を実行してコードを整形してください.
+完了次第 `pnpm format` を実行してコードを整形してください. (VSCode を使用している場合は自動的に整形されます.)
 
 Pulsate メンテナーのレビューと承認が得られれば, マージできます.
 
