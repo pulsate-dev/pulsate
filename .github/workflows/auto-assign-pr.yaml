@@ -1,4 +1,4 @@
-name: Pull request workflow
+name: Auto-assign PR
 
 on:
   pull_request:
@@ -9,6 +9,7 @@ permissions:
 
 jobs:
   assign:
+    name: Assign PR to the author
     if: ${{ github.event.pull_request.user.login != 'renovate[bot]' || toJSON(github.event.pull_request.assignees) == '[]' }}
     runs-on: ubuntu-latest
     steps:
@@ -24,4 +25,3 @@ jobs:
               issue_number: context.issue.number,
               assignees: `${{ github.actor }}`
             })
-
