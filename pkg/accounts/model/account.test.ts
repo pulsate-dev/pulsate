@@ -107,27 +107,19 @@ describe('Account', () => {
 });
 
 describe('AccountNameSchema', () => {
+  const check = (v: unknown) => AccountNameSchema.safeParse(v).success;
+
   const account = Account.new(exampleInput);
 
   it('check it is accountname', () => {
-    expect(AccountNameSchema.safeParse(account.getName()).success).toBe(true);
+    expect(check(account.getName())).toBe(true);
   });
 
   it('check it is not accountname', () => {
-    expect(AccountNameSchema.safeParse('@@').success).toBe(false);
-
-    expect(AccountNameSchema.safeParse('@_name_@example.com').success).toBe(
-      false,
-    );
-
-    expect(
-      AccountNameSchema.safeParse('@n_a_m_e_@sharp-#-sharp.com').success,
-    ).toBe(false);
-
-    expect(AccountNameSchema.safeParse('@query@?.com').success).toBe(false);
-
-    expect(AccountNameSchema.safeParse('@日本語example.com').success).toBe(
-      false,
-    );
+    expect(check('@@')).toBe(false);
+    expect(check('@_name_@example.com')).toBe(false);
+    expect(check('@n_a_m_e_@sharp-#-sharp.com')).toBe(false);
+    expect(check('@query@?.com')).toBe(false);
+    expect(check('@日本語example.com')).toBe(false);
   });
 });

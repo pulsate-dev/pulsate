@@ -40,6 +40,8 @@ describe('SnowflakeIDGenerator', () => {
 });
 
 describe('IDSchema', () => {
+  const check = (v: unknown) => IDSchema().safeParse(v).success;
+
   const SHORTEST = String(1 << 22);
 
   it('check it is id', () => {
@@ -47,17 +49,17 @@ describe('IDSchema', () => {
 
     for (let i = 0; i < 64; i++) {
       const id = Result.unwrap(generator.generate());
-      expect(IDSchema().safeParse(id).success).toBe(true);
+      expect(check(id)).toBe(true);
     }
 
-    expect(IDSchema().safeParse(SHORTEST).success).toBe(true);
+    expect(check(SHORTEST)).toBe(true);
   });
 
   it('check it is not id', () => {
-    expect(IDSchema().safeParse('').success).toBe(false);
-    expect(IDSchema().safeParse('0').success).toBe(false);
-    expect(IDSchema().safeParse('a').success).toBe(false);
-    expect(IDSchema().safeParse(`${SHORTEST}a`).success).toBe(false);
-    expect(IDSchema().safeParse(`a${SHORTEST}`).success).toBe(false);
+    expect(check('')).toBe(false);
+    expect(check('0')).toBe(false);
+    expect(check('a')).toBe(false);
+    expect(check(`${SHORTEST}a`)).toBe(false);
+    expect(check(`a${SHORTEST}`)).toBe(false);
   });
 });
