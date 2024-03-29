@@ -1,3 +1,4 @@
+import { z } from '@hono/zod-openapi';
 import { Result } from '@mikuroxina/mini-fn';
 
 import { OFFSET_FROM_UNIX_EPOCH } from '../time/mod.js';
@@ -67,3 +68,22 @@ export class SnowflakeIDGenerator {
     return Result.ok(id.toString() as ID<T>);
   }
 }
+
+export const IDSchema = <T>() =>
+  z
+    .string()
+    .regex(/^\d+$/)
+    .refine((s) => {
+      let n;
+      try {
+        n = BigInt(s);
+      } catch {
+        return false;
+      }
+
+      return (
+        n >= 0b1111111111111111111111n &&
+        n <= 0b1111111111111111111111111111111111111111111111111111111111111111n
+      );
+    })
+    .transform((s) => s as ID<T>);
