@@ -1,7 +1,12 @@
 import { describe, expect, it } from 'vitest';
 
 import { type ID } from '../../id/type.js';
-import { Account, type AccountID, type CreateAccountArgs } from './account.js';
+import {
+  AccountNameSchema,
+  Account,
+  type AccountID,
+  type CreateAccountArgs,
+} from './account.js';
 
 const exampleInput: CreateAccountArgs = {
   id: '1' as ID<AccountID>,
@@ -98,5 +103,31 @@ describe('Account', () => {
     expect(() => {
       account.setMail('pulsate@example.com');
     }).toThrow();
+  });
+});
+
+describe('AccountNameSchema', () => {
+  const account = Account.new(exampleInput);
+
+  it('check it is accountname', () => {
+    expect(AccountNameSchema.safeParse(account.getName()).success).toBe(true);
+  });
+
+  it('check it is not accountname', () => {
+    expect(AccountNameSchema.safeParse('@@').success).toBe(false);
+
+    expect(AccountNameSchema.safeParse('@_name_@example.com').success).toBe(
+      false,
+    );
+
+    expect(
+      AccountNameSchema.safeParse('@n_a_m_e_@sharp-#-sharp.com').success,
+    ).toBe(false);
+
+    expect(AccountNameSchema.safeParse('@query@?.com').success).toBe(false);
+
+    expect(AccountNameSchema.safeParse('@日本語example.com').success).toBe(
+      false,
+    );
   });
 });

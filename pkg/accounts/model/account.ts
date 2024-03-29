@@ -1,3 +1,5 @@
+import { z } from '@hono/zod-openapi';
+
 import type { ID } from '../../id/type.js';
 import {
   AccountAlreadyDeletedError,
@@ -13,6 +15,11 @@ export type AccountRole = 'admin' | 'normal' | 'moderator';
 export type AccountStatus = 'active' | 'notActivated';
 export type AccountFrozen = 'frozen' | 'normal';
 export type AccountSilenced = 'silenced' | 'normal';
+
+export const AccountNameSchema = z
+  .string()
+  .regex(/^@(?:[a-zA-Z0-9][\w\-.]*)@(?:[^/?#]+)$/)
+  .transform((s) => s as AccountName);
 
 export interface CreateAccountArgs {
   id: ID<AccountID>;
