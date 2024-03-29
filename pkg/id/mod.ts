@@ -74,16 +74,16 @@ export const IDSchema = <T>() =>
     .string()
     .regex(/^\d+$/)
     .refine((s) => {
-      let n;
       try {
-        n = BigInt(s);
+        const n = BigInt(s);
+
+        return (
+          n >= 0b1111111111111111111111n &&
+          n <=
+            0b1111111111111111111111111111111111111111111111111111111111111111n
+        );
       } catch {
         return false;
       }
-
-      return (
-        n >= 0b1111111111111111111111n &&
-        n <= 0b1111111111111111111111111111111111111111111111111111111111111111n
-      );
     })
     .transform((s) => s as ID<T>);
