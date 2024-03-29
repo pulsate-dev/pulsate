@@ -53,6 +53,7 @@ describe('IDSchema', () => {
     }
 
     expect(check(SHORTEST)).toBe(true);
+    expect(check(`${String((1n << 64n) - 1n)}`)).toBe(true);
   });
 
   it('check it is not id', () => {
@@ -61,5 +62,6 @@ describe('IDSchema', () => {
     expect(check('a')).toBe(false);
     expect(check(`${SHORTEST}a`)).toBe(false);
     expect(check(`a${SHORTEST}`)).toBe(false);
+    expect(check(`${String((1n << 65n) - 1n)}`)).toBe(false);
   });
 });
