@@ -6,6 +6,7 @@ import type { Note, NoteID } from './note.js';
 
 export interface NoteRepository {
   create(note: Note): Promise<Result.Result<Error, void>>;
+  getFiltered(filters: NoteFilter[]): Promise<Result.Result<Error, Note[]>>;
   findByAuthorID(
     authorID: ID<AccountID>,
     limit: number,
@@ -13,3 +14,11 @@ export interface NoteRepository {
   findByID(id: ID<NoteID>): Promise<Option.Option<Note>>;
   deleteByID(id: ID<NoteID>): Promise<Result.Result<Error, void>>;
 }
+
+export type NoteFilter =
+  | { type: 'author'; any: ID<AccountID>[] }
+  | { type: 'attachment'; more: number }
+  | { type: 'cw'; is: string }
+  | { type: 'created'; less: Date }
+  | { type: 'updated'; less: Date }
+  | { type: 'deleted'; has: boolean };
