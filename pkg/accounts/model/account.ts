@@ -18,7 +18,7 @@ export type AccountSilenced = 'silenced' | 'normal';
 
 export const AccountNameSchema = z
   .string()
-  .regex(/^@(?:[a-zA-Z0-9][\w\-.]*)@(?:[^/?#]+)$/)
+  .regex(/^@([a-zA-Z\d][\w\-.]*)@(([\w\-~.!$&'()*+,;=]|(%[\dA-F]{2}))+)$/)
   .transform((s) => s as AccountName);
 
 export interface CreateAccountArgs {
