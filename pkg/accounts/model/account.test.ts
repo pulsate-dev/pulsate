@@ -113,6 +113,8 @@ describe('AccountNameSchema', () => {
 
   it('check it is accountname', () => {
     expect(check(account.getName())).toBe(true);
+
+    expect(check('@name@xn--example-bs3o55gu19k.com')).toBe(true);
   });
 
   it('check it is not accountname', () => {
@@ -120,6 +122,6 @@ describe('AccountNameSchema', () => {
     expect(check('@_name_@example.com')).toBe(false);
     expect(check('@n_a_m_e_@sharp-#-sharp.com')).toBe(false);
     expect(check('@query@?.com')).toBe(false);
-    expect(check('@日本語example.com')).toBe(false);
+    expect(check('@name@日本語example.com')).toBe(false);
   });
 });
