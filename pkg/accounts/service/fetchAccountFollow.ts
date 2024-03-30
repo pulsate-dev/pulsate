@@ -1,7 +1,8 @@
-import { Option } from '@mikuroxina/mini-fn';
+import { Option, Cat, Result } from '@mikuroxina/mini-fn';
 
 import type { AccountID, AccountName } from '../../accounts/model/account.js';
 import type { ID } from '../../id/type.js';
+import type { AccountFollow } from '../model/follow.js';
 import type {
   AccountFollowRepository,
   AccountRepository,
@@ -13,29 +14,43 @@ export class FetchAccountFollowService {
     private readonly accountRepository: AccountRepository,
   ) {}
 
-  async fetchFollowingsByID(id: ID<AccountID>) /* inferred */ {
+  async fetchFollowingsByID(
+    id: ID<AccountID>,
+  ): Promise<Result.Result<Error, AccountFollow[]>> {
     return this.accountFollowRepository.fetchAllFollowing(id);
   }
 
-  async fetchFollowingsByName(name: AccountName) /* inferred */ {
-    const id = await this.accountRepository
-      .findByName(name)
-      .then((o) => Option.unwrap(o))
-      .then((a) => a.getID());
+  async fetchFollowingsByName(
+    name: AccountName,
+  ): Promise<Result.Result<Error, AccountFollow[]>> {
+    const resId = Cat.cat(await this.accountRepository.findByName(name))
+      .feed(Option.okOr(new Error('ACCOUNT_NOT_FOUND')))
+      .feed(Result.map((a) => a.getID())).value;
 
-    return this.fetchFollowingsByID(id);
+    if (Result.isErr(resId)) {
+      return resId;
+    }
+
+    return this.fetchFollowingsByID(resId[1]);
   }
 
-  async fetchFollowersByID(id: ID<AccountID>) /* inferred */ {
+  async fetchFollowersByID(
+    id: ID<AccountID>,
+  ): Promise<Result.Result<Error, AccountFollow[]>> {
     return this.accountFollowRepository.fetchAllFollowers(id);
   }
 
-  async fetchFollowersByName(name: AccountName) /* inferred */ {
-    const id = await this.accountRepository
-      .findByName(name)
-      .then((o) => Option.unwrap(o))
-      .then((a) => a.getID());
+  async fetchFollowersByName(
+    name: AccountName,
+  ): Promise<Result.Result<Error, AccountFollow[]>> {
+    const resId = Cat.cat(await this.accountRepository.findByName(name))
+      .feed(Option.okOr(new Error('ACCOUNT_NOT_FOUND')))
+      .feed(Result.map((a) => a.getID())).value;
 
-    return this.fetchFollowersByID(id);
+    if (Result.isErr(resId)) {
+      return resId;
+    }
+
+    return this.fetchFollowersByID(resId[1]);
   }
 }
