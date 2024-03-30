@@ -23,15 +23,15 @@ interface AccountPrismaArgs {
   name: string;
   nickname: string;
   mail: string;
-  passphrase_hash: string | null;
+  passphraseHash: string | null;
   bio: string;
   role: number;
   frozen: number;
   silenced: number;
   status: number;
-  created_at: Date;
-  updated_at: Date | null;
-  deleted_at: Date | null;
+  createdAt: Date;
+  updatedAt: Date | null;
+  deletedAt: Date | null;
 }
 
 export class PrismaAccountRepository implements AccountRepository {
@@ -123,15 +123,15 @@ export class PrismaAccountRepository implements AccountRepository {
       name: account.getName(),
       nickname: account.getNickname(),
       mail: account.getMail(),
-      passphrase_hash: account.getPassphraseHash() ?? '',
+      passphraseHash: account.getPassphraseHash() ?? '',
       bio: account.getBio(),
       role: role,
       frozen: frozen,
       silenced: silenced,
       status: status,
-      created_at: account.getCreatedAt(),
-      updated_at: account.getUpdatedAt() ?? null,
-      deleted_at: account.getDeletedAt() ?? null,
+      createdAt: account.getCreatedAt(),
+      updatedAt: account.getUpdatedAt() ?? null,
+      deletedAt: account.getDeletedAt() ?? null,
     };
   }
 
@@ -175,15 +175,15 @@ export class PrismaAccountRepository implements AccountRepository {
       nickname: args.nickname,
       mail: args.mail,
       passphraseHash:
-        args.passphrase_hash === null ? undefined : args.passphrase_hash,
+        args.passphraseHash === null ? undefined : args.passphraseHash,
       bio: args.bio,
       role: role,
       frozen: frozen,
       silenced: silenced,
       status: status,
-      createdAt: args.created_at,
-      deletedAt: args.deleted_at === null ? undefined : args.deleted_at,
-      updatedAt: args.updated_at === null ? undefined : args.updated_at,
+      createdAt: args.createdAt,
+      deletedAt: args.deletedAt === null ? undefined : args.deletedAt,
+      updatedAt: args.updatedAt === null ? undefined : args.updatedAt,
     });
   }
 }
@@ -199,11 +199,11 @@ export class PrismaAccountVerifyTokenRepository
     expire: Date,
   ): Promise<Result.Result<Error, void>> {
     try {
-      await this.prisma.account_verify_token.create({
+      await this.prisma.accountVerifyToken.create({
         data: {
-          account_id: accountID,
+          accountId: accountID,
           token: token,
-          expires_at: expire,
+          expiresAt: expire,
         },
       });
     } catch (e) {
@@ -215,9 +215,9 @@ export class PrismaAccountVerifyTokenRepository
   async findByID(
     id: ID<AccountID>,
   ): Promise<Option.Option<{ token: string; expire: Date }>> {
-    const res = await this.prisma.account_verify_token.findUnique({
+    const res = await this.prisma.accountVerifyToken.findUnique({
       where: {
-        account_id: id,
+        accountId: id,
       },
     });
 
@@ -226,16 +226,16 @@ export class PrismaAccountVerifyTokenRepository
     }
     return Option.some({
       token: res.token,
-      expire: res.expires_at,
+      expire: res.expiresAt,
     });
   }
 }
 
 interface AccountFollowPrismaArgs {
-  from_id: string;
-  to_id: string;
-  created_at: Date;
-  deleted_at: Date | null;
+  fromId: string;
+  toId: string;
+  createdAt: Date;
+  deletedAt: Date | null;
 }
 
 export class PrismaAccountFollowRepository implements AccountFollowRepository {
@@ -245,8 +245,8 @@ export class PrismaAccountFollowRepository implements AccountFollowRepository {
     try {
       await this.prisma.following.create({
         data: {
-          from_id: follow.getFromID(),
-          to_id: follow.getTargetID(),
+          fromId: follow.getFromID(),
+          toId: follow.getTargetID(),
         },
       });
       return Result.ok(undefined);
@@ -262,13 +262,13 @@ export class PrismaAccountFollowRepository implements AccountFollowRepository {
     try {
       await this.prisma.following.update({
         where: {
-          from_id_to_id: {
-            from_id: fromID,
-            to_id: targetID,
+          fromId_toId: {
+            fromId: fromID,
+            toId: targetID,
           },
         },
         data: {
-          deleted_at: new Date(),
+          deletedAt: new Date(),
         },
       });
       return Result.ok(undefined);
@@ -282,7 +282,7 @@ export class PrismaAccountFollowRepository implements AccountFollowRepository {
   ): Promise<Result.Result<Error, AccountFollow[]>> {
     const res = await this.prisma.following.findMany({
       where: {
-        to_id: accountID,
+        toId: accountID,
       },
     });
     return Result.ok(res.map((f) => this.fromPrismaArgs(f)));
@@ -292,7 +292,7 @@ export class PrismaAccountFollowRepository implements AccountFollowRepository {
   ): Promise<Result.Result<Error, AccountFollow[]>> {
     const res = await this.prisma.following.findMany({
       where: {
-        from_id: accountID,
+        fromId: accountID,
       },
     });
     return Result.ok(res.map((f) => this.fromPrismaArgs(f)));
@@ -304,11 +304,11 @@ export class PrismaAccountFollowRepository implements AccountFollowRepository {
   ): Promise<Result.Result<Error, AccountFollow[]>> {
     const res = await this.prisma.following.findMany({
       where: {
-        to_id: accountID,
+        toId: accountID,
       },
       take: limit,
       orderBy: {
-        created_at: 'desc',
+        createdAt: 'desc',
       },
     });
     return Result.ok(res.map((f) => this.fromPrismaArgs(f)));
@@ -320,11 +320,11 @@ export class PrismaAccountFollowRepository implements AccountFollowRepository {
   ): Promise<Result.Result<Error, AccountFollow[]>> {
     const res = await this.prisma.following.findMany({
       where: {
-        from_id: accountID,
+        fromId: accountID,
       },
       take: limit,
       orderBy: {
-        created_at: 'desc',
+        createdAt: 'desc',
       },
     });
     return Result.ok(res.map((f) => this.fromPrismaArgs(f)));
@@ -332,10 +332,10 @@ export class PrismaAccountFollowRepository implements AccountFollowRepository {
 
   private fromPrismaArgs(args: AccountFollowPrismaArgs): AccountFollow {
     return AccountFollow.reconstruct({
-      fromID: args.from_id as ID<AccountID>,
-      targetID: args.to_id as ID<AccountID>,
-      createdAt: args.created_at,
-      deletedAt: args.deleted_at === null ? undefined : args.deleted_at,
+      fromID: args.fromId as ID<AccountID>,
+      targetID: args.toId as ID<AccountID>,
+      createdAt: args.createdAt,
+      deletedAt: args.deletedAt === null ? undefined : args.deletedAt,
     });
   }
 }
