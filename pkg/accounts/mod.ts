@@ -25,11 +25,10 @@ import {
   UpdateAccountRoute,
   VerifyEmailRoute,
 } from './router.js';
-import { TokenVerifyService } from './service/accountVerifyToken.js';
 import { AuthenticationService } from './service/authenticate.js';
-import { EditAccountService } from './service/editAccount.js';
+import { EditAccountService } from './service/edit.js';
 import { EtagVerifyService } from './service/etagGenerateVerify.js';
-import { FetchAccountService } from './service/fetchAccount.js';
+import { FetchAccountService } from './service/fetch.js';
 import { FollowService } from './service/follow.js';
 import { FreezeService } from './service/freeze.js';
 import { RegisterAccountService } from './service/register.js';
@@ -38,6 +37,7 @@ import { DummySendNotificationService } from './service/sendNotification.js';
 import { SilenceService } from './service/silence.js';
 import { TokenGenerator } from './service/tokenGenerator.js';
 import { UnfollowService } from './service/unfollow.js';
+import { TokenVerifyService } from './service/verifyToken.js';
 
 export const accounts = new OpenAPIHono();
 const accountRepository = new InMemoryAccountRepository();

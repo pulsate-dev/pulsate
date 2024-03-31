@@ -5,7 +5,7 @@ import type { ID } from '../../id/type.js';
 import { Argon2idPasswordEncoder } from '../../password/mod.js';
 import { InMemoryAccountRepository } from '../adaptor/repository/dummy.js';
 import { Account, type AccountID } from '../model/account.js';
-import { EditAccountService } from './editAccount.js';
+import { EditAccountService } from './edit.js';
 import { EtagVerifyService } from './etagGenerateVerify.js';
 
 const repository = new InMemoryAccountRepository();

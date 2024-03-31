@@ -8,7 +8,7 @@ import {
   InMemoryAccountVerifyTokenRepository,
 } from '../adaptor/repository/dummy.js';
 import { Account, type AccountID } from '../model/account.js';
-import { TokenVerifyService } from './accountVerifyToken.js';
+import { TokenVerifyService } from './verifyToken.js';
 
 const repository = new InMemoryAccountVerifyTokenRepository();
 const accountRepository = new InMemoryAccountRepository();

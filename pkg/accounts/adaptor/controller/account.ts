@@ -3,16 +3,16 @@ import { Option, Result } from '@mikuroxina/mini-fn';
 
 import type { ID } from '../../../id/type.js';
 import { type AccountID, type AccountName } from '../../model/account.js';
-import type { TokenVerifyService } from '../../service/accountVerifyToken.js';
 import type { AuthenticationService } from '../../service/authenticate.js';
-import type { EditAccountService } from '../../service/editAccount.js';
-import type { FetchAccountService } from '../../service/fetchAccount.js';
+import type { EditAccountService } from '../../service/edit.js';
+import type { FetchAccountService } from '../../service/fetch.js';
 import type { FollowService } from '../../service/follow.js';
 import type { FreezeService } from '../../service/freeze.js';
 import type { RegisterAccountService } from '../../service/register.js';
 import type { ResendVerifyTokenService } from '../../service/resendToken.js';
 import type { SilenceService } from '../../service/silence.js';
 import { type UnfollowService } from '../../service/unfollow.js';
+import type { TokenVerifyService } from '../../service/verifyToken.js';
 import {
   type CreateAccountResponseSchema,
   type GetAccountResponseSchema,

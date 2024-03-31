@@ -2,10 +2,7 @@ import { describe, it, expect } from 'vitest';
 
 import { type ID } from '../../id/type.js';
 import { type AccountID, type CreateAccountArgs } from './account.js';
-import {
-  InactiveAccount,
-  type CreateInactiveAccountArgs,
-} from './inactiveAccount.js';
+import { InactiveAccount, type CreateInactiveAccountArgs } from './inactive.js';
 
 const exampleInput: CreateInactiveAccountArgs = {
   id: '1' as ID<AccountID>,

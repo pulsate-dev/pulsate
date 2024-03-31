@@ -4,7 +4,7 @@ import { afterEach, describe, expect, it } from 'vitest';
 import type { ID } from '../../id/type.js';
 import { InMemoryAccountRepository } from '../adaptor/repository/dummy.js';
 import { Account, type AccountID } from '../model/account.js';
-import { FetchAccountService } from './fetchAccount.js';
+import { FetchAccountService } from './fetch.js';
 
 const repository = new InMemoryAccountRepository();
 await repository.create(

@@ -8,9 +8,9 @@ import {
   InMemoryAccountVerifyTokenRepository,
 } from '../adaptor/repository/dummy.js';
 import { Account, type AccountID } from '../model/account.js';
-import { TokenVerifyService } from './accountVerifyToken.js';
 import { ResendVerifyTokenService } from './resendToken.js';
 import { DummySendNotificationService } from './sendNotification.js';
+import { TokenVerifyService } from './verifyToken.js';
 
 const repository = new InMemoryAccountRepository();
 await repository.create(

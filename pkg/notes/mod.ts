@@ -7,11 +7,10 @@ import {
   InMemoryAccountRepository,
   InMemoryAccountVerifyTokenRepository,
 } from '../accounts/adaptor/repository/dummy.js';
-import { TokenVerifyService } from '../accounts/service/accountVerifyToken.js';
 import { AuthenticationService } from '../accounts/service/authenticate.js';
-import { EditAccountService } from '../accounts/service/editAccount.js';
+import { EditAccountService } from '../accounts/service/edit.js';
 import { EtagVerifyService } from '../accounts/service/etagGenerateVerify.js';
-import { FetchAccountService } from '../accounts/service/fetchAccount.js';
+import { FetchAccountService } from '../accounts/service/fetch.js';
 import { FollowService } from '../accounts/service/follow.js';
 import { FreezeService } from '../accounts/service/freeze.js';
 import { RegisterAccountService } from '../accounts/service/register.js';
@@ -20,6 +19,7 @@ import { DummySendNotificationService } from '../accounts/service/sendNotificati
 import { SilenceService } from '../accounts/service/silence.js';
 import { TokenGenerator } from '../accounts/service/tokenGenerator.js';
 import { UnfollowService } from '../accounts/service/unfollow.js';
+import { TokenVerifyService } from '../accounts/service/verifyToken.js';
 import { SnowflakeIDGenerator } from '../id/mod.js';
 import { AccountModule } from '../intermodule/account.js';
 import { Argon2idPasswordEncoder } from '../password/mod.js';

@@ -8,11 +8,10 @@ import {
   InMemoryAccountVerifyTokenRepository,
 } from '../../accounts/adaptor/repository/dummy.js';
 import { Account, type AccountID } from '../../accounts/model/account.js';
-import { TokenVerifyService } from '../../accounts/service/accountVerifyToken.js';
 import { AuthenticationService } from '../../accounts/service/authenticate.js';
-import { EditAccountService } from '../../accounts/service/editAccount.js';
+import { EditAccountService } from '../../accounts/service/edit.js';
 import { EtagVerifyService } from '../../accounts/service/etagGenerateVerify.js';
-import { FetchAccountService } from '../../accounts/service/fetchAccount.js';
+import { FetchAccountService } from '../../accounts/service/fetch.js';
 import { FollowService } from '../../accounts/service/follow.js';
 import { FreezeService } from '../../accounts/service/freeze.js';
 import { RegisterAccountService } from '../../accounts/service/register.js';
@@ -21,6 +20,7 @@ import { DummySendNotificationService } from '../../accounts/service/sendNotific
 import { SilenceService } from '../../accounts/service/silence.js';
 import { TokenGenerator } from '../../accounts/service/tokenGenerator.js';
 import { UnfollowService } from '../../accounts/service/unfollow.js';
+import { TokenVerifyService } from '../../accounts/service/verifyToken.js';
 import { MockClock, SnowflakeIDGenerator } from '../../id/mod.js';
 import type { ID } from '../../id/type.js';
 import { AccountModule } from '../../intermodule/account.js';

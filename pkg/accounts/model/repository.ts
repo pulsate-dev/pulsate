@@ -4,7 +4,7 @@ import { type ID } from '../../id/type.js';
 import type { Account } from './account.js';
 import { type AccountID } from './account.js';
 import type { AccountFollow } from './follow.js';
-import type { InactiveAccount } from './inactiveAccount.js';
+import type { InactiveAccount } from './inactive.js';
 
 export interface AccountRepository {
   create(account: Account): Promise<Result.Result<Error, void>>;
