@@ -27,7 +27,7 @@ import { AccountModule } from '../../intermodule/account.js';
 import { Argon2idPasswordEncoder } from '../../password/mod.js';
 import { InMemoryNoteRepository } from '../adaptor/repository/dummy.js';
 import { Note, type NoteID } from '../model/note.js';
-import { FetchNoteService } from './fetch.js';
+import { FetchNoteService } from './fetchNote.js';
 
 const testNote = Note.new({
   id: '1' as ID<NoteID>,

@@ -5,7 +5,7 @@ import type { AccountID } from '../../accounts/model/account.js';
 import { SnowflakeIDGenerator } from '../../id/mod.js';
 import type { ID } from '../../id/type.js';
 import { InMemoryNoteRepository } from '../adaptor/repository/dummy.js';
-import { CreateNoteService } from './create.js';
+import { CreateNoteService } from './createNote.js';
 
 const noteRepository = new InMemoryNoteRepository();
 const createNoteService = new CreateNoteService(
