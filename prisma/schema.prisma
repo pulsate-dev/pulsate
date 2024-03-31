@@ -10,141 +10,156 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model account {
-  id              String  @id
-  name            String  @unique
-  nickname        String
-  mail            String  @unique
-  passphrase_hash String?
-  bio             String  @default("")
-  role            Int     @default(0)
-  frozen          Int     @default(0)
-  silenced        Int     @default(0)
-  status          Int     @default(0)
+model Account {
+  id             String  @id
+  name           String  @unique
+  nickname       String
+  mail           String  @unique
+  passphraseHash String? @map("passphrase_hash")
+  bio            String  @default("")
+  role           Int     @default(0)
+  frozen         Int     @default(0)
+  silenced       Int     @default(0)
+  status         Int     @default(0)
 
-  created_at DateTime  @default(now())
-  updated_at DateTime? @updatedAt
-  deleted_at DateTime?
+  createdAt DateTime  @default(now()) @map("created_at")
+  updatedAt DateTime? @updatedAt @map("updated_at")
+  deletedAt DateTime? @map("deleted_at")
 
-  following            following[]            @relation("following")
-  followed             following[]            @relation("followed")
-  note                 note[]
-  reaction             reaction[]
-  bookmark             bookmark[]
-  list_member          list_member[]
-  medium               medium[]
-  account_verify_token account_verify_token[]
-  list                 list[]
+  following          Following[]          @relation("following")
+  followed           Following[]          @relation("followed")
+  note               Note[]
+  reaction           Reaction[]
+  bookmark           Bookmark[]
+  listMember         ListMember[]
+  medium             Medium[]
+  accountVerifyToken AccountVerifyToken[]
+  list               List[]
+
+  @@map("account")
 }
 
-model following {
-  from    account @relation("followed", fields: [from_id], references: [id])
-  from_id String
-  to      account @relation("following", fields: [to_id], references: [id])
-  to_id   String
-  state   Int     @default(1)
+model Following {
+  from   Account @relation("followed", fields: [fromId], references: [id])
+  fromId String  @map("from_id")
+  to     Account @relation("following", fields: [toId], references: [id])
+  toId   String  @map("to_id")
+  state  Int     @default(1)
 
-  created_at DateTime  @default(now())
-  updated_at DateTime? @updatedAt
-  deleted_at DateTime?
+  createdAt DateTime  @default(now()) @map("created_at")
+  updatedAt DateTime? @updatedAt @map("updated_at")
+  deletedAt DateTime? @map("deleted_at")
 
-  @@id([from_id, to_id])
+  @@id([fromId, toId])
+  @@map("following")
 }
 
-model note {
+model Note {
   id         String  @id
   text       String  @db.Text
   visibility Int     @default(0)
-  author     account @relation(fields: [author_id], references: [id])
-  author_id  String
-  renote_id  String?
-  renote     note?   @relation("renote", fields: [renote_id], references: [id])
+  author     Account @relation(fields: [authorId], references: [id])
+  authorId   String  @map("author_id")
+  renoteId   String? @map("renote_id")
+  renote     Note?   @relation("renote", fields: [renoteId], references: [id])
 
-  created_at      DateTime          @default(now())
-  deleted_at      DateTime?
-  renotes         note[]            @relation("renote")
-  reaction        reaction[]
-  bookmark        bookmark[]
-  note_attachment note_attachment[]
+  createdAt      DateTime         @default(now()) @map("created_at")
+  deletedAt      DateTime?        @map("deleted_at")
+  renotes        Note[]           @relation("renote")
+  reaction       Reaction[]
+  bookmark       Bookmark[]
+  noteAttachment NoteAttachment[]
+
+  @@map("note")
 }
 
-model reaction {
-  reacted_by_id String
-  reacted_by    account @relation(fields: [reacted_by_id], references: [id])
-  reacted_to_id String
-  reacted_to    note    @relation(fields: [reacted_to_id], references: [id])
-  body          String
+model Reaction {
+  reactedById String  @map("reacted_by_id")
+  reactedBy   Account @relation(fields: [reactedById], references: [id])
+  reactedToId String  @map("reacted_to_id")
+  reactedTo   Note    @relation(fields: [reactedToId], references: [id])
+  body        String
 
-  created_at DateTime  @default(now())
-  deleted_at DateTime?
+  createdAt DateTime  @default(now()) @map("created_at")
+  deletedAt DateTime? @map("deleted_at")
 
-  @@id([reacted_by_id, reacted_to_id])
+  @@id([reactedById, reactedToId])
+  @@map("reaction")
 }
 
-model bookmark {
-  note_id    String
-  note       note    @relation(fields: [note_id], references: [id])
-  account_id String
-  account    account @relation(fields: [account_id], references: [id])
+model Bookmark {
+  noteId    String  @map("note_id")
+  note      Note    @relation(fields: [noteId], references: [id])
+  accountId String  @map("account_id")
+  account   Account @relation(fields: [accountId], references: [id])
 
-  created_at DateTime  @default(now())
-  deleted_at DateTime?
+  createdAt DateTime  @default(now()) @map("created_at")
+  deletedAt DateTime? @map("deleted_at")
 
-  @@id([note_id, account_id])
+  @@id([noteId, accountId])
+  @@map("bookmark")
 }
 
-model list {
+model List {
   id         String  @id
   title      String
   visibility Int     @default(0)
-  account_id String
-  account    account @relation(fields: [account_id], references: [id])
+  accountId  String  @map("account_id")
+  account    Account @relation(fields: [accountId], references: [id])
 
-  created_at  DateTime      @default(now())
-  deleted_at  DateTime?
-  list_member list_member[]
+  createdAt  DateTime     @default(now()) @map("created_at")
+  deletedAt  DateTime?    @map("deleted_at")
+  listMember ListMember[]
+
+  @@map("list")
 }
 
-model list_member {
-  list_id   String
-  list      list    @relation(fields: [list_id], references: [id])
-  member_id String
-  member    account @relation(fields: [member_id], references: [id])
+model ListMember {
+  listId   String  @map("list_id")
+  list     List    @relation(fields: [listId], references: [id])
+  memberId String  @map("member_id")
+  member   Account @relation(fields: [memberId], references: [id])
 
-  created_at DateTime  @default(now())
-  deleted_at DateTime?
+  createdAt DateTime  @default(now()) @map("created_at")
+  deletedAt DateTime? @map("deleted_at")
 
-  @@id([list_id, member_id])
+  @@id([listId, memberId])
+  @@map("list_member")
 }
 
-model medium {
-  id              String            @id
-  name            String
-  mime            String
-  author_id       String
-  author          account           @relation(fields: [author_id], references: [id])
-  url             String
-  created_at      DateTime          @default(now())
-  deleted_at      DateTime?
-  note_attachment note_attachment[]
+model Medium {
+  id             String           @id
+  name           String
+  mime           String
+  authorId       String           @map("author_id")
+  author         Account          @relation(fields: [authorId], references: [id])
+  url            String
+  createdAt      DateTime         @default(now()) @map("created_at")
+  deletedAt      DateTime?        @map("deleted_at")
+  noteAttachment NoteAttachment[]
+
+  @@map("medium")
 }
 
-model note_attachment {
-  medium_id String
-  medium    medium @relation(fields: [medium_id], references: [id])
-  note_id   String
-  note      note   @relation(fields: [note_id], references: [id])
+model NoteAttachment {
+  mediumId String @map("medium_id")
+  medium   Medium @relation(fields: [mediumId], references: [id])
+  noteId   String @map("note_id")
+  note     Note   @relation(fields: [noteId], references: [id])
 
-  alt        String
-  created_at DateTime  @default(now())
-  deleted_at DateTime?
+  alt       String
+  createdAt DateTime  @default(now()) @map("created_at")
+  deletedAt DateTime? @map("deleted_at")
 
-  @@id([medium_id, note_id])
+  @@id([mediumId, noteId])
+  @@map("note_attachment")
 }
 
-model account_verify_token {
-  account_id String   @id
-  account    account  @relation(fields: [account_id], references: [id])
-  token      String
-  expires_at DateTime
+model AccountVerifyToken {
+  accountId String   @id @map("account_id")
+  account   Account  @relation(fields: [accountId], references: [id])
+  token     String
+  expiresAt DateTime @map("expires_at")
+
+  @@map("account_verify_token")
 }
