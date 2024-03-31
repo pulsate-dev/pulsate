@@ -1,7 +1,7 @@
 import { Option, Result } from '@mikuroxina/mini-fn';
 
 import type { AccountName } from '../model/account.js';
-import { AccountFollow } from '../model/follow.js';
+import { AccountFollow } from '../model/followAccount.js';
 import type {
   AccountFollowRepository,
   AccountRepository,

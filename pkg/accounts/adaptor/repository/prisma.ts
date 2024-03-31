@@ -11,7 +11,7 @@ import {
   type AccountSilenced,
   type AccountStatus,
 } from '../../model/account.js';
-import { AccountFollow } from '../../model/follow.js';
+import { AccountFollow } from '../../model/followAccount.js';
 import type {
   AccountFollowRepository,
   AccountRepository,

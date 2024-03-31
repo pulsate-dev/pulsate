@@ -7,12 +7,12 @@ import type { TokenVerifyService } from '../../service/accountVerifyToken.js';
 import type { AuthenticationService } from '../../service/authenticate.js';
 import type { EditAccountService } from '../../service/editAccount.js';
 import type { FetchAccountService } from '../../service/fetchAccount.js';
-import type { FollowService } from '../../service/follow.js';
-import type { FreezeService } from '../../service/freeze.js';
-import type { RegisterAccountService } from '../../service/register.js';
-import type { ResendVerifyTokenService } from '../../service/resendToken.js';
-import type { SilenceService } from '../../service/silence.js';
-import { type UnfollowService } from '../../service/unfollow.js';
+import type { FollowService } from '../../service/followAccount.js';
+import type { FreezeService } from '../../service/freezeAccount.js';
+import type { RegisterAccountService } from '../../service/registerAccount.js';
+import type { ResendVerifyTokenService } from '../../service/resendAccountVerifyToken.js';
+import type { SilenceService } from '../../service/silenceAccount.js';
+import { type UnfollowService } from '../../service/unfollowAccount.js';
 import {
   type CreateAccountResponseSchema,
   type GetAccountResponseSchema,

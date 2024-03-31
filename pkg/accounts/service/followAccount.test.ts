@@ -7,7 +7,7 @@ import {
   InMemoryAccountRepository,
 } from '../adaptor/repository/dummy.js';
 import { Account, type AccountID } from '../model/account.js';
-import { FollowService } from './follow.js';
+import { FollowService } from './followAccount.js';
 
 const accountRepository = new InMemoryAccountRepository();
 await accountRepository.create(

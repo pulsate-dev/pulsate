@@ -4,7 +4,7 @@ import { afterEach, describe, expect, it } from 'vitest';
 import type { ID } from '../../id/type.js';
 import { InMemoryAccountRepository } from '../adaptor/repository/dummy.js';
 import { Account, type AccountID } from '../model/account.js';
-import { SilenceService } from './silence.js';
+import { FreezeService } from './freezeAccount.js';
 
 const repository = new InMemoryAccountRepository();
 await repository.create(
@@ -22,28 +22,28 @@ await repository.create(
     createdAt: new Date(),
   }),
 );
-const silenceService = new SilenceService(repository);
+const freezeService = new FreezeService(repository);
 
-describe('SilenceService', () => {
+describe('FreezeService', () => {
   afterEach(() => repository.reset());
 
-  it('set account silence', async () => {
+  it('set account freeze', async () => {
     const account = await repository.findByName('@john@example.com');
     if (Option.isNone(account)) return;
 
-    await silenceService.setSilence('@john@example.com');
+    await freezeService.setFreeze('@john@example.com');
 
-    expect(account[1].getSilenced()).toBe('silenced');
-    expect(account[1].getSilenced()).not.toBe('normal');
+    expect(account[1].getFrozen()).toBe('frozen');
+    expect(account[1].getFrozen()).not.toBe('normal');
   });
 
-  it('unset account silence', async () => {
+  it('unset account freeze', async () => {
     const account = await repository.findByName('@john@example.com');
     if (Option.isNone(account)) return;
 
-    await silenceService.undoSilence('@john@example.com');
+    await freezeService.undoFreeze('@john@example.com');
 
-    expect(account[1].getSilenced()).toBe('normal');
-    expect(account[1].getSilenced()).not.toBe('silenced');
+    expect(account[1].getFrozen()).toBe('normal');
+    expect(account[1].getFrozen()).not.toBe('frozen');
   });
 });

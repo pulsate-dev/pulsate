@@ -9,7 +9,7 @@ import {
 } from '../adaptor/repository/dummy.js';
 import { type AccountName, type AccountRole } from '../model/account.js';
 import { TokenVerifyService } from './accountVerifyToken.js';
-import { RegisterAccountService } from './register.js';
+import { RegisterAccountService } from './registerAccount.js';
 import { DummySendNotificationService } from './sendNotification.js';
 
 const repository = new InMemoryAccountRepository();
