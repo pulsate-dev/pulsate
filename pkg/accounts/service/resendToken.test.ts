@@ -10,7 +10,7 @@ import {
 import { Account, type AccountID } from '../model/account.js';
 import { ResendVerifyTokenService } from './resendToken.js';
 import { DummySendNotificationService } from './sendNotification.js';
-import { TokenVerifyService } from './verifyToken.js';
+import { VerifyTokenService } from './verifyToken.js';
 
 const repository = new InMemoryAccountRepository();
 await repository.create(
@@ -49,7 +49,7 @@ await accountRepository.create(
 );
 const mockClock = new MockClock(new Date('2023-09-10T00:00:00Z'));
 
-const tokenVerifyService = new TokenVerifyService(
+const verifyTokenService = new VerifyTokenService(
   verifyRepository,
   accountRepository,
   mockClock,
@@ -62,7 +62,7 @@ describe('ResendVerifyTokenService', () => {
   it('resend verify token', async () => {
     const service = new ResendVerifyTokenService(
       repository,
-      tokenVerifyService,
+      verifyTokenService,
       sendNotificationService,
     );
     const actual = await service.handle('@john@example.com');
@@ -72,7 +72,7 @@ describe('ResendVerifyTokenService', () => {
   it('when account not found', async () => {
     const service = new ResendVerifyTokenService(
       repository,
-      tokenVerifyService,
+      verifyTokenService,
       sendNotificationService,
     );
     const actual = await service.handle('@a@example.com');

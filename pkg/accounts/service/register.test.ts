@@ -10,7 +10,7 @@ import {
 import { type AccountName, type AccountRole } from '../model/account.js';
 import { RegisterService } from './register.js';
 import { DummySendNotificationService } from './sendNotification.js';
-import { TokenVerifyService } from './verifyToken.js';
+import { VerifyTokenService } from './verifyToken.js';
 
 const repository = new InMemoryAccountRepository();
 const verifyRepository = new InMemoryAccountVerifyTokenRepository();
@@ -21,7 +21,7 @@ const registerService: RegisterService = new RegisterService({
   idGenerator: new SnowflakeIDGenerator(1, mockClock),
   passwordEncoder: new Argon2idPasswordEncoder(),
   sendNotification: new DummySendNotificationService(),
-  verifyTokenService: new TokenVerifyService(
+  verifyTokenService: new VerifyTokenService(
     verifyRepository,
     repository,
     mockClock,

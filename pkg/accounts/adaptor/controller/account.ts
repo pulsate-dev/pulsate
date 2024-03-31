@@ -12,7 +12,7 @@ import type { RegisterService } from '../../service/register.js';
 import type { ResendVerifyTokenService } from '../../service/resendToken.js';
 import type { SilenceService } from '../../service/silence.js';
 import { type UnfollowService } from '../../service/unfollow.js';
-import type { TokenVerifyService } from '../../service/verifyToken.js';
+import type { VerifyTokenService } from '../../service/verifyToken.js';
 import {
   type CreateAccountResponseSchema,
   type GetAccountResponseSchema,
@@ -25,7 +25,7 @@ export class AccountController {
   private readonly editService: EditService;
   private readonly fetchService: FetchService;
   private readonly freezeService: FreezeService;
-  private readonly tokenVerifyService: TokenVerifyService;
+  private readonly tokenVerifyService: VerifyTokenService;
   private readonly authenticateService: AuthenticateService;
   private readonly silenceService: SilenceService;
   private readonly followService: FollowService;
@@ -37,7 +37,7 @@ export class AccountController {
     editService: EditService;
     fetchService: FetchService;
     freezeService: FreezeService;
-    tokenVerifyService: TokenVerifyService;
+    tokenVerifyService: VerifyTokenService;
     authenticateService: AuthenticateService;
     silenceService: SilenceService;
     followService: FollowService;

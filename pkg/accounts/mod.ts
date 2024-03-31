@@ -37,7 +37,7 @@ import { DummySendNotificationService } from './service/sendNotification.js';
 import { SilenceService } from './service/silence.js';
 import { TokenGenerator } from './service/tokenGenerator.js';
 import { UnfollowService } from './service/unfollow.js';
-import { TokenVerifyService } from './service/verifyToken.js';
+import { VerifyTokenService } from './service/verifyToken.js';
 
 export const accounts = new OpenAPIHono();
 const accountRepository = new InMemoryAccountRepository();
@@ -71,14 +71,14 @@ export const controller = new AccountController({
     idGenerator: idGenerator,
     passwordEncoder: passwordEncoder,
     sendNotification: new DummySendNotificationService(),
-    verifyTokenService: new TokenVerifyService(
+    verifyTokenService: new VerifyTokenService(
       accountVerifyTokenRepository,
       accountRepository,
       new Clock(),
     ),
   }),
   silenceService: new SilenceService(accountRepository),
-  tokenVerifyService: new TokenVerifyService(
+  tokenVerifyService: new VerifyTokenService(
     accountVerifyTokenRepository,
     accountRepository,
     new Clock(),
@@ -89,7 +89,7 @@ export const controller = new AccountController({
   ),
   resendTokenService: new ResendVerifyTokenService(
     accountRepository,
-    new TokenVerifyService(
+    new VerifyTokenService(
       accountVerifyTokenRepository,
       accountRepository,
       new Clock(),
