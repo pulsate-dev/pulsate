@@ -7,7 +7,7 @@ import {
   type AccountVerifyTokenRepository,
 } from '../model/repository.js';
 
-export class TokenVerifyService {
+export class VerifyAccountTokenService {
   constructor(
     private readonly repository: AccountVerifyTokenRepository,
     private readonly accountRepository: AccountRepository,

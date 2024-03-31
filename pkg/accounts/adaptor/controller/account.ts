@@ -3,7 +3,6 @@ import { Option, Result } from '@mikuroxina/mini-fn';
 
 import type { ID } from '../../../id/type.js';
 import { type AccountID, type AccountName } from '../../model/account.js';
-import type { TokenVerifyService } from '../../service/accountVerifyToken.js';
 import type { AuthenticateAccountService } from '../../service/authenticateAccount.js';
 import type { EditAccountService } from '../../service/editAccount.js';
 import type { FetchAccountService } from '../../service/fetchAccount.js';
@@ -13,6 +12,7 @@ import type { RegisterAccountService } from '../../service/registerAccount.js';
 import type { ResendVerifyTokenService } from '../../service/resendToken.js';
 import type { SilenceAccountService } from '../../service/silenceAccount.js';
 import { type UnfollowAccountService } from '../../service/unfollowAccount.js';
+import type { VerifyAccountTokenService } from '../../service/verifyAccountToken.js';
 import {
   type CreateAccountResponseSchema,
   type GetAccountResponseSchema,
@@ -25,7 +25,7 @@ export class AccountController {
   private readonly editAccountService: EditAccountService;
   private readonly fetchAccountService: FetchAccountService;
   private readonly freezeAccountService: FreezeAccountService;
-  private readonly tokenVerifyService: TokenVerifyService;
+  private readonly verifyAccountTokenService: VerifyAccountTokenService;
   private readonly authenticateAccountService: AuthenticateAccountService;
   private readonly silenceAccountService: SilenceAccountService;
   private readonly followAccountService: FollowAccountService;
@@ -37,7 +37,7 @@ export class AccountController {
     editAccountService: EditAccountService;
     fetchAccountService: FetchAccountService;
     freezeAccountService: FreezeAccountService;
-    tokenVerifyService: TokenVerifyService;
+    verifyAccountTokenService: VerifyAccountTokenService;
     authenticateAccountService: AuthenticateAccountService;
     silenceAccountService: SilenceAccountService;
     followAccountService: FollowAccountService;
@@ -48,7 +48,7 @@ export class AccountController {
     this.editAccountService = args.editAccountService;
     this.fetchAccountService = args.fetchAccountService;
     this.freezeAccountService = args.freezeAccountService;
-    this.tokenVerifyService = args.tokenVerifyService;
+    this.verifyAccountTokenService = args.verifyAccountTokenService;
     this.authenticateAccountService = args.authenticateAccountService;
     this.silenceAccountService = args.silenceAccountService;
     this.followAccountService = args.followAccountService;
@@ -173,7 +173,7 @@ export class AccountController {
     name: string,
     token: string,
   ): Promise<Result.Result<Error, void>> {
-    const res = await this.tokenVerifyService.verify(
+    const res = await this.verifyAccountTokenService.verify(
       name as AccountName,
       token,
     );

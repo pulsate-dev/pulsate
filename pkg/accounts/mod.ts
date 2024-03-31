@@ -25,7 +25,6 @@ import {
   UpdateAccountRoute,
   VerifyEmailRoute,
 } from './router.js';
-import { TokenVerifyService } from './service/accountVerifyToken.js';
 import { AuthenticateAccountService } from './service/authenticateAccount.js';
 import { EditAccountService } from './service/editAccount.js';
 import { EtagVerifyService } from './service/etagGenerateVerify.js';
@@ -38,6 +37,7 @@ import { DummySendNotificationService } from './service/sendNotification.js';
 import { SilenceAccountService } from './service/silenceAccount.js';
 import { TokenGenerator } from './service/tokenGenerator.js';
 import { UnfollowAccountService } from './service/unfollowAccount.js';
+import { VerifyAccountTokenService } from './service/verifyAccountToken.js';
 
 export const accounts = new OpenAPIHono();
 const accountRepository = new InMemoryAccountRepository();
@@ -74,14 +74,14 @@ export const controller = new AccountController({
     idGenerator: idGenerator,
     passwordEncoder: passwordEncoder,
     sendNotification: new DummySendNotificationService(),
-    verifyTokenService: new TokenVerifyService(
+    verifyAccountTokenService: new VerifyAccountTokenService(
       accountVerifyTokenRepository,
       accountRepository,
       new Clock(),
     ),
   }),
   silenceAccountService: new SilenceAccountService(accountRepository),
-  tokenVerifyService: new TokenVerifyService(
+  verifyAccountTokenService: new VerifyAccountTokenService(
     accountVerifyTokenRepository,
     accountRepository,
     new Clock(),
@@ -92,7 +92,7 @@ export const controller = new AccountController({
   ),
   resendTokenService: new ResendVerifyTokenService(
     accountRepository,
-    new TokenVerifyService(
+    new VerifyAccountTokenService(
       accountVerifyTokenRepository,
       accountRepository,
       new Clock(),

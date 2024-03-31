@@ -7,7 +7,6 @@ import {
   InMemoryAccountRepository,
   InMemoryAccountVerifyTokenRepository,
 } from '../accounts/adaptor/repository/dummy.js';
-import { TokenVerifyService } from '../accounts/service/accountVerifyToken.js';
 import { AuthenticateAccountService } from '../accounts/service/authenticateAccount.js';
 import { EditAccountService } from '../accounts/service/editAccount.js';
 import { EtagVerifyService } from '../accounts/service/etagGenerateVerify.js';
@@ -20,6 +19,7 @@ import { DummySendNotificationService } from '../accounts/service/sendNotificati
 import { SilenceAccountService } from '../accounts/service/silenceAccount.js';
 import { TokenGenerator } from '../accounts/service/tokenGenerator.js';
 import { UnfollowAccountService } from '../accounts/service/unfollowAccount.js';
+import { VerifyAccountTokenService } from '../accounts/service/verifyAccountToken.js';
 import { SnowflakeIDGenerator } from '../id/mod.js';
 import { AccountModule } from '../intermodule/account.js';
 import { Argon2idPasswordEncoder } from '../password/mod.js';
@@ -68,14 +68,14 @@ const accountController = new AccountController({
     idGenerator: idGenerator,
     passwordEncoder: passwordEncoder,
     sendNotification: new DummySendNotificationService(),
-    verifyTokenService: new TokenVerifyService(
+    verifyAccountTokenService: new VerifyAccountTokenService(
       accountVerifyTokenRepository,
       accountRepository,
       new Clock(),
     ),
   }),
   silenceAccountService: new SilenceAccountService(accountRepository),
-  tokenVerifyService: new TokenVerifyService(
+  verifyAccountTokenService: new VerifyAccountTokenService(
     accountVerifyTokenRepository,
     accountRepository,
     new Clock(),
@@ -86,7 +86,7 @@ const accountController = new AccountController({
   ),
   resendTokenService: new ResendVerifyTokenService(
     accountRepository,
-    new TokenVerifyService(
+    new VerifyAccountTokenService(
       accountVerifyTokenRepository,
       accountRepository,
       new Clock(),
