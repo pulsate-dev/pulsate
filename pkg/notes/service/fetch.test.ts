@@ -14,7 +14,7 @@ import { EtagVerifyService } from '../../accounts/service/etagGenerateVerify.js'
 import { FetchService as FetchAccountService } from '../../accounts/service/fetch.js';
 import { FollowService } from '../../accounts/service/follow.js';
 import { FreezeService } from '../../accounts/service/freeze.js';
-import { RegisterService } from '../../accounts/service/register.js';
+import { RegisterService as RegisterAccountService } from '../../accounts/service/register.js';
 import { ResendVerifyTokenService } from '../../accounts/service/resendToken.js';
 import { DummySendNotificationService } from '../../accounts/service/sendNotification.js';
 import { SilenceService } from '../../accounts/service/silence.js';
@@ -124,7 +124,7 @@ const accountController = new AccountController({
   fetchService: new FetchAccountService(accountRepository),
   followService: new FollowService(accountFollowRepository, accountRepository),
   freezeService: new FreezeService(accountRepository),
-  registerService: new RegisterService({
+  registerService: new RegisterAccountService({
     repository: accountRepository,
     idGenerator: idGenerator,
     passwordEncoder: passwordEncoder,
