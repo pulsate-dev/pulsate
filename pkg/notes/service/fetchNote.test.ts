@@ -144,7 +144,7 @@ const accountController = new AccountController({
     accountRepository,
     new Clock(),
   ),
-  unFollowAccountService: new UnfollowAccountService(
+  unfollowAccountService: new UnfollowAccountService(
     accountFollowRepository,
     accountRepository,
   ),

@@ -29,7 +29,7 @@ export class AccountController {
   private readonly authenticateAccountService: AuthenticateAccountService;
   private readonly silenceAccountService: SilenceAccountService;
   private readonly followAccountService: FollowAccountService;
-  private readonly unFollowAccountService: UnfollowAccountService;
+  private readonly unfollowAccountService: UnfollowAccountService;
   private readonly resendTokenService: ResendVerifyTokenService;
 
   constructor(args: {
@@ -41,7 +41,7 @@ export class AccountController {
     authenticateAccountService: AuthenticateAccountService;
     silenceAccountService: SilenceAccountService;
     followAccountService: FollowAccountService;
-    unFollowAccountService: UnfollowAccountService;
+    unfollowAccountService: UnfollowAccountService;
     resendTokenService: ResendVerifyTokenService;
   }) {
     this.registerAccountService = args.registerAccountService;
@@ -52,7 +52,7 @@ export class AccountController {
     this.authenticateAccountService = args.authenticateAccountService;
     this.silenceAccountService = args.silenceAccountService;
     this.followAccountService = args.followAccountService;
-    this.unFollowAccountService = args.unFollowAccountService;
+    this.unfollowAccountService = args.unfollowAccountService;
     this.resendTokenService = args.resendTokenService;
   }
 
@@ -301,7 +301,7 @@ export class AccountController {
   }
 
   async unFollowAccount(name: string): Promise<Result.Result<Error, void>> {
-    const res = await this.unFollowAccountService.handle(
+    const res = await this.unfollowAccountService.handle(
       name as AccountName,
       '' as AccountName,
     );
