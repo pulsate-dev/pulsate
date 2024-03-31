@@ -3,7 +3,7 @@ import { Option, Result } from '@mikuroxina/mini-fn';
 import type { AccountName } from '../model/account.js';
 import { type AccountRepository } from '../model/repository.js';
 
-export class FreezeService {
+export class FreezeAccountService {
   private readonly accountRepository: AccountRepository;
 
   constructor(accountRepository: AccountRepository) {

@@ -7,7 +7,7 @@ import type {
   AccountRepository,
 } from '../model/repository.js';
 
-export class FollowService {
+export class FollowAccountService {
   constructor(
     private readonly followRepository: AccountFollowRepository,
     private readonly accountRepository: AccountRepository,

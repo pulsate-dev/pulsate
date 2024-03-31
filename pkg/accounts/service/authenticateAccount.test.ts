@@ -5,7 +5,7 @@ import type { ID } from '../../id/type.js';
 import { Argon2idPasswordEncoder } from '../../password/mod.js';
 import { InMemoryAccountRepository } from '../adaptor/repository/dummy.js';
 import { Account } from '../model/account.js';
-import { AuthenticationService } from './authenticateAccount.js';
+import { AuthenticateAccountService } from './authenticateAccount.js';
 import { TokenGenerator } from './tokenGenerator.js';
 
 describe('AuthenticationService', () => {
@@ -35,7 +35,7 @@ describe('AuthenticationService', () => {
 
     const tokenGenerator = await TokenGenerator.new();
 
-    const service = new AuthenticationService({
+    const service = new AuthenticateAccountService({
       accountRepository: accountRepository,
       tokenGenerator: tokenGenerator,
       passwordEncoder: encoder,

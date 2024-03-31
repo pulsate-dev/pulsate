@@ -7,7 +7,7 @@ import {
   InMemoryAccountRepository,
 } from '../adaptor/repository/dummy.js';
 import { Account, type AccountID } from '../model/account.js';
-import { FollowService } from './followAccount.js';
+import { FollowAccountService } from './followAccount.js';
 
 const accountRepository = new InMemoryAccountRepository();
 await accountRepository.create(
@@ -45,7 +45,7 @@ await accountRepository.create(
   }),
 );
 const repository = new InMemoryAccountFollowRepository();
-const service = new FollowService(repository, accountRepository);
+const service = new FollowAccountService(repository, accountRepository);
 
 describe('FollowService', () => {
   it('should follow', async () => {

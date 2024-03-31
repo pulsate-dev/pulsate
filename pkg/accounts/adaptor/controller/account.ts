@@ -4,15 +4,15 @@ import { Option, Result } from '@mikuroxina/mini-fn';
 import type { ID } from '../../../id/type.js';
 import { type AccountID, type AccountName } from '../../model/account.js';
 import type { TokenVerifyService } from '../../service/accountVerifyToken.js';
-import type { AuthenticationService } from '../../service/authenticate.js';
+import type { AuthenticateAccountService } from '../../service/authenticateAccount.js';
 import type { EditAccountService } from '../../service/editAccount.js';
 import type { FetchAccountService } from '../../service/fetchAccount.js';
-import type { FollowService } from '../../service/followAccount.js';
-import type { FreezeService } from '../../service/freezeAccount.js';
+import type { FollowAccountService } from '../../service/followAccount.js';
+import type { FreezeAccountService } from '../../service/freezeAccount.js';
 import type { RegisterAccountService } from '../../service/registerAccount.js';
-import type { ResendVerifyTokenService } from '../../service/resendAccountVerifyToken.js';
-import type { SilenceService } from '../../service/silenceAccount.js';
-import { type UnfollowService } from '../../service/unfollowAccount.js';
+import type { ResendVerifyTokenService } from '../../service/resendToken.js';
+import type { SilenceAccountService } from '../../service/silenceAccount.js';
+import { type UnfollowAccountService } from '../../service/unfollowAccount.js';
 import {
   type CreateAccountResponseSchema,
   type GetAccountResponseSchema,
@@ -24,35 +24,35 @@ export class AccountController {
   private readonly registerAccountService: RegisterAccountService;
   private readonly editAccountService: EditAccountService;
   private readonly fetchAccountService: FetchAccountService;
-  private readonly freezeService: FreezeService;
+  private readonly freezeAccountService: FreezeAccountService;
   private readonly tokenVerifyService: TokenVerifyService;
-  private readonly authenticationService: AuthenticationService;
-  private readonly silenceService: SilenceService;
-  private readonly followService: FollowService;
-  private readonly unFollowService: UnfollowService;
+  private readonly authenticateAccountService: AuthenticateAccountService;
+  private readonly silenceAccountService: SilenceAccountService;
+  private readonly followAccountService: FollowAccountService;
+  private readonly unFollowAccountService: UnfollowAccountService;
   private readonly resendTokenService: ResendVerifyTokenService;
 
   constructor(args: {
     registerAccountService: RegisterAccountService;
     editAccountService: EditAccountService;
     fetchAccountService: FetchAccountService;
-    freezeService: FreezeService;
+    freezeAccountService: FreezeAccountService;
     tokenVerifyService: TokenVerifyService;
-    authenticationService: AuthenticationService;
-    silenceService: SilenceService;
-    followService: FollowService;
-    unFollowService: UnfollowService;
+    authenticateAccountService: AuthenticateAccountService;
+    silenceAccountService: SilenceAccountService;
+    followAccountService: FollowAccountService;
+    unFollowAccountService: UnfollowAccountService;
     resendTokenService: ResendVerifyTokenService;
   }) {
     this.registerAccountService = args.registerAccountService;
     this.editAccountService = args.editAccountService;
     this.fetchAccountService = args.fetchAccountService;
-    this.freezeService = args.freezeService;
+    this.freezeAccountService = args.freezeAccountService;
     this.tokenVerifyService = args.tokenVerifyService;
-    this.authenticationService = args.authenticationService;
-    this.silenceService = args.silenceService;
-    this.followService = args.followService;
-    this.unFollowService = args.unFollowService;
+    this.authenticateAccountService = args.authenticateAccountService;
+    this.silenceAccountService = args.silenceAccountService;
+    this.followAccountService = args.followAccountService;
+    this.unFollowAccountService = args.unFollowAccountService;
     this.resendTokenService = args.resendTokenService;
   }
 
@@ -152,7 +152,7 @@ export class AccountController {
   }
 
   async freezeAccount(name: string): Promise<Result.Result<Error, void>> {
-    const res = await this.freezeService.setFreeze(name as AccountName);
+    const res = await this.freezeAccountService.setFreeze(name as AccountName);
     if (Result.isErr(res)) {
       return res;
     }
@@ -161,7 +161,7 @@ export class AccountController {
   }
 
   async unFreezeAccount(name: string): Promise<Result.Result<Error, void>> {
-    const res = await this.freezeService.undoFreeze(name as AccountName);
+    const res = await this.freezeAccountService.undoFreeze(name as AccountName);
     if (Result.isErr(res)) {
       return res;
     }
@@ -249,7 +249,7 @@ export class AccountController {
     passphrase: string,
   ): Promise<Result.Result<Error, z.infer<typeof LoginResponseSchema>>> {
     // ToDo: Check Captcha token
-    const res = await this.authenticationService.handle(
+    const res = await this.authenticateAccountService.handle(
       name as AccountName,
       passphrase,
     );
@@ -265,7 +265,9 @@ export class AccountController {
 
   async silenceAccount(name: string): Promise<Result.Result<Error, void>> {
     // ToDo: check user's permission
-    const res = await this.silenceService.setSilence(name as AccountName);
+    const res = await this.silenceAccountService.setSilence(
+      name as AccountName,
+    );
     if (Result.isErr(res)) {
       return res;
     }
@@ -275,7 +277,9 @@ export class AccountController {
 
   async unSilenceAccount(name: string): Promise<Result.Result<Error, void>> {
     // ToDo: check user's permission
-    const res = await this.silenceService.undoSilence(name as AccountName);
+    const res = await this.silenceAccountService.undoSilence(
+      name as AccountName,
+    );
     if (Result.isErr(res)) {
       return res;
     }
@@ -285,7 +289,7 @@ export class AccountController {
 
   async followAccount(name: string): Promise<Result.Result<Error, void>> {
     // ToDo: get following account's name from request
-    const res = await this.followService.handle(
+    const res = await this.followAccountService.handle(
       '' as AccountName,
       name as AccountName,
     );
@@ -297,7 +301,7 @@ export class AccountController {
   }
 
   async unFollowAccount(name: string): Promise<Result.Result<Error, void>> {
-    const res = await this.unFollowService.handle(
+    const res = await this.unFollowAccountService.handle(
       name as AccountName,
       '' as AccountName,
     );

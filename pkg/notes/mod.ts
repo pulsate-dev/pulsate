@@ -8,18 +8,18 @@ import {
   InMemoryAccountVerifyTokenRepository,
 } from '../accounts/adaptor/repository/dummy.js';
 import { TokenVerifyService } from '../accounts/service/accountVerifyToken.js';
-import { AuthenticationService } from '../accounts/service/authenticate.js';
+import { AuthenticateAccountService } from '../accounts/service/authenticateAccount.js';
 import { EditAccountService } from '../accounts/service/editAccount.js';
 import { EtagVerifyService } from '../accounts/service/etagGenerateVerify.js';
 import { FetchAccountService } from '../accounts/service/fetchAccount.js';
-import { FollowService } from '../accounts/service/followAccount.js';
-import { FreezeService } from '../accounts/service/freezeAccount.js';
+import { FollowAccountService } from '../accounts/service/followAccount.js';
+import { FreezeAccountService } from '../accounts/service/freezeAccount.js';
 import { RegisterAccountService } from '../accounts/service/registerAccount.js';
-import { ResendVerifyTokenService } from '../accounts/service/resendAccountVerifyToken.js';
+import { ResendVerifyTokenService } from '../accounts/service/resendToken.js';
 import { DummySendNotificationService } from '../accounts/service/sendNotification.js';
-import { SilenceService } from '../accounts/service/silenceAccount.js';
+import { SilenceAccountService } from '../accounts/service/silenceAccount.js';
 import { TokenGenerator } from '../accounts/service/tokenGenerator.js';
-import { UnfollowService } from '../accounts/service/unfollowAccount.js';
+import { UnfollowAccountService } from '../accounts/service/unfollowAccount.js';
 import { SnowflakeIDGenerator } from '../id/mod.js';
 import { AccountModule } from '../intermodule/account.js';
 import { Argon2idPasswordEncoder } from '../password/mod.js';
@@ -47,7 +47,7 @@ class Clock {
 }
 const passwordEncoder = new Argon2idPasswordEncoder();
 const accountController = new AccountController({
-  authenticationService: new AuthenticationService({
+  authenticateAccountService: new AuthenticateAccountService({
     accountRepository: accountRepository,
     tokenGenerator: tokenGenerator,
     passwordEncoder: passwordEncoder,
@@ -58,8 +58,11 @@ const accountController = new AccountController({
     passwordEncoder,
   ),
   fetchAccountService: new FetchAccountService(accountRepository),
-  followService: new FollowService(accountFollowRepository, accountRepository),
-  freezeService: new FreezeService(accountRepository),
+  followAccountService: new FollowAccountService(
+    accountFollowRepository,
+    accountRepository,
+  ),
+  freezeAccountService: new FreezeAccountService(accountRepository),
   registerAccountService: new RegisterAccountService({
     repository: accountRepository,
     idGenerator: idGenerator,
@@ -71,13 +74,13 @@ const accountController = new AccountController({
       new Clock(),
     ),
   }),
-  silenceService: new SilenceService(accountRepository),
+  silenceAccountService: new SilenceAccountService(accountRepository),
   tokenVerifyService: new TokenVerifyService(
     accountVerifyTokenRepository,
     accountRepository,
     new Clock(),
   ),
-  unFollowService: new UnfollowService(
+  unFollowAccountService: new UnfollowAccountService(
     accountFollowRepository,
     accountRepository,
   ),

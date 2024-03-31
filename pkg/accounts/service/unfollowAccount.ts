@@ -6,7 +6,7 @@ import type {
   AccountRepository,
 } from '../model/repository.js';
 
-export class UnfollowService {
+export class UnfollowAccountService {
   constructor(
     private readonly followRepository: AccountFollowRepository,
     private readonly accountRepository: AccountRepository,

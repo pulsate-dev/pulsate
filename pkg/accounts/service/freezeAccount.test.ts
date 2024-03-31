@@ -4,7 +4,7 @@ import { afterEach, describe, expect, it } from 'vitest';
 import type { ID } from '../../id/type.js';
 import { InMemoryAccountRepository } from '../adaptor/repository/dummy.js';
 import { Account, type AccountID } from '../model/account.js';
-import { FreezeService } from './freezeAccount.js';
+import { FreezeAccountService } from './freezeAccount.js';
 
 const repository = new InMemoryAccountRepository();
 await repository.create(
@@ -22,7 +22,7 @@ await repository.create(
     createdAt: new Date(),
   }),
 );
-const freezeService = new FreezeService(repository);
+const freezeService = new FreezeAccountService(repository);
 
 describe('FreezeService', () => {
   afterEach(() => repository.reset());

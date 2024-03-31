@@ -8,7 +8,7 @@ import {
 } from '../adaptor/repository/dummy.js';
 import { Account, type AccountID } from '../model/account.js';
 import { AccountFollow } from '../model/followAccount.js';
-import { UnfollowService } from './unfollowAccount.js';
+import { UnfollowAccountService } from './unfollowAccount.js';
 
 const accountRepository = new InMemoryAccountRepository();
 await accountRepository.create(
@@ -52,7 +52,7 @@ const repository = new InMemoryAccountFollowRepository([
     createdAt: new Date(),
   }),
 ]);
-const service = new UnfollowService(repository, accountRepository);
+const service = new UnfollowAccountService(repository, accountRepository);
 
 describe('UnfollowService', () => {
   it('should unfollow', async () => {
