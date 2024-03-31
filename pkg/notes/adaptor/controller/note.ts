@@ -5,8 +5,8 @@ import type { AccountID } from '../../../accounts/model/account.js';
 import type { ID } from '../../../id/type.js';
 import type { AccountModule } from '../../../intermodule/account.js';
 import type { NoteVisibility } from '../../model/note.js';
-import type { CreateNoteService } from '../../service/create.js';
-import type { FetchNoteService } from '../../service/fetch.js';
+import type { CreateService } from '../../service/create.js';
+import type { FetchService } from '../../service/fetch.js';
 import {
   type CreateNoteResponseSchema,
   type GetNoteResponseSchema,
@@ -14,8 +14,8 @@ import {
 
 export class NoteController {
   constructor(
-    private readonly createNoteService: CreateNoteService,
-    private readonly fetchNoteService: FetchNoteService,
+    private readonly createNoteService: CreateService,
+    private readonly fetchNoteService: FetchService,
     private readonly accountModule: AccountModule,
   ) {}
 

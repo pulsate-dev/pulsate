@@ -26,8 +26,8 @@ import { Argon2idPasswordEncoder } from '../password/mod.js';
 import { NoteController } from './adaptor/controller/note.js';
 import { InMemoryNoteRepository } from './adaptor/repository/dummy.js';
 import { CreateNoteRoute, GetNoteRoute } from './router.js';
-import { CreateNoteService } from './service/create.js';
-import { FetchNoteService } from './service/fetch.js';
+import { CreateService } from './service/create.js';
+import { FetchService } from './service/fetch.js';
 
 export const noteHandlers = new OpenAPIHono();
 const noteRepository = new InMemoryNoteRepository();
@@ -94,8 +94,8 @@ const accountController = new AccountController({
 
 const accountModule = new AccountModule(accountController);
 // Note
-const createNoteService = new CreateNoteService(noteRepository, idGenerator);
-const fetchNoteService = new FetchNoteService(noteRepository, accountModule);
+const createNoteService = new CreateService(noteRepository, idGenerator);
+const fetchNoteService = new FetchService(noteRepository, accountModule);
 const controller = new NoteController(
   createNoteService,
   fetchNoteService,
