@@ -5,7 +5,7 @@ import type { AccountName } from '../model/account.js';
 import { type AccountRepository } from '../model/repository.js';
 import type { EtagVerifyService } from './etagGenerateVerify.js';
 
-export class EditAccountService {
+export class EditService {
   private readonly nicknameShortest = 1;
   private readonly nicknameLongest = 256;
   private readonly passphraseShortest = 8;

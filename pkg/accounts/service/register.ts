@@ -20,7 +20,7 @@ export class AccountAlreadyExistsError extends Error {
   }
 }
 
-export class RegisterAccountService {
+export class RegisterService {
   private readonly accountRepository: AccountRepository;
   private readonly snowflakeIDGenerator: SnowflakeIDGenerator;
   private readonly passwordEncoder: PasswordEncoder;

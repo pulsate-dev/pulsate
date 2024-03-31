@@ -5,7 +5,7 @@ import type { ID } from '../../id/type.js';
 import { Argon2idPasswordEncoder } from '../../password/mod.js';
 import { InMemoryAccountRepository } from '../adaptor/repository/dummy.js';
 import { Account, type AccountID } from '../model/account.js';
-import { EditAccountService } from './edit.js';
+import { EditService } from './edit.js';
 import { EtagVerifyService } from './etagGenerateVerify.js';
 
 const repository = new InMemoryAccountRepository();
@@ -25,13 +25,13 @@ await repository.create(
   }),
 );
 const etagVerifyService = new EtagVerifyService();
-const editAccountService = new EditAccountService(
+const editService = new EditService(
   repository,
   etagVerifyService,
   new Argon2idPasswordEncoder(),
 );
 
-describe('EditAccountService', () => {
+describe('EditService', () => {
   afterEach(() => repository.reset());
 
   it('should be success to update nickname', async () => {
@@ -39,7 +39,7 @@ describe('EditAccountService', () => {
     if (Option.isNone(account)) return;
 
     const etag = await etagVerifyService.generate(account[1]);
-    const updateRes = await editAccountService.editNickname(
+    const updateRes = await editService.editNickname(
       etag,
       '@john@example.com',
       'new nickname',
@@ -54,7 +54,7 @@ describe('EditAccountService', () => {
     if (Option.isNone(account)) return;
 
     const etag = await etagVerifyService.generate(account[1]);
-    const updateRes = await editAccountService.editNickname(
+    const updateRes = await editService.editNickname(
       etag,
       '@john@example.com',
       '',
@@ -67,7 +67,7 @@ describe('EditAccountService', () => {
     if (Option.isNone(account)) return;
 
     const etag = await etagVerifyService.generate(account[1]);
-    const updateRes = await editAccountService.editNickname(
+    const updateRes = await editService.editNickname(
       etag,
       '@john@example.com',
       'a'.repeat(257),
@@ -80,7 +80,7 @@ describe('EditAccountService', () => {
     if (Option.isNone(account)) return;
 
     const etag = await etagVerifyService.generate(account[1]);
-    const updateRes = await editAccountService.editNickname(
+    const updateRes = await editService.editNickname(
       etag,
       '@john@example.com',
       'a'.repeat(256),
@@ -95,7 +95,7 @@ describe('EditAccountService', () => {
     if (Option.isNone(account)) return;
 
     const etag = await etagVerifyService.generate(account[1]);
-    const updateRes = await editAccountService.editNickname(
+    const updateRes = await editService.editNickname(
       etag,
       '@john@example.com',
       'a',
@@ -109,7 +109,7 @@ describe('EditAccountService', () => {
     if (Option.isNone(account)) return;
 
     const etag = await etagVerifyService.generate(account[1]);
-    const res = await editAccountService.editNickname(
+    const res = await editService.editNickname(
       etag,
       '@john@example.com',
       'new nickname',
@@ -118,7 +118,7 @@ describe('EditAccountService', () => {
   });
 
   it('should be fail to update nickname when account not found', async () => {
-    const res = await editAccountService.editNickname(
+    const res = await editService.editNickname(
       'invalid etag',
       '@foo@example.com',
       'new nickname',
@@ -131,7 +131,7 @@ describe('EditAccountService', () => {
     if (Option.isNone(account)) return;
 
     const etag = await etagVerifyService.generate(account[1]);
-    const updateRes = await editAccountService.editNickname(
+    const updateRes = await editService.editNickname(
       etag,
       '@john@example.com',
       'new password',
@@ -145,7 +145,7 @@ describe('EditAccountService', () => {
     if (Option.isNone(account)) return;
 
     const etag = await etagVerifyService.generate(account[1]);
-    const updateRes = await editAccountService.editNickname(
+    const updateRes = await editService.editNickname(
       etag,
       '@john@example.com',
       'a'.repeat(7),
@@ -158,7 +158,7 @@ describe('EditAccountService', () => {
     if (Option.isNone(account)) return;
 
     const etag = await etagVerifyService.generate(account[1]);
-    const updateRes = await editAccountService.editNickname(
+    const updateRes = await editService.editNickname(
       etag,
       '@john@example.com',
       'a'.repeat(513),
@@ -171,7 +171,7 @@ describe('EditAccountService', () => {
     if (Option.isNone(account)) return;
 
     const etag = await etagVerifyService.generate(account[1]);
-    const updateRes = await editAccountService.editNickname(
+    const updateRes = await editService.editNickname(
       etag,
       '@john@example.com',
       'a'.repeat(8),
@@ -185,7 +185,7 @@ describe('EditAccountService', () => {
     if (Option.isNone(account)) return;
 
     const etag = await etagVerifyService.generate(account[1]);
-    const updateRes = await editAccountService.editNickname(
+    const updateRes = await editService.editNickname(
       etag,
       '@john@example.com',
       'a'.repeat(512),
@@ -195,7 +195,7 @@ describe('EditAccountService', () => {
   });
 
   it('should be fail to update passphrase when etag not match', async () => {
-    const res = await editAccountService.editPassphrase(
+    const res = await editService.editPassphrase(
       'invalid_etag',
       '@john@example.com',
       'new password',
@@ -204,7 +204,7 @@ describe('EditAccountService', () => {
   });
 
   it('should be fail to update passphrase when account not found', async () => {
-    const res = await editAccountService.editPassphrase(
+    const res = await editService.editPassphrase(
       'invalid etag',
       '@john@example.com',
       'new password',
@@ -217,7 +217,7 @@ describe('EditAccountService', () => {
     if (Option.isNone(account)) return;
 
     const etag = await etagVerifyService.generate(account[1]);
-    const updateRes = await editAccountService.editEmail(
+    const updateRes = await editService.editEmail(
       etag,
       '@john@example.com',
       'pulsate@example.com',
@@ -230,7 +230,7 @@ describe('EditAccountService', () => {
     const account = await repository.findByName('@john@example.com');
     if (Option.isNone(account)) return;
 
-    const updateRes = await editAccountService.editEmail(
+    const updateRes = await editService.editEmail(
       'invalid_etag',
       '@john@example.com',
       'pulsate@example.com',
@@ -239,7 +239,7 @@ describe('EditAccountService', () => {
   });
 
   it('should be fail to update email when account not found', async () => {
-    const updateRes = await editAccountService.editEmail(
+    const updateRes = await editService.editEmail(
       'invalid etag',
       '@john@example.com',
       'pulsate@pulsate.mail',
@@ -252,7 +252,7 @@ describe('EditAccountService', () => {
     if (Option.isNone(account)) return;
 
     const etag = await etagVerifyService.generate(account[1]);
-    const updateRes = await editAccountService.editEmail(
+    const updateRes = await editService.editEmail(
       etag,
       '@john@example.com',
       'a'.repeat(7),
@@ -266,7 +266,7 @@ describe('EditAccountService', () => {
     if (Option.isNone(account)) return;
 
     const etag = await etagVerifyService.generate(account[1]);
-    const updateRes = await editAccountService.editEmail(
+    const updateRes = await editService.editEmail(
       etag,
       '@john@example.com',
       'a'.repeat(8),
@@ -280,7 +280,7 @@ describe('EditAccountService', () => {
     if (Option.isNone(account)) return;
 
     const etag = await etagVerifyService.generate(account[1]);
-    const updateRes = await editAccountService.editEmail(
+    const updateRes = await editService.editEmail(
       etag,
       '@john@example.com',
       'a'.repeat(320),
@@ -293,7 +293,7 @@ describe('EditAccountService', () => {
     if (Option.isNone(account)) return;
 
     const etag = await etagVerifyService.generate(account[1]);
-    const updateRes = await editAccountService.editEmail(
+    const updateRes = await editService.editEmail(
       etag,
       '@john@example.com',
       'a'.repeat(319),
@@ -307,7 +307,7 @@ describe('EditAccountService', () => {
     if (Option.isNone(account)) return;
 
     const etag = await etagVerifyService.generate(account[1]);
-    const updateRes = await editAccountService.editBio(
+    const updateRes = await editService.editBio(
       etag,
       '@john@example.com',
       'new bio',

@@ -3,12 +3,12 @@ import { Option, Result } from '@mikuroxina/mini-fn';
 
 import type { ID } from '../../../id/type.js';
 import { type AccountID, type AccountName } from '../../model/account.js';
-import type { AuthenticationService } from '../../service/authenticate.js';
-import type { EditAccountService } from '../../service/edit.js';
-import type { FetchAccountService } from '../../service/fetch.js';
+import type { AuthenticateService } from '../../service/authenticate.js';
+import type { EditService } from '../../service/edit.js';
+import type { FetchService } from '../../service/fetch.js';
 import type { FollowService } from '../../service/follow.js';
 import type { FreezeService } from '../../service/freeze.js';
-import type { RegisterAccountService } from '../../service/register.js';
+import type { RegisterService } from '../../service/register.js';
 import type { ResendVerifyTokenService } from '../../service/resendToken.js';
 import type { SilenceService } from '../../service/silence.js';
 import { type UnfollowService } from '../../service/unfollow.js';
@@ -21,35 +21,35 @@ import {
 } from '../validator/schema.js';
 
 export class AccountController {
-  private readonly registerAccountService: RegisterAccountService;
-  private readonly editAccountService: EditAccountService;
-  private readonly fetchAccountService: FetchAccountService;
+  private readonly registerService: RegisterService;
+  private readonly editService: EditService;
+  private readonly fetchService: FetchService;
   private readonly freezeService: FreezeService;
   private readonly tokenVerifyService: TokenVerifyService;
-  private readonly authenticationService: AuthenticationService;
+  private readonly authenticateService: AuthenticateService;
   private readonly silenceService: SilenceService;
   private readonly followService: FollowService;
   private readonly unFollowService: UnfollowService;
   private readonly resendTokenService: ResendVerifyTokenService;
 
   constructor(args: {
-    registerAccountService: RegisterAccountService;
-    editAccountService: EditAccountService;
-    fetchAccountService: FetchAccountService;
+    registerService: RegisterService;
+    editService: EditService;
+    fetchService: FetchService;
     freezeService: FreezeService;
     tokenVerifyService: TokenVerifyService;
-    authenticationService: AuthenticationService;
+    authenticateService: AuthenticateService;
     silenceService: SilenceService;
     followService: FollowService;
     unFollowService: UnfollowService;
     resendTokenService: ResendVerifyTokenService;
   }) {
-    this.registerAccountService = args.registerAccountService;
-    this.editAccountService = args.editAccountService;
-    this.fetchAccountService = args.fetchAccountService;
+    this.registerService = args.registerService;
+    this.editService = args.editService;
+    this.fetchService = args.fetchService;
     this.freezeService = args.freezeService;
     this.tokenVerifyService = args.tokenVerifyService;
-    this.authenticationService = args.authenticationService;
+    this.authenticateService = args.authenticateService;
     this.silenceService = args.silenceService;
     this.followService = args.followService;
     this.unFollowService = args.unFollowService;
@@ -63,7 +63,7 @@ export class AccountController {
   ): Promise<
     Result.Result<Error, z.infer<typeof CreateAccountResponseSchema>>
   > {
-    const res = await this.registerAccountService.handle(
+    const res = await this.registerService.handle(
       name as AccountName,
       email,
       '',
@@ -96,7 +96,7 @@ export class AccountController {
     Result.Result<Error, z.infer<typeof UpdateAccountResponseSchema>>
   > {
     if (args.nickname) {
-      const res = await this.editAccountService.editNickname(
+      const res = await this.editService.editNickname(
         etag,
         name as AccountName,
         args.nickname,
@@ -106,7 +106,7 @@ export class AccountController {
       }
     }
     if (args.passphrase) {
-      const res = await this.editAccountService.editPassphrase(
+      const res = await this.editService.editPassphrase(
         etag,
         name as AccountName,
         args.passphrase,
@@ -116,7 +116,7 @@ export class AccountController {
       }
     }
     if (args.email) {
-      const res = await this.editAccountService.editEmail(
+      const res = await this.editService.editEmail(
         etag,
         name as AccountName,
         args.email,
@@ -126,7 +126,7 @@ export class AccountController {
       }
     }
 
-    const editedBioResp = await this.editAccountService.editBio(
+    const editedBioResp = await this.editService.editBio(
       etag,
       name as AccountName,
       args.bio,
@@ -135,9 +135,7 @@ export class AccountController {
       return Result.err(editedBioResp[1]);
     }
 
-    const res = await this.fetchAccountService.fetchAccount(
-      name as AccountName,
-    );
+    const res = await this.fetchService.fetchAccount(name as AccountName);
     if (Result.isErr(res)) {
       return res;
     }
@@ -187,9 +185,7 @@ export class AccountController {
   async getAccount(
     name: string,
   ): Promise<Result.Result<Error, z.infer<typeof GetAccountResponseSchema>>> {
-    const res = await this.fetchAccountService.fetchAccount(
-      name as AccountName,
-    );
+    const res = await this.fetchService.fetchAccount(name as AccountName);
     if (Result.isErr(res)) {
       return res;
     }
@@ -217,9 +213,7 @@ export class AccountController {
   async getAccountByID(
     id: string,
   ): Promise<Result.Result<Error, z.infer<typeof GetAccountResponseSchema>>> {
-    const res = await this.fetchAccountService.fetchAccountByID(
-      id as ID<AccountID>,
-    );
+    const res = await this.fetchService.fetchAccountByID(id as ID<AccountID>);
     if (Result.isErr(res)) {
       return res;
     }
@@ -249,7 +243,7 @@ export class AccountController {
     passphrase: string,
   ): Promise<Result.Result<Error, z.infer<typeof LoginResponseSchema>>> {
     // ToDo: Check Captcha token
-    const res = await this.authenticationService.handle(
+    const res = await this.authenticateService.handle(
       name as AccountName,
       passphrase,
     );

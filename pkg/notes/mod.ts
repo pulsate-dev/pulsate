@@ -7,13 +7,13 @@ import {
   InMemoryAccountRepository,
   InMemoryAccountVerifyTokenRepository,
 } from '../accounts/adaptor/repository/dummy.js';
-import { AuthenticationService } from '../accounts/service/authenticate.js';
-import { EditAccountService } from '../accounts/service/edit.js';
+import { AuthenticateService } from '../accounts/service/authenticate.js';
+import { EditService } from '../accounts/service/edit.js';
 import { EtagVerifyService } from '../accounts/service/etagGenerateVerify.js';
-import { FetchAccountService } from '../accounts/service/fetch.js';
+import { FetchService as FetchAccountService } from '../accounts/service/fetch.js';
 import { FollowService } from '../accounts/service/follow.js';
 import { FreezeService } from '../accounts/service/freeze.js';
-import { RegisterAccountService } from '../accounts/service/register.js';
+import { RegisterService } from '../accounts/service/register.js';
 import { ResendVerifyTokenService } from '../accounts/service/resendToken.js';
 import { DummySendNotificationService } from '../accounts/service/sendNotification.js';
 import { SilenceService } from '../accounts/service/silence.js';
@@ -47,20 +47,20 @@ class Clock {
 }
 const passwordEncoder = new Argon2idPasswordEncoder();
 const accountController = new AccountController({
-  authenticationService: new AuthenticationService({
+  authenticateService: new AuthenticateService({
     accountRepository: accountRepository,
     tokenGenerator: tokenGenerator,
     passwordEncoder: passwordEncoder,
   }),
-  editAccountService: new EditAccountService(
+  editService: new EditService(
     accountRepository,
     new EtagVerifyService(),
     passwordEncoder,
   ),
-  fetchAccountService: new FetchAccountService(accountRepository),
+  fetchService: new FetchAccountService(accountRepository),
   followService: new FollowService(accountFollowRepository, accountRepository),
   freezeService: new FreezeService(accountRepository),
-  registerAccountService: new RegisterAccountService({
+  registerService: new RegisterService({
     repository: accountRepository,
     idGenerator: idGenerator,
     passwordEncoder: passwordEncoder,

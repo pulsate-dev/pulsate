@@ -25,13 +25,13 @@ import {
   UpdateAccountRoute,
   VerifyEmailRoute,
 } from './router.js';
-import { AuthenticationService } from './service/authenticate.js';
-import { EditAccountService } from './service/edit.js';
+import { AuthenticateService } from './service/authenticate.js';
+import { EditService } from './service/edit.js';
 import { EtagVerifyService } from './service/etagGenerateVerify.js';
-import { FetchAccountService } from './service/fetch.js';
+import { FetchService } from './service/fetch.js';
 import { FollowService } from './service/follow.js';
 import { FreezeService } from './service/freeze.js';
-import { RegisterAccountService } from './service/register.js';
+import { RegisterService } from './service/register.js';
 import { ResendVerifyTokenService } from './service/resendToken.js';
 import { DummySendNotificationService } from './service/sendNotification.js';
 import { SilenceService } from './service/silence.js';
@@ -53,20 +53,20 @@ const idGenerator = new SnowflakeIDGenerator(0, new Clock());
 const passwordEncoder = new Argon2idPasswordEncoder();
 
 export const controller = new AccountController({
-  authenticationService: new AuthenticationService({
+  authenticateService: new AuthenticateService({
     accountRepository: accountRepository,
     tokenGenerator: tokenGenerator,
     passwordEncoder: passwordEncoder,
   }),
-  editAccountService: new EditAccountService(
+  editService: new EditService(
     accountRepository,
     new EtagVerifyService(),
     passwordEncoder,
   ),
-  fetchAccountService: new FetchAccountService(accountRepository),
+  fetchService: new FetchService(accountRepository),
   followService: new FollowService(accountFollowRepository, accountRepository),
   freezeService: new FreezeService(accountRepository),
-  registerAccountService: new RegisterAccountService({
+  registerService: new RegisterService({
     repository: accountRepository,
     idGenerator: idGenerator,
     passwordEncoder: passwordEncoder,

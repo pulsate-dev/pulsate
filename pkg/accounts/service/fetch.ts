@@ -4,7 +4,7 @@ import type { ID } from '../../id/type.js';
 import { type Account, type AccountID } from '../model/account.js';
 import type { AccountRepository } from '../model/repository.js';
 
-export class FetchAccountService {
+export class FetchService {
   private accountRepository: AccountRepository;
 
   constructor(accountRepository: AccountRepository) {

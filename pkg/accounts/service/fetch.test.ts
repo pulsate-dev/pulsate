@@ -4,7 +4,7 @@ import { afterEach, describe, expect, it } from 'vitest';
 import type { ID } from '../../id/type.js';
 import { InMemoryAccountRepository } from '../adaptor/repository/dummy.js';
 import { Account, type AccountID } from '../model/account.js';
-import { FetchAccountService } from './fetch.js';
+import { FetchService } from './fetch.js';
 
 const repository = new InMemoryAccountRepository();
 await repository.create(
@@ -22,13 +22,13 @@ await repository.create(
     createdAt: new Date(),
   }),
 );
-const fetchAccountService = new FetchAccountService(repository);
+const fetchService = new FetchService(repository);
 
-describe('FetchAccountService', () => {
+describe('FetchService', () => {
   afterEach(() => repository.reset());
 
   it('fetch account info', async () => {
-    const account = await fetchAccountService.fetchAccount('@john@example.com');
+    const account = await fetchService.fetchAccount('@john@example.com');
     if (Result.isErr(account)) return;
 
     expect(account[1].getID()).toBe('1');
@@ -46,17 +46,13 @@ describe('FetchAccountService', () => {
 
   it("fetch account info doesn't exist", async () => {
     // `@notJohn` is not registered.
-    const account = await fetchAccountService.fetchAccount(
-      '@notJohn@example.com',
-    );
+    const account = await fetchService.fetchAccount('@notJohn@example.com');
 
     expect(Result.isErr(account)).toBe(true);
   });
 
   it('fetch account by ID', async () => {
-    const account = await fetchAccountService.fetchAccountByID(
-      '1' as ID<AccountID>,
-    );
+    const account = await fetchService.fetchAccountByID('1' as ID<AccountID>);
     if (Result.isErr(account)) {
       return;
     }
@@ -80,9 +76,7 @@ describe('FetchAccountService', () => {
 
   it("fetch account by ID doesn't exist", async () => {
     // `2` is not registered.
-    const account = await fetchAccountService.fetchAccountByID(
-      '2' as ID<AccountID>,
-    );
+    const account = await fetchService.fetchAccountByID('2' as ID<AccountID>);
 
     expect(Result.isErr(account)).toBe(true);
   });
