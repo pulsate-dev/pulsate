@@ -88,6 +88,19 @@ export class PrismaAccountRepository implements AccountRepository {
     return Option.some(this.fromPrismaArgs(res));
   }
 
+  async edit(account: Account): Promise<Result.Result<Error, void>> {
+    try {
+      await this.prisma.account.update({
+        where: { id: account.getID() },
+        data: this.toPrismaArgs(account),
+      });
+    } catch (e) {
+      return Result.err(e as Error);
+    }
+
+    return Result.ok(undefined);
+  }
+
   private toPrismaArgs(account: Account): AccountPrismaArgs {
     const role = (
       {
