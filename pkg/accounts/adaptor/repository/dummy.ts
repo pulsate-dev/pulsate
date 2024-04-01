@@ -52,6 +52,17 @@ export class InMemoryAccountRepository implements AccountRepository {
 
     return Promise.resolve(Option.some(account));
   }
+
+  async edit(account: Account): Promise<Result.Result<Error, void>> {
+    this.data.forEach((a) => {
+      if (a.getID() === account.getID()) {
+        this.data.delete(a);
+      }
+    });
+    this.data.add(account);
+
+    return Result.ok(undefined);
+  }
 }
 
 export class InMemoryAccountVerifyTokenRepository
