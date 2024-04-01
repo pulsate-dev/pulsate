@@ -54,11 +54,12 @@ export class InMemoryAccountRepository implements AccountRepository {
   }
 
   async edit(account: Account): Promise<Result.Result<Error, void>> {
-    this.data.forEach((a) => {
-      if (a.getID() === account.getID()) {
-        this.data.delete(a);
-      }
-    });
+    const oldAccount = Array.from(this.data).find(
+      (a) => a.getName() === account.getName(),
+    );
+    if (oldAccount) {
+      this.data.delete(oldAccount);
+    }
     this.data.add(account);
 
     return Result.ok(undefined);
