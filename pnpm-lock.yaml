@@ -22,7 +22,7 @@ dependencies:
     version: 5.11.0(prisma@5.11.0)
   '@scalar/hono-api-reference':
     specifier: ^0.4.0
-    version: 0.4.20(hono@3.12.12)(postcss@8.4.38)(typescript@5.4.3)(unified@11.0.4)(vue@3.4.21)(yjs@13.6.14)
+    version: 0.4.21(hono@3.12.12)(postcss@8.4.38)(typescript@5.4.3)(unified@11.0.4)(vue@3.4.21)(yjs@13.6.14)
   argon2:
     specifier: ^0.40.0
     version: 0.40.1
@@ -1377,17 +1377,17 @@ packages:
     dev: false
     optional: true
 
-  /@scalar/api-client@1.1.10(@scalar/oas-utils@0.1.1)(typescript@5.4.3)(vue@3.4.21)(yjs@13.6.14):
-    resolution: {integrity: sha512-XJCBfKL5nau9B1QCnwKgmZAK/8mwJPRjxTGvxKyLpOm0c0eEAWYtQbWFFf8FmfB4BjT87iIPGBGBdqSzH8pZVA==}
+  /@scalar/api-client@1.1.11(@scalar/oas-utils@0.1.2)(typescript@5.4.3)(vue@3.4.21)(yjs@13.6.14):
+    resolution: {integrity: sha512-iy2mv2x0vmfSoINsY5wMpQ1uR8keeKYMbshuXrXXdsg8r+421TA4WkvIQPhu9fYGBwSb/5uyJIvouAh0PbtOKA==}
     engines: {node: '>=18'}
     peerDependencies:
-      '@scalar/oas-utils': 0.1.1
+      '@scalar/oas-utils': 0.1.2
       vue: ^3.3.0
     dependencies:
       '@floating-ui/vue': 1.0.6(vue@3.4.21)
       '@headlessui/vue': 1.7.19(vue@3.4.21)
       '@scalar/components': 0.4.8(typescript@5.4.3)(vue@3.4.21)
-      '@scalar/oas-utils': 0.1.1
+      '@scalar/oas-utils': 0.1.2
       '@scalar/openapi-parser': 0.3.2
       '@scalar/themes': 0.6.7(vue@3.4.21)
       '@scalar/use-codemirror': 0.9.1(vue@3.4.21)(yjs@13.6.14)
@@ -1413,23 +1413,23 @@ packages:
       - yjs
     dev: false
 
-  /@scalar/api-reference@1.20.12(postcss@8.4.38)(typescript@5.4.3)(unified@11.0.4)(vue@3.4.21)(yjs@13.6.14):
-    resolution: {integrity: sha512-r52GPIg113GVSLzS7TyvT576Z+KQzW7FnxTya1HL2C4ERjvZPx9KiP2QCJv6vGxQNBBbrffH25y5yz9Phxx3zg==}
+  /@scalar/api-reference@1.20.13(postcss@8.4.38)(typescript@5.4.3)(unified@11.0.4)(vue@3.4.21)(yjs@13.6.14):
+    resolution: {integrity: sha512-AovUQkbfsmfJA02exFeAhSxzvFvLh4ai6XkVorp67lJQ871CjqHT6Qu3yKo1w0qLpQszyIm11NHrqBNi/Bmt/A==}
     engines: {node: '>=18'}
     peerDependencies:
       unified: ^11.0.0
       vue: ^3.3.0
     dependencies:
       '@headlessui/vue': 1.7.19(vue@3.4.21)
-      '@scalar/api-client': 1.1.10(@scalar/oas-utils@0.1.1)(typescript@5.4.3)(vue@3.4.21)(yjs@13.6.14)
+      '@scalar/api-client': 1.1.11(@scalar/oas-utils@0.1.2)(typescript@5.4.3)(vue@3.4.21)(yjs@13.6.14)
       '@scalar/components': 0.4.8(typescript@5.4.3)(vue@3.4.21)
-      '@scalar/oas-utils': 0.1.1
+      '@scalar/oas-utils': 0.1.2
       '@scalar/openapi-parser': 0.3.2
       '@scalar/snippetz': 0.1.5
       '@scalar/themes': 0.6.7(vue@3.4.21)
       '@scalar/use-modal': 0.2.9(@headlessui/vue@1.7.19)(vue@3.4.21)
       '@scalar/use-tooltip': 0.5.12(vue@3.4.21)
-      '@unhead/schema': 1.9.3
+      '@unhead/schema': 1.9.4
       '@vcarl/remark-headings': 0.1.0
       '@vueuse/core': 10.9.0(vue@3.4.21)
       axios: 1.6.8
@@ -1447,7 +1447,7 @@ packages:
       remark-parse: 11.0.0
       remark-rehype: 11.1.0
       remark-stringify: 11.0.0
-      unhead: 1.9.3
+      unhead: 1.9.4
       unified: 11.0.4
       vue: 3.4.21(typescript@5.4.3)
       vue-sonner: 1.1.2
@@ -1485,13 +1485,13 @@ packages:
       - typescript
     dev: false
 
-  /@scalar/hono-api-reference@0.4.20(hono@3.12.12)(postcss@8.4.38)(typescript@5.4.3)(unified@11.0.4)(vue@3.4.21)(yjs@13.6.14):
-    resolution: {integrity: sha512-EOMDxqUdBhlkq7bx4IEWUWy+yUWe5EKDFsPvnoFdFk7DVBNq7iPZ2OOAllXvgds8SaNXJOnr7AF3YIhMnAn6UQ==}
+  /@scalar/hono-api-reference@0.4.21(hono@3.12.12)(postcss@8.4.38)(typescript@5.4.3)(unified@11.0.4)(vue@3.4.21)(yjs@13.6.14):
+    resolution: {integrity: sha512-ZHIf52OTDqQ3vpsIoKX7xsv+xJ3ZHdoIOHP/eqzhw7xPZZUwgUhiNGupy/xYZu5w8pBWx7oV24jmrAdUP5pTrA==}
     engines: {node: '>=18'}
     peerDependencies:
       hono: ^3.0.0 || ^4.0.0
     dependencies:
-      '@scalar/api-reference': 1.20.12(postcss@8.4.38)(typescript@5.4.3)(unified@11.0.4)(vue@3.4.21)(yjs@13.6.14)
+      '@scalar/api-reference': 1.20.13(postcss@8.4.38)(typescript@5.4.3)(unified@11.0.4)(vue@3.4.21)(yjs@13.6.14)
       hono: 3.12.12
     transitivePeerDependencies:
       - '@vue/composition-api'
@@ -1510,8 +1510,8 @@ packages:
       - yjs
     dev: false
 
-  /@scalar/oas-utils@0.1.1:
-    resolution: {integrity: sha512-5UFUeDeLaRXK2+PmHjJLN2PyAfzBSOAVVSQaHs8kdbcFXhLioj7BQPtdXdf7b5LnBu+PrqLBXbCJWl7UdCBWwQ==}
+  /@scalar/oas-utils@0.1.2:
+    resolution: {integrity: sha512-+9+b9qxHndKr3SZZIFNfpt+gOVGdGnPvc3zhTPmEYmytsI+jxbQWoZN1jX/HimbgQAJarghdvNj7KbewZRX/OA==}
     engines: {node: '>=18'}
     dependencies:
       yaml: 2.4.1
@@ -1940,24 +1940,24 @@ packages:
   /@ungap/structured-clone@1.2.0:
     resolution: {integrity: sha512-zuVdFrMJiuCDQUMCzQaD6KL28MjnqqN8XnAqiEq9PNm/hCPTSGfrXCOfwj1ow4LFb/tNymJPwsNbVePc1xFqrQ==}
 
-  /@unhead/dom@1.9.3:
-    resolution: {integrity: sha512-l7KO6zv8T/yKpWOtcKww3k6RLENEiwiapoiPwtKlwWBFJekSjgM1+1AVu58yWqadFYHGP0/XhMwxKrOaOL+Vkw==}
+  /@unhead/dom@1.9.4:
+    resolution: {integrity: sha512-nEaHOcCL0u56g4XOV5XGwRMFZ05eEINfp8nxVrPiIGLrS9BoFrZS7/6IYSkalkNRTmw8M5xqxt6BalBr594SaA==}
     dependencies:
-      '@unhead/schema': 1.9.3
-      '@unhead/shared': 1.9.3
+      '@unhead/schema': 1.9.4
+      '@unhead/shared': 1.9.4
     dev: false
 
-  /@unhead/schema@1.9.3:
-    resolution: {integrity: sha512-emFHDYxn6u5SVwSRXMpYBCYKBua+GCjUwTLLdUupInthW3UraSUuXakmv06wDvejE8pTrBOPrGWescIYmwm69A==}
+  /@unhead/schema@1.9.4:
+    resolution: {integrity: sha512-/J6KYQ+aqKO5uLDTU9BXfiRAfJ3mQNmF5gh3Iyd4qZaWfqjsDGYIaAe4xAGPnJxwBn6FHlnvQvZBSGqru1MByw==}
     dependencies:
       hookable: 5.5.3
       zhead: 2.2.4
     dev: false
 
-  /@unhead/shared@1.9.3:
-    resolution: {integrity: sha512-9wJ+wNmAVDCsCFKE3YHMwNkmFqKzCqQfp53ABJHQFOvY336s4nMWtiMNMjxF4aY4pJk8Qpwd8dRlgpLlyH0KZg==}
+  /@unhead/shared@1.9.4:
+    resolution: {integrity: sha512-ErP6SUzPPRX9Df4fqGlwlLInoG+iBiH0nDudRuIpoFGyTnv1uO9BQ+lfFld8s1gI1WCdoBwVkISBp9/f/E/GLA==}
     dependencies:
-      '@unhead/schema': 1.9.3
+      '@unhead/schema': 1.9.4
     dev: false
 
   /@vcarl/remark-headings@0.1.0:
@@ -4684,12 +4684,12 @@ packages:
   /undici-types@5.26.5:
     resolution: {integrity: sha512-JlCMO+ehdEIKqlFxk6IfVoAUVmgz7cU7zD/h9XZ0qzeosSHmUJVOzSQvvYSYWXkFXC+IfLKSIffhv0sVZup6pA==}
 
-  /unhead@1.9.3:
-    resolution: {integrity: sha512-nV6d4ALJph73hCJT1tAd4z30Q2Gv8vNUvK0netM/EetL2scdggf9brcX3OyPqWhZbnFIOE+AouH2oE1KPznkcw==}
+  /unhead@1.9.4:
+    resolution: {integrity: sha512-QVU0y3KowRu2cLjXxfemTKNohK4vdEwyahoszlEnRz0E5BTNRZQSs8AnommorGmVM7DvB2t4dwWadB51wDlPzw==}
     dependencies:
-      '@unhead/dom': 1.9.3
-      '@unhead/schema': 1.9.3
-      '@unhead/shared': 1.9.3
+      '@unhead/dom': 1.9.4
+      '@unhead/schema': 1.9.4
+      '@unhead/shared': 1.9.4
       hookable: 5.5.3
     dev: false
 
