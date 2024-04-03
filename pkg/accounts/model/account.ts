@@ -49,7 +49,7 @@ export const AccountNameSchema = z
 
     // check. RFC1035 より "<label>" を参照
     for (const label of domain.split('.')) {
-      if (!/^[a-zA-Z](?:.*[a-zA-Z0-9])?$/.test(label)) {
+      if (!/^[a-zA-Z][a-zA-Z0-9-]*$/.test(label)) {
         return false;
       }
     }
