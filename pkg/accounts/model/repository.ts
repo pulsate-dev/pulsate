@@ -11,6 +11,7 @@ export interface AccountRepository {
   findByName(name: string): Promise<Option.Option<Account>>;
   findByID(id: ID<AccountID>): Promise<Option.Option<Account>>;
   findByMail(mail: string): Promise<Option.Option<Account>>;
+  edit(account: Account): Promise<Result.Result<Error, void>>;
 }
 
 export interface InactiveAccountRepository {
