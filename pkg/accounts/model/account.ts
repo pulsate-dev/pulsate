@@ -19,7 +19,7 @@ export type AccountSilenced = 'silenced' | 'normal';
 export const AccountNameSchema = z
   .string()
   .refine((s) => {
-    const parts = s.split('@', 3);
+    const parts = s.split('@');
 
     // check. @ 区切りで 3 つの文字列に区切ることが出来る
     if (!((p): p is [string, string, string] => p.length === 3)(parts)) {

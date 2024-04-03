@@ -119,6 +119,7 @@ describe('AccountNameSchema', () => {
 
   it('check it is not accountname', () => {
     expect(check('@@')).toBe(false);
+    expect(check('@name@domain@what')).toBe(false);
     expect(check('@_name_@example.com')).toBe(false);
     expect(check('@n_a_m_e_@sharp-#-sharp.com')).toBe(false);
     expect(check('@query@?.com')).toBe(false);
