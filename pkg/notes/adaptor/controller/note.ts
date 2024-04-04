@@ -7,15 +7,18 @@ import type { AccountModule } from '../../../intermodule/account.js';
 import type { NoteVisibility } from '../../model/note.js';
 import type { CreateNoteService } from '../../service/create.js';
 import type { FetchNoteService } from '../../service/fetch.js';
+import type { RenoteService } from '../../service/renote.js';
 import {
   type CreateNoteResponseSchema,
   type GetNoteResponseSchema,
+  type RenoteResponseSchema,
 } from '../validator/schema.js';
 
 export class NoteController {
   constructor(
     private readonly createNoteService: CreateNoteService,
     private readonly fetchNoteService: FetchNoteService,
+    private readonly renoteService: RenoteService,
     private readonly accountModule: AccountModule,
   ) {}
 
@@ -87,6 +90,35 @@ export class NoteController {
         followed_count: 0,
         following_count: 0,
       },
+    });
+  }
+
+  async renote(
+    originalNoteID: string,
+    authorID: string,
+    content: string,
+    visibility: string,
+    contentsWarningComment: string,
+  ): Promise<Result.Result<Error, z.infer<typeof RenoteResponseSchema>>> {
+    const res = await this.renoteService.handle(
+      originalNoteID as ID<AccountID>,
+      content,
+      contentsWarningComment,
+      authorID as ID<AccountID>,
+      visibility as NoteVisibility,
+    );
+    if (Result.isErr(res)) {
+      return res;
+    }
+
+    return Result.ok({
+      id: res[1].getID(),
+      content: res[1].getContent(),
+      visibility: res[1].getVisibility(),
+      contents_warning_comment: res[1].getCwComment(),
+      original_note_id: Option.unwrap(res[1].getOriginalNoteID()),
+      author_id: res[1].getAuthorID(),
+      created_at: res[1].getCreatedAt().toUTCString(),
     });
   }
 }

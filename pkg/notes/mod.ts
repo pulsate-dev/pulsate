@@ -25,9 +25,10 @@ import { AccountModule } from '../intermodule/account.js';
 import { Argon2idPasswordEncoder } from '../password/mod.js';
 import { NoteController } from './adaptor/controller/note.js';
 import { InMemoryNoteRepository } from './adaptor/repository/dummy.js';
-import { CreateNoteRoute, GetNoteRoute } from './router.js';
+import { CreateNoteRoute, GetNoteRoute, RenoteRoute } from './router.js';
 import { CreateNoteService } from './service/create.js';
 import { FetchNoteService } from './service/fetch.js';
+import { RenoteService } from './service/renote.js';
 
 export const noteHandlers = new OpenAPIHono();
 const noteRepository = new InMemoryNoteRepository();
@@ -96,9 +97,11 @@ const accountModule = new AccountModule(accountController);
 // Note
 const createNoteService = new CreateNoteService(noteRepository, idGenerator);
 const fetchNoteService = new FetchNoteService(noteRepository, accountModule);
+const renoteService = new RenoteService(noteRepository, idGenerator);
 const controller = new NoteController(
   createNoteService,
   fetchNoteService,
+  renoteService,
   accountModule,
 );
 
@@ -132,6 +135,24 @@ noteHandlers.openapi(GetNoteRoute, async (c) => {
   const res = await controller.getNoteByID(id);
   if (Result.isErr(res)) {
     return c.json({ error: res[1].message }, 404);
+  }
+
+  return c.json(res[1]);
+});
+
+noteHandlers.openapi(RenoteRoute, async (c) => {
+  const { id } = c.req.param();
+  const req = c.req.valid('json');
+  const res = await controller.renote(
+    id,
+    req.content,
+    req.contents_warning_comment,
+    '',
+    req.visibility,
+  );
+
+  if (Result.isErr(res)) {
+    return c.json({ error: res[1].message }, 400);
   }
 
   return c.json(res[1]);

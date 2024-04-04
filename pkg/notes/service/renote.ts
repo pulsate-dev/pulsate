@@ -13,7 +13,7 @@ export class RenoteService {
     private readonly idGenerator: SnowflakeIDGenerator,
   ) {}
 
-  async renote(
+  async handle(
     originalNoteID: ID<NoteID>,
     content: string,
     contentsWarningComment: string,

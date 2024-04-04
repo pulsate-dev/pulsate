@@ -28,7 +28,7 @@ const service = new RenoteService(
 
 describe('RenoteService', () => {
   it('should create renote', async () => {
-    const renote = await service.renote(
+    const renote = await service.handle(
       '2' as ID<NoteID>,
       'renote',
       '',
@@ -45,7 +45,7 @@ describe('RenoteService', () => {
   });
 
   it('should not create renote with DIRECT visibility', async () => {
-    const res = await service.renote(
+    const res = await service.handle(
       '2' as ID<NoteID>,
       'direct renote',
       '',
@@ -57,7 +57,7 @@ describe('RenoteService', () => {
   });
 
   it('if original note not found', async () => {
-    const res = await service.renote(
+    const res = await service.handle(
       '3' as ID<NoteID>,
       'renote',
       '',
