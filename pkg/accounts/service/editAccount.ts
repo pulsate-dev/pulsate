@@ -53,6 +53,11 @@ export class EditAccountService {
 
     try {
       account.setNickName(nickname);
+      const res = await this.accountRepository.edit(account);
+      if (Result.isErr(res)) {
+        return res;
+      }
+
       return Result.ok(true);
     } catch (e) {
       return Result.err(e as unknown as Error);
@@ -86,6 +91,12 @@ export class EditAccountService {
       account.setPassphraseHash(
         await this.passwordEncoder.encodePassword(newPassphrase),
       );
+
+      const res = await this.accountRepository.edit(account);
+      if (Result.isErr(res)) {
+        return res;
+      }
+
       return Result.ok(true);
     } catch (e) {
       return Result.err(e as unknown as Error);
@@ -119,6 +130,12 @@ export class EditAccountService {
 
     try {
       account.setMail(newEmail);
+
+      const res = await this.accountRepository.edit(account);
+      if (Result.isErr(res)) {
+        return res;
+      }
+
       return Result.ok(true);
     } catch (e) {
       return Result.err(e as unknown as Error);
@@ -141,6 +158,12 @@ export class EditAccountService {
 
     try {
       account.setBio(bio);
+
+      const res = await this.accountRepository.edit(account);
+      if (Result.isErr(res)) {
+        return res;
+      }
+
       return Result.ok(true);
     } catch (e) {
       return Result.err(e as unknown as Error);
