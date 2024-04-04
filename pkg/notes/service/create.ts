@@ -1,4 +1,4 @@
-import { type Option, Result } from '@mikuroxina/mini-fn';
+import { Option, Result } from '@mikuroxina/mini-fn';
 
 import type { AccountID } from '../../accounts/model/account.js';
 import type { SnowflakeIDGenerator } from '../../id/mod.js';
@@ -25,6 +25,7 @@ export class CreateNoteService {
         contentsWarningComment: contentsWarningComment,
         createdAt: new Date(),
         sendTo: sendTo,
+        originalNoteID: Option.none(),
         visibility: visibility,
         authorID: authorID,
       });
