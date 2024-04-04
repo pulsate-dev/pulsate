@@ -99,8 +99,8 @@ describe('EditAccountService', () => {
       'should be fail to update nickname when $title',
       async ({ etag: invalid, name, nickname }) => {
         const updateRes = await editAccountService.editNickname(
-          invalid ? invalid : etag,
-          name ? name : '@john@example.com',
+          invalid ?? etag,
+          name ?? '@john@example.com',
           nickname,
         );
         expect(Result.isErr(updateRes)).toBe(true);
@@ -167,8 +167,8 @@ describe('EditAccountService', () => {
       'should be failed to update passphrase when $title',
       async ({ etag: invalid, name, passphrase }) => {
         const updateRes = await editAccountService.editPassphrase(
-          invalid ? invalid : etag,
-          name ? name : '@john@example.com',
+          invalid ?? etag,
+          name ?? '@john@example.com',
           passphrase,
         );
 
@@ -231,8 +231,8 @@ describe('EditAccountService', () => {
       'should be fail to update email when $title',
       async ({ etag: invalid, name, email }) => {
         const updateRes = await editAccountService.editEmail(
-          invalid ? invalid : etag,
-          name ? name : '@john@example.com',
+          invalid ?? etag,
+          name ?? '@john@example.com',
           email,
         );
         expect(Result.isErr(updateRes)).toBe(true);
@@ -278,8 +278,8 @@ describe('EditAccountService', () => {
       'should be fail to update bio when $title',
       async ({ etag: invalid, name, bio }) => {
         const updateRes = await editAccountService.editBio(
-          invalid ? invalid : etag,
-          name ? name : '@john@example.com',
+          invalid ?? etag,
+          name ?? '@john@example.com',
           bio,
         );
 
