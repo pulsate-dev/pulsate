@@ -52,13 +52,14 @@ describe('IDSchema', () => {
       expect(check(id)).toBe(true);
     }
 
+    expect(check('0')).toBe(true);
     expect(check(SHORTEST)).toBe(true);
     expect(check(`${String((1n << 64n) - 1n)}`)).toBe(true);
   });
 
   it('check it is not id', () => {
     expect(check('')).toBe(false);
-    expect(check('0')).toBe(false);
+    expect(check('-1')).toBe(false);
     expect(check('a')).toBe(false);
     expect(check(`${SHORTEST}a`)).toBe(false);
     expect(check(`a${SHORTEST}`)).toBe(false);
