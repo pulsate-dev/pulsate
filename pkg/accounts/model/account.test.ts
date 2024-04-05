@@ -126,6 +126,10 @@ describe('AccountNameSchema', () => {
     expect(check('what@name@domain')).toBe(false);
     expect(check('@name@example.')).toBe(false);
     expect(check('@name@.example.com')).toBe(false);
+    expect(check('@name@example-.com')).toBe(false);
+    expect(check('@name@example.com-')).toBe(false);
+    expect(check('@name@-example.com')).toBe(false);
+    expect(check('@name@example.-com')).toBe(false);
     expect(check('@n_a_m_e_@sharp-#-sharp.com')).toBe(false);
     expect(check('@query@?.com')).toBe(false);
     expect(check('@name@日本語example.com')).toBe(false);
