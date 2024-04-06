@@ -1,3 +1,5 @@
+import { z } from '@hono/zod-openapi';
+
 import type { ID } from '../../id/type.js';
 import {
   AccountAlreadyDeletedError,
@@ -13,6 +15,48 @@ export type AccountRole = 'admin' | 'normal' | 'moderator';
 export type AccountStatus = 'active' | 'notActivated';
 export type AccountFrozen = 'frozen' | 'normal';
 export type AccountSilenced = 'silenced' | 'normal';
+
+export const AccountNameSchema = z
+  .string()
+  .refine((s) => {
+    const parts = s.split('@');
+
+    // check. @ 区切りで 3 つの文字列に区切ることが出来る
+    if (!((p): p is [string, string, string] => p.length === 3)(parts)) {
+      return false;
+    }
+
+    const [head, name, domain] = parts;
+
+    // check. 最初の文字は @, 最初の @ の手前は空文字
+    if (head.length !== 0) {
+      return false;
+    }
+
+    // check. 名前は a-z A-Z 0-9 - _ . のみ許容
+    //        但し 1 文字以上, 最初の文字は記号非許容
+    if (!/^[a-zA-Z0-9][\w\-.]*$/.test(name)) {
+      return false;
+    }
+
+    // ref. RFC1035 https://www.rfc-editor.org/rfc/rfc1035#page-8
+    //
+    // check. ドメイン名は RFC1035 より "<subdomain>" を参照, 空白は許容しない
+    //        ここでは文字種の検証のみ
+    if (!/^[a-zA-Z0-9\-.]+$/.test(domain)) {
+      return false;
+    }
+
+    // check. RFC1035 より "<label>" を参照
+    for (const label of domain.split('.')) {
+      if (!/^[a-zA-Z](?:.*[a-zA-Z0-9])?$/.test(label)) {
+        return false;
+      }
+    }
+
+    return true;
+  })
+  .transform((s) => s as AccountName);
 
 export interface CreateAccountArgs {
   id: ID<AccountID>;

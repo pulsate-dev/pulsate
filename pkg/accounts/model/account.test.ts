@@ -1,7 +1,12 @@
 import { describe, expect, it } from 'vitest';
 
 import { type ID } from '../../id/type.js';
-import { Account, type AccountID, type CreateAccountArgs } from './account.js';
+import {
+  AccountNameSchema,
+  Account,
+  type AccountID,
+  type CreateAccountArgs,
+} from './account.js';
 
 const exampleInput: CreateAccountArgs = {
   id: '1' as ID<AccountID>,
@@ -98,5 +103,35 @@ describe('Account', () => {
     expect(() => {
       account.setMail('pulsate@example.com');
     }).toThrow();
+  });
+});
+
+describe('AccountNameSchema', () => {
+  const check = (v: unknown) => AccountNameSchema.safeParse(v).success;
+
+  const account = Account.new(exampleInput);
+
+  it('check it is accountname', () => {
+    expect(check(account.getName())).toBe(true);
+
+    expect(check('@name@domain')).toBe(true);
+    expect(check('@name@example.com')).toBe(true);
+    expect(check('@name@xn--example-bs3o55gu19k.com')).toBe(true);
+  });
+
+  it('check it is not accountname', () => {
+    expect(check('@@')).toBe(false);
+    expect(check('@_name_@example.com')).toBe(false);
+    expect(check('@name@domain@what')).toBe(false);
+    expect(check('what@name@domain')).toBe(false);
+    expect(check('@name@example.')).toBe(false);
+    expect(check('@name@.example.com')).toBe(false);
+    expect(check('@name@example-.com')).toBe(false);
+    expect(check('@name@example.com-')).toBe(false);
+    expect(check('@name@-example.com')).toBe(false);
+    expect(check('@name@example.-com')).toBe(false);
+    expect(check('@n_a_m_e_@sharp-#-sharp.com')).toBe(false);
+    expect(check('@query@?.com')).toBe(false);
+    expect(check('@name@日本語example.com')).toBe(false);
   });
 });

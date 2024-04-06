@@ -1,7 +1,7 @@
 import { Result } from '@mikuroxina/mini-fn';
 import { describe, it, expect } from 'vitest';
 
-import { type Clock, SnowflakeIDGenerator } from './mod.js';
+import { IDSchema, type Clock, SnowflakeIDGenerator } from './mod.js';
 
 class DummyClock implements Clock {
   now(): bigint {
@@ -36,5 +36,33 @@ describe('SnowflakeIDGenerator', () => {
 
     const res = generator.generate();
     expect(Result.isErr(res)).toBe(true);
+  });
+});
+
+describe('IDSchema', () => {
+  const check = (v: unknown) => IDSchema().safeParse(v).success;
+
+  const SHORTEST = String(1 << 22);
+
+  it('check it is id', () => {
+    const generator = new SnowflakeIDGenerator(1, new DummyClock());
+
+    for (let i = 0; i < 64; i++) {
+      const id = Result.unwrap(generator.generate());
+      expect(check(id)).toBe(true);
+    }
+
+    expect(check('0')).toBe(true);
+    expect(check(SHORTEST)).toBe(true);
+    expect(check(`${String((1n << 64n) - 1n)}`)).toBe(true);
+  });
+
+  it('check it is not id', () => {
+    expect(check('')).toBe(false);
+    expect(check('-1')).toBe(false);
+    expect(check('a')).toBe(false);
+    expect(check(`${SHORTEST}a`)).toBe(false);
+    expect(check(`a${SHORTEST}`)).toBe(false);
+    expect(check(`${String((1n << 65n) - 1n)}`)).toBe(false);
   });
 });
