@@ -2,21 +2,21 @@ import { Option, Result } from '@mikuroxina/mini-fn';
 
 import type { AccountName } from '../model/account.js';
 import { type AccountRepository } from '../model/repository.js';
-import type { TokenVerifyService } from './accountVerifyToken.js';
 import { type SendNotificationService } from './sendNotification.js';
+import type { VerifyAccountTokenService } from './verifyToken.js';
 
 export class ResendVerifyTokenService {
   private readonly accountRepository: AccountRepository;
-  private readonly tokenVerifyService: TokenVerifyService;
+  private readonly verifyAccountTokenService: VerifyAccountTokenService;
   private readonly sendNotificationService: SendNotificationService;
 
   constructor(
     accountRepository: AccountRepository,
-    tokenVerifyService: TokenVerifyService,
+    verifyAccountTokenService: VerifyAccountTokenService,
     sendNotificationService: SendNotificationService,
   ) {
     this.accountRepository = accountRepository;
-    this.tokenVerifyService = tokenVerifyService;
+    this.verifyAccountTokenService = verifyAccountTokenService;
     this.sendNotificationService = sendNotificationService;
   }
 
@@ -30,7 +30,9 @@ export class ResendVerifyTokenService {
       return Option.some(new Error('AccountAlreadyVerifiedError'));
     }
 
-    const token = await this.tokenVerifyService.generate(account[1].getName());
+    const token = await this.verifyAccountTokenService.generate(
+      account[1].getName(),
+    );
     if (Result.isErr(token)) {
       return Option.some(token[1]);
     }

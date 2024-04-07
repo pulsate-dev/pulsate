@@ -9,8 +9,8 @@ import {
   type AccountRole,
 } from '../model/account.js';
 import { type AccountRepository } from '../model/repository.js';
-import type { TokenVerifyService } from './accountVerifyToken.js';
 import { type SendNotificationService } from './sendNotification.js';
+import type { VerifyAccountTokenService } from './verifyToken.js';
 
 export class AccountAlreadyExistsError extends Error {
   override readonly name = 'AccountAlreadyExistsError' as const;
@@ -25,20 +25,20 @@ export class RegisterAccountService {
   private readonly snowflakeIDGenerator: SnowflakeIDGenerator;
   private readonly passwordEncoder: PasswordEncoder;
   private readonly sendNotificationService: SendNotificationService;
-  private readonly tokenVerifyService: TokenVerifyService;
+  private readonly verifyAccountTokenService: VerifyAccountTokenService;
 
   constructor(arg: {
     repository: AccountRepository;
     idGenerator: SnowflakeIDGenerator;
     passwordEncoder: PasswordEncoder;
     sendNotification: SendNotificationService;
-    verifyTokenService: TokenVerifyService;
+    verifyAccountTokenService: VerifyAccountTokenService;
   }) {
     this.accountRepository = arg.repository;
     this.snowflakeIDGenerator = arg.idGenerator;
     this.passwordEncoder = arg.passwordEncoder;
     this.sendNotificationService = arg.sendNotification;
-    this.tokenVerifyService = arg.verifyTokenService;
+    this.verifyAccountTokenService = arg.verifyAccountTokenService;
   }
 
   public async handle(
@@ -81,7 +81,9 @@ export class RegisterAccountService {
       return Result.err(res[1]);
     }
 
-    const token = await this.tokenVerifyService.generate(account.getName());
+    const token = await this.verifyAccountTokenService.generate(
+      account.getName(),
+    );
     if (Result.isErr(token)) {
       return Result.err(token[1]);
     }

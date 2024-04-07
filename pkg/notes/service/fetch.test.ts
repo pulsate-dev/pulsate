@@ -8,7 +8,6 @@ import {
   InMemoryAccountVerifyTokenRepository,
 } from '../../accounts/adaptor/repository/dummy.js';
 import { Account, type AccountID } from '../../accounts/model/account.js';
-import { TokenVerifyService } from '../../accounts/service/accountVerifyToken.js';
 import { AuthenticationService } from '../../accounts/service/authenticate.js';
 import { EditAccountService } from '../../accounts/service/editAccount.js';
 import { EtagVerifyService } from '../../accounts/service/etagGenerateVerify.js';
@@ -21,6 +20,7 @@ import { DummySendNotificationService } from '../../accounts/service/sendNotific
 import { SilenceService } from '../../accounts/service/silence.js';
 import { TokenGenerator } from '../../accounts/service/tokenGenerator.js';
 import { UnfollowService } from '../../accounts/service/unfollow.js';
+import { VerifyAccountTokenService } from '../../accounts/service/verifyToken.js';
 import { MockClock, SnowflakeIDGenerator } from '../../id/mod.js';
 import type { ID } from '../../id/type.js';
 import { AccountModule } from '../../intermodule/account.js';
@@ -129,14 +129,14 @@ const accountController = new AccountController({
     idGenerator: idGenerator,
     passwordEncoder: passwordEncoder,
     sendNotification: new DummySendNotificationService(),
-    verifyTokenService: new TokenVerifyService(
+    verifyAccountTokenService: new VerifyAccountTokenService(
       accountVerifyTokenRepository,
       accountRepository,
       new Clock(),
     ),
   }),
   silenceService: new SilenceService(accountRepository),
-  tokenVerifyService: new TokenVerifyService(
+  verifyAccountTokenService: new VerifyAccountTokenService(
     accountVerifyTokenRepository,
     accountRepository,
     new Clock(),
@@ -147,7 +147,7 @@ const accountController = new AccountController({
   ),
   resendTokenService: new ResendVerifyTokenService(
     accountRepository,
-    new TokenVerifyService(
+    new VerifyAccountTokenService(
       accountVerifyTokenRepository,
       accountRepository,
       new Clock(),

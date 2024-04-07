@@ -8,7 +8,7 @@ import {
   InMemoryAccountVerifyTokenRepository,
 } from '../adaptor/repository/dummy.js';
 import { Account, type AccountID } from '../model/account.js';
-import { TokenVerifyService } from './accountVerifyToken.js';
+import { VerifyAccountTokenService } from './verifyToken.js';
 
 const repository = new InMemoryAccountVerifyTokenRepository();
 const accountRepository = new InMemoryAccountRepository();
@@ -31,13 +31,13 @@ await accountRepository.create(
 );
 const mockClock = new MockClock(new Date('2023-09-10T00:00:00Z'));
 
-const service = new TokenVerifyService(
+const service = new VerifyAccountTokenService(
   repository,
   accountRepository,
   mockClock,
 );
 
-describe('TokenVerifyService', () => {
+describe('VerifyAccountTokenService', () => {
   it('generate/verify account verify token', async () => {
     const token = await service.generate('@johndoe@example.com');
     if (Result.isErr(token)) {
@@ -54,7 +54,7 @@ describe('TokenVerifyService', () => {
   });
 
   it('expired token', async () => {
-    const dummyService = new TokenVerifyService(
+    const dummyService = new VerifyAccountTokenService(
       repository,
       accountRepository,
       mockClock,
