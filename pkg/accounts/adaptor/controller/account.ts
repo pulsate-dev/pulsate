@@ -3,7 +3,7 @@ import { Option, Result } from '@mikuroxina/mini-fn';
 
 import type { ID } from '../../../id/type.js';
 import { type AccountID, type AccountName } from '../../model/account.js';
-import type { AuthenticationService } from '../../service/authenticate.js';
+import type { AuthenticateService } from '../../service/authenticate.js';
 import type { EditAccountService } from '../../service/editAccount.js';
 import type { FetchAccountService } from '../../service/fetchAccount.js';
 import type { FollowService } from '../../service/follow.js';
@@ -26,7 +26,7 @@ export class AccountController {
   private readonly fetchAccountService: FetchAccountService;
   private readonly freezeService: FreezeService;
   private readonly verifyAccountTokenService: VerifyAccountTokenService;
-  private readonly authenticationService: AuthenticationService;
+  private readonly authenticateService: AuthenticateService;
   private readonly silenceService: SilenceService;
   private readonly followService: FollowService;
   private readonly unFollowService: UnfollowService;
@@ -38,7 +38,7 @@ export class AccountController {
     fetchAccountService: FetchAccountService;
     freezeService: FreezeService;
     verifyAccountTokenService: VerifyAccountTokenService;
-    authenticationService: AuthenticationService;
+    authenticateService: AuthenticateService;
     silenceService: SilenceService;
     followService: FollowService;
     unFollowService: UnfollowService;
@@ -49,7 +49,7 @@ export class AccountController {
     this.fetchAccountService = args.fetchAccountService;
     this.freezeService = args.freezeService;
     this.verifyAccountTokenService = args.verifyAccountTokenService;
-    this.authenticationService = args.authenticationService;
+    this.authenticateService = args.authenticateService;
     this.silenceService = args.silenceService;
     this.followService = args.followService;
     this.unFollowService = args.unFollowService;
@@ -249,7 +249,7 @@ export class AccountController {
     passphrase: string,
   ): Promise<Result.Result<Error, z.infer<typeof LoginResponseSchema>>> {
     // ToDo: Check Captcha token
-    const res = await this.authenticationService.handle(
+    const res = await this.authenticateService.handle(
       name as AccountName,
       passphrase,
     );

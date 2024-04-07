@@ -7,7 +7,7 @@ import {
   InMemoryAccountRepository,
   InMemoryAccountVerifyTokenRepository,
 } from '../accounts/adaptor/repository/dummy.js';
-import { AuthenticationService } from '../accounts/service/authenticate.js';
+import { AuthenticateService } from '../accounts/service/authenticate.js';
 import { EditAccountService } from '../accounts/service/editAccount.js';
 import { EtagVerifyService } from '../accounts/service/etagGenerateVerify.js';
 import { FetchAccountService } from '../accounts/service/fetchAccount.js';
@@ -47,7 +47,7 @@ class Clock {
 }
 const passwordEncoder = new Argon2idPasswordEncoder();
 const accountController = new AccountController({
-  authenticationService: new AuthenticationService({
+  authenticateService: new AuthenticateService({
     accountRepository: accountRepository,
     tokenGenerator: tokenGenerator,
     passwordEncoder: passwordEncoder,

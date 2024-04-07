@@ -8,7 +8,7 @@ import {
   InMemoryAccountVerifyTokenRepository,
 } from '../../accounts/adaptor/repository/dummy.js';
 import { Account, type AccountID } from '../../accounts/model/account.js';
-import { AuthenticationService } from '../../accounts/service/authenticate.js';
+import { AuthenticateService } from '../../accounts/service/authenticate.js';
 import { EditAccountService } from '../../accounts/service/editAccount.js';
 import { EtagVerifyService } from '../../accounts/service/etagGenerateVerify.js';
 import { FetchAccountService } from '../../accounts/service/fetchAccount.js';
@@ -111,7 +111,7 @@ class Clock {
 const idGenerator = new SnowflakeIDGenerator(0, new MockClock(new Date()));
 const passwordEncoder = new Argon2idPasswordEncoder();
 const accountController = new AccountController({
-  authenticationService: new AuthenticationService({
+  authenticateService: new AuthenticateService({
     accountRepository: accountRepository,
     tokenGenerator: tokenGenerator,
     passwordEncoder: passwordEncoder,

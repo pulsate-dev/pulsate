@@ -11,7 +11,7 @@ export interface TokenPair {
   refreshToken: string;
 }
 
-export class AuthenticationService {
+export class AuthenticateService {
   private readonly accountRepository: AccountRepository;
   private readonly tokenGenerator: TokenGenerator;
   private readonly passwordEncoder: PasswordEncoder;

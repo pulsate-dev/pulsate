@@ -25,7 +25,7 @@ import {
   UpdateAccountRoute,
   VerifyEmailRoute,
 } from './router.js';
-import { AuthenticationService } from './service/authenticate.js';
+import { AuthenticateService } from './service/authenticate.js';
 import { EditAccountService } from './service/editAccount.js';
 import { EtagVerifyService } from './service/etagGenerateVerify.js';
 import { FetchAccountService } from './service/fetchAccount.js';
@@ -53,7 +53,7 @@ const idGenerator = new SnowflakeIDGenerator(0, new Clock());
 const passwordEncoder = new Argon2idPasswordEncoder();
 
 export const controller = new AccountController({
-  authenticationService: new AuthenticationService({
+  authenticateService: new AuthenticateService({
     accountRepository: accountRepository,
     tokenGenerator: tokenGenerator,
     passwordEncoder: passwordEncoder,
