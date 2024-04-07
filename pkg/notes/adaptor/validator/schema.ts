@@ -102,3 +102,56 @@ export const GetNoteResponseSchema = z.object({
   }),
   // ToDo: add attachment_files, reactions
 });
+
+export const RenoteRequestSchema = z.object({
+  content: z.string().max(3000).openapi({
+    example: 'hello world!',
+    description:
+      'Note content (max 3000 characters/if attachment file exists, allow 0 character)',
+    default: '',
+  }),
+  visibility: z
+    .union([z.literal('public'), z.literal('home'), z.literal('followers')])
+    .openapi({
+      example: 'public',
+      description: 'Note visibility (public/home/followers)',
+      default: 'public',
+    }),
+  // ToDo: Define attachment schema
+  contents_warning_comment: z.string().max(256).openapi({
+    example: 'This note contains sensitive content',
+    description: 'Contents warning comment (max 256 characters)',
+    default: '',
+  }),
+});
+
+export const RenoteResponseSchema = z.object({
+  id: z.string().openapi({
+    example: '38477395',
+    description: 'Note ID',
+  }),
+  content: z.string().openapi({
+    example: 'hello world!',
+    description: 'Note content',
+  }),
+  visibility: z.string().openapi({
+    example: 'PUBLIC',
+    description: 'Note visibility',
+  }),
+  original_note_id: z.string().openapi({
+    example: '38477395',
+    description: 'Original note ID',
+  }),
+  contents_warning_comment: z.string().openapi({
+    example: 'This note contains sensitive content',
+    description: 'Contents warning comment',
+  }),
+  author_id: z.string().openapi({
+    example: '38477395',
+    description: 'Author account ID',
+  }),
+  created_at: z.string().openapi({
+    example: '2021-01-01T00:00:00Z',
+    description: 'Note created date',
+  }),
+});

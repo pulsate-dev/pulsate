@@ -13,6 +13,7 @@ export interface CreateNoteArgs {
   visibility: NoteVisibility;
   contentsWarningComment: string;
   sendTo: Option.Option<ID<AccountID>>;
+  originalNoteID: Option.Option<ID<NoteID>>;
   createdAt: Date;
   updatedAt: Option.Option<Date>;
   deletedAt: Option.Option<Date>;
@@ -26,6 +27,7 @@ export class Note {
     this.visibility = arg.visibility;
     this.contentsWarningComment = arg.contentsWarningComment;
     this.sendTo = arg.sendTo;
+    this.originalNoteID = arg.originalNoteID;
     this.createdAt = arg.createdAt;
     this.updatedAt = arg.updatedAt;
     this.deletedAt = arg.deletedAt;
@@ -78,6 +80,11 @@ export class Note {
   private readonly sendTo: Option.Option<ID<AccountID>>;
   getSendTo(): Option.Option<ID<AccountID>> {
     return this.sendTo;
+  }
+
+  private readonly originalNoteID: Option.Option<ID<NoteID>>;
+  getOriginalNoteID(): Option.Option<ID<NoteID>> {
+    return this.originalNoteID;
   }
 
   private readonly createdAt: Date;

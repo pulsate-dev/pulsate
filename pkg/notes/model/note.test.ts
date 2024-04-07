@@ -12,6 +12,7 @@ const exampleInput: CreateNoteArgs = {
   visibility: 'PUBLIC',
   contentsWarningComment: '',
   sendTo: Option.none(),
+  originalNoteID: Option.none(),
   updatedAt: Option.none(),
   deletedAt: Option.none(),
 };

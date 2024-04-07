@@ -36,6 +36,7 @@ const testNote = Note.new({
   contentsWarningComment: '',
   createdAt: new Date('2023-09-10T00:00:00Z'),
   sendTo: Option.none(),
+  originalNoteID: Option.none(),
   visibility: 'PUBLIC',
 });
 const deletedNote = Note.reconstruct({
@@ -45,6 +46,7 @@ const deletedNote = Note.reconstruct({
   contentsWarningComment: '',
   createdAt: new Date('2023-09-10T00:00:00Z'),
   sendTo: Option.none(),
+  originalNoteID: Option.none(),
   visibility: 'PUBLIC',
   deletedAt: Option.some(new Date('2024-01-01T00:00:00Z')),
   updatedAt: Option.none(),
@@ -56,6 +58,7 @@ const frozenUserNote = Note.reconstruct({
   contentsWarningComment: '',
   createdAt: new Date('2023-09-10T00:00:00Z'),
   sendTo: Option.none(),
+  originalNoteID: Option.none(),
   visibility: 'PUBLIC',
   deletedAt: Option.some(new Date('2024-01-01T00:00:00Z')),
   updatedAt: Option.none(),
