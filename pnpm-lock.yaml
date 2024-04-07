@@ -16,7 +16,7 @@ dependencies:
     version: 0.9.10(hono@3.12.12)(zod@3.22.4)
   '@mikuroxina/mini-fn':
     specifier: ^5.5.1
-    version: 5.6.0
+    version: 5.7.0
   '@prisma/client':
     specifier: 5.11.0
     version: 5.11.0(prisma@5.11.0)
@@ -853,8 +853,8 @@ packages:
     hasBin: true
     dev: true
 
-  /@mikuroxina/mini-fn@5.6.0:
-    resolution: {integrity: sha512-59ITWAiOseYGQfX1CoKU83rdxkuhTDG5VcXvGX/a1rd6OvcrwcfFBukFjffqsNbwLkPVR5sLa4aECfaxTuyeLw==}
+  /@mikuroxina/mini-fn@5.7.0:
+    resolution: {integrity: sha512-dUc1Te2alRMbbgAgK701DojTfaVh4q3OIcm7sgDCPmwTsCndtNJOiDpVHkq2W++fY19QyC8FNHGyr7agtFAGKw==}
     dev: false
 
   /@nodelib/fs.scandir@2.1.5:
