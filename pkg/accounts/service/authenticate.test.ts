@@ -6,7 +6,7 @@ import { Argon2idPasswordEncoder } from '../../password/mod.js';
 import { InMemoryAccountRepository } from '../adaptor/repository/dummy.js';
 import { Account } from '../model/account.js';
 import { AuthenticateService } from './authenticate.js';
-import { TokenGenerator } from './tokenGenerator.js';
+import { AuthenticationTokenService } from './authenticationTokenService.js';
 
 describe('AuthenticateService', () => {
   it('Generate valid token pair', async () => {
@@ -33,18 +33,22 @@ describe('AuthenticateService', () => {
       }),
     );
 
-    const tokenGenerator = await TokenGenerator.new();
+    const authenticationTokenService = await AuthenticationTokenService.new();
 
     const service = new AuthenticateService({
       accountRepository: accountRepository,
-      tokenGenerator: tokenGenerator,
+      authenticationTokenService: authenticationTokenService,
       passwordEncoder: encoder,
     });
 
     const result = Result.unwrap(
       await service.handle('@test@example.com', 'じゃすた・いぐざんぽぅ'),
     );
-    expect(await tokenGenerator.verify(result.authorizationToken)).toBe(true);
-    expect(await tokenGenerator.verify(result.refreshToken)).toBe(true);
+    expect(
+      await authenticationTokenService.verify(result.authorizationToken),
+    ).toBe(true);
+    expect(await authenticationTokenService.verify(result.refreshToken)).toBe(
+      true,
+    );
   });
 });

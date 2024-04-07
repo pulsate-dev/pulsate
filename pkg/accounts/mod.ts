@@ -26,6 +26,7 @@ import {
   VerifyEmailRoute,
 } from './router.js';
 import { AuthenticateService } from './service/authenticate.js';
+import { AuthenticationTokenService } from './service/authenticationTokenService.js';
 import { EditAccountService } from './service/editAccount.js';
 import { EtagVerifyService } from './service/etagGenerateVerify.js';
 import { FetchAccountService } from './service/fetchAccount.js';
@@ -35,7 +36,6 @@ import { RegisterAccountService } from './service/register.js';
 import { ResendVerifyTokenService } from './service/resendToken.js';
 import { DummySendNotificationService } from './service/sendNotification.js';
 import { SilenceService } from './service/silence.js';
-import { TokenGenerator } from './service/tokenGenerator.js';
 import { UnfollowService } from './service/unfollow.js';
 import { VerifyAccountTokenService } from './service/verifyToken.js';
 
@@ -43,7 +43,7 @@ export const accounts = new OpenAPIHono();
 const accountRepository = new InMemoryAccountRepository();
 const accountFollowRepository = new InMemoryAccountFollowRepository();
 const accountVerifyTokenRepository = new InMemoryAccountVerifyTokenRepository();
-const tokenGenerator = await TokenGenerator.new();
+const authenticationTokenService = await AuthenticationTokenService.new();
 class Clock {
   now() {
     return BigInt(Date.now());
@@ -55,7 +55,7 @@ const passwordEncoder = new Argon2idPasswordEncoder();
 export const controller = new AccountController({
   authenticateService: new AuthenticateService({
     accountRepository: accountRepository,
-    tokenGenerator: tokenGenerator,
+    authenticationTokenService: authenticationTokenService,
     passwordEncoder: passwordEncoder,
   }),
   editAccountService: new EditAccountService(

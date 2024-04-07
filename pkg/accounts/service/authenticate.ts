@@ -4,7 +4,7 @@ import type { PasswordEncoder } from '../../password/mod.js';
 import { addSecondsToDate, convertTo } from '../../time/mod.js';
 import type { AccountName } from '../model/account.js';
 import type { AccountRepository } from '../model/repository.js';
-import type { TokenGenerator } from './tokenGenerator.js';
+import type { AuthenticationTokenService } from './authenticationTokenService.js';
 
 export interface TokenPair {
   authorizationToken: string;
@@ -13,16 +13,16 @@ export interface TokenPair {
 
 export class AuthenticateService {
   private readonly accountRepository: AccountRepository;
-  private readonly tokenGenerator: TokenGenerator;
+  private readonly authenticationTokenService: AuthenticationTokenService;
   private readonly passwordEncoder: PasswordEncoder;
 
   constructor(args: {
     accountRepository: AccountRepository;
-    tokenGenerator: TokenGenerator;
+    authenticationTokenService: AuthenticationTokenService;
     passwordEncoder: PasswordEncoder;
   }) {
     this.accountRepository = args.accountRepository;
-    this.tokenGenerator = args.tokenGenerator;
+    this.authenticationTokenService = args.authenticationTokenService;
     this.passwordEncoder = args.passwordEncoder;
   }
 
@@ -43,7 +43,7 @@ export class AuthenticateService {
       return Result.err(new Error('Password is incorrect'));
     }
 
-    const authorizationToken = await this.tokenGenerator.generate(
+    const authorizationToken = await this.authenticationTokenService.generate(
       Option.unwrap(account).getName(),
       convertTo(new Date()),
       convertTo(addSecondsToDate(new Date(), 900)),
@@ -53,7 +53,7 @@ export class AuthenticateService {
       return Result.err(new Error('Failed to generate authorization token'));
     }
 
-    const refreshToken = await this.tokenGenerator.generate(
+    const refreshToken = await this.authenticationTokenService.generate(
       Option.unwrap(account).getName(),
       convertTo(new Date()),
       convertTo(addSecondsToDate(new Date(), 2_592_000)),

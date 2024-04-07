@@ -8,6 +8,7 @@ import {
   InMemoryAccountVerifyTokenRepository,
 } from '../accounts/adaptor/repository/dummy.js';
 import { AuthenticateService } from '../accounts/service/authenticate.js';
+import { AuthenticationTokenService } from '../accounts/service/authenticationTokenService.js';
 import { EditAccountService } from '../accounts/service/editAccount.js';
 import { EtagVerifyService } from '../accounts/service/etagGenerateVerify.js';
 import { FetchAccountService } from '../accounts/service/fetchAccount.js';
@@ -17,7 +18,6 @@ import { RegisterAccountService } from '../accounts/service/register.js';
 import { ResendVerifyTokenService } from '../accounts/service/resendToken.js';
 import { DummySendNotificationService } from '../accounts/service/sendNotification.js';
 import { SilenceService } from '../accounts/service/silence.js';
-import { TokenGenerator } from '../accounts/service/tokenGenerator.js';
 import { UnfollowService } from '../accounts/service/unfollow.js';
 import { VerifyAccountTokenService } from '../accounts/service/verifyToken.js';
 import { SnowflakeIDGenerator } from '../id/mod.js';
@@ -39,7 +39,7 @@ const idGenerator = new SnowflakeIDGenerator(0, {
 const accountRepository = new InMemoryAccountRepository();
 const accountFollowRepository = new InMemoryAccountFollowRepository();
 const accountVerifyTokenRepository = new InMemoryAccountVerifyTokenRepository();
-const tokenGenerator = await TokenGenerator.new();
+const authenticationTokenService = await AuthenticationTokenService.new();
 class Clock {
   now() {
     return BigInt(Date.now());
@@ -49,7 +49,7 @@ const passwordEncoder = new Argon2idPasswordEncoder();
 const accountController = new AccountController({
   authenticateService: new AuthenticateService({
     accountRepository: accountRepository,
-    tokenGenerator: tokenGenerator,
+    authenticationTokenService: authenticationTokenService,
     passwordEncoder: passwordEncoder,
   }),
   editAccountService: new EditAccountService(
