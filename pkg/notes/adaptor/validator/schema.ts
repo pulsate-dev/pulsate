@@ -110,7 +110,9 @@ export const RenoteRequestSchema = z.object({
       'Note content (max 3000 characters/if attachment file exists, allow 0 character)',
     default: '',
   }),
-  visibility: z.string().openapi({
+  visibility: z
+    .union([z.literal('public'), z.literal('home'), z.literal('followers')])
+    .openapi({
     example: 'PUBLIC',
     description: 'Note visibility (PUBLIC/HOME/FOLLOWERS)',
     default: 'PUBLIC',
