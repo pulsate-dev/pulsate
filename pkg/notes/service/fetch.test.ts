@@ -11,7 +11,7 @@ import { Account, type AccountID } from '../../accounts/model/account.js';
 import { AuthenticateService } from '../../accounts/service/authenticate.js';
 import { AuthenticationTokenService } from '../../accounts/service/authenticationTokenService.js';
 import { EditAccountService } from '../../accounts/service/editAccount.js';
-import { EtagVerifyService } from '../../accounts/service/etagGenerateVerify.js';
+import { EtagService } from '../../accounts/service/etagService.js';
 import { FetchAccountService } from '../../accounts/service/fetchAccount.js';
 import { FollowService } from '../../accounts/service/follow.js';
 import { FreezeService } from '../../accounts/service/freeze.js';
@@ -118,7 +118,7 @@ const accountController = new AccountController({
   }),
   editAccountService: new EditAccountService(
     accountRepository,
-    new EtagVerifyService(),
+    new EtagService(),
     passwordEncoder,
   ),
   fetchAccountService: new FetchAccountService(accountRepository),

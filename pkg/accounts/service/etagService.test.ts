@@ -4,7 +4,7 @@ import { afterEach, describe, expect, it } from 'vitest';
 import type { ID } from '../../id/type.js';
 import { InMemoryAccountRepository } from '../adaptor/repository/dummy.js';
 import { Account, type AccountID } from '../model/account.js';
-import { EtagVerifyService } from './etagGenerateVerify.js';
+import { EtagService } from './etagService.js';
 
 const repository = new InMemoryAccountRepository();
 await repository.create(
@@ -22,17 +22,17 @@ await repository.create(
     createdAt: new Date(),
   }),
 );
-const etagVerifyService: EtagVerifyService = new EtagVerifyService();
+const etagService: EtagService = new EtagService();
 
-describe('EtagVerifyService', () => {
+describe('etagService', () => {
   afterEach(() => repository.reset());
 
   it('success to verify etag', async () => {
     const account = await repository.findByName('@john@example.com');
     if (Option.isNone(account)) return;
 
-    const etag = await etagVerifyService.generate(account[1]);
-    const result = await etagVerifyService.verify(account[1], etag);
+    const etag = await etagService.generate(account[1]);
+    const result = await etagService.verify(account[1], etag);
     expect(result).toBe(true);
   });
 
@@ -40,8 +40,8 @@ describe('EtagVerifyService', () => {
     const account = await repository.findByName('@john@example.com');
     if (Option.isNone(account)) return;
 
-    const etag = `${await etagVerifyService.generate(account[1])}_invalid`;
-    const result = await etagVerifyService.verify(account[1], etag);
+    const etag = `${await etagService.generate(account[1])}_invalid`;
+    const result = await etagService.verify(account[1], etag);
     expect(result).toBe(false);
   });
 
@@ -49,7 +49,7 @@ describe('EtagVerifyService', () => {
     const account = await repository.findByName('@john@example.com');
     if (Option.isNone(account)) return;
 
-    const etag = await etagVerifyService.generate(account[1]);
+    const etag = await etagService.generate(account[1]);
     expect(etag.length).toBe(64);
   });
 });

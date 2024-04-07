@@ -3,7 +3,7 @@ import { Option, Result } from '@mikuroxina/mini-fn';
 import { type PasswordEncoder } from '../../password/mod.js';
 import type { AccountName } from '../model/account.js';
 import { type AccountRepository } from '../model/repository.js';
-import type { EtagVerifyService } from './etagGenerateVerify.js';
+import type { EtagService } from './etagService.js';
 
 export class EditAccountService {
   private readonly nicknameShortest = 1;
@@ -14,16 +14,16 @@ export class EditAccountService {
   private readonly emailLongest = 319;
 
   private accountRepository: AccountRepository;
-  private etagVerifyService: EtagVerifyService;
+  private etagService: EtagService;
   private passwordEncoder: PasswordEncoder;
 
   constructor(
     accountRepository: AccountRepository,
-    etagVerifyService: EtagVerifyService,
+    etagService: EtagService,
     passwordEncoder: PasswordEncoder,
   ) {
     this.accountRepository = accountRepository;
-    this.etagVerifyService = etagVerifyService;
+    this.etagService = etagService;
     this.passwordEncoder = passwordEncoder;
   }
 
@@ -38,7 +38,7 @@ export class EditAccountService {
     }
     const account = Option.unwrap(res);
 
-    const match = await this.etagVerifyService.verify(account, etag);
+    const match = await this.etagService.verify(account, etag);
     if (!match) {
       // TODO: add a new error type for etag not match
       return Result.err(new Error('etag not match'));
@@ -75,7 +75,7 @@ export class EditAccountService {
     }
     const account = Option.unwrap(res);
 
-    const match = await this.etagVerifyService.verify(account, etag);
+    const match = await this.etagService.verify(account, etag);
     if (!match) {
       return Result.err(new Error('etag not match'));
     }
@@ -114,7 +114,7 @@ export class EditAccountService {
     }
     const account = Option.unwrap(res);
 
-    const match = await this.etagVerifyService.verify(account, etag);
+    const match = await this.etagService.verify(account, etag);
     if (!match) {
       return Result.err(new Error('etag not match'));
     }
@@ -149,7 +149,7 @@ export class EditAccountService {
     }
     const account = Option.unwrap(res);
 
-    const match = await this.etagVerifyService.verify(account, etag);
+    const match = await this.etagService.verify(account, etag);
     if (!match) {
       return Result.err(new Error('etag not match'));
     }

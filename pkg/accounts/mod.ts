@@ -28,7 +28,7 @@ import {
 import { AuthenticateService } from './service/authenticate.js';
 import { AuthenticationTokenService } from './service/authenticationTokenService.js';
 import { EditAccountService } from './service/editAccount.js';
-import { EtagVerifyService } from './service/etagGenerateVerify.js';
+import { EtagService } from './service/etagService.js';
 import { FetchAccountService } from './service/fetchAccount.js';
 import { FollowService } from './service/follow.js';
 import { FreezeService } from './service/freeze.js';
@@ -60,7 +60,7 @@ export const controller = new AccountController({
   }),
   editAccountService: new EditAccountService(
     accountRepository,
-    new EtagVerifyService(),
+    new EtagService(),
     passwordEncoder,
   ),
   fetchAccountService: new FetchAccountService(accountRepository),

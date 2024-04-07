@@ -1,6 +1,6 @@
 import type { Account } from '../model/account.js';
 
-export class EtagVerifyService {
+export class EtagService {
   /**
    * Verify Etag with Etag in given account. Ref: https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/ETag
    * @param account

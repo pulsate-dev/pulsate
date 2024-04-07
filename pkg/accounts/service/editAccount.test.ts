@@ -6,14 +6,14 @@ import { Argon2idPasswordEncoder } from '../../password/mod.js';
 import { InMemoryAccountRepository } from '../adaptor/repository/dummy.js';
 import { Account, type AccountID } from '../model/account.js';
 import { EditAccountService } from './editAccount.js';
-import { EtagVerifyService } from './etagGenerateVerify.js';
+import { EtagService } from './etagService.js';
 
 const passwordEncoder = new Argon2idPasswordEncoder();
 const repository = new InMemoryAccountRepository();
-const etagVerifyService = new EtagVerifyService();
+const etagService = new EtagService();
 const editAccountService = new EditAccountService(
   repository,
-  etagVerifyService,
+  etagService,
   passwordEncoder,
 );
 
@@ -40,7 +40,7 @@ describe('EditAccountService', () => {
     const res = await repository.findByName('@john@example.com');
     if (Option.isNone(res)) return;
 
-    etag = await etagVerifyService.generate(res[1]);
+    etag = await etagService.generate(res[1]);
     account = res[1];
   });
   afterEach(() => repository.reset());
