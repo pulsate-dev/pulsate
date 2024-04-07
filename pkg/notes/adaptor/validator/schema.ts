@@ -113,10 +113,10 @@ export const RenoteRequestSchema = z.object({
   visibility: z
     .union([z.literal('public'), z.literal('home'), z.literal('followers')])
     .openapi({
-    example: 'PUBLIC',
-    description: 'Note visibility (PUBLIC/HOME/FOLLOWERS)',
-    default: 'PUBLIC',
-  }),
+      example: 'public',
+      description: 'Note visibility (public/home/followers)',
+      default: 'public',
+    }),
   // ToDo: Define attachment schema
   contents_warning_comment: z.string().max(256).openapi({
     example: 'This note contains sensitive content',
