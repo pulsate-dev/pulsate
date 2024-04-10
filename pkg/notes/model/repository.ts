@@ -13,3 +13,9 @@ export interface NoteRepository {
   findByID(id: ID<NoteID>): Promise<Option.Option<Note>>;
   deleteByID(id: ID<NoteID>): Promise<Result.Result<Error, void>>;
 }
+
+export interface BookmarkRepository {
+  create(note: Note): Promise<Result.Result<Error, void>>;
+  findByID(id: ID<NoteID>): Promise<Option.Option<Note>>;
+  deleteByID(id: ID<NoteID>): Promise<Result.Result<Error, void>>;
+}
