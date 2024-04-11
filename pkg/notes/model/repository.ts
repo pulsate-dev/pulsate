@@ -2,6 +2,7 @@ import type { Option, Result } from '@mikuroxina/mini-fn';
 
 import type { AccountID } from '../../accounts/model/account.js';
 import type { ID } from '../../id/type.js';
+import type { Bookmark } from './bookmark.js';
 import type { Note, NoteID } from './note.js';
 
 export interface NoteRepository {
@@ -16,6 +17,6 @@ export interface NoteRepository {
 
 export interface BookmarkRepository {
   create(note: Note): Promise<Result.Result<Error, void>>;
-  findByID(id: ID<NoteID>): Promise<Option.Option<Note>>;
+  findByID(id: ID<NoteID>): Promise<Option.Option<Bookmark>>;
   deleteByID(id: ID<NoteID>): Promise<Result.Result<Error, void>>;
 }
