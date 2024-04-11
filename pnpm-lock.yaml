@@ -22,7 +22,7 @@ dependencies:
     version: 5.12.1(prisma@5.12.1)
   '@scalar/hono-api-reference':
     specifier: ^0.4.0
-    version: 0.4.32(hono@4.2.3)(postcss@8.4.38)(typescript@5.4.4)(unified@11.0.4)(vue@3.4.21)(yjs@13.6.14)
+    version: 0.4.33(hono@4.2.3)(postcss@8.4.38)(typescript@5.4.4)(unified@11.0.4)(vue@3.4.21)(yjs@13.6.14)
   argon2:
     specifier: ^0.40.0
     version: 0.40.1
@@ -655,7 +655,7 @@ packages:
     peerDependencies:
       vue: ^3.2.0
     dependencies:
-      '@tanstack/vue-virtual': 3.2.0(vue@3.4.21)
+      '@tanstack/vue-virtual': 3.2.1(vue@3.4.21)
       vue: 3.4.21(typescript@5.4.4)
     dev: false
 
@@ -1071,8 +1071,8 @@ packages:
       - yjs
     dev: false
 
-  /@scalar/api-reference@1.20.25(postcss@8.4.38)(typescript@5.4.4)(unified@11.0.4)(vue@3.4.21)(yjs@13.6.14):
-    resolution: {integrity: sha512-D1uzEUOH4cioS0BDjBdhvSytdtG38jBA0CLVk/J9IlSVDDYyeUfmSW3vNxzMUj70MDGYJONrwaaRjK4bSodCDg==}
+  /@scalar/api-reference@1.20.26(postcss@8.4.38)(typescript@5.4.4)(unified@11.0.4)(vue@3.4.21)(yjs@13.6.14):
+    resolution: {integrity: sha512-IHx6FVvQCwqqFM9CCUmmCS5N3mv5vtoC9WtRaJ5SP2FXDdQbmG2WZW8IhCfb7MrwT94a0SjSfAdccXlHcTFTKQ==}
     engines: {node: '>=18'}
     peerDependencies:
       unified: ^11.0.0
@@ -1143,13 +1143,13 @@ packages:
       - typescript
     dev: false
 
-  /@scalar/hono-api-reference@0.4.32(hono@4.2.3)(postcss@8.4.38)(typescript@5.4.4)(unified@11.0.4)(vue@3.4.21)(yjs@13.6.14):
-    resolution: {integrity: sha512-wn7H2dKwX5XWMqRPq9YNNCIWGH4Ar9RykFUk2Z+ecFYlQQwvgmsXeTXbobCyrkNh6NwHEPRHd5Aa6Jkh5Wqw6w==}
+  /@scalar/hono-api-reference@0.4.33(hono@4.2.3)(postcss@8.4.38)(typescript@5.4.4)(unified@11.0.4)(vue@3.4.21)(yjs@13.6.14):
+    resolution: {integrity: sha512-HxRub8uakgUc5lHBp0kQjPjlgqRa9ySWpT4LN6taiQfU1p3nNHcYXNKm+iRyK0vDtMlNzeue0Den/Z7SMtxkWQ==}
     engines: {node: '>=18'}
     peerDependencies:
       hono: ^3.0.0 || ^4.0.0
     dependencies:
-      '@scalar/api-reference': 1.20.25(postcss@8.4.38)(typescript@5.4.4)(unified@11.0.4)(vue@3.4.21)(yjs@13.6.14)
+      '@scalar/api-reference': 1.20.26(postcss@8.4.38)(typescript@5.4.4)(unified@11.0.4)(vue@3.4.21)(yjs@13.6.14)
       hono: 4.2.3
     transitivePeerDependencies:
       - '@vue/composition-api'
@@ -1306,16 +1306,16 @@ packages:
     resolution: {integrity: sha512-+Fj43pSMwJs4KRrH/938Uf+uAELIgVBmQzg/q1YG10djyfA3TnrU8N8XzqCh/okZdszqBQTZf96idMfE5lnwTA==}
     dev: true
 
-  /@tanstack/virtual-core@3.2.0:
-    resolution: {integrity: sha512-P5XgYoAw/vfW65byBbJQCw+cagdXDT/qH6wmABiLt4v4YBT2q2vqCOhihe+D1Nt325F/S/0Tkv6C5z0Lv+VBQQ==}
+  /@tanstack/virtual-core@3.2.1:
+    resolution: {integrity: sha512-nO0d4vRzsmpBQCJYyClNHPPoUMI4nXNfrm6IcCRL33ncWMoNVpURh9YebEHPw8KrtsP2VSJIHE4gf4XFGk1OGg==}
     dev: false
 
-  /@tanstack/vue-virtual@3.2.0(vue@3.4.21):
-    resolution: {integrity: sha512-KbmQVvw1k5Js2Fk4DJw9aDxFT5+e8a2Ba4UBJAFCRnWBCnzd3NlmEHI9JCeLv1tYDZ/iHwwv+Z9Le0BENIEP8A==}
+  /@tanstack/vue-virtual@3.2.1(vue@3.4.21):
+    resolution: {integrity: sha512-NWJL8zJ4kwCkUzWd2jLKN9NTxj9RjYyaJwtA16j9urfbnMIdKe2g2HNymq0jGj+fmX/9nd58d6h78LrZ7I/J+A==}
     peerDependencies:
       vue: ^2.7.0 || ^3.0.0
     dependencies:
-      '@tanstack/virtual-core': 3.2.0
+      '@tanstack/virtual-core': 3.2.1
       vue: 3.4.21(typescript@5.4.4)
     dev: false
 
