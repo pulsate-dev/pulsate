@@ -25,10 +25,10 @@ import {
   UpdateAccountRoute,
   VerifyEmailRoute,
 } from './router.js';
-import { TokenVerifyService } from './service/accountVerifyToken.js';
-import { AuthenticationService } from './service/authenticate.js';
+import { AuthenticateService } from './service/authenticate.js';
+import { AuthenticationTokenService } from './service/authenticationTokenService.js';
 import { EditAccountService } from './service/editAccount.js';
-import { EtagVerifyService } from './service/etagGenerateVerify.js';
+import { EtagService } from './service/etagService.js';
 import { FetchAccountService } from './service/fetchAccount.js';
 import { FollowService } from './service/follow.js';
 import { FreezeService } from './service/freeze.js';
@@ -36,14 +36,14 @@ import { RegisterAccountService } from './service/register.js';
 import { ResendVerifyTokenService } from './service/resendToken.js';
 import { DummySendNotificationService } from './service/sendNotification.js';
 import { SilenceService } from './service/silence.js';
-import { TokenGenerator } from './service/tokenGenerator.js';
 import { UnfollowService } from './service/unfollow.js';
+import { VerifyAccountTokenService } from './service/verifyToken.js';
 
 export const accounts = new OpenAPIHono();
 const accountRepository = new InMemoryAccountRepository();
 const accountFollowRepository = new InMemoryAccountFollowRepository();
 const accountVerifyTokenRepository = new InMemoryAccountVerifyTokenRepository();
-const tokenGenerator = await TokenGenerator.new();
+const authenticationTokenService = await AuthenticationTokenService.new();
 class Clock {
   now() {
     return BigInt(Date.now());
@@ -53,14 +53,14 @@ const idGenerator = new SnowflakeIDGenerator(0, new Clock());
 const passwordEncoder = new Argon2idPasswordEncoder();
 
 export const controller = new AccountController({
-  authenticationService: new AuthenticationService({
+  authenticateService: new AuthenticateService({
     accountRepository: accountRepository,
-    tokenGenerator: tokenGenerator,
+    authenticationTokenService: authenticationTokenService,
     passwordEncoder: passwordEncoder,
   }),
   editAccountService: new EditAccountService(
     accountRepository,
-    new EtagVerifyService(),
+    new EtagService(),
     passwordEncoder,
   ),
   fetchAccountService: new FetchAccountService(accountRepository),
@@ -71,14 +71,14 @@ export const controller = new AccountController({
     idGenerator: idGenerator,
     passwordEncoder: passwordEncoder,
     sendNotification: new DummySendNotificationService(),
-    verifyTokenService: new TokenVerifyService(
+    verifyAccountTokenService: new VerifyAccountTokenService(
       accountVerifyTokenRepository,
       accountRepository,
       new Clock(),
     ),
   }),
   silenceService: new SilenceService(accountRepository),
-  tokenVerifyService: new TokenVerifyService(
+  verifyAccountTokenService: new VerifyAccountTokenService(
     accountVerifyTokenRepository,
     accountRepository,
     new Clock(),
@@ -89,7 +89,7 @@ export const controller = new AccountController({
   ),
   resendTokenService: new ResendVerifyTokenService(
     accountRepository,
-    new TokenVerifyService(
+    new VerifyAccountTokenService(
       accountVerifyTokenRepository,
       accountRepository,
       new Clock(),

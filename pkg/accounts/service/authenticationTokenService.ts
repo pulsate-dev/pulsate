@@ -3,7 +3,7 @@ import * as jose from 'jose';
 
 import type { PulsateTime } from '../../time/mod.js';
 
-export class TokenGenerator {
+export class AuthenticationTokenService {
   private readonly privateKey: CryptoKey;
   private readonly publicKey: CryptoKey;
 
@@ -15,7 +15,7 @@ export class TokenGenerator {
       true,
       ['sign', 'verify'],
     )) as CryptoKeyPair;
-    return new TokenGenerator(privateKey, publicKey);
+    return new AuthenticationTokenService(privateKey, publicKey);
   }
 
   private constructor(privateKey: CryptoKey, publicKey: CryptoKey) {

@@ -3,8 +3,7 @@ import { Option, Result } from '@mikuroxina/mini-fn';
 
 import type { ID } from '../../../id/type.js';
 import { type AccountID, type AccountName } from '../../model/account.js';
-import type { TokenVerifyService } from '../../service/accountVerifyToken.js';
-import type { AuthenticationService } from '../../service/authenticate.js';
+import type { AuthenticateService } from '../../service/authenticate.js';
 import type { EditAccountService } from '../../service/editAccount.js';
 import type { FetchAccountService } from '../../service/fetchAccount.js';
 import type { FollowService } from '../../service/follow.js';
@@ -13,6 +12,7 @@ import type { RegisterAccountService } from '../../service/register.js';
 import type { ResendVerifyTokenService } from '../../service/resendToken.js';
 import type { SilenceService } from '../../service/silence.js';
 import { type UnfollowService } from '../../service/unfollow.js';
+import type { VerifyAccountTokenService } from '../../service/verifyToken.js';
 import {
   type CreateAccountResponseSchema,
   type GetAccountResponseSchema,
@@ -25,8 +25,8 @@ export class AccountController {
   private readonly editAccountService: EditAccountService;
   private readonly fetchAccountService: FetchAccountService;
   private readonly freezeService: FreezeService;
-  private readonly tokenVerifyService: TokenVerifyService;
-  private readonly authenticationService: AuthenticationService;
+  private readonly verifyAccountTokenService: VerifyAccountTokenService;
+  private readonly authenticateService: AuthenticateService;
   private readonly silenceService: SilenceService;
   private readonly followService: FollowService;
   private readonly unFollowService: UnfollowService;
@@ -37,8 +37,8 @@ export class AccountController {
     editAccountService: EditAccountService;
     fetchAccountService: FetchAccountService;
     freezeService: FreezeService;
-    tokenVerifyService: TokenVerifyService;
-    authenticationService: AuthenticationService;
+    verifyAccountTokenService: VerifyAccountTokenService;
+    authenticateService: AuthenticateService;
     silenceService: SilenceService;
     followService: FollowService;
     unFollowService: UnfollowService;
@@ -48,8 +48,8 @@ export class AccountController {
     this.editAccountService = args.editAccountService;
     this.fetchAccountService = args.fetchAccountService;
     this.freezeService = args.freezeService;
-    this.tokenVerifyService = args.tokenVerifyService;
-    this.authenticationService = args.authenticationService;
+    this.verifyAccountTokenService = args.verifyAccountTokenService;
+    this.authenticateService = args.authenticateService;
     this.silenceService = args.silenceService;
     this.followService = args.followService;
     this.unFollowService = args.unFollowService;
@@ -173,7 +173,7 @@ export class AccountController {
     name: string,
     token: string,
   ): Promise<Result.Result<Error, void>> {
-    const res = await this.tokenVerifyService.verify(
+    const res = await this.verifyAccountTokenService.verify(
       name as AccountName,
       token,
     );
@@ -249,7 +249,7 @@ export class AccountController {
     passphrase: string,
   ): Promise<Result.Result<Error, z.infer<typeof LoginResponseSchema>>> {
     // ToDo: Check Captcha token
-    const res = await this.authenticationService.handle(
+    const res = await this.authenticateService.handle(
       name as AccountName,
       passphrase,
     );
