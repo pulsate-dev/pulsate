@@ -2,8 +2,12 @@ import { Option, Result } from '@mikuroxina/mini-fn';
 
 import type { AccountID } from '../../../accounts/model/account.js';
 import type { ID } from '../../../id/type.js';
+import { Bookmark } from '../../model/bookmark.js';
 import { type Note, type NoteID } from '../../model/note.js';
-import type { NoteRepository } from '../../model/repository.js';
+import type {
+  BookmarkRepository,
+  NoteRepository,
+} from '../../model/repository.js';
 
 export class InMemoryNoteRepository implements NoteRepository {
   private readonly notes: Map<ID<NoteID>, Note>;
@@ -48,6 +52,43 @@ export class InMemoryNoteRepository implements NoteRepository {
 
   findByID(id: ID<NoteID>): Promise<Option.Option<Note>> {
     const res = this.notes.get(id);
+    if (!res) {
+      return Promise.resolve(Option.none());
+    }
+    return Promise.resolve(Option.some(res));
+  }
+}
+
+export class InMemoryBookmarkRepository implements BookmarkRepository {
+  private readonly bookmarks: Map<ID<NoteID>, Bookmark>;
+
+  constructor(bookmarks: Bookmark[] = []) {
+    this.bookmarks = new Map(
+      bookmarks.map((bookmark) => [bookmark.getNoteID(), bookmark]),
+    );
+  }
+
+  async create(note: Note): Promise<Result.Result<Error, void>> {
+    const bookmark = Bookmark.new({
+      noteID: note.getID(),
+      accountID: note.getAuthorID(),
+    });
+    this.bookmarks.set(note.getID(), bookmark);
+    return Result.ok(undefined);
+  }
+
+  async deleteByID(id: ID<NoteID>): Promise<Result.Result<Error, void>> {
+    const target = await this.findByID(id);
+    if (Option.isNone(target)) {
+      return Result.err(new Error('bookmark not found'));
+    }
+
+    this.bookmarks.delete(Option.unwrap(target).getNoteID());
+    return Result.ok(undefined);
+  }
+
+  findByID(id: ID<NoteID>): Promise<Option.Option<Bookmark>> {
+    const res = this.bookmarks.get(id);
     if (!res) {
       return Promise.resolve(Option.none());
     }
