@@ -22,7 +22,7 @@ dependencies:
     version: 5.12.1(prisma@5.12.1)
   '@scalar/hono-api-reference':
     specifier: ^0.4.0
-    version: 0.4.37(hono@4.2.3)(postcss@8.4.38)(typescript@5.4.5)(unified@11.0.4)(vue@3.4.23)(yjs@13.6.14)
+    version: 0.4.38(hono@4.2.3)(postcss@8.4.38)(typescript@5.4.5)(unified@11.0.4)(vue@3.4.23)(yjs@13.6.14)
   argon2:
     specifier: ^0.40.0
     version: 0.40.1
@@ -1074,8 +1074,8 @@ packages:
       - yjs
     dev: false
 
-  /@scalar/api-reference@1.20.30(postcss@8.4.38)(typescript@5.4.5)(unified@11.0.4)(vue@3.4.23)(yjs@13.6.14):
-    resolution: {integrity: sha512-EWlWq3WdirBxl+A7weI1FFlCbu2LMEyGTgAKaDDBbOMajBEisikCO5y3ZcPgv4JDGZNXdbJ+MpQxP91cetgdFw==}
+  /@scalar/api-reference@1.20.31(postcss@8.4.38)(typescript@5.4.5)(unified@11.0.4)(vue@3.4.23)(yjs@13.6.14):
+    resolution: {integrity: sha512-+E8uKwpQDEnreJqghzgeqdOjn8knuOncX+jSaESh78948pHluNa+si1CHOhSqBt+AZp9qkpmXFh+ztHpLOywTQ==}
     engines: {node: '>=18'}
     peerDependencies:
       unified: ^11.0.0
@@ -1148,13 +1148,13 @@ packages:
       - typescript
     dev: false
 
-  /@scalar/hono-api-reference@0.4.37(hono@4.2.3)(postcss@8.4.38)(typescript@5.4.5)(unified@11.0.4)(vue@3.4.23)(yjs@13.6.14):
-    resolution: {integrity: sha512-t/uZe+2Vee9HmuHoboKu+O2u8tHjYzhMrp1Ab37p9SxcuNwSlst0i/qe+cPp9s6olXqQIYeQLyDUSriy1EFjvQ==}
+  /@scalar/hono-api-reference@0.4.38(hono@4.2.3)(postcss@8.4.38)(typescript@5.4.5)(unified@11.0.4)(vue@3.4.23)(yjs@13.6.14):
+    resolution: {integrity: sha512-f2v6LPssPyHEVOfwx50F3YQbqgxSGFRKhxJYUv4uXUSoN2hqZkYDGNySSJnMqTyvvu2y6DgiftNEWTVFPPm0KQ==}
     engines: {node: '>=18'}
     peerDependencies:
       hono: ^3.0.0 || ^4.0.0
     dependencies:
-      '@scalar/api-reference': 1.20.30(postcss@8.4.38)(typescript@5.4.5)(unified@11.0.4)(vue@3.4.23)(yjs@13.6.14)
+      '@scalar/api-reference': 1.20.31(postcss@8.4.38)(typescript@5.4.5)(unified@11.0.4)(vue@3.4.23)(yjs@13.6.14)
       hono: 4.2.3
     transitivePeerDependencies:
       - '@vue/composition-api'
@@ -1196,7 +1196,7 @@ packages:
       jsonpointer: 5.0.1
       leven: 4.0.0
       openapi-types: 12.1.3
-      vite: 5.2.8(@types/node@20.12.7)
+      vite: 5.2.9(@types/node@20.12.7)
       yaml: 2.4.1
     transitivePeerDependencies:
       - less
@@ -2713,8 +2713,8 @@ packages:
       zwitch: 2.0.4
     dev: false
 
-  /hast-util-to-text@4.0.1:
-    resolution: {integrity: sha512-RHL7Vo2n06ZocCFWqmbyhZ1pCYX/mSKdywt9YD5U6Hquu5syV+dImCXFKLFt02JoK5QxkQFS0PoVdFdPXuPffQ==}
+  /hast-util-to-text@4.0.2:
+    resolution: {integrity: sha512-KK6y/BN8lbaq654j7JgBydev7wuNMcID54lkRav1P0CaE1e47P72AWWPiGKXTJU271ooYzcvTAn/Zt0REnvc7A==}
     dependencies:
       '@types/hast': 3.0.4
       '@types/unist': 3.0.2
@@ -3319,7 +3319,7 @@ packages:
       micromark-util-html-tag-name: 2.0.0
       micromark-util-normalize-identifier: 2.0.0
       micromark-util-resolve-all: 2.0.0
-      micromark-util-subtokenize: 2.0.0
+      micromark-util-subtokenize: 2.0.1
       micromark-util-symbol: 2.0.0
       micromark-util-types: 2.0.0
     dev: false
@@ -3509,8 +3509,8 @@ packages:
       micromark-util-symbol: 2.0.0
     dev: false
 
-  /micromark-util-subtokenize@2.0.0:
-    resolution: {integrity: sha512-vc93L1t+gpR3p8jxeVdaYlbV2jTYteDje19rNSS/H5dlhxUYll5Fy6vJ2cDwP8RnsXi818yGty1ayP55y3W6fg==}
+  /micromark-util-subtokenize@2.0.1:
+    resolution: {integrity: sha512-jZNtiFl/1aY73yS3UGQkutD0UbhTt68qnRpw2Pifmz5wV9h8gOVsN70v+Lq/f1rKaU/W8pxRe8y8Q9FX1AOe1Q==}
     dependencies:
       devlop: 1.1.0
       micromark-util-chunked: 2.0.0
@@ -3543,7 +3543,7 @@ packages:
       micromark-util-normalize-identifier: 2.0.0
       micromark-util-resolve-all: 2.0.0
       micromark-util-sanitize-uri: 2.0.0
-      micromark-util-subtokenize: 2.0.0
+      micromark-util-subtokenize: 2.0.1
       micromark-util-symbol: 2.0.0
       micromark-util-types: 2.0.0
     transitivePeerDependencies:
@@ -3897,7 +3897,7 @@ packages:
     resolution: {integrity: sha512-QtobgRgYoQaK6p1eSr2SD1i61f7bjF2kZHAQHxeCHAuJf7ZUDMvQ7owDq9YTkmar5m5TSUol+2D3bp3KfJf/oA==}
     dependencies:
       '@types/hast': 3.0.4
-      hast-util-to-text: 4.0.1
+      hast-util-to-text: 4.0.2
       lowlight: 3.1.0
       unist-util-visit: 5.0.0
       vfile: 6.0.1
@@ -4414,6 +4414,43 @@ packages:
       rollup: 4.14.3
     optionalDependencies:
       fsevents: 2.3.3
+    dev: true
+
+  /vite@5.2.9(@types/node@20.12.7):
+    resolution: {integrity: sha512-uOQWfuZBlc6Y3W/DTuQ1Sr+oIXWvqljLvS881SVmAj00d5RdgShLcuXWxseWPd4HXwiYBFW/vXHfKFeqj9uQnw==}
+    engines: {node: ^18.0.0 || >=20.0.0}
+    hasBin: true
+    peerDependencies:
+      '@types/node': ^18.0.0 || >=20.0.0
+      less: '*'
+      lightningcss: ^1.21.0
+      sass: '*'
+      stylus: '*'
+      sugarss: '*'
+      terser: ^5.4.0
+    peerDependenciesMeta:
+      '@types/node':
+        optional: true
+      less:
+        optional: true
+      lightningcss:
+        optional: true
+      sass:
+        optional: true
+      stylus:
+        optional: true
+      sugarss:
+        optional: true
+      terser:
+        optional: true
+    dependencies:
+      '@types/node': 20.12.7
+      esbuild: 0.20.2
+      postcss: 8.4.38
+      rollup: 4.14.3
+    optionalDependencies:
+      fsevents: 2.3.3
+    dev: false
 
   /vitest@1.5.0(@types/node@20.12.7):
     resolution: {integrity: sha512-d8UKgR0m2kjdxDWX6911uwxout6GHS0XaGH1cksSIVVG8kRlE7G7aBw7myKQCvDI5dT4j7ZMa+l706BIORMDLw==}
