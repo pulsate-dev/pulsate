@@ -22,7 +22,7 @@ dependencies:
     version: 5.12.1(prisma@5.12.1)
   '@scalar/hono-api-reference':
     specifier: ^0.4.0
-    version: 0.4.38(hono@4.2.3)(postcss@8.4.38)(typescript@5.4.5)(unified@11.0.4)(vue@3.4.23)(yjs@13.6.14)
+    version: 0.4.39(hono@4.2.3)(postcss@8.4.38)(typescript@5.4.5)(unified@11.0.4)(vue@3.4.23)(yjs@13.6.14)
   argon2:
     specifier: ^0.40.0
     version: 0.40.1
@@ -290,8 +290,8 @@ packages:
       '@lezer/common': 1.2.1
     dev: false
 
-  /@codemirror/commands@6.3.3:
-    resolution: {integrity: sha512-dO4hcF0fGT9tu1Pj1D2PvGvxjeGkbC6RGcZw6Qs74TH+Ed1gw98jmUgd2axWvIZEqTeTuFrg1lEB1KV6cK9h1A==}
+  /@codemirror/commands@6.4.0:
+    resolution: {integrity: sha512-HB3utD5GxCvEhSyj5EuG9KpuQQhFpxalh3lwrspyL/GeSNDe4c6JDxVzL12SJ+7gUknHjZzmq7OPCb9QPgiRmQ==}
     dependencies:
       '@codemirror/language': 6.10.1
       '@codemirror/state': 6.4.1
@@ -1074,8 +1074,8 @@ packages:
       - yjs
     dev: false
 
-  /@scalar/api-reference@1.20.31(postcss@8.4.38)(typescript@5.4.5)(unified@11.0.4)(vue@3.4.23)(yjs@13.6.14):
-    resolution: {integrity: sha512-+E8uKwpQDEnreJqghzgeqdOjn8knuOncX+jSaESh78948pHluNa+si1CHOhSqBt+AZp9qkpmXFh+ztHpLOywTQ==}
+  /@scalar/api-reference@1.20.32(postcss@8.4.38)(typescript@5.4.5)(unified@11.0.4)(vue@3.4.23)(yjs@13.6.14):
+    resolution: {integrity: sha512-Uy/Hd9Q0a0OBoCy2SRYosDZERLztWpwrl+glR6zNC0kejeKcnKkZ2IMkSGS5ywOlFYUy17WQsV+biNdX+7nCDA==}
     engines: {node: '>=18'}
     peerDependencies:
       unified: ^11.0.0
@@ -1148,13 +1148,13 @@ packages:
       - typescript
     dev: false
 
-  /@scalar/hono-api-reference@0.4.38(hono@4.2.3)(postcss@8.4.38)(typescript@5.4.5)(unified@11.0.4)(vue@3.4.23)(yjs@13.6.14):
-    resolution: {integrity: sha512-f2v6LPssPyHEVOfwx50F3YQbqgxSGFRKhxJYUv4uXUSoN2hqZkYDGNySSJnMqTyvvu2y6DgiftNEWTVFPPm0KQ==}
+  /@scalar/hono-api-reference@0.4.39(hono@4.2.3)(postcss@8.4.38)(typescript@5.4.5)(unified@11.0.4)(vue@3.4.23)(yjs@13.6.14):
+    resolution: {integrity: sha512-D6mnzbDLMyApF6/A9kkGt8yO5MLbdzeKDIJHv0MW4BGeOy8oPO5Gwxl007UWBBrvTAehhNU73ZhGMxx3I5aQCg==}
     engines: {node: '>=18'}
     peerDependencies:
       hono: ^3.0.0 || ^4.0.0
     dependencies:
-      '@scalar/api-reference': 1.20.31(postcss@8.4.38)(typescript@5.4.5)(unified@11.0.4)(vue@3.4.23)(yjs@13.6.14)
+      '@scalar/api-reference': 1.20.32(postcss@8.4.38)(typescript@5.4.5)(unified@11.0.4)(vue@3.4.23)(yjs@13.6.14)
       hono: 4.2.3
     transitivePeerDependencies:
       - '@vue/composition-api'
@@ -1271,7 +1271,7 @@ packages:
       yjs: ^13.6.0
     dependencies:
       '@codemirror/autocomplete': 6.16.0(@codemirror/language@6.10.1)(@codemirror/state@6.4.1)(@codemirror/view@6.26.3)(@lezer/common@1.2.1)
-      '@codemirror/commands': 6.3.3
+      '@codemirror/commands': 6.4.0
       '@codemirror/lang-css': 6.2.1(@codemirror/view@6.26.3)
       '@codemirror/lang-html': 6.4.9
       '@codemirror/lang-json': 6.0.1
@@ -1732,7 +1732,7 @@ packages:
       '@vue/compiler-ssr': 3.4.23
       '@vue/shared': 3.4.23
       estree-walker: 2.0.2
-      magic-string: 0.30.9
+      magic-string: 0.30.10
       postcss: 8.4.38
       source-map-js: 1.2.0
     dev: false
@@ -2038,7 +2038,7 @@ packages:
     resolution: {integrity: sha512-J8j+nZ+CdWmIeFIGXEFbFPtpiYacFMDR8GlHK3IyHQJMCaVRfGx9NT+Hxivv1ckLWPvNdZqndbr/7lVhrf/Svg==}
     dependencies:
       '@codemirror/autocomplete': 6.16.0(@codemirror/language@6.10.1)(@codemirror/state@6.4.1)(@codemirror/view@6.26.3)(@lezer/common@1.2.1)
-      '@codemirror/commands': 6.3.3
+      '@codemirror/commands': 6.4.0
       '@codemirror/language': 6.10.1
       '@codemirror/lint': 6.5.0
       '@codemirror/search': 6.5.6
@@ -3126,11 +3126,18 @@ packages:
       yallist: 4.0.0
     dev: true
 
+  /magic-string@0.30.10:
+    resolution: {integrity: sha512-iIRwTIf0QKV3UAnYK4PU8uiEc4SRh5jX0mwpIwETPpHdhVM4f53RSwS/vXvN1JhGX+Cs7B8qIq3d6AH49O5fAQ==}
+    dependencies:
+      '@jridgewell/sourcemap-codec': 1.4.15
+    dev: false
+
   /magic-string@0.30.9:
     resolution: {integrity: sha512-S1+hd+dIrC8EZqKyT9DstTH/0Z+f76kmmvZnkfQVmOpDEF9iVgdYif3Q/pIWHmCoo59bQVGW0kVL3e2nl+9+Sw==}
     engines: {node: '>=12'}
     dependencies:
       '@jridgewell/sourcemap-codec': 1.4.15
+    dev: true
 
   /magicast@0.3.4:
     resolution: {integrity: sha512-TyDF/Pn36bBji9rWKHlZe+PZb6Mx5V8IHCSxk7X4aljM4e/vyDvZZYwHewdVaqiA0nb3ghfHU/6AUpDxWoER2Q==}
