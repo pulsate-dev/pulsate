@@ -10,10 +10,10 @@ dependencies:
     version: 1.9.1
   '@hono/swagger-ui':
     specifier: ^0.2.1
-    version: 0.2.1(hono@4.2.3)
+    version: 0.2.1(hono@4.2.4)
   '@hono/zod-openapi':
     specifier: ^0.11.0
-    version: 0.11.0(hono@4.2.3)(zod@3.22.4)
+    version: 0.11.0(hono@4.2.4)(zod@3.22.4)
   '@mikuroxina/mini-fn':
     specifier: ^5.5.1
     version: 5.7.0
@@ -22,13 +22,13 @@ dependencies:
     version: 5.12.1(prisma@5.12.1)
   '@scalar/hono-api-reference':
     specifier: ^0.4.0
-    version: 0.4.39(hono@4.2.3)(postcss@8.4.38)(typescript@5.4.5)(unified@11.0.4)(vue@3.4.23)(yjs@13.6.14)
+    version: 0.4.39(hono@4.2.4)(postcss@8.4.38)(typescript@5.4.5)(unified@11.0.4)(vue@3.4.23)(yjs@13.6.14)
   argon2:
     specifier: ^0.40.0
     version: 0.40.1
   hono:
     specifier: ^4.0.0
-    version: 4.2.3
+    version: 4.2.4
   jose:
     specifier: ^5.2.1
     version: 5.2.4
@@ -660,15 +660,15 @@ packages:
     engines: {node: '>=18.14.1'}
     dev: false
 
-  /@hono/swagger-ui@0.2.1(hono@4.2.3):
+  /@hono/swagger-ui@0.2.1(hono@4.2.4):
     resolution: {integrity: sha512-wBxVMRe3/v8xH4o6icmwztiIq0DG0s7+jHVMHVUAoFFCWEQNL2iskMmQtrhSDtsFmBZUeUFQUaaJ6Ir6DOmHLA==}
     peerDependencies:
       hono: '*'
     dependencies:
-      hono: 4.2.3
+      hono: 4.2.4
     dev: false
 
-  /@hono/zod-openapi@0.11.0(hono@4.2.3)(zod@3.22.4):
+  /@hono/zod-openapi@0.11.0(hono@4.2.4)(zod@3.22.4):
     resolution: {integrity: sha512-thbxV4lWJoDo1NjF8ZGnd0muD3UHUpRqpKvS3RI+kWCXU05nyuViymUbPvVpp+O6i5SjovITTF91NRMTraZm3Q==}
     engines: {node: '>=16.0.0'}
     peerDependencies:
@@ -676,18 +676,18 @@ packages:
       zod: 3.*
     dependencies:
       '@asteasolutions/zod-to-openapi': 7.0.0(zod@3.22.4)
-      '@hono/zod-validator': 0.2.1(hono@4.2.3)(zod@3.22.4)
-      hono: 4.2.3
+      '@hono/zod-validator': 0.2.1(hono@4.2.4)(zod@3.22.4)
+      hono: 4.2.4
       zod: 3.22.4
     dev: false
 
-  /@hono/zod-validator@0.2.1(hono@4.2.3)(zod@3.22.4):
+  /@hono/zod-validator@0.2.1(hono@4.2.4)(zod@3.22.4):
     resolution: {integrity: sha512-HFoxln7Q6JsE64qz2WBS28SD33UB2alp3aRKmcWnNLDzEL1BLsWfbdX6e1HIiUprHYTIXf5y7ax8eYidKUwyaA==}
     peerDependencies:
       hono: '>=3.9.0'
       zod: ^3.19.1
     dependencies:
-      hono: 4.2.3
+      hono: 4.2.4
       zod: 3.22.4
     dev: false
 
@@ -1148,14 +1148,14 @@ packages:
       - typescript
     dev: false
 
-  /@scalar/hono-api-reference@0.4.39(hono@4.2.3)(postcss@8.4.38)(typescript@5.4.5)(unified@11.0.4)(vue@3.4.23)(yjs@13.6.14):
+  /@scalar/hono-api-reference@0.4.39(hono@4.2.4)(postcss@8.4.38)(typescript@5.4.5)(unified@11.0.4)(vue@3.4.23)(yjs@13.6.14):
     resolution: {integrity: sha512-D6mnzbDLMyApF6/A9kkGt8yO5MLbdzeKDIJHv0MW4BGeOy8oPO5Gwxl007UWBBrvTAehhNU73ZhGMxx3I5aQCg==}
     engines: {node: '>=18'}
     peerDependencies:
       hono: ^3.0.0 || ^4.0.0
     dependencies:
       '@scalar/api-reference': 1.20.32(postcss@8.4.38)(typescript@5.4.5)(unified@11.0.4)(vue@3.4.23)(yjs@13.6.14)
-      hono: 4.2.3
+      hono: 4.2.4
     transitivePeerDependencies:
       - '@vue/composition-api'
       - debug
@@ -2743,8 +2743,8 @@ packages:
     engines: {node: '>=12.0.0'}
     dev: false
 
-  /hono@4.2.3:
-    resolution: {integrity: sha512-yZDnPOp/XzjIB7KUWaOxwLSywnhxMvAKth8hfKhWQiWXeZhBfC6GlFnEst/FOOgn7rSWjShhQPS89PLEuHxq3Q==}
+  /hono@4.2.4:
+    resolution: {integrity: sha512-2T5Ahxh8tT0ISKCrNeA+OIwfD5W4EZ00iIMYBBCuiIivr+sOrZYOphinARSG7wL3nFsY6zkFHMMZbcR9CzEzug==}
     engines: {node: '>=16.0.0'}
     dev: false
 
