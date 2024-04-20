@@ -95,7 +95,7 @@ Pulsate commit messages must follow [conventional commit](https://www.convention
 Pulsate assumes the following development environment.
 
 - [Node.js](https://nodejs.org) v20.x
-- [Pnpm (pnpm)](https://pnpm.io/ja/) v8.x
+- [Pnpm (pnpm)](https://pnpm.io/ja/) v9.x
 
 ### Fixing and installing the Node.js version
 
