@@ -96,7 +96,7 @@ Pulsateコミットメッセージは[Conventional commit](https://www.conventio
 Pulsate は以下のような開発環境を想定しています.
 
 - [Node.js](https://nodejs.org) v20.x
-- [Pnpm (pnpm)](https://pnpm.io/ja/) v8.x
+- [Pnpm (pnpm)](https://pnpm.io/ja/) v9.x
 
 ### Node.js のバージョン固定・インストール
 
