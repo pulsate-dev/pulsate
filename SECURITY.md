@@ -2,8 +2,6 @@
 
 A Guide to Pulsate's Security Policy.
 
-[日本語版](./.github/SECURITY_JA.md)
-
 ## Supported Versions
 
 Below is the support status for each version of Pulsate.
