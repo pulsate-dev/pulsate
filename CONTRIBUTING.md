@@ -2,8 +2,6 @@
 
 A guide on how to participate in this project.
 
-[日本語版](./.github/CONTRIBUTING_JA.md)
-
 - [Issues](#issues)
 - [Pull Requests](#pull-requests)
   - [Review](#review)
