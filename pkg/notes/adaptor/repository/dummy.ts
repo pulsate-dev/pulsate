@@ -60,35 +60,54 @@ export class InMemoryNoteRepository implements NoteRepository {
 }
 
 export class InMemoryBookmarkRepository implements BookmarkRepository {
-  private readonly bookmarks: Map<ID<NoteID>, Bookmark>;
+  private readonly bookmarks: Map<`${ID<NoteID>}_${ID<AccountID>}`, Bookmark>;
+
+  private generateBookmarkID(id: {
+    noteID: ID<NoteID>;
+    accountID: ID<AccountID>;
+  }): `${ID<NoteID>}_${ID<AccountID>}` {
+    return `${id.noteID}_${id.accountID}`;
+  }
 
   constructor(bookmarks: Bookmark[] = []) {
     this.bookmarks = new Map(
-      bookmarks.map((bookmark) => [bookmark.getNoteID(), bookmark]),
+      bookmarks.map((bookmark) => [
+        this.generateBookmarkID({
+          noteID: bookmark.getNoteID(),
+          accountID: bookmark.getAccountID(),
+        }),
+        bookmark,
+      ]),
     );
   }
 
-  async create(note: Note): Promise<Result.Result<Error, void>> {
-    const bookmark = Bookmark.new({
-      noteID: note.getID(),
-      accountID: note.getAuthorID(),
-    });
-    this.bookmarks.set(note.getID(), bookmark);
+  async create(id: {
+    noteID: ID<NoteID>;
+    accountID: ID<AccountID>;
+  }): Promise<Result.Result<Error, void>> {
+    const bookmark = Bookmark.new(id);
+    this.bookmarks.set(this.generateBookmarkID(id), bookmark);
     return Result.ok(undefined);
   }
 
-  async deleteByID(id: ID<NoteID>): Promise<Result.Result<Error, void>> {
+  async deleteByID(id: {
+    noteID: ID<NoteID>;
+    accountID: ID<AccountID>;
+  }): Promise<Result.Result<Error, void>> {
     const target = await this.findByID(id);
     if (Option.isNone(target)) {
       return Result.err(new Error('bookmark not found'));
     }
 
-    this.bookmarks.delete(Option.unwrap(target).getNoteID());
+    this.bookmarks.delete(this.generateBookmarkID(id));
     return Result.ok(undefined);
   }
 
-  findByID(id: ID<NoteID>): Promise<Option.Option<Bookmark>> {
-    const res = this.bookmarks.get(id);
+  async findByID(id: {
+    noteID: ID<NoteID>;
+    accountID: ID<AccountID>;
+  }): Promise<Option.Option<Bookmark>> {
+    const res = this.bookmarks.get(this.generateBookmarkID(id));
     if (!res) {
       return Promise.resolve(Option.none());
     }
