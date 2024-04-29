@@ -106,6 +106,10 @@ accounts.doc('/accounts/doc.json', {
   },
 });
 
+export type AccountModuleHandlerType =
+  | typeof GetAccountHandler
+  | typeof CreateAccountHandler;
+
 export const CreateAccountHandler = accounts.openapi(
   CreateAccountRoute,
   async (c) => {

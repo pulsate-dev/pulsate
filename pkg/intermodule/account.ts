@@ -2,10 +2,7 @@ import { Result } from '@mikuroxina/mini-fn';
 import { hc } from 'hono/client';
 
 import type { AccountController } from '../accounts/adaptor/controller/account.js';
-import {
-  type CreateAccountHandler,
-  type GetAccountHandler,
-} from '../accounts/mod.js';
+import { type AccountModuleHandlerType } from '../accounts/mod.js';
 import {
   Account,
   type AccountFrozen,
@@ -17,14 +14,10 @@ import {
 } from '../accounts/model/account.js';
 import type { ID } from '../id/type.js';
 
-type accountModuleHandlerType =
-  | typeof GetAccountHandler
-  | typeof CreateAccountHandler;
-
 export class AccountModule {
   // NOTE: This is a temporary solution to use hono client
   // ToDo: base url should be configurable
-  private readonly client = hc<accountModuleHandlerType>(
+  private readonly client = hc<AccountModuleHandlerType>(
     'http://localhost:3000',
   );
 
