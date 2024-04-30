@@ -1,7 +1,7 @@
 import { z } from '@hono/zod-openapi';
 import { Result } from '@mikuroxina/mini-fn';
+import { OFFSET_FROM_UNIX_EPOCH } from '~/time/mod.js';
 
-import { OFFSET_FROM_UNIX_EPOCH } from '../time/mod.js';
 import type { ID } from './type.js';
 
 export interface Clock {
