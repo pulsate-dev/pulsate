@@ -1,6 +1,5 @@
 import { Result } from '@mikuroxina/mini-fn';
-
-import type { AccountController } from '../accounts/adaptor/controller/account.js';
+import type { AccountController } from '~/accounts/adaptor/controller/account.js';
 import {
   Account,
   type AccountFrozen,
@@ -9,8 +8,8 @@ import {
   type AccountRole,
   type AccountSilenced,
   type AccountStatus,
-} from '../accounts/model/account.js';
-import type { ID } from '../id/type.js';
+} from '~/accounts/model/account.js';
+import type { ID } from '~/id/type.js';
 
 export class AccountModule {
   constructor(private readonly controller: AccountController) {}
