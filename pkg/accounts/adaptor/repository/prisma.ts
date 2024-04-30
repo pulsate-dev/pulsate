@@ -1,7 +1,5 @@
 import { Option, Result } from '@mikuroxina/mini-fn';
 import { type PrismaClient } from '@prisma/client';
-
-import type { ID } from '../../../id/type.js';
 import {
   Account,
   type AccountFrozen,
@@ -10,13 +8,14 @@ import {
   type AccountRole,
   type AccountSilenced,
   type AccountStatus,
-} from '../../model/account.js';
-import { AccountFollow } from '../../model/follow.js';
+} from '~/accounts/model/account.js';
+import { AccountFollow } from '~/accounts/model/follow.js';
 import type {
   AccountFollowRepository,
   AccountRepository,
   AccountVerifyTokenRepository,
-} from '../../model/repository.js';
+} from '~/accounts/model/repository.js';
+import type { ID } from '~/id/type.js';
 
 interface AccountPrismaArgs {
   id: string;

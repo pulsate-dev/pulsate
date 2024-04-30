@@ -1,13 +1,16 @@
 import { Result } from '@mikuroxina/mini-fn';
 import { describe, expect, it } from 'vitest';
-
-import { SnowflakeIDGenerator, MockClock } from '../../id/mod.js';
-import { Argon2idPasswordEncoder } from '../../password/mod.js';
 import {
   InMemoryAccountRepository,
   InMemoryAccountVerifyTokenRepository,
-} from '../adaptor/repository/dummy.js';
-import { type AccountName, type AccountRole } from '../model/account.js';
+} from '~/accounts/adaptor/repository/dummy.js';
+import {
+  type AccountName,
+  type AccountRole,
+} from '~/accounts/model/account.js';
+import { SnowflakeIDGenerator, MockClock } from '~/id/mod.js';
+import { Argon2idPasswordEncoder } from '~/password/mod.js';
+
 import { RegisterAccountService } from './register.js';
 import { DummySendNotificationService } from './sendNotification.js';
 import { VerifyAccountTokenService } from './verifyToken.js';

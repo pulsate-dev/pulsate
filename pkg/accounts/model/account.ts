@@ -1,6 +1,6 @@
 import { z } from '@hono/zod-openapi';
+import type { ID } from '~/id/type.js';
 
-import type { ID } from '../../id/type.js';
 import {
   AccountAlreadyDeletedError,
   AccountAlreadyFrozenError,

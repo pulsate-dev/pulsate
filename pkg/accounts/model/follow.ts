@@ -1,6 +1,6 @@
 import { Option } from '@mikuroxina/mini-fn';
+import type { ID } from '~/id/type.js';
 
-import type { ID } from '../../id/type.js';
 import type { AccountID } from './account.js';
 
 export interface CreateAccountFollowArgs {

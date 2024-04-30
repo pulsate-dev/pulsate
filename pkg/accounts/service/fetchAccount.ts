@@ -1,8 +1,7 @@
 import { Option, Result } from '@mikuroxina/mini-fn';
-
-import type { ID } from '../../id/type.js';
-import { type Account, type AccountID } from '../model/account.js';
-import type { AccountRepository } from '../model/repository.js';
+import { type Account, type AccountID } from '~/accounts/model/account.js';
+import type { AccountRepository } from '~/accounts/model/repository.js';
+import type { ID } from '~/id/type.js';
 
 export class FetchAccountService {
   private accountRepository: AccountRepository;

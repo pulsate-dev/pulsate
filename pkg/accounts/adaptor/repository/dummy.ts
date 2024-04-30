@@ -1,15 +1,14 @@
 import { Option, Result } from '@mikuroxina/mini-fn';
-
-import { type ID } from '../../../id/type.js';
-import { type Account, type AccountID } from '../../model/account.js';
-import { type AccountFollow } from '../../model/follow.js';
-import type { InactiveAccount } from '../../model/inactiveAccount.js';
+import { type Account, type AccountID } from '~/accounts/model/account.js';
+import { type AccountFollow } from '~/accounts/model/follow.js';
+import type { InactiveAccount } from '~/accounts/model/inactiveAccount.js';
 import type {
   AccountFollowRepository,
   AccountRepository,
   AccountVerifyTokenRepository,
   InactiveAccountRepository,
-} from '../../model/repository.js';
+} from '~/accounts/model/repository.js';
+import { type ID } from '~/id/type.js';
 
 export class InMemoryAccountRepository implements AccountRepository {
   private data: Set<Account>;
