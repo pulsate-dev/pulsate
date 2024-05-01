@@ -27,7 +27,7 @@ export class AccountModule {
     name: AccountName,
   ): Promise<Result.Result<Error, Account>> {
     const res = await this.client.accounts[':name'].$get({
-      param: { name: name },
+      param: { name },
     });
 
     if (!res.ok) {

@@ -106,23 +106,18 @@ accounts.doc('/accounts/doc.json', {
   },
 });
 
-export type AccountModuleHandlerType =
-  | typeof GetAccountHandler
-  | typeof CreateAccountHandler;
+export type AccountModuleHandlerType = typeof GetAccountHandler;
 
-export const CreateAccountHandler = accounts.openapi(
-  CreateAccountRoute,
-  async (c) => {
-    const { name, email, passphrase } = c.req.valid('json');
+accounts.openapi(CreateAccountRoute, async (c) => {
+  const { name, email, passphrase } = c.req.valid('json');
 
-    const res = await controller.createAccount(name, email, passphrase);
-    if (Result.isErr(res)) {
-      return c.json({ error: res[1].message }, { status: 400 });
-    }
+  const res = await controller.createAccount(name, email, passphrase);
+  if (Result.isErr(res)) {
+    return c.json({ error: res[1].message }, { status: 400 });
+  }
 
-    return c.json(res[1]);
-  },
-);
+  return c.json(res[1]);
+});
 
 accounts.openapi(UpdateAccountRoute, async (c) => {
   const name = c.req.param('name');
