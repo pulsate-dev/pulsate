@@ -179,29 +179,26 @@ accounts.openapi(VerifyEmailRoute, async (c) => {
   return new Response(null, { status: 204 });
 });
 
-export const GetAccountHandler = accounts.openapi(
-  GetAccountRoute,
-  async (c) => {
-    const name = c.req.param('name');
+const GetAccountHandler = accounts.openapi(GetAccountRoute, async (c) => {
+  const name = c.req.param('name');
 
-    const res = await controller.getAccount(name);
-    if (Result.isErr(res)) {
-      return c.json({ error: res[1].message }, { status: 404 });
-    }
+  const res = await controller.getAccount(name);
+  if (Result.isErr(res)) {
+    return c.json({ error: res[1].message }, { status: 404 });
+  }
 
-    return c.json({
-      id: res[1].id,
-      name: res[1].name,
-      nickname: res[1].nickname,
-      bio: res[1].bio,
-      avatar: '',
-      header: '',
-      followed_count: res[1].followed_count,
-      following_count: res[1].following_count,
-      note_count: res[1].note_count,
-    });
-  },
-);
+  return c.json({
+    id: res[1].id,
+    name: res[1].name,
+    nickname: res[1].nickname,
+    bio: res[1].bio,
+    avatar: '',
+    header: '',
+    followed_count: res[1].followed_count,
+    following_count: res[1].following_count,
+    note_count: res[1].note_count,
+  });
+});
 
 accounts.openapi(LoginRoute, async (c) => {
   const { name, passphrase } = c.req.valid('json');
