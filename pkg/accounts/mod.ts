@@ -106,6 +106,8 @@ accounts.doc('/accounts/doc.json', {
   },
 });
 
+export type AccountModuleHandlerType = typeof GetAccountHandler;
+
 accounts.openapi(CreateAccountRoute, async (c) => {
   const { name, email, passphrase } = c.req.valid('json');
 
@@ -177,7 +179,7 @@ accounts.openapi(VerifyEmailRoute, async (c) => {
   return new Response(null, { status: 204 });
 });
 
-accounts.openapi(GetAccountRoute, async (c) => {
+const GetAccountHandler = accounts.openapi(GetAccountRoute, async (c) => {
   const name = c.req.param('name');
 
   const res = await controller.getAccount(name);
