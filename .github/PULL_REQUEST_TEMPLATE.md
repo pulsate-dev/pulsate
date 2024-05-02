@@ -2,9 +2,9 @@
 
 Thanks for submitting a pull request!
 
-- If this pr is your frist contribution, read "CONTRIBUTING.md".:
-  hhttps://github.com/pulsate-dev/.github?tab=coc-ov-file
-- Run `deno fmt` to format your code.
+- If this pr is your first contribution, read "CONTRIBUTING.md".:
+  https://github.com/pulsate-dev/.github?tab=coc-ov-file
+- Run `pnpm format && pnpm lint` to format your code.
 - If your PR is not finished, set it as "draft" PR.
   See more: https://docs.github.com/pull-requests/collaborating-with-pull-requests/proposing-changes-to-your-work-with-pull-requests/changing-the-stage-of-a-pull-request
 

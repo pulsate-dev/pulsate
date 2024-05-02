@@ -59,38 +59,71 @@ export class InMemoryNoteRepository implements NoteRepository {
 }
 
 export class InMemoryBookmarkRepository implements BookmarkRepository {
-  private readonly bookmarks: Map<ID<NoteID>, Bookmark>;
+  private readonly bookmarks: Map<[ID<NoteID>, ID<AccountID>], Bookmark>;
+
+  private equalID(
+    a: [ID<NoteID>, ID<AccountID>],
+    b: [ID<NoteID>, ID<AccountID>],
+  ): boolean {
+    return a[0] === b[0] && a[1] === b[1];
+  }
 
   constructor(bookmarks: Bookmark[] = []) {
     this.bookmarks = new Map(
-      bookmarks.map((bookmark) => [bookmark.getNoteID(), bookmark]),
+      bookmarks.map((bookmark) => [
+        [bookmark.getNoteID(), bookmark.getAccountID()],
+        bookmark,
+      ]),
     );
   }
 
-  async create(note: Note): Promise<Result.Result<Error, void>> {
-    const bookmark = Bookmark.new({
-      noteID: note.getID(),
-      accountID: note.getAuthorID(),
-    });
-    this.bookmarks.set(note.getID(), bookmark);
+  async create(id: {
+    noteID: ID<NoteID>;
+    accountID: ID<AccountID>;
+  }): Promise<Result.Result<Error, void>> {
+    const bookmark = Bookmark.new(id);
+    this.bookmarks.set([id.noteID, id.accountID], bookmark);
     return Result.ok(undefined);
   }
 
-  async deleteByID(id: ID<NoteID>): Promise<Result.Result<Error, void>> {
-    const target = await this.findByID(id);
-    if (Option.isNone(target)) {
+  async deleteByID(id: {
+    noteID: ID<NoteID>;
+    accountID: ID<AccountID>;
+  }): Promise<Result.Result<Error, void>> {
+    const key = Array.from(this.bookmarks.keys()).find((k) =>
+      this.equalID(k, [id.noteID, id.accountID]),
+    );
+
+    if (!key) {
       return Result.err(new Error('bookmark not found'));
     }
 
-    this.bookmarks.delete(Option.unwrap(target).getNoteID());
+    this.bookmarks.delete(key);
     return Result.ok(undefined);
   }
 
-  findByID(id: ID<NoteID>): Promise<Option.Option<Bookmark>> {
-    const res = this.bookmarks.get(id);
-    if (!res) {
+  async findByID(id: {
+    noteID: ID<NoteID>;
+    accountID: ID<AccountID>;
+  }): Promise<Option.Option<Bookmark>> {
+    const bookmark = Array.from(this.bookmarks.entries()).find((v) =>
+      this.equalID(v[0], [id.noteID, id.accountID]),
+    );
+    if (!bookmark) {
       return Promise.resolve(Option.none());
     }
-    return Promise.resolve(Option.some(res));
+    return Promise.resolve(Option.some(bookmark[1]));
+  }
+
+  async findByAccountID(id: ID<AccountID>): Promise<Option.Option<Bookmark[]>> {
+    const bookmarks = Array.from(this.bookmarks.entries())
+      .filter((v) => v[0][1] === id)
+      .map((v) => v[1]);
+
+    if (bookmarks.length === 0) {
+      return Promise.resolve(Option.none());
+    }
+
+    return Promise.resolve(Option.some(bookmarks));
   }
 }

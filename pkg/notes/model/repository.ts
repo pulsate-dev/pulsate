@@ -16,7 +16,16 @@ export interface NoteRepository {
 }
 
 export interface BookmarkRepository {
-  create(note: Note): Promise<Result.Result<Error, void>>;
-  findByID(id: ID<NoteID>): Promise<Option.Option<Bookmark>>;
-  deleteByID(id: ID<NoteID>): Promise<Result.Result<Error, void>>;
+  create(id: {
+    noteID: ID<NoteID>;
+    accountID: ID<AccountID>;
+  }): Promise<Result.Result<Error, void>>;
+  findByID(id: {
+    noteID: ID<NoteID>;
+    accountID: ID<AccountID>;
+  }): Promise<Option.Option<Bookmark>>;
+  deleteByID(id: {
+    noteID: ID<NoteID>;
+    accountID: ID<AccountID>;
+  }): Promise<Result.Result<Error, void>>;
 }
