@@ -1,7 +1,6 @@
 import { Option } from '@mikuroxina/mini-fn';
 import * as jose from 'jose';
-
-import type { PulsateTime } from '../../time/mod.js';
+import type { PulsateTime } from '~/time/mod.js';
 
 export class AuthenticationTokenService {
   private readonly privateKey: CryptoKey;

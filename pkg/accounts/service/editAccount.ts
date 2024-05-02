@@ -1,8 +1,8 @@
 import { Option, Result } from '@mikuroxina/mini-fn';
+import type { AccountName } from '~/accounts/model/account.js';
+import { type AccountRepository } from '~/accounts/model/repository.js';
+import { type PasswordEncoder } from '~/password/mod.js';
 
-import { type PasswordEncoder } from '../../password/mod.js';
-import type { AccountName } from '../model/account.js';
-import { type AccountRepository } from '../model/repository.js';
 import type { EtagService } from './etagService.js';
 
 export class EditAccountService {

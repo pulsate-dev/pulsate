@@ -1,10 +1,10 @@
 import { Option, Result } from '@mikuroxina/mini-fn';
 import { afterEach, beforeEach, describe, expect, it } from 'vitest';
+import { InMemoryAccountRepository } from '~/accounts/adaptor/repository/dummy.js';
+import { Account, type AccountID } from '~/accounts/model/account.js';
+import type { ID } from '~/id/type.js';
+import { Argon2idPasswordEncoder } from '~/password/mod.js';
 
-import type { ID } from '../../id/type.js';
-import { Argon2idPasswordEncoder } from '../../password/mod.js';
-import { InMemoryAccountRepository } from '../adaptor/repository/dummy.js';
-import { Account, type AccountID } from '../model/account.js';
 import { EditAccountService } from './editAccount.js';
 import { EtagService } from './etagService.js';
 

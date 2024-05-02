@@ -1,11 +1,10 @@
 import { Option, Result } from '@mikuroxina/mini-fn';
-
-import type { AccountID } from '../../accounts/model/account.js';
-import type { SnowflakeIDGenerator } from '../../id/mod.js';
-import type { ID } from '../../id/type.js';
-import type { NoteID, NoteVisibility } from '../model/note.js';
-import { Note } from '../model/note.js';
-import type { NoteRepository } from '../model/repository.js';
+import type { AccountID } from '~/accounts/model/account.js';
+import type { SnowflakeIDGenerator } from '~/id/mod.js';
+import type { ID } from '~/id/type.js';
+import type { NoteID, NoteVisibility } from '~/notes/model/note.js';
+import { Note } from '~/notes/model/note.js';
+import type { NoteRepository } from '~/notes/model/repository.js';
 
 export class RenoteService {
   constructor(

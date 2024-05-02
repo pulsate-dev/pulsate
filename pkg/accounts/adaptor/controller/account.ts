@@ -1,24 +1,23 @@
 import { type z } from '@hono/zod-openapi';
 import { Option, Result } from '@mikuroxina/mini-fn';
-
-import type { ID } from '../../../id/type.js';
-import { type AccountID, type AccountName } from '../../model/account.js';
-import type { AuthenticateService } from '../../service/authenticate.js';
-import type { EditAccountService } from '../../service/editAccount.js';
-import type { FetchAccountService } from '../../service/fetchAccount.js';
-import type { FollowService } from '../../service/follow.js';
-import type { FreezeService } from '../../service/freeze.js';
-import type { RegisterAccountService } from '../../service/register.js';
-import type { ResendVerifyTokenService } from '../../service/resendToken.js';
-import type { SilenceService } from '../../service/silence.js';
-import { type UnfollowService } from '../../service/unfollow.js';
-import type { VerifyAccountTokenService } from '../../service/verifyToken.js';
 import {
   type CreateAccountResponseSchema,
   type GetAccountResponseSchema,
   type LoginResponseSchema,
   type UpdateAccountResponseSchema,
-} from '../validator/schema.js';
+} from '~/accounts/adaptor/validator/schema.js';
+import { type AccountID, type AccountName } from '~/accounts/model/account.js';
+import type { AuthenticateService } from '~/accounts/service/authenticate.js';
+import type { EditAccountService } from '~/accounts/service/editAccount.js';
+import type { FetchAccountService } from '~/accounts/service/fetchAccount.js';
+import type { FollowService } from '~/accounts/service/follow.js';
+import type { FreezeService } from '~/accounts/service/freeze.js';
+import type { RegisterAccountService } from '~/accounts/service/register.js';
+import type { ResendVerifyTokenService } from '~/accounts/service/resendToken.js';
+import type { SilenceService } from '~/accounts/service/silence.js';
+import { type UnfollowService } from '~/accounts/service/unfollow.js';
+import type { VerifyAccountTokenService } from '~/accounts/service/verifyToken.js';
+import type { ID } from '~/id/type.js';
 
 export class AccountController {
   private readonly registerAccountService: RegisterAccountService;

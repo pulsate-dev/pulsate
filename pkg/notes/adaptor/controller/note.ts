@@ -1,18 +1,17 @@
 import { type z } from '@hono/zod-openapi';
 import { Option, Result } from '@mikuroxina/mini-fn';
-
-import type { AccountID } from '../../../accounts/model/account.js';
-import type { ID } from '../../../id/type.js';
-import type { AccountModule } from '../../../intermodule/account.js';
-import type { NoteVisibility } from '../../model/note.js';
-import type { CreateNoteService } from '../../service/create.js';
-import type { FetchNoteService } from '../../service/fetch.js';
-import type { RenoteService } from '../../service/renote.js';
+import type { AccountID } from '~/accounts/model/account.js';
+import type { ID } from '~/id/type.js';
+import type { AccountModule } from '~/intermodule/account.js';
 import {
   type CreateNoteResponseSchema,
   type GetNoteResponseSchema,
   type RenoteResponseSchema,
-} from '../validator/schema.js';
+} from '~/notes/adaptor/validator/schema.js';
+import type { NoteVisibility } from '~/notes/model/note.js';
+import type { CreateNoteService } from '~/notes/service/create.js';
+import type { FetchNoteService } from '~/notes/service/fetch.js';
+import type { RenoteService } from '~/notes/service/renote.js';
 
 export class NoteController {
   constructor(

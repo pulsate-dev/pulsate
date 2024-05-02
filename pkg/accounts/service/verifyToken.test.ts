@@ -1,13 +1,13 @@
 import { Result } from '@mikuroxina/mini-fn';
 import { describe, expect, it } from 'vitest';
-
-import { MockClock } from '../../id/mod.js';
-import { type ID } from '../../id/type.js';
 import {
   InMemoryAccountRepository,
   InMemoryAccountVerifyTokenRepository,
-} from '../adaptor/repository/dummy.js';
-import { Account, type AccountID } from '../model/account.js';
+} from '~/accounts/adaptor/repository/dummy.js';
+import { Account, type AccountID } from '~/accounts/model/account.js';
+import { MockClock } from '~/id/mod.js';
+import { type ID } from '~/id/type.js';
+
 import { VerifyAccountTokenService } from './verifyToken.js';
 
 const repository = new InMemoryAccountVerifyTokenRepository();

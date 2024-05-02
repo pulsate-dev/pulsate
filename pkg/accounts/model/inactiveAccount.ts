@@ -1,4 +1,5 @@
-import type { ID } from '../../id/type.js';
+import type { ID } from '~/id/type.js';
+
 import {
   Account,
   type AccountID,
