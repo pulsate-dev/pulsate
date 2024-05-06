@@ -1,7 +1,7 @@
 import { Option } from '@mikuroxina/mini-fn';
 import { describe, it, expect } from 'vitest';
-import { convertTo } from '~/time/mod.js';
 
+import { convertTo } from '../../time/mod.js';
 import { AuthenticationTokenService } from './authenticationTokenService.js';
 
 const service = await AuthenticationTokenService.new();

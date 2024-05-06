@@ -1,4 +1,4 @@
-import type { Account } from '~/accounts/model/account.js';
+import type { Account } from '../model/account.js';
 
 export class EtagService {
   /**

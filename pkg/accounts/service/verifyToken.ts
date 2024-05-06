@@ -1,10 +1,11 @@
 import { Option, Result } from '@mikuroxina/mini-fn';
-import { type AccountName } from '~/accounts/model/account.js';
+
+import { type Clock } from '../../id/mod.js';
+import { type AccountName } from '../model/account.js';
 import {
   type AccountRepository,
   type AccountVerifyTokenRepository,
-} from '~/accounts/model/repository.js';
-import { type Clock } from '~/id/mod.js';
+} from '../model/repository.js';
 
 export class VerifyAccountTokenService {
   constructor(

@@ -1,9 +1,9 @@
 import { Option } from '@mikuroxina/mini-fn';
 import { afterEach, describe, expect, it } from 'vitest';
-import { InMemoryAccountRepository } from '~/accounts/adaptor/repository/dummy.js';
-import { Account, type AccountID } from '~/accounts/model/account.js';
-import type { ID } from '~/id/type.js';
 
+import type { ID } from '../../id/type.js';
+import { InMemoryAccountRepository } from '../adaptor/repository/dummy.js';
+import { Account, type AccountID } from '../model/account.js';
 import { FreezeService } from './freeze.js';
 
 const repository = new InMemoryAccountRepository();

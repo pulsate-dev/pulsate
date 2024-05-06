@@ -1,32 +1,32 @@
 import { Option } from '@mikuroxina/mini-fn';
 import { afterEach, describe, expect, it } from 'vitest';
-import { AccountController } from '~/accounts/adaptor/controller/account.js';
+
+import { AccountController } from '../../accounts/adaptor/controller/account.js';
 import {
   InMemoryAccountFollowRepository,
   InMemoryAccountRepository,
   InMemoryAccountVerifyTokenRepository,
-} from '~/accounts/adaptor/repository/dummy.js';
-import { Account, type AccountID } from '~/accounts/model/account.js';
-import { AuthenticateService } from '~/accounts/service/authenticate.js';
-import { AuthenticationTokenService } from '~/accounts/service/authenticationTokenService.js';
-import { EditAccountService } from '~/accounts/service/editAccount.js';
-import { EtagService } from '~/accounts/service/etagService.js';
-import { FetchAccountService } from '~/accounts/service/fetchAccount.js';
-import { FollowService } from '~/accounts/service/follow.js';
-import { FreezeService } from '~/accounts/service/freeze.js';
-import { RegisterAccountService } from '~/accounts/service/register.js';
-import { ResendVerifyTokenService } from '~/accounts/service/resendToken.js';
-import { DummySendNotificationService } from '~/accounts/service/sendNotification.js';
-import { SilenceService } from '~/accounts/service/silence.js';
-import { UnfollowService } from '~/accounts/service/unfollow.js';
-import { VerifyAccountTokenService } from '~/accounts/service/verifyToken.js';
-import { MockClock, SnowflakeIDGenerator } from '~/id/mod.js';
-import type { ID } from '~/id/type.js';
-import { AccountModule } from '~/intermodule/account.js';
-import { InMemoryNoteRepository } from '~/notes/adaptor/repository/dummy.js';
-import { Note, type NoteID } from '~/notes/model/note.js';
-import { Argon2idPasswordEncoder } from '~/password/mod.js';
-
+} from '../../accounts/adaptor/repository/dummy.js';
+import { Account, type AccountID } from '../../accounts/model/account.js';
+import { AuthenticateService } from '../../accounts/service/authenticate.js';
+import { AuthenticationTokenService } from '../../accounts/service/authenticationTokenService.js';
+import { EditAccountService } from '../../accounts/service/editAccount.js';
+import { EtagService } from '../../accounts/service/etagService.js';
+import { FetchAccountService } from '../../accounts/service/fetchAccount.js';
+import { FollowService } from '../../accounts/service/follow.js';
+import { FreezeService } from '../../accounts/service/freeze.js';
+import { RegisterAccountService } from '../../accounts/service/register.js';
+import { ResendVerifyTokenService } from '../../accounts/service/resendToken.js';
+import { DummySendNotificationService } from '../../accounts/service/sendNotification.js';
+import { SilenceService } from '../../accounts/service/silence.js';
+import { UnfollowService } from '../../accounts/service/unfollow.js';
+import { VerifyAccountTokenService } from '../../accounts/service/verifyToken.js';
+import { MockClock, SnowflakeIDGenerator } from '../../id/mod.js';
+import type { ID } from '../../id/type.js';
+import { AccountModule } from '../../intermodule/account.js';
+import { Argon2idPasswordEncoder } from '../../password/mod.js';
+import { InMemoryNoteRepository } from '../adaptor/repository/dummy.js';
+import { Note, type NoteID } from '../model/note.js';
 import { FetchNoteService } from './fetch.js';
 
 const testNote = Note.new({

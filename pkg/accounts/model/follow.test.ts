@@ -1,7 +1,7 @@
 import { Option } from '@mikuroxina/mini-fn';
 import { describe, expect, it } from 'vitest';
-import type { ID } from '~/id/type.js';
 
+import type { ID } from '../../id/type.js';
 import type { AccountID } from './account.js';
 import { AccountFollow, type CreateAccountFollowArgs } from './follow.js';
 

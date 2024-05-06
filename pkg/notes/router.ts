@@ -1,6 +1,6 @@
 import { createRoute, z } from '@hono/zod-openapi';
-import { CommonErrorResponseSchema } from '~/accounts/adaptor/validator/schema.js';
 
+import { CommonErrorResponseSchema } from '../accounts/adaptor/validator/schema.js';
 import {
   CreateNoteRequestSchema,
   CreateNoteResponseSchema,
