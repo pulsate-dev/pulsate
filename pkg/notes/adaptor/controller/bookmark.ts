@@ -23,11 +23,7 @@ export class BookmarkController {
       noteID as ID<NoteID>,
       accountID as ID<AccountID>,
     );
-    if (Result.isErr(res)) {
-      return res;
-    }
-
-    return Result.ok(undefined);
+    return Result.map(() => undefined)(res);
   }
 
   async getBookmarkByID(
@@ -61,10 +57,6 @@ export class BookmarkController {
       accountID as ID<AccountID>,
     );
 
-    if (Result.isErr(res)) {
-      return res;
-    }
-
-    return Result.ok(undefined);
+    return Result.map(() => undefined)(res);
   }
 }
