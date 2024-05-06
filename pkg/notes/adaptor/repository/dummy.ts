@@ -1,12 +1,13 @@
 import { Option, Result } from '@mikuroxina/mini-fn';
-import type { AccountID } from '~/accounts/model/account.js';
-import type { ID } from '~/id/type.js';
-import { Bookmark } from '~/notes/model/bookmark.js';
-import { type Note, type NoteID } from '~/notes/model/note.js';
+
+import type { AccountID } from '../../../accounts/model/account.js';
+import type { ID } from '../../../id/type.js';
+import { Bookmark } from '../../model/bookmark.js';
+import { type Note, type NoteID } from '../../model/note.js';
 import type {
   BookmarkRepository,
   NoteRepository,
-} from '~/notes/model/repository.js';
+} from '../../model/repository.js';
 
 export class InMemoryNoteRepository implements NoteRepository {
   private readonly notes: Map<ID<NoteID>, Note>;

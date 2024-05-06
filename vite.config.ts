@@ -1,4 +1,3 @@
-import path from 'path';
 import { configDefaults, defineConfig } from 'vitest/config';
 
 export default defineConfig({
@@ -8,9 +7,6 @@ export default defineConfig({
       include: ['pkg/**'],
       exclude: [...configDefaults.exclude, 'build/**'],
       reporter: ['text', 'json', 'html'],
-    },
-    alias: {
-      '~': path.resolve(__dirname, './pkg'),
     },
   },
 });

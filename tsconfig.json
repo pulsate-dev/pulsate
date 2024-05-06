@@ -26,12 +26,7 @@
     "verbatimModuleSyntax": true,
     "pretty": true,
     "esModuleInterop": true,
-    "resolveJsonModule": true,
-
-    "baseUrl": "./",
-    "paths": {
-      "~/*": ["pkg/*"]
-    }
+    "resolveJsonModule": true
   },
   "include": [
     "**/*.ts",

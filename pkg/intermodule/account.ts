@@ -1,7 +1,8 @@
 import { Result } from '@mikuroxina/mini-fn';
 import { hc } from 'hono/client';
-import type { AccountController } from '~/accounts/adaptor/controller/account.js';
-import { type AccountModuleHandlerType } from '~/accounts/mod.js';
+
+import type { AccountController } from '../accounts/adaptor/controller/account.js';
+import { type AccountModuleHandlerType } from '../accounts/mod.js';
 import {
   Account,
   type AccountFrozen,
@@ -10,8 +11,8 @@ import {
   type AccountRole,
   type AccountSilenced,
   type AccountStatus,
-} from '~/accounts/model/account.js';
-import type { ID } from '~/id/type.js';
+} from '../accounts/model/account.js';
+import type { ID } from '../id/type.js';
 
 export class AccountModule {
   // NOTE: This is a temporary solution to use hono client

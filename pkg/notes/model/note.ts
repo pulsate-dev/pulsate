@@ -1,6 +1,7 @@
 import { Option } from '@mikuroxina/mini-fn';
-import type { AccountID } from '~/accounts/model/account.js';
-import type { ID } from '~/id/type.js';
+
+import type { AccountID } from '../../accounts/model/account.js';
+import type { ID } from '../../id/type.js';
 
 export type NoteID = string;
 export type NoteVisibility = 'PUBLIC' | 'HOME' | 'FOLLOWERS' | 'DIRECT';

@@ -1,8 +1,8 @@
 import { OpenAPIHono } from '@hono/zod-openapi';
 import { Result } from '@mikuroxina/mini-fn';
-import { SnowflakeIDGenerator } from '~/id/mod.js';
-import { Argon2idPasswordEncoder } from '~/password/mod.js';
 
+import { SnowflakeIDGenerator } from '../id/mod.js';
+import { Argon2idPasswordEncoder } from '../password/mod.js';
 import { AccountController } from './adaptor/controller/account.js';
 import {
   InMemoryAccountFollowRepository,

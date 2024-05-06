@@ -1,11 +1,12 @@
 import { Option, Cat, Result } from '@mikuroxina/mini-fn';
-import type { AccountID, AccountName } from '~/accounts/model/account.js';
-import type { AccountFollow } from '~/accounts/model/follow.js';
+
+import type { AccountID, AccountName } from '../../accounts/model/account.js';
+import type { ID } from '../../id/type.js';
+import type { AccountFollow } from '../model/follow.js';
 import type {
   AccountFollowRepository,
   AccountRepository,
-} from '~/accounts/model/repository.js';
-import type { ID } from '~/id/type.js';
+} from '../model/repository.js';
 
 export class FetchAccountFollowService {
   constructor(

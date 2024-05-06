@@ -1,11 +1,11 @@
 import { Option, Result } from '@mikuroxina/mini-fn';
 import { describe, expect, it, vi } from 'vitest';
-import type { AccountID } from '~/accounts/model/account.js';
-import { SnowflakeIDGenerator } from '~/id/mod.js';
-import type { ID } from '~/id/type.js';
-import { InMemoryNoteRepository } from '~/notes/adaptor/repository/dummy.js';
-import { Note, type NoteID } from '~/notes/model/note.js';
 
+import type { AccountID } from '../../accounts/model/account.js';
+import { SnowflakeIDGenerator } from '../../id/mod.js';
+import type { ID } from '../../id/type.js';
+import { InMemoryNoteRepository } from '../adaptor/repository/dummy.js';
+import { Note, type NoteID } from '../model/note.js';
 import { RenoteService } from './renote.js';
 
 const originalNote = Note.new({

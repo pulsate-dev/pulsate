@@ -1,14 +1,14 @@
 import { Option, Result } from '@mikuroxina/mini-fn';
+
+import type { SnowflakeIDGenerator } from '../../id/mod.js';
+import { type PasswordEncoder } from '../../password/mod.js';
 import {
   Account,
   type AccountID,
   type AccountName,
   type AccountRole,
-} from '~/accounts/model/account.js';
-import { type AccountRepository } from '~/accounts/model/repository.js';
-import type { SnowflakeIDGenerator } from '~/id/mod.js';
-import { type PasswordEncoder } from '~/password/mod.js';
-
+} from '../model/account.js';
+import { type AccountRepository } from '../model/repository.js';
 import { type SendNotificationService } from './sendNotification.js';
 import type { VerifyAccountTokenService } from './verifyToken.js';
 
