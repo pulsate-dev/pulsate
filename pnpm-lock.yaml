@@ -13,10 +13,10 @@ importers:
         version: 1.11.1
       '@hono/swagger-ui':
         specifier: ^0.2.1
-        version: 0.2.2(hono@4.2.9)
+        version: 0.2.2(hono@4.3.1)
       '@hono/zod-openapi':
         specifier: ^0.11.0
-        version: 0.11.0(hono@4.2.9)(zod@3.22.5)
+        version: 0.11.0(hono@4.3.1)(zod@3.22.5)
       '@mikuroxina/mini-fn':
         specifier: ^6.0.0
         version: 6.1.1
@@ -25,13 +25,13 @@ importers:
         version: 5.13.0(prisma@5.13.0)
       '@scalar/hono-api-reference':
         specifier: ^0.5.0
-        version: 0.5.20(hono@4.2.9)(nanoid@5.0.7)(postcss@8.4.38)(typescript@5.4.5)(unified@11.0.4)(vitest@1.6.0(@types/node@20.12.8))(vue-sonner@1.1.2)(vue@3.4.23(typescript@5.4.5))(yjs@13.6.14)
+        version: 0.5.20(hono@4.3.1)(nanoid@5.0.7)(postcss@8.4.38)(typescript@5.4.5)(unified@11.0.4)(vitest@1.6.0(@types/node@20.12.8))(vue-sonner@1.1.2)(vue@3.4.23(typescript@5.4.5))(yjs@13.6.14)
       argon2:
         specifier: ^0.40.0
         version: 0.40.1
       hono:
         specifier: ^4.0.0
-        version: 4.2.9
+        version: 4.3.1
       jose:
         specifier: ^5.2.1
         version: 5.2.4
@@ -386,10 +386,6 @@ packages:
 
   '@eslint/eslintrc@3.0.2':
     resolution: {integrity: sha512-wV19ZEGEMAC1eHgrS7UQPqsdEiCIbTKTasEfcXAigzoXICcqZSjBZEHlZwNVvKg6UBCjSlos84XiLqsRJnIcIg==}
-    engines: {node: ^18.18.0 || ^20.9.0 || >=21.1.0}
-
-  '@eslint/js@9.1.1':
-    resolution: {integrity: sha512-5WoDz3Y19Bg2BnErkZTp0en+c/i9PvgFS7MBe1+m60HjFr0hrphlAGp4yzI7pxpt4xShln4ZyYp4neJm8hmOkQ==}
     engines: {node: ^18.18.0 || ^20.9.0 || >=21.1.0}
 
   '@eslint/js@9.2.0':
@@ -1671,8 +1667,8 @@ packages:
     resolution: {integrity: sha512-fJ7cW7fQGCYAkgv4CPfwFHrfd/cLS4Hau96JuJ+ZTOWhjnhoeN1ub1tFmALm/+lW5z4WCAuAV9bm05AP0mS6Gw==}
     engines: {node: '>=12.0.0'}
 
-  hono@4.2.9:
-    resolution: {integrity: sha512-59FAv52UxDWUt/NlC0NzrRCjeVCThUnVlqlrKYm+k80XujBu6uJwBIa5gACKKZWobjA0MJ6Vds0I3URKf383Cw==}
+  hono@4.3.1:
+    resolution: {integrity: sha512-yw/m4lZCuPpVJUQXyoeCy4uHXmq/osMxfEM8jMKGMr2V1OuL3vYybLrtoGj3GxC2wKIcMZO20i9nDMuZGkExNw==}
     engines: {node: '>=16.0.0'}
 
   hookable@5.5.3:
@@ -3143,8 +3139,6 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
-  '@eslint/js@9.1.1': {}
-
   '@eslint/js@9.2.0': {}
 
   '@floating-ui/core@1.6.1':
@@ -3174,20 +3168,20 @@ snapshots:
 
   '@hono/node-server@1.11.1': {}
 
-  '@hono/swagger-ui@0.2.2(hono@4.2.9)':
+  '@hono/swagger-ui@0.2.2(hono@4.3.1)':
     dependencies:
-      hono: 4.2.9
+      hono: 4.3.1
 
-  '@hono/zod-openapi@0.11.0(hono@4.2.9)(zod@3.22.5)':
+  '@hono/zod-openapi@0.11.0(hono@4.3.1)(zod@3.22.5)':
     dependencies:
       '@asteasolutions/zod-to-openapi': 7.0.0(zod@3.22.5)
-      '@hono/zod-validator': 0.2.1(hono@4.2.9)(zod@3.22.5)
-      hono: 4.2.9
+      '@hono/zod-validator': 0.2.1(hono@4.3.1)(zod@3.22.5)
+      hono: 4.3.1
       zod: 3.22.5
 
-  '@hono/zod-validator@0.2.1(hono@4.2.9)(zod@3.22.5)':
+  '@hono/zod-validator@0.2.1(hono@4.3.1)(zod@3.22.5)':
     dependencies:
-      hono: 4.2.9
+      hono: 4.3.1
       zod: 3.22.5
 
   '@humanwhocodes/config-array@0.13.0':
@@ -3493,10 +3487,10 @@ snapshots:
 
   '@scalar/galaxy@0.1.0': {}
 
-  '@scalar/hono-api-reference@0.5.20(hono@4.2.9)(nanoid@5.0.7)(postcss@8.4.38)(typescript@5.4.5)(unified@11.0.4)(vitest@1.6.0(@types/node@20.12.8))(vue-sonner@1.1.2)(vue@3.4.23(typescript@5.4.5))(yjs@13.6.14)':
+  '@scalar/hono-api-reference@0.5.20(hono@4.3.1)(nanoid@5.0.7)(postcss@8.4.38)(typescript@5.4.5)(unified@11.0.4)(vitest@1.6.0(@types/node@20.12.8))(vue-sonner@1.1.2)(vue@3.4.23(typescript@5.4.5))(yjs@13.6.14)':
     dependencies:
       '@scalar/api-reference': 1.22.20(nanoid@5.0.7)(postcss@8.4.38)(typescript@5.4.5)(unified@11.0.4)(vitest@1.6.0(@types/node@20.12.8))(vue-sonner@1.1.2)(vue@3.4.23(typescript@5.4.5))(yjs@13.6.14)
-      hono: 4.2.9
+      hono: 4.3.1
     transitivePeerDependencies:
       - '@jest/globals'
       - '@types/bun'
@@ -4830,7 +4824,7 @@ snapshots:
 
   highlight.js@11.9.0: {}
 
-  hono@4.2.9: {}
+  hono@4.3.1: {}
 
   hookable@5.5.3: {}
 
