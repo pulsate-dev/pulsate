@@ -16,17 +16,18 @@ export class FetchNoteService {
     if (Option.isNone(note)) {
       return Option.none();
     }
-    const account = await this.accountModule.fetchAccount(
-      note[1].getAuthorID(),
-    );
-    if (Result.isErr(account)) {
-      return Option.none();
-    }
-
     // if note deleted
     if (Option.isSome(note[1].getDeletedAt())) {
       return Option.none();
     }
+    const account = await this.accountModule.fetchAccount(
+      note[1].getAuthorID(),
+    );
+
+    if (Result.isErr(account)) {
+      return Option.none();
+    }
+
     // if account frozen
     if (account[1].getFrozen() === 'frozen') {
       return Option.none();

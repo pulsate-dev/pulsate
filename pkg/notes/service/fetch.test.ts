@@ -1,5 +1,5 @@
-import { Option } from '@mikuroxina/mini-fn';
-import { afterEach, describe, expect, it } from 'vitest';
+import { Option, Result } from '@mikuroxina/mini-fn';
+import { afterEach, describe, expect, it, vi } from 'vitest';
 
 import { InMemoryAccountRepository } from '../../accounts/adaptor/repository/dummy.js';
 import { Account, type AccountID } from '../../accounts/model/account.js';
@@ -90,6 +90,9 @@ describe('FetchNoteService', () => {
   afterEach(() => accountRepository.reset());
 
   it('should fetch notes', async () => {
+    vi.spyOn(accountModule, 'fetchAccount').mockImplementation(async () => {
+      return Result.ok(testAccount);
+    });
     const res = await service.fetchNoteByID('1' as ID<NoteID>);
 
     expect(Option.isSome(res)).toBe(true);
@@ -109,6 +112,9 @@ describe('FetchNoteService', () => {
   });
 
   it('account frozen', async () => {
+    vi.spyOn(accountModule, 'fetchAccount').mockImplementation(async () => {
+      return Result.ok(frozenAccount);
+    });
     const res = await service.fetchNoteByID(frozenUserNote.getID());
 
     expect(Option.isNone(res)).toBe(true);
