@@ -1,7 +1,6 @@
 import { Result } from '@mikuroxina/mini-fn';
 import { hc } from 'hono/client';
 
-import type { AccountController } from '../accounts/adaptor/controller/account.js';
 import { type AccountModuleHandlerType } from '../accounts/mod.js';
 import {
   Account,
@@ -21,13 +20,13 @@ export class AccountModule {
     'http://localhost:3000',
   );
 
-  constructor(private readonly controller: AccountController) {}
+  constructor() {}
 
   async fetchAccount(
-    name: AccountName,
+    id: ID<AccountID>,
   ): Promise<Result.Result<Error, Account>> {
-    const res = await this.client.accounts[':name'].$get({
-      param: { name },
+    const res = await this.client.accounts[':id'].$get({
+      param: { id },
     });
 
     if (!res.ok) {
@@ -50,33 +49,6 @@ export class AccountModule {
       silenced: body.silenced as AccountSilenced,
       status: body.status as AccountStatus,
       createdAt: body.created_at as Date,
-      passphraseHash: undefined,
-    });
-
-    return Result.ok(account);
-  }
-
-  // ToDo: use hono rpc in this function
-  async fetchAccountByID(
-    id: ID<AccountID>,
-  ): Promise<Result.Result<Error, Account>> {
-    const res = await this.controller.getAccountByID(id);
-
-    if (Result.isErr(res)) {
-      return res;
-    }
-    const unwrapped = Result.unwrap(res);
-    const account = Account.new({
-      id: unwrapped.id as ID<AccountID>,
-      mail: unwrapped.email as string,
-      name: unwrapped.name as AccountName,
-      nickname: unwrapped.nickname,
-      bio: unwrapped.bio,
-      role: unwrapped.role as AccountRole,
-      frozen: unwrapped.frozen as AccountFrozen,
-      silenced: unwrapped.silenced as AccountSilenced,
-      status: unwrapped.status as AccountStatus,
-      createdAt: unwrapped.created_at as Date,
       passphraseHash: undefined,
     });
 

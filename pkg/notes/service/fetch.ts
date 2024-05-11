@@ -16,7 +16,7 @@ export class FetchNoteService {
     if (Option.isNone(note)) {
       return Option.none();
     }
-    const account = await this.accountModule.fetchAccountByID(
+    const account = await this.accountModule.fetchAccount(
       note[1].getAuthorID(),
     );
     if (Result.isErr(account)) {

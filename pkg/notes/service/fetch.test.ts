@@ -1,30 +1,10 @@
 import { Option } from '@mikuroxina/mini-fn';
 import { afterEach, describe, expect, it } from 'vitest';
 
-import { AccountController } from '../../accounts/adaptor/controller/account.js';
-import {
-  InMemoryAccountFollowRepository,
-  InMemoryAccountRepository,
-  InMemoryAccountVerifyTokenRepository,
-} from '../../accounts/adaptor/repository/dummy.js';
+import { InMemoryAccountRepository } from '../../accounts/adaptor/repository/dummy.js';
 import { Account, type AccountID } from '../../accounts/model/account.js';
-import { AuthenticateService } from '../../accounts/service/authenticate.js';
-import { AuthenticationTokenService } from '../../accounts/service/authenticationTokenService.js';
-import { EditAccountService } from '../../accounts/service/editAccount.js';
-import { EtagService } from '../../accounts/service/etagService.js';
-import { FetchAccountService } from '../../accounts/service/fetchAccount.js';
-import { FollowService } from '../../accounts/service/follow.js';
-import { FreezeService } from '../../accounts/service/freeze.js';
-import { RegisterAccountService } from '../../accounts/service/register.js';
-import { ResendVerifyTokenService } from '../../accounts/service/resendToken.js';
-import { DummySendNotificationService } from '../../accounts/service/sendNotification.js';
-import { SilenceService } from '../../accounts/service/silence.js';
-import { UnfollowService } from '../../accounts/service/unfollow.js';
-import { VerifyAccountTokenService } from '../../accounts/service/verifyToken.js';
-import { MockClock, SnowflakeIDGenerator } from '../../id/mod.js';
 import type { ID } from '../../id/type.js';
 import { AccountModule } from '../../intermodule/account.js';
-import { Argon2idPasswordEncoder } from '../../password/mod.js';
 import { InMemoryNoteRepository } from '../adaptor/repository/dummy.js';
 import { Note, type NoteID } from '../model/note.js';
 import { FetchNoteService } from './fetch.js';
@@ -103,62 +83,7 @@ const accountRepository = new InMemoryAccountRepository([
   testAccount,
   frozenAccount,
 ]);
-const accountFollowRepository = new InMemoryAccountFollowRepository();
-const accountVerifyTokenRepository = new InMemoryAccountVerifyTokenRepository();
-const authenticationTokenService = await AuthenticationTokenService.new();
-class Clock {
-  now() {
-    return BigInt(Date.now());
-  }
-}
-const idGenerator = new SnowflakeIDGenerator(0, new MockClock(new Date()));
-const passwordEncoder = new Argon2idPasswordEncoder();
-const accountController = new AccountController({
-  authenticateService: new AuthenticateService({
-    accountRepository: accountRepository,
-    authenticationTokenService: authenticationTokenService,
-    passwordEncoder: passwordEncoder,
-  }),
-  editAccountService: new EditAccountService(
-    accountRepository,
-    new EtagService(),
-    passwordEncoder,
-  ),
-  fetchAccountService: new FetchAccountService(accountRepository),
-  followService: new FollowService(accountFollowRepository, accountRepository),
-  freezeService: new FreezeService(accountRepository),
-  registerAccountService: new RegisterAccountService({
-    repository: accountRepository,
-    idGenerator: idGenerator,
-    passwordEncoder: passwordEncoder,
-    sendNotification: new DummySendNotificationService(),
-    verifyAccountTokenService: new VerifyAccountTokenService(
-      accountVerifyTokenRepository,
-      accountRepository,
-      new Clock(),
-    ),
-  }),
-  silenceService: new SilenceService(accountRepository),
-  verifyAccountTokenService: new VerifyAccountTokenService(
-    accountVerifyTokenRepository,
-    accountRepository,
-    new Clock(),
-  ),
-  unFollowService: new UnfollowService(
-    accountFollowRepository,
-    accountRepository,
-  ),
-  resendTokenService: new ResendVerifyTokenService(
-    accountRepository,
-    new VerifyAccountTokenService(
-      accountVerifyTokenRepository,
-      accountRepository,
-      new Clock(),
-    ),
-    new DummySendNotificationService(),
-  ),
-});
-const accountModule = new AccountModule(accountController);
+const accountModule = new AccountModule();
 const service = new FetchNoteService(repository, accountModule);
 
 describe('FetchNoteService', () => {
