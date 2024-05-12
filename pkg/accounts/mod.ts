@@ -180,9 +180,9 @@ accounts.openapi(VerifyEmailRoute, async (c) => {
 });
 
 const GetAccountHandler = accounts.openapi(GetAccountRoute, async (c) => {
-  const name = c.req.param('id');
+  const id = c.req.param('id');
 
-  const res = await controller.getAccount(name);
+  const res = await controller.getAccount(id);
   if (Result.isErr(res)) {
     return c.json({ error: res[1].message }, { status: 404 });
   }
