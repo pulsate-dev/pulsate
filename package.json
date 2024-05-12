@@ -27,7 +27,8 @@
     "format:check": "prettier --check \"./**/*.{js,ts,md}\"",
     "lint": "eslint . ",
     "prepare": "pnpm run build:prisma",
-    "postinstall": "lefthook install"
+    "postinstall": "lefthook install",
+    "docs:api": "node ./build/apidoc.js"
   },
   "dependencies": {
     "@hono/node-server": "^1.7.0",
