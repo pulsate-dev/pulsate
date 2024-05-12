@@ -1,0 +1,1838 @@
+{
+  "openapi": "3.0.0",
+  "info": {
+    "description": "",
+    "title": "Pulsate API Document",
+    "version": "0.1.0"
+  },
+  "components": {
+    "schemas": {
+      "CreateAccountResponse": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "Account ID",
+            "example": "38477395"
+          },
+          "name": {
+            "type": "string",
+            "description": "account name",
+            "example": "@example_man@example.com"
+          },
+          "email": {
+            "type": "string",
+            "format": "email",
+            "description": "account email address",
+            "example": "foo@example.com"
+          }
+        },
+        "required": [
+          "id",
+          "name",
+          "email"
+        ]
+      },
+      "CreateAccountRequest": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "Characters must be [A-Za-z0-9-.] The first and last characters must be [A-Za-z0-9-.]",
+            "example": "@example_man@example.com"
+          },
+          "email": {
+            "type": "string",
+            "format": "email",
+            "example": "foo@example.com"
+          },
+          "passphrase": {
+            "type": "string",
+            "minLength": 8,
+            "maxLength": 512,
+            "description": "Passphrase must be a UTF-8 string excluding spaces, tabs, full-width spaces, newlines, and null characters.",
+            "example": "じゃすた・いぐざんぽぅ"
+          },
+          "captcha_token": {
+            "type": "string",
+            "description": "Captcha token (e.g. reCAPTCHA, Cloudflare Trunstile)"
+          }
+        },
+        "required": [
+          "name",
+          "email",
+          "passphrase",
+          "captcha_token"
+        ]
+      },
+      "UpdateAccountResponse": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "Account ID",
+            "example": "38477395"
+          },
+          "name": {
+            "type": "string",
+            "description": "account name",
+            "example": "@example_man@example.com"
+          },
+          "nickname": {
+            "type": "string",
+            "description": "account nickname",
+            "example": "John Doe"
+          },
+          "bio": {
+            "type": "string",
+            "minLength": 0,
+            "maxLength": 1024,
+            "description": "Biography",
+            "examples": [
+              "",
+              "いい感じの自己紹介🆓",
+              "This is bio hello^~ <:javascript:358409384>"
+            ]
+          },
+          "email": {
+            "type": "string",
+            "format": "email",
+            "description": "account email address",
+            "example": "foo@example.com"
+          }
+        },
+        "required": [
+          "id",
+          "name",
+          "nickname",
+          "bio",
+          "email"
+        ]
+      },
+      "UpdateAccountRequest": {
+        "type": "object",
+        "properties": {
+          "nickname": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 256,
+            "description": "Nickname",
+            "examples": [
+              "Johndoe<:typescript:3939849792873>",
+              "ジョン・ドゥ🚉"
+            ]
+          },
+          "email": {
+            "type": "string",
+            "format": "email",
+            "description": "Email address",
+            "example": "john@example.com"
+          },
+          "passphrase": {
+            "type": "string",
+            "minLength": 8,
+            "maxLength": 512,
+            "description": "Passphrase",
+            "example": "じゃすた・いぐざんぽぅ"
+          },
+          "bio": {
+            "type": "string",
+            "minLength": 0,
+            "maxLength": 1024,
+            "description": "Biography",
+            "examples": [
+              "",
+              "いい感じの自己紹介🆓",
+              "This is bio hello^~ <:javascript:358409384>"
+            ]
+          }
+        },
+        "required": [
+          "bio"
+        ]
+      },
+      "VerifyEmailRequest": {
+        "type": "object",
+        "properties": {
+          "token": {
+            "type": "string",
+            "description": "Verification token",
+            "example": "vq34rvyanho10q9hbc98ydbvaervna43r0varhj"
+          }
+        },
+        "required": [
+          "token"
+        ]
+      },
+      "GetAccountResponse": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "account ID",
+            "example": "38477395"
+          },
+          "email": {
+            "type": "string",
+            "description": "account email address (only when logged in to an account with viewing privileges)",
+            "example": "johndoe@example.com"
+          },
+          "name": {
+            "type": "string",
+            "minLength": 8,
+            "maxLength": 512,
+            "description": "account name",
+            "example": "@johndoe@example.com"
+          },
+          "nickname": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 256,
+            "description": "account nickname",
+            "example": "JohnDoe<:typescript:299384730049>"
+          },
+          "bio": {
+            "type": "string",
+            "minLength": 0,
+            "maxLength": 1024,
+            "description": "Biography",
+            "examples": [
+              "",
+              "いい感じの自己紹介🆓",
+              "This is bio hello^~ <:javascript:358409384>"
+            ]
+          },
+          "avatar": {
+            "type": "string",
+            "format": "uri",
+            "description": "avatar URL",
+            "example": "https://example.com/avatar.png"
+          },
+          "header": {
+            "type": "string",
+            "format": "uri",
+            "description": "header URL",
+            "example": "https://example.com/header.png"
+          },
+          "followed_count": {
+            "type": "number",
+            "description": "followed count",
+            "example": 100
+          },
+          "following_count": {
+            "type": "number",
+            "description": "following count",
+            "example": 100
+          },
+          "note_count": {
+            "type": "number",
+            "description": "note count",
+            "example": 100
+          },
+          "role": {
+            "type": "string",
+            "description": "account role (only when logged in to an account with viewing privileges)",
+            "example": "normal"
+          },
+          "status": {
+            "type": "string",
+            "description": "account status (only when logged in to an account with viewing privileges)",
+            "example": "active"
+          },
+          "frozen": {
+            "type": "string",
+            "description": "account frozen status (only when logged in to an account with viewing privileges)",
+            "example": "normal"
+          },
+          "silenced": {
+            "type": "string",
+            "description": "account silenced status (only when logged in to an account with viewing privileges)",
+            "example": "normal"
+          },
+          "created_at": {
+            "type": "string",
+            "description": "account created at (only when logged in to an account with viewing privileges)",
+            "example": "2021-01-01T00:00:00Z"
+          }
+        },
+        "required": [
+          "id",
+          "name",
+          "nickname",
+          "bio",
+          "avatar",
+          "header",
+          "followed_count",
+          "following_count",
+          "note_count"
+        ]
+      },
+      "LoginResponse": {
+        "type": "object",
+        "properties": {
+          "authorization_token": {
+            "type": "string",
+            "description": "authorization token",
+            "example": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIzZTE2NDQ4MzMwMDAwMDIiLCJpYXQiOjE2NDA5OTUyMDEsInJlZnJlc2hfdG9rZW4iOiJleUpoYkdjaU9pSklVekkxTmlJc0luUjVjQ0k2SWtwWFZDSjkuZXlKemRXSWlPaUl6WlRFMk5EUTRNek13TURBd01ESWlMQ0pwWVhRaU9qRTJOREE1T1RVeU1ERjkud2Q4cWJVcWowWGtCU1hud0FxM0lRYU1nQS1RTFd2MHVKU1NLX3BIVTZCYyJ9.mRUfLIYOGlLuC9D72zBriVvrHYrQgVHW7ntQ-bp5SHs"
+          },
+          "refresh_token": {
+            "type": "string",
+            "description": "refresh token",
+            "example": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIzZTE2NDQ4MzMwMDAwMDIiLCJpYXQiOjE2NDA5OTUyMDEsInJlZnJlc2hfdG9rZW4iOiJleUpoYkdjaU9pSklVekkxTmlJc0luUjVjQ0k2SWtwWFZDSjkuZXlKemRXSWlPaUl6WlRFMk5EUTRNek13TURBd01ESWlMQ0pwWVhRaU9qRTJOREE1T1RVeU1ERjkud2Q4cWJVcWowWGtCU1hud0FxM0lRYU1nQS1RTFd2MHVKU1NLX3BIVTZCYyJ9.mRUfLIYOGlLuC9D72zBriVvrHYrQgVHW7ntQ-bp5SHs"
+          }
+        },
+        "required": [
+          "authorization_token",
+          "refresh_token"
+        ]
+      },
+      "LoginRequest": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "minLength": 8,
+            "maxLength": 512,
+            "description": "account name",
+            "example": "@johndoe@example.com"
+          },
+          "passphrase": {
+            "type": "string",
+            "minLength": 8,
+            "maxLength": 512,
+            "description": "Passphrase",
+            "example": "じゃすた・いぐざんぽぅ"
+          },
+          "captcha_token": {
+            "type": "string",
+            "description": "Captcha token (e.g. reCAPTCHA, Cloudflare Trunstile)"
+          }
+        },
+        "required": [
+          "name",
+          "passphrase",
+          "captcha_token"
+        ]
+      },
+      "RefreshRequest": {
+        "type": "object",
+        "properties": {
+          "refresh_token": {
+            "type": "string",
+            "description": "refresh token",
+            "example": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIzZTE2NDQ4MzMwMDAwMDIiLCJpYXQiOjE2NDA5OTUyMDEsInJlZnJlc2hfdG9rZW4iOiJleUpoYkdjaU9pSklVekkxTmlJc0luUjVjQ0k2SWtwWFZDSjkuZXlKemRXSWlPaUl6WlRFMk5EUTRNek13TURBd01ESWlMQ0pwWVhRaU9qRTJOREE1T1RVeU1ERjkud2Q4cWJVcWowWGtCU1hud0FxM0lRYU1nQS1RTFd2MHVKU1NLX3BIVTZCYyJ9.mRUfLIYOGlLuC9D72zBriVvrHYrQgVHW7ntQ-bp5SHs"
+          }
+        },
+        "required": [
+          "refresh_token"
+        ]
+      },
+      "FollowAccountResponse": {
+        "type": "object",
+        "properties": {}
+      },
+      "ResendVerificationEmailRequest": {
+        "type": "object",
+        "properties": {
+          "captcha_token": {
+            "type": "string",
+            "description": "Captcha token (e.g. reCAPTCHA, Cloudflare Trunstile)"
+          }
+        },
+        "required": [
+          "captcha_token"
+        ]
+      }
+    },
+    "parameters": {}
+  },
+  "paths": {
+    "/accounts": {
+      "post": {
+        "tags": [
+          "accounts"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateAccountRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CreateAccountResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string",
+                      "default": "",
+                      "description": "Error code",
+                      "example": "TEST_ERROR_CODE"
+                    }
+                  },
+                  "required": [
+                    "error"
+                  ]
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Conflict",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string",
+                      "default": "",
+                      "description": "Error code",
+                      "example": "TEST_ERROR_CODE"
+                    }
+                  },
+                  "required": [
+                    "error"
+                  ]
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/accounts/:name": {
+      "patch": {
+        "tags": [
+          "accounts"
+        ],
+        "parameters": [
+          {
+            "schema": {
+              "type": "string",
+              "minLength": 3,
+              "maxLength": 64,
+              "description": "Characters must be [A-Za-z0-9-.] The first and last characters must be [A-Za-z0-9-.]",
+              "example": "example_man"
+            },
+            "required": true,
+            "name": "name",
+            "in": "path"
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateAccountRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UpdateAccountResponse"
+                }
+              }
+            }
+          },
+          "202": {
+            "description": "When email updated",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UpdateAccountResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string",
+                      "default": "",
+                      "description": "Error code",
+                      "example": "TEST_ERROR_CODE"
+                    }
+                  },
+                  "required": [
+                    "error"
+                  ]
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string",
+                      "default": "",
+                      "description": "Error code",
+                      "example": "TEST_ERROR_CODE"
+                    }
+                  },
+                  "required": [
+                    "error"
+                  ]
+                }
+              }
+            }
+          },
+          "412": {
+            "description": "Precondition Failed",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string",
+                      "default": "",
+                      "description": "Error code",
+                      "example": "TEST_ERROR_CODE"
+                    }
+                  },
+                  "required": [
+                    "error"
+                  ]
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/accounts/:name/freeze": {
+      "put": {
+        "tags": [
+          "accounts"
+        ],
+        "parameters": [
+          {
+            "schema": {
+              "type": "string",
+              "minLength": 3,
+              "maxLength": 64,
+              "description": "Characters must be [A-Za-z0-9-.] The first and last characters must be [A-Za-z0-9-.]",
+              "example": "example_man"
+            },
+            "required": true,
+            "name": "name",
+            "in": "path"
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "No Content"
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string",
+                      "default": "",
+                      "description": "Error code",
+                      "example": "TEST_ERROR_CODE"
+                    }
+                  },
+                  "required": [
+                    "error"
+                  ]
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string",
+                      "default": "",
+                      "description": "Error code",
+                      "example": "TEST_ERROR_CODE"
+                    }
+                  },
+                  "required": [
+                    "error"
+                  ]
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string",
+                      "default": "",
+                      "description": "Error code",
+                      "example": "TEST_ERROR_CODE"
+                    }
+                  },
+                  "required": [
+                    "error"
+                  ]
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "accounts"
+        ],
+        "parameters": [
+          {
+            "schema": {
+              "type": "string",
+              "minLength": 3,
+              "maxLength": 64,
+              "description": "Characters must be [A-Za-z0-9-.] The first and last characters must be [A-Za-z0-9-.]",
+              "example": "example_man"
+            },
+            "required": true,
+            "name": "name",
+            "in": "path"
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "No Content"
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string",
+                      "default": "",
+                      "description": "Error code",
+                      "example": "TEST_ERROR_CODE"
+                    }
+                  },
+                  "required": [
+                    "error"
+                  ]
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string",
+                      "default": "",
+                      "description": "Error code",
+                      "example": "TEST_ERROR_CODE"
+                    }
+                  },
+                  "required": [
+                    "error"
+                  ]
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string",
+                      "default": "",
+                      "description": "Error code",
+                      "example": "TEST_ERROR_CODE"
+                    }
+                  },
+                  "required": [
+                    "error"
+                  ]
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/accounts/:name/verify_email": {
+      "post": {
+        "tags": [
+          "accounts"
+        ],
+        "parameters": [
+          {
+            "schema": {
+              "type": "string",
+              "minLength": 3,
+              "maxLength": 64,
+              "description": "Characters must be [A-Za-z0-9-.] The first and last characters must be [A-Za-z0-9-.]",
+              "example": "example_man"
+            },
+            "required": true,
+            "name": "name",
+            "in": "path"
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/VerifyEmailRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "204": {
+            "description": "No Content"
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string",
+                      "default": "",
+                      "description": "Error code",
+                      "example": "TEST_ERROR_CODE"
+                    }
+                  },
+                  "required": [
+                    "error"
+                  ]
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string",
+                      "default": "",
+                      "description": "Error code",
+                      "example": "TEST_ERROR_CODE"
+                    }
+                  },
+                  "required": [
+                    "error"
+                  ]
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/accounts/:id": {
+      "get": {
+        "tags": [
+          "accounts"
+        ],
+        "parameters": [
+          {
+            "schema": {
+              "type": "string",
+              "description": "Account ID",
+              "example": "495849959300385847"
+            },
+            "required": true,
+            "name": "id",
+            "in": "path"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GetAccountResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string",
+                      "default": "",
+                      "description": "Error code",
+                      "example": "TEST_ERROR_CODE"
+                    }
+                  },
+                  "required": [
+                    "error"
+                  ]
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/login": {
+      "post": {
+        "tags": [
+          "accounts"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/LoginRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/LoginResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string",
+                      "default": "",
+                      "description": "Error code",
+                      "example": "TEST_ERROR_CODE"
+                    }
+                  },
+                  "required": [
+                    "error"
+                  ]
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string",
+                      "default": "",
+                      "description": "Error code",
+                      "example": "TEST_ERROR_CODE"
+                    }
+                  },
+                  "required": [
+                    "error"
+                  ]
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/refresh": {
+      "post": {
+        "tags": [
+          "accounts"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RefreshRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UpdateAccountResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string",
+                      "default": "",
+                      "description": "Error code",
+                      "example": "TEST_ERROR_CODE"
+                    }
+                  },
+                  "required": [
+                    "error"
+                  ]
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/accounts/:name/silence": {
+      "put": {
+        "tags": [
+          "accounts"
+        ],
+        "parameters": [
+          {
+            "schema": {
+              "type": "string",
+              "minLength": 3,
+              "maxLength": 64,
+              "description": "Characters must be [A-Za-z0-9-.] The first and last characters must be [A-Za-z0-9-.]",
+              "example": "example_man"
+            },
+            "required": true,
+            "name": "name",
+            "in": "path"
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {}
+            }
+          }
+        },
+        "responses": {
+          "204": {
+            "description": "No Content"
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string",
+                      "default": "",
+                      "description": "Error code",
+                      "example": "TEST_ERROR_CODE"
+                    }
+                  },
+                  "required": [
+                    "error"
+                  ]
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string",
+                      "default": "",
+                      "description": "Error code",
+                      "example": "TEST_ERROR_CODE"
+                    }
+                  },
+                  "required": [
+                    "error"
+                  ]
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "accounts"
+        ],
+        "parameters": [
+          {
+            "schema": {
+              "type": "string",
+              "minLength": 3,
+              "maxLength": 64,
+              "description": "Characters must be [A-Za-z0-9-.] The first and last characters must be [A-Za-z0-9-.]",
+              "example": "example_man"
+            },
+            "required": true,
+            "name": "name",
+            "in": "path"
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {}
+            }
+          }
+        },
+        "responses": {
+          "204": {
+            "description": "No Content"
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string",
+                      "default": "",
+                      "description": "Error code",
+                      "example": "TEST_ERROR_CODE"
+                    }
+                  },
+                  "required": [
+                    "error"
+                  ]
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string",
+                      "default": "",
+                      "description": "Error code",
+                      "example": "TEST_ERROR_CODE"
+                    }
+                  },
+                  "required": [
+                    "error"
+                  ]
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/accounts/:name/follow": {
+      "post": {
+        "tags": [
+          "accounts"
+        ],
+        "parameters": [
+          {
+            "schema": {
+              "type": "string",
+              "minLength": 3,
+              "maxLength": 64,
+              "description": "Characters must be [A-Za-z0-9-.] The first and last characters must be [A-Za-z0-9-.]",
+              "example": "example_man"
+            },
+            "required": true,
+            "name": "name",
+            "in": "path"
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {}
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Accepted",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FollowAccountResponse"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string",
+                      "default": "",
+                      "description": "Error code",
+                      "example": "TEST_ERROR_CODE"
+                    }
+                  },
+                  "required": [
+                    "error"
+                  ]
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string",
+                      "default": "",
+                      "description": "Error code",
+                      "example": "TEST_ERROR_CODE"
+                    }
+                  },
+                  "required": [
+                    "error"
+                  ]
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "accounts"
+        ],
+        "parameters": [
+          {
+            "schema": {
+              "type": "string",
+              "minLength": 3,
+              "maxLength": 64,
+              "description": "Characters must be [A-Za-z0-9-.] The first and last characters must be [A-Za-z0-9-.]",
+              "example": "example_man"
+            },
+            "required": true,
+            "name": "name",
+            "in": "path"
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {}
+            }
+          }
+        },
+        "responses": {
+          "204": {
+            "description": "No Content"
+          },
+          "400": {
+            "description": "Forbidden",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string",
+                      "default": "",
+                      "description": "Error code",
+                      "example": "TEST_ERROR_CODE"
+                    }
+                  },
+                  "required": [
+                    "error"
+                  ]
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string",
+                      "default": "",
+                      "description": "Error code",
+                      "example": "TEST_ERROR_CODE"
+                    }
+                  },
+                  "required": [
+                    "error"
+                  ]
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/accounts/:name/resend_verify_email": {
+      "post": {
+        "tags": [
+          "accounts"
+        ],
+        "parameters": [
+          {
+            "schema": {
+              "type": "string",
+              "minLength": 3,
+              "maxLength": 64,
+              "description": "Characters must be [A-Za-z0-9-.] The first and last characters must be [A-Za-z0-9-.]",
+              "example": "example_man"
+            },
+            "required": true,
+            "name": "name",
+            "in": "path"
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ResendVerificationEmailRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "204": {
+            "description": "No Content"
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string",
+                      "default": "",
+                      "description": "Error code",
+                      "example": "TEST_ERROR_CODE"
+                    }
+                  },
+                  "required": [
+                    "error"
+                  ]
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string",
+                      "default": "",
+                      "description": "Error code",
+                      "example": "TEST_ERROR_CODE"
+                    }
+                  },
+                  "required": [
+                    "error"
+                  ]
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string",
+                      "default": "",
+                      "description": "Error code",
+                      "example": "TEST_ERROR_CODE"
+                    }
+                  },
+                  "required": [
+                    "error"
+                  ]
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/notes": {
+      "post": {
+        "tags": [
+          "notes"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "content": {
+                    "type": "string",
+                    "maxLength": 3000,
+                    "default": "",
+                    "description": "Note content (max 3000 characters/if attachment file exists, allow 0 character)",
+                    "example": "hello world!"
+                  },
+                  "visibility": {
+                    "type": "string",
+                    "default": "PUBLIC",
+                    "description": "Note visibility (PUBLIC/HOME/FOLLOWERS/DIRECT)",
+                    "example": "PUBLIC"
+                  },
+                  "contents_warning_comment": {
+                    "type": "string",
+                    "maxLength": 256,
+                    "default": "",
+                    "description": "Contents warning comment (max 256 characters)",
+                    "example": "This note contains sensitive content"
+                  },
+                  "send_to": {
+                    "type": "string",
+                    "default": "",
+                    "description": "Send to account ID (if visibility is DIRECT)",
+                    "example": "38477395"
+                  }
+                },
+                "required": [
+                  "content",
+                  "visibility",
+                  "contents_warning_comment"
+                ]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "id": {
+                      "type": "string",
+                      "description": "Note ID",
+                      "example": "38477395"
+                    },
+                    "content": {
+                      "type": "string",
+                      "description": "Note content",
+                      "example": "hello world!"
+                    },
+                    "visibility": {
+                      "type": "string",
+                      "description": "Note visibility",
+                      "example": "PUBLIC"
+                    },
+                    "contents_warning_comment": {
+                      "type": "string",
+                      "description": "Contents warning comment",
+                      "example": "This note contains sensitive content"
+                    },
+                    "send_to": {
+                      "type": "string",
+                      "description": "Send to account ID",
+                      "example": "38477395"
+                    },
+                    "author_id": {
+                      "type": "string",
+                      "description": "Author account ID",
+                      "example": "38477395"
+                    },
+                    "created_at": {
+                      "type": "string",
+                      "description": "Note created date",
+                      "example": "2021-01-01T00:00:00Z"
+                    }
+                  },
+                  "required": [
+                    "id",
+                    "content",
+                    "visibility",
+                    "contents_warning_comment",
+                    "author_id",
+                    "created_at"
+                  ]
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string",
+                      "default": "",
+                      "description": "Error code",
+                      "example": "TEST_ERROR_CODE"
+                    }
+                  },
+                  "required": [
+                    "error"
+                  ]
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "You are silenced",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string",
+                      "default": "",
+                      "description": "Error code",
+                      "example": "TEST_ERROR_CODE"
+                    }
+                  },
+                  "required": [
+                    "error"
+                  ]
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/notes/:id": {
+      "get": {
+        "tags": [
+          "notes"
+        ],
+        "parameters": [
+          {
+            "schema": {
+              "type": "string",
+              "description": "Note ID",
+              "example": "1"
+            },
+            "required": true,
+            "name": "id",
+            "in": "path"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "id": {
+                      "type": "string",
+                      "description": "Note ID",
+                      "example": "38477395"
+                    },
+                    "content": {
+                      "type": "string",
+                      "description": "Note content",
+                      "example": "hello world!"
+                    },
+                    "contents_warning_comment": {
+                      "type": "string",
+                      "description": "Contents warning comment",
+                      "example": "(if length not 0) This note contains sensitive content"
+                    },
+                    "send_to": {
+                      "type": "string",
+                      "description": "Send to account ID",
+                      "example": "38477395"
+                    },
+                    "visibility": {
+                      "type": "string",
+                      "description": "Note visibility (PUBLIC/HOME/FOLLOWERS/DIRECT)",
+                      "example": "PUBLIC"
+                    },
+                    "created_at": {
+                      "type": "string",
+                      "format": "date-time",
+                      "description": "Note created date",
+                      "example": "2021-01-01T00:00:00Z"
+                    },
+                    "author": {
+                      "type": "object",
+                      "properties": {
+                        "id": {
+                          "type": "string"
+                        },
+                        "name": {
+                          "type": "string"
+                        },
+                        "display_name": {
+                          "type": "string"
+                        },
+                        "bio": {
+                          "type": "string"
+                        },
+                        "avatar": {
+                          "type": "string"
+                        },
+                        "header": {
+                          "type": "string"
+                        },
+                        "followed_count": {
+                          "type": "number"
+                        },
+                        "following_count": {
+                          "type": "number"
+                        }
+                      },
+                      "required": [
+                        "id",
+                        "name",
+                        "display_name",
+                        "bio",
+                        "avatar",
+                        "header",
+                        "followed_count",
+                        "following_count"
+                      ]
+                    }
+                  },
+                  "required": [
+                    "id",
+                    "content",
+                    "contents_warning_comment",
+                    "visibility",
+                    "created_at",
+                    "author"
+                  ]
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Note not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string",
+                      "default": "",
+                      "description": "Error code",
+                      "example": "TEST_ERROR_CODE"
+                    }
+                  },
+                  "required": [
+                    "error"
+                  ]
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/notes/:id/renote": {
+      "post": {
+        "tags": [
+          "notes"
+        ],
+        "parameters": [
+          {
+            "schema": {
+              "type": "string",
+              "description": "Note ID",
+              "example": "1"
+            },
+            "required": true,
+            "name": "id",
+            "in": "path"
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "content": {
+                    "type": "string",
+                    "maxLength": 3000,
+                    "default": "",
+                    "description": "Note content (max 3000 characters/if attachment file exists, allow 0 character)",
+                    "example": "hello world!"
+                  },
+                  "visibility": {
+                    "anyOf": [
+                      {
+                        "type": "string",
+                        "enum": [
+                          "public"
+                        ]
+                      },
+                      {
+                        "type": "string",
+                        "enum": [
+                          "home"
+                        ]
+                      },
+                      {
+                        "type": "string",
+                        "enum": [
+                          "followers"
+                        ]
+                      }
+                    ],
+                    "default": "public",
+                    "description": "Note visibility (public/home/followers)",
+                    "example": "public"
+                  },
+                  "contents_warning_comment": {
+                    "type": "string",
+                    "maxLength": 256,
+                    "default": "",
+                    "description": "Contents warning comment (max 256 characters)",
+                    "example": "This note contains sensitive content"
+                  }
+                },
+                "required": [
+                  "content",
+                  "visibility",
+                  "contents_warning_comment"
+                ]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "id": {
+                      "type": "string",
+                      "description": "Note ID",
+                      "example": "38477395"
+                    },
+                    "content": {
+                      "type": "string",
+                      "description": "Note content",
+                      "example": "hello world!"
+                    },
+                    "visibility": {
+                      "type": "string",
+                      "description": "Note visibility",
+                      "example": "PUBLIC"
+                    },
+                    "original_note_id": {
+                      "type": "string",
+                      "description": "Original note ID",
+                      "example": "38477395"
+                    },
+                    "contents_warning_comment": {
+                      "type": "string",
+                      "description": "Contents warning comment",
+                      "example": "This note contains sensitive content"
+                    },
+                    "author_id": {
+                      "type": "string",
+                      "description": "Author account ID",
+                      "example": "38477395"
+                    },
+                    "created_at": {
+                      "type": "string",
+                      "description": "Note created date",
+                      "example": "2021-01-01T00:00:00Z"
+                    }
+                  },
+                  "required": [
+                    "id",
+                    "content",
+                    "visibility",
+                    "original_note_id",
+                    "contents_warning_comment",
+                    "author_id",
+                    "created_at"
+                  ]
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string",
+                      "default": "",
+                      "description": "Error code",
+                      "example": "TEST_ERROR_CODE"
+                    }
+                  },
+                  "required": [
+                    "error"
+                  ]
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "You are silenced",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string",
+                      "default": "",
+                      "description": "Error code",
+                      "example": "TEST_ERROR_CODE"
+                    }
+                  },
+                  "required": [
+                    "error"
+                  ]
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Note not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string",
+                      "default": "",
+                      "description": "Error code",
+                      "example": "TEST_ERROR_CODE"
+                    }
+                  },
+                  "required": [
+                    "error"
+                  ]
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}
