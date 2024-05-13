@@ -2,6 +2,7 @@ import { createRoute, z } from '@hono/zod-openapi';
 
 import { CommonErrorResponseSchema } from '../accounts/adaptor/validator/schema.js';
 import {
+  CreateBookmarkResponseSchema,
   CreateNoteRequestSchema,
   CreateNoteResponseSchema,
   GetNoteResponseSchema,
@@ -129,6 +130,65 @@ export const RenoteRoute = createRoute({
     },
     404: {
       description: 'Note not found',
+      content: {
+        'application/json': {
+          schema: CommonErrorResponseSchema,
+        },
+      },
+    },
+  },
+});
+
+export const CreateBookmarkRoute = createRoute({
+  method: 'post',
+  tags: ['bookmark'],
+  path: '/notes/:id/bookmark',
+  request: {
+    params: z.object({
+      id: z.string().openapi({
+        description: 'Note ID',
+        example: '1',
+      }),
+    }),
+  },
+  responses: {
+    200: {
+      description: 'OK',
+      content: {
+        'application/json': {
+          schema: CreateBookmarkResponseSchema,
+        },
+      },
+    },
+    404: {
+      description: 'Note not found',
+      content: {
+        'application/json': {
+          schema: CommonErrorResponseSchema,
+        },
+      },
+    },
+  },
+});
+
+export const DeleteBookmarkRoute = createRoute({
+  method: 'delete',
+  tags: ['bookmark'],
+  path: '/notes/:id/bookmark',
+  request: {
+    params: z.object({
+      id: z.string().openapi({
+        description: 'Note ID',
+        example: '1',
+      }),
+    }),
+  },
+  responses: {
+    204: {
+      description: 'OK',
+    },
+    404: {
+      description: 'Bookmark not found',
       content: {
         'application/json': {
           schema: CommonErrorResponseSchema,
