@@ -16,7 +16,7 @@ importers:
         version: 0.2.2(hono@4.3.4)
       '@hono/zod-openapi':
         specifier: ^0.11.0
-        version: 0.11.0(hono@4.3.4)(zod@3.22.5)
+        version: 0.11.1(hono@4.3.4)(zod@3.22.5)
       '@mikuroxina/mini-fn':
         specifier: ^6.0.0
         version: 6.1.1
@@ -557,8 +557,8 @@ packages:
     peerDependencies:
       hono: '*'
 
-  '@hono/zod-openapi@0.11.0':
-    resolution: {integrity: sha512-thbxV4lWJoDo1NjF8ZGnd0muD3UHUpRqpKvS3RI+kWCXU05nyuViymUbPvVpp+O6i5SjovITTF91NRMTraZm3Q==}
+  '@hono/zod-openapi@0.11.1':
+    resolution: {integrity: sha512-lCeAu1fH5cWRQccGsiiJBxHQKT1ueMYP3efdY/4VX6MvGNaLjFiIf5haXhbF2pr3+Eln7ZogKUVSVF+NoCWtgw==}
     engines: {node: '>=16.0.0'}
     peerDependencies:
       hono: '>=3.11.3'
@@ -2958,11 +2958,6 @@ packages:
   yallist@4.0.0:
     resolution: {integrity: sha512-3wdGidZyq5PB084XLES5TpOSRA3wjXAlIWMhum2kRcv/41Sn2emQ0dycQW4uZXLejwKvg6EsvbdlVL+FYEct7A==}
 
-  yaml@2.4.1:
-    resolution: {integrity: sha512-pIXzoImaqmfOrL7teGUBt/T7ZDnyeGBWyXQBvOVhLkWLN37GXv8NMLK406UY6dS51JfcQHsmcW5cJ441bHg6Lg==}
-    engines: {node: '>= 14'}
-    hasBin: true
-
   yaml@2.4.2:
     resolution: {integrity: sha512-B3VqDZ+JAg1nZpaEmWtTXUlBneoGx6CPM9b0TENK6aoSu5t73dItudwdgmi6tHlIZZId4dZ9skcAQ2UbcyAeVA==}
     engines: {node: '>= 14'}
@@ -3384,7 +3379,7 @@ snapshots:
     dependencies:
       hono: 4.3.4
 
-  '@hono/zod-openapi@0.11.0(hono@4.3.4)(zod@3.22.5)':
+  '@hono/zod-openapi@0.11.1(hono@4.3.4)(zod@3.22.5)':
     dependencies:
       '@asteasolutions/zod-to-openapi': 7.0.0(zod@3.22.5)
       '@hono/zod-validator': 0.2.1(hono@4.3.4)(zod@3.22.5)
@@ -5748,7 +5743,7 @@ snapshots:
 
   openapi3-ts@4.3.1:
     dependencies:
-      yaml: 2.4.1
+      yaml: 2.4.2
 
   optionator@0.9.4:
     dependencies:
@@ -6408,8 +6403,6 @@ snapshots:
     optional: true
 
   yallist@4.0.0: {}
-
-  yaml@2.4.1: {}
 
   yaml@2.4.2: {}
 
