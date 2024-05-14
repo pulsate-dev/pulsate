@@ -63,7 +63,7 @@ export class NoteController {
       return Result.err(new Error('Note not found'));
     }
 
-    const authorAccount = await this.accountModule.fetchAccountByID(
+    const authorAccount = await this.accountModule.fetchAccount(
       res[1].getAuthorID(),
     );
 

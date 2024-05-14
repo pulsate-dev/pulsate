@@ -6,13 +6,13 @@
   "main": "./build/main.js",
   "license": "Apache-2.0",
   "keywords": [],
-  "packageManager": "pnpm@9.0.6",
+  "packageManager": "pnpm@9.1.0",
   "author": {
     "name": "pulsate-dev",
     "email": "info@pulsate.dev"
   },
   "engines": {
-    "node": "20.12.2"
+    "node": "20.13.1"
   },
   "scripts": {
     "start": "node ./build/main.js",
@@ -27,7 +27,8 @@
     "format:check": "prettier --check \"./**/*.{js,ts,md}\"",
     "lint": "eslint . ",
     "prepare": "pnpm run build:prisma",
-    "postinstall": "lefthook install"
+    "postinstall": "lefthook install",
+    "docs:api": "node ./build/apidoc.js"
   },
   "dependencies": {
     "@hono/node-server": "^1.7.0",
@@ -51,7 +52,7 @@
     "@typescript-eslint/eslint-plugin": "^7.0.0",
     "@typescript-eslint/parser": "^7.0.0",
     "@vitest/coverage-v8": "^1.2.2",
-    "esbuild": "^0.20.2",
+    "esbuild": "^0.21.0",
     "eslint": "^9.0.0",
     "eslint-config-prettier": "^9.1.0",
     "eslint-plugin-vitest": "^0.5.0",

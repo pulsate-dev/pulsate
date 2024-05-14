@@ -5,16 +5,7 @@ import { Hono } from 'hono';
 import { accounts } from './pkg/accounts/mod.js';
 import { noteHandlers } from './pkg/notes/mod.js';
 
-const app = new Hono();
-
-/*
-All routes must be "/"
-(The "/" account cannot be written in the library specification.
- */
-app.route('/', noteHandlers);
-app.route('/', accounts);
-
-app.get('/doc.json', async (c) => {
+export const app = new Hono().get('/doc', async (c) => {
   const modulePath: string[] = ['accounts', 'notes'];
   const basePath = 'http://localhost:3000/';
   const openAPIBase = {
@@ -51,12 +42,19 @@ app.get('/doc.json', async (c) => {
   return c.json(openAPIBase);
 });
 
+/*
+All routes must be "/"
+(The "/" account cannot be written in the library specification.
+ */
+app.route('/', noteHandlers);
+app.route('/', accounts);
+
 app.get(
   '/reference',
   apiReference({
     pageTitle: 'Pulsate API',
     spec: {
-      url: '/doc.json',
+      url: '/doc',
     },
   }),
 );

@@ -5,6 +5,7 @@ import { OFFSET_FROM_UNIX_EPOCH } from '../time/mod.js';
 import type { ID } from './type.js';
 
 export interface Clock {
+  /** @returns current time in milliseconds from Unix Epoch (1970 Jan 1st 00:00:00.000 UTC) */
   now(): bigint;
 }
 

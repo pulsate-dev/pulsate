@@ -380,13 +380,12 @@ export const RefreshRoute = createRoute({
 export const GetAccountRoute = createRoute({
   method: 'get',
   tags: ['accounts'],
-  path: '/accounts/:name',
+  path: '/accounts/:id',
   request: {
     params: z.object({
-      name: z.string().min(3).max(64).openapi({
-        example: 'example_man',
-        description:
-          'Characters must be [A-Za-z0-9-.] The first and last characters must be [A-Za-z0-9-.]',
+      id: z.string().openapi({
+        example: '495849959300385847',
+        description: 'Account ID',
       }),
     }),
   },
