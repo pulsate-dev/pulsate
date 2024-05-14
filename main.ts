@@ -15,6 +15,12 @@ export const app = new Hono().get('/doc', async (c) => {
       title: 'Pulsate API Document',
       version: '0.1.0',
     },
+    servers: [
+      {
+        url: 'http://localhost:3000/',
+        description: 'Local server',
+      },
+    ],
     components: {
       schemas: {},
       parameters: {},
