@@ -1,13 +1,13 @@
 import { OpenAPIHono } from '@hono/zod-openapi';
-import { Result } from '@mikuroxina/mini-fn';
+import { Cat, Ether, Promise, Result } from '@mikuroxina/mini-fn';
 
-import { SnowflakeIDGenerator } from '../id/mod.js';
-import { Argon2idPasswordEncoder } from '../password/mod.js';
+import { clockSymbol, snowflakeIDGenerator } from '../id/mod.js';
+import { argon2idPasswordEncoder } from '../password/mod.js';
 import { AccountController } from './adaptor/controller/account.js';
 import {
-  InMemoryAccountFollowRepository,
-  InMemoryAccountRepository,
-  InMemoryAccountVerifyTokenRepository,
+  newFollowRepo,
+  newAccountRepo,
+  verifyTokenRepo,
 } from './adaptor/repository/dummy.js';
 import type { AccountName } from './model/account.js';
 import {
@@ -25,76 +25,89 @@ import {
   UpdateAccountRoute,
   VerifyEmailRoute,
 } from './router.js';
-import { AuthenticateService } from './service/authenticate.js';
-import { AuthenticationTokenService } from './service/authenticationTokenService.js';
-import { EditAccountService } from './service/editAccount.js';
-import { EtagService } from './service/etagService.js';
-import { FetchAccountService } from './service/fetchAccount.js';
-import { FollowService } from './service/follow.js';
-import { FreezeService } from './service/freeze.js';
-import { RegisterAccountService } from './service/register.js';
-import { ResendVerifyTokenService } from './service/resendToken.js';
-import { DummySendNotificationService } from './service/sendNotification.js';
-import { SilenceService } from './service/silence.js';
-import { UnfollowService } from './service/unfollow.js';
-import { VerifyAccountTokenService } from './service/verifyToken.js';
+import { authenticate } from './service/authenticate.js';
+import { authenticateToken } from './service/authenticationTokenService.js';
+import { edit } from './service/editAccount.js';
+import { etag } from './service/etagService.js';
+import { fetch } from './service/fetchAccount.js';
+import { follow } from './service/follow.js';
+import { freeze } from './service/freeze.js';
+import { register } from './service/register.js';
+import { resendToken } from './service/resendToken.js';
+import { dummy } from './service/sendNotification.js';
+import { silence } from './service/silence.js';
+import { unfollow } from './service/unfollow.js';
+import { verifyAccountToken } from './service/verifyToken.js';
 
 export const accounts = new OpenAPIHono();
-const accountRepository = new InMemoryAccountRepository();
-const accountFollowRepository = new InMemoryAccountFollowRepository();
-const accountVerifyTokenRepository = new InMemoryAccountVerifyTokenRepository();
-const authenticationTokenService = await AuthenticationTokenService.new();
+const accountRepository = newAccountRepo();
+const accountFollowRepository = newFollowRepo();
 class Clock {
   now() {
     return BigInt(Date.now());
   }
 }
-const idGenerator = new SnowflakeIDGenerator(0, new Clock());
-const passwordEncoder = new Argon2idPasswordEncoder();
+const clock = Ether.newEther(clockSymbol, () => new Clock());
+const idGenerator = Ether.compose(clock)(snowflakeIDGenerator(0));
 
+const verifyAccountTokenService = Cat.cat(verifyAccountToken)
+  .feed(Ether.compose(clock))
+  .feed(Ether.compose(verifyTokenRepo))
+  .feed(Ether.compose(accountRepository)).value;
+
+const composer = Ether.composeT(Promise.monad);
+const liftOverPromise = <const D extends Record<string, symbol>, T>(
+  ether: Ether.Ether<D, T>,
+): Ether.EtherT<D, Promise.PromiseHkt, T> => ({
+  ...ether,
+  handler: (resolved) => Promise.pure(ether.handler(resolved)),
+});
 export const controller = new AccountController({
-  authenticateService: new AuthenticateService({
-    accountRepository: accountRepository,
-    authenticationTokenService: authenticationTokenService,
-    passwordEncoder: passwordEncoder,
-  }),
-  editAccountService: new EditAccountService(
-    accountRepository,
-    new EtagService(),
-    passwordEncoder,
+  authenticateService: await Ether.runEtherT(
+    Cat.cat(liftOverPromise(authenticate))
+      .feed(composer(liftOverPromise(accountRepository)))
+      .feed(composer(authenticateToken))
+      .feed(composer(liftOverPromise(argon2idPasswordEncoder))).value,
   ),
-  fetchAccountService: new FetchAccountService(accountRepository),
-  followService: new FollowService(accountFollowRepository, accountRepository),
-  freezeService: new FreezeService(accountRepository),
-  registerAccountService: new RegisterAccountService({
-    repository: accountRepository,
-    idGenerator: idGenerator,
-    passwordEncoder: passwordEncoder,
-    sendNotification: new DummySendNotificationService(),
-    verifyAccountTokenService: new VerifyAccountTokenService(
-      accountVerifyTokenRepository,
-      accountRepository,
-      new Clock(),
-    ),
-  }),
-  silenceService: new SilenceService(accountRepository),
-  verifyAccountTokenService: new VerifyAccountTokenService(
-    accountVerifyTokenRepository,
-    accountRepository,
-    new Clock(),
+  editAccountService: Ether.runEther(
+    Cat.cat(edit)
+      .feed(Ether.compose(accountRepository))
+      .feed(Ether.compose(etag))
+      .feed(Ether.compose(argon2idPasswordEncoder)).value,
   ),
-  unFollowService: new UnfollowService(
-    accountFollowRepository,
-    accountRepository,
+  fetchAccountService: Ether.runEther(
+    Cat.cat(fetch).feed(Ether.compose(accountRepository)).value,
   ),
-  resendTokenService: new ResendVerifyTokenService(
-    accountRepository,
-    new VerifyAccountTokenService(
-      accountVerifyTokenRepository,
-      accountRepository,
-      new Clock(),
-    ),
-    new DummySendNotificationService(),
+  followService: Ether.runEther(
+    Cat.cat(follow)
+      .feed(Ether.compose(accountRepository))
+      .feed(Ether.compose(accountFollowRepository)).value,
+  ),
+  freezeService: Ether.runEther(
+    Cat.cat(freeze).feed(Ether.compose(accountRepository)).value,
+  ),
+  registerAccountService: Ether.runEther(
+    Cat.cat(register)
+      .feed(Ether.compose(accountRepository))
+      .feed(Ether.compose(idGenerator))
+      .feed(Ether.compose(argon2idPasswordEncoder))
+      .feed(Ether.compose(dummy))
+      .feed(Ether.compose(verifyAccountTokenService)).value,
+  ),
+  silenceService: Ether.runEther(
+    Cat.cat(silence).feed(Ether.compose(accountRepository)).value,
+  ),
+  verifyAccountTokenService: Ether.runEther(verifyAccountTokenService),
+  unFollowService: Ether.runEther(
+    Cat.cat(unfollow)
+      .feed(Ether.compose(accountFollowRepository))
+      .feed(Ether.compose(accountRepository)).value,
+  ),
+  resendTokenService: Ether.runEther(
+    Cat.cat(resendToken)
+      .feed(Ether.compose(accountRepository))
+      .feed(Ether.compose(verifyAccountTokenService))
+      .feed(Ether.compose(dummy)).value,
   ),
 });
 
