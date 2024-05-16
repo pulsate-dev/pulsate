@@ -1,11 +1,13 @@
-import { Option, Cat, Result } from '@mikuroxina/mini-fn';
+import { Option, Cat, Result, Ether } from '@mikuroxina/mini-fn';
 
 import type { AccountID, AccountName } from '../../accounts/model/account.js';
 import type { ID } from '../../id/type.js';
 import type { AccountFollow } from '../model/follow.js';
-import type {
-  AccountFollowRepository,
-  AccountRepository,
+import {
+  accountRepoSymbol,
+  followRepoSymbol,
+  type AccountFollowRepository,
+  type AccountRepository,
 } from '../model/repository.js';
 
 export class FetchAccountFollowService {
@@ -54,3 +56,12 @@ export class FetchAccountFollowService {
     return this.fetchFollowersByID(resId[1]);
   }
 }
+
+export const fetchFollowSymbol =
+  Ether.newEtherSymbol<FetchAccountFollowService>();
+export const fetchFollow = Ether.newEther(
+  fetchFollowSymbol,
+  ({ accountRepository, followRepository }) =>
+    new FetchAccountFollowService(followRepository, accountRepository),
+  { followRepository: followRepoSymbol, accountRepository: accountRepoSymbol },
+);

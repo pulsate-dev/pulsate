@@ -1,7 +1,10 @@
-import { Option, Result } from '@mikuroxina/mini-fn';
+import { Ether, Option, Result } from '@mikuroxina/mini-fn';
 
 import type { AccountName } from '../model/account.js';
-import { type AccountRepository } from '../model/repository.js';
+import {
+  accountRepoSymbol,
+  type AccountRepository,
+} from '../model/repository.js';
 
 export class FreezeService {
   private readonly accountRepository: AccountRepository;
@@ -42,3 +45,10 @@ export class FreezeService {
     }
   }
 }
+
+export const freezeSymbol = Ether.newEtherSymbol<FreezeService>();
+export const freeze = Ether.newEther(
+  freezeSymbol,
+  ({ accountRepository }) => new FreezeService(accountRepository),
+  { accountRepository: accountRepoSymbol },
+);

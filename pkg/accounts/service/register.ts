@@ -1,16 +1,31 @@
-import { Option, Result } from '@mikuroxina/mini-fn';
+import { Ether, Option, Result } from '@mikuroxina/mini-fn';
 
-import type { SnowflakeIDGenerator } from '../../id/mod.js';
-import { type PasswordEncoder } from '../../password/mod.js';
+import {
+  snowflakeIDGeneratorSymbol,
+  type SnowflakeIDGenerator,
+} from '../../id/mod.js';
+import {
+  passwordEncoderSymbol,
+  type PasswordEncoder,
+} from '../../password/mod.js';
 import {
   Account,
   type AccountID,
   type AccountName,
   type AccountRole,
 } from '../model/account.js';
-import { type AccountRepository } from '../model/repository.js';
-import { type SendNotificationService } from './sendNotification.js';
-import type { VerifyAccountTokenService } from './verifyToken.js';
+import {
+  accountRepoSymbol,
+  type AccountRepository,
+} from '../model/repository.js';
+import {
+  sendNotificationSymbol,
+  type SendNotificationService,
+} from './sendNotification.js';
+import {
+  verifyAccountTokenSymbol,
+  type VerifyAccountTokenService,
+} from './verifyToken.js';
 
 export class AccountAlreadyExistsError extends Error {
   override readonly name = 'AccountAlreadyExistsError' as const;
@@ -106,3 +121,16 @@ export class RegisterAccountService {
     return Option.isSome(byName) || Option.isSome(byMail);
   }
 }
+
+export const registerSymbol = Ether.newEtherSymbol<RegisterAccountService>();
+export const register = Ether.newEther(
+  registerSymbol,
+  (deps) => new RegisterAccountService(deps),
+  {
+    repository: accountRepoSymbol,
+    idGenerator: snowflakeIDGeneratorSymbol,
+    passwordEncoder: passwordEncoderSymbol,
+    sendNotification: sendNotificationSymbol,
+    verifyAccountTokenService: verifyAccountTokenSymbol,
+  },
+);

@@ -1,9 +1,18 @@
-import { Option, Result } from '@mikuroxina/mini-fn';
+import { Ether, Option, Result } from '@mikuroxina/mini-fn';
 
 import type { AccountName } from '../model/account.js';
-import { type AccountRepository } from '../model/repository.js';
-import { type SendNotificationService } from './sendNotification.js';
-import type { VerifyAccountTokenService } from './verifyToken.js';
+import {
+  accountRepoSymbol,
+  type AccountRepository,
+} from '../model/repository.js';
+import {
+  sendNotificationSymbol,
+  type SendNotificationService,
+} from './sendNotification.js';
+import {
+  verifyAccountTokenSymbol,
+  type VerifyAccountTokenService,
+} from './verifyToken.js';
 
 export class ResendVerifyTokenService {
   private readonly accountRepository: AccountRepository;
@@ -42,3 +51,20 @@ export class ResendVerifyTokenService {
     return Option.none();
   }
 }
+
+export const resendTokenSymbol =
+  Ether.newEtherSymbol<ResendVerifyTokenService>();
+export const resendToken = Ether.newEther(
+  resendTokenSymbol,
+  ({ accountRepository, verifyAccountTokenService, sendNotificationService }) =>
+    new ResendVerifyTokenService(
+      accountRepository,
+      verifyAccountTokenService,
+      sendNotificationService,
+    ),
+  {
+    accountRepository: accountRepoSymbol,
+    verifyAccountTokenService: verifyAccountTokenSymbol,
+    sendNotificationService: sendNotificationSymbol,
+  },
+);
