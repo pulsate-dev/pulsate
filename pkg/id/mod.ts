@@ -1,5 +1,5 @@
 import { z } from '@hono/zod-openapi';
-import { Result } from '@mikuroxina/mini-fn';
+import { Ether, Result } from '@mikuroxina/mini-fn';
 
 import { OFFSET_FROM_UNIX_EPOCH } from '../time/mod.js';
 import type { ID } from './type.js';
@@ -8,6 +8,7 @@ export interface Clock {
   /** @returns current time in milliseconds from Unix Epoch (1970 Jan 1st 00:00:00.000 UTC) */
   now(): bigint;
 }
+export const clockSymbol = Ether.newEtherSymbol<Clock>();
 
 export class MockClock implements Clock {
   constructor(private readonly time: Date) {}
@@ -15,6 +16,8 @@ export class MockClock implements Clock {
     return BigInt(this.time.getTime());
   }
 }
+export const mockClock = (date: Date) =>
+  Ether.newEther(clockSymbol, () => new MockClock(date));
 
 export class SnowflakeIDGenerator {
   private readonly WORKER_ID_BIT_LENGTH = 10n;
@@ -69,6 +72,14 @@ export class SnowflakeIDGenerator {
     return Result.ok(id.toString() as ID<T>);
   }
 }
+export const snowflakeIDGeneratorSymbol =
+  Ether.newEtherSymbol<SnowflakeIDGenerator>();
+export const snowflakeIDGenerator = (workerID: number) =>
+  Ether.newEther(
+    snowflakeIDGeneratorSymbol,
+    ({ clock }) => new SnowflakeIDGenerator(workerID, clock),
+    { clock: clockSymbol },
+  );
 
 export const IDSchema = <T>() =>
   z
