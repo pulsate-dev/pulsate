@@ -1,4 +1,4 @@
-import { Option, Result } from '@mikuroxina/mini-fn';
+import { Ether, Option, Result } from '@mikuroxina/mini-fn';
 import { type PrismaClient } from '@prisma/client';
 
 import type { ID } from '../../../id/type.js';
@@ -12,10 +12,13 @@ import {
   type AccountStatus,
 } from '../../model/account.js';
 import { AccountFollow } from '../../model/follow.js';
-import type {
-  AccountFollowRepository,
-  AccountRepository,
-  AccountVerifyTokenRepository,
+import {
+  accountRepoSymbol,
+  followRepoSymbol,
+  verifyTokenRepoSymbol,
+  type AccountFollowRepository,
+  type AccountRepository,
+  type AccountVerifyTokenRepository,
 } from '../../model/repository.js';
 
 interface AccountPrismaArgs {
@@ -200,6 +203,8 @@ export class PrismaAccountRepository implements AccountRepository {
     });
   }
 }
+export const accountRepo = (client: PrismaClient) =>
+  Ether.newEther(accountRepoSymbol, () => new PrismaAccountRepository(client));
 
 export class PrismaAccountVerifyTokenRepository
   implements AccountVerifyTokenRepository
@@ -243,6 +248,11 @@ export class PrismaAccountVerifyTokenRepository
     });
   }
 }
+export const verifyTokenRepo = (client: PrismaClient) =>
+  Ether.newEther(
+    verifyTokenRepoSymbol,
+    () => new PrismaAccountVerifyTokenRepository(client),
+  );
 
 interface AccountFollowPrismaArgs {
   fromId: string;
@@ -352,3 +362,8 @@ export class PrismaAccountFollowRepository implements AccountFollowRepository {
     });
   }
 }
+export const followRepo = (client: PrismaClient) =>
+  Ether.newEther(
+    followRepoSymbol,
+    () => new PrismaAccountFollowRepository(client),
+  );
