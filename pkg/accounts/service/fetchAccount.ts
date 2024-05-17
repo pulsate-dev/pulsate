@@ -1,8 +1,11 @@
-import { Option, Result } from '@mikuroxina/mini-fn';
+import { Ether, Option, Result } from '@mikuroxina/mini-fn';
 
 import type { ID } from '../../id/type.js';
 import { type Account, type AccountID } from '../model/account.js';
-import type { AccountRepository } from '../model/repository.js';
+import {
+  accountRepoSymbol,
+  type AccountRepository,
+} from '../model/repository.js';
 
 export class FetchAccountService {
   private accountRepository: AccountRepository;
@@ -32,3 +35,10 @@ export class FetchAccountService {
     return Option.okOr(new Error('AccountNotFoundError'))(res);
   }
 }
+
+export const fetchSymbol = Ether.newEtherSymbol<FetchAccountService>();
+export const fetch = Ether.newEther(
+  fetchSymbol,
+  ({ accountRepository }) => new FetchAccountService(accountRepository),
+  { accountRepository: accountRepoSymbol },
+);

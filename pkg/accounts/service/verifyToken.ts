@@ -1,8 +1,10 @@
-import { Option, Result } from '@mikuroxina/mini-fn';
+import { Ether, Option, Result } from '@mikuroxina/mini-fn';
 
-import { type Clock } from '../../id/mod.js';
+import { clockSymbol, type Clock } from '../../id/mod.js';
 import { type AccountName } from '../model/account.js';
 import {
+  accountRepoSymbol,
+  verifyTokenRepoSymbol,
   type AccountRepository,
   type AccountVerifyTokenRepository,
 } from '../model/repository.js';
@@ -80,3 +82,20 @@ export class VerifyAccountTokenService {
     return Result.ok(undefined);
   }
 }
+
+export const verifyAccountTokenSymbol =
+  Ether.newEtherSymbol<VerifyAccountTokenService>();
+export const verifyAccountToken = Ether.newEther(
+  verifyAccountTokenSymbol,
+  ({ verifyTokenRepository, accountRepository, clock }) =>
+    new VerifyAccountTokenService(
+      verifyTokenRepository,
+      accountRepository,
+      clock,
+    ),
+  {
+    verifyTokenRepository: verifyTokenRepoSymbol,
+    accountRepository: accountRepoSymbol,
+    clock: clockSymbol,
+  },
+);

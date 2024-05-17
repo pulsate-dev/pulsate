@@ -1,9 +1,11 @@
-import { Option, Result } from '@mikuroxina/mini-fn';
+import { Ether, Option, Result } from '@mikuroxina/mini-fn';
 
 import type { AccountName } from '../model/account.js';
-import type {
-  AccountFollowRepository,
-  AccountRepository,
+import {
+  accountRepoSymbol,
+  followRepoSymbol,
+  type AccountFollowRepository,
+  type AccountRepository,
 } from '../model/repository.js';
 
 export class UnfollowService {
@@ -36,3 +38,14 @@ export class UnfollowService {
     return Option.none();
   }
 }
+
+export const unfollowSymbol = Ether.newEtherSymbol<UnfollowService>();
+export const unfollow = Ether.newEther(
+  unfollowSymbol,
+  ({ accountFollowRepository, accountRepository }) =>
+    new UnfollowService(accountFollowRepository, accountRepository),
+  {
+    accountFollowRepository: followRepoSymbol,
+    accountRepository: accountRepoSymbol,
+  },
+);

@@ -1,4 +1,4 @@
-import type { Option, Result } from '@mikuroxina/mini-fn';
+import { Ether, type Option, type Result } from '@mikuroxina/mini-fn';
 
 import { type ID } from '../../id/type.js';
 import type { Account } from './account.js';
@@ -13,12 +13,15 @@ export interface AccountRepository {
   findByMail(mail: string): Promise<Option.Option<Account>>;
   edit(account: Account): Promise<Result.Result<Error, void>>;
 }
+export const accountRepoSymbol = Ether.newEtherSymbol<AccountRepository>();
 
 export interface InactiveAccountRepository {
   create(account: InactiveAccount): Promise<Result.Result<Error, void>>;
   findByName(name: string): Promise<Option.Option<InactiveAccount>>;
   findByMail(mail: string): Promise<Option.Option<InactiveAccount>>;
 }
+export const inactiveAccountRepoSymbol =
+  Ether.newEtherSymbol<InactiveAccountRepository>();
 
 export interface AccountVerifyTokenRepository {
   create(
@@ -31,6 +34,8 @@ export interface AccountVerifyTokenRepository {
     id: ID<AccountID>,
   ): Promise<Option.Option<{ token: string; expire: Date }>>;
 }
+export const verifyTokenRepoSymbol =
+  Ether.newEtherSymbol<AccountVerifyTokenRepository>();
 
 export interface AccountFollowRepository {
   follow(follow: AccountFollow): Promise<Result.Result<Error, void>>;
@@ -53,3 +58,4 @@ export interface AccountFollowRepository {
     limit: number,
   ): Promise<Result.Result<Error, AccountFollow[]>>;
 }
+export const followRepoSymbol = Ether.newEtherSymbol<AccountFollowRepository>();

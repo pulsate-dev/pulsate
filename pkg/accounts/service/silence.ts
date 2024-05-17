@@ -1,7 +1,10 @@
-import { Option, Result } from '@mikuroxina/mini-fn';
+import { Ether, Option, Result } from '@mikuroxina/mini-fn';
 
 import { type AccountName } from '../model/account.js';
-import { type AccountRepository } from '../model/repository.js';
+import {
+  accountRepoSymbol,
+  type AccountRepository,
+} from '../model/repository.js';
 
 export class SilenceService {
   private readonly accountRepository: AccountRepository;
@@ -42,3 +45,10 @@ export class SilenceService {
     }
   }
 }
+
+export const silenceSymbol = Ether.newEtherSymbol<SilenceService>();
+export const silence = Ether.newEther(
+  silenceSymbol,
+  ({ accountRepository }) => new SilenceService(accountRepository),
+  { accountRepository: accountRepoSymbol },
+);

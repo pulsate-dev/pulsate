@@ -1,14 +1,18 @@
-import { Option, Result } from '@mikuroxina/mini-fn';
+import { Ether, Option, Result } from '@mikuroxina/mini-fn';
 
 import { type ID } from '../../../id/type.js';
 import { type Account, type AccountID } from '../../model/account.js';
 import { type AccountFollow } from '../../model/follow.js';
 import type { InactiveAccount } from '../../model/inactiveAccount.js';
-import type {
-  AccountFollowRepository,
-  AccountRepository,
-  AccountVerifyTokenRepository,
-  InactiveAccountRepository,
+import {
+  accountRepoSymbol,
+  followRepoSymbol,
+  inactiveAccountRepoSymbol,
+  verifyTokenRepoSymbol,
+  type AccountFollowRepository,
+  type AccountRepository,
+  type AccountVerifyTokenRepository,
+  type InactiveAccountRepository,
 } from '../../model/repository.js';
 
 export class InMemoryAccountRepository implements AccountRepository {
@@ -65,6 +69,11 @@ export class InMemoryAccountRepository implements AccountRepository {
     return Result.ok(undefined);
   }
 }
+export const newAccountRepo = (accounts: Account[] = []) =>
+  Ether.newEther(
+    accountRepoSymbol,
+    () => new InMemoryAccountRepository(accounts),
+  );
 
 export class InMemoryAccountVerifyTokenRepository
   implements AccountVerifyTokenRepository
@@ -95,6 +104,10 @@ export class InMemoryAccountVerifyTokenRepository
     return Promise.resolve(Option.some(data));
   }
 }
+export const verifyTokenRepo = Ether.newEther(
+  verifyTokenRepoSymbol,
+  () => new InMemoryAccountVerifyTokenRepository(),
+);
 
 export class InMemoryAccountFollowRepository
   implements AccountFollowRepository
@@ -167,6 +180,11 @@ export class InMemoryAccountFollowRepository
     );
   }
 }
+export const newFollowRepo = (data?: AccountFollow[]) =>
+  Ether.newEther(
+    followRepoSymbol,
+    () => new InMemoryAccountFollowRepository(data),
+  );
 
 export class InMemoryInactiveAccountRepository
   implements InactiveAccountRepository
@@ -203,3 +221,7 @@ export class InMemoryInactiveAccountRepository
     return Promise.resolve(Option.some(account));
   }
 }
+export const inactiveAccountRepo = Ether.newEther(
+  inactiveAccountRepoSymbol,
+  () => new InMemoryInactiveAccountRepository(),
+);

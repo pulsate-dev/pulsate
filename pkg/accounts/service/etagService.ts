@@ -1,3 +1,5 @@
+import { Ether } from '@mikuroxina/mini-fn';
+
 import type { Account } from '../model/account.js';
 
 export class EtagService {
@@ -27,3 +29,6 @@ export class EtagService {
     return Buffer.from(digest).toString('hex');
   }
 }
+
+export const etagSymbol = Ether.newEtherSymbol<EtagService>();
+export const etag = Ether.newEther(etagSymbol, () => new EtagService());

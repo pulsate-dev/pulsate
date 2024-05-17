@@ -1,10 +1,19 @@
-import { Option, Result } from '@mikuroxina/mini-fn';
+import { Ether, Option, Result } from '@mikuroxina/mini-fn';
 
-import type { PasswordEncoder } from '../../password/mod.js';
+import {
+  passwordEncoderSymbol,
+  type PasswordEncoder,
+} from '../../password/mod.js';
 import { addSecondsToDate, convertTo } from '../../time/mod.js';
 import type { AccountName } from '../model/account.js';
-import type { AccountRepository } from '../model/repository.js';
-import type { AuthenticationTokenService } from './authenticationTokenService.js';
+import {
+  accountRepoSymbol,
+  type AccountRepository,
+} from '../model/repository.js';
+import {
+  authenticateTokenSymbol,
+  type AuthenticationTokenService,
+} from './authenticationTokenService.js';
 
 export interface TokenPair {
   authorizationToken: string;
@@ -69,3 +78,14 @@ export class AuthenticateService {
     });
   }
 }
+
+export const authenticateSymbol = Ether.newEtherSymbol<AuthenticateService>();
+export const authenticate = Ether.newEther(
+  authenticateSymbol,
+  (deps) => new AuthenticateService(deps),
+  {
+    accountRepository: accountRepoSymbol,
+    authenticationTokenService: authenticateTokenSymbol,
+    passwordEncoder: passwordEncoderSymbol,
+  },
+);

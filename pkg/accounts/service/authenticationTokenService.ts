@@ -1,4 +1,4 @@
-import { Option } from '@mikuroxina/mini-fn';
+import { Ether, Option, type Promise } from '@mikuroxina/mini-fn';
 import * as jose from 'jose';
 
 import type { PulsateTime } from '../../time/mod.js';
@@ -47,3 +47,10 @@ export class AuthenticationTokenService {
     }
   }
 }
+
+export const authenticateTokenSymbol =
+  Ether.newEtherSymbol<AuthenticationTokenService>();
+export const authenticateToken = Ether.newEtherT<Promise.PromiseHkt>()(
+  authenticateTokenSymbol,
+  AuthenticationTokenService.new,
+);

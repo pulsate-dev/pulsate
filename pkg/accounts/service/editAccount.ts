@@ -1,9 +1,15 @@
-import { Option, Result } from '@mikuroxina/mini-fn';
+import { Ether, Option, Result } from '@mikuroxina/mini-fn';
 
-import { type PasswordEncoder } from '../../password/mod.js';
+import {
+  passwordEncoderSymbol,
+  type PasswordEncoder,
+} from '../../password/mod.js';
 import type { AccountName } from '../model/account.js';
-import { type AccountRepository } from '../model/repository.js';
-import type { EtagService } from './etagService.js';
+import {
+  accountRepoSymbol,
+  type AccountRepository,
+} from '../model/repository.js';
+import { etagSymbol, type EtagService } from './etagService.js';
 
 export class EditAccountService {
   private readonly nicknameShortest = 1;
@@ -170,3 +176,15 @@ export class EditAccountService {
     }
   }
 }
+
+export const editSymbol = Ether.newEtherSymbol<EditAccountService>();
+export const edit = Ether.newEther(
+  editSymbol,
+  ({ accountRepository, etagService, passwordEncoder }) =>
+    new EditAccountService(accountRepository, etagService, passwordEncoder),
+  {
+    accountRepository: accountRepoSymbol,
+    etagService: etagSymbol,
+    passwordEncoder: passwordEncoderSymbol,
+  },
+);
