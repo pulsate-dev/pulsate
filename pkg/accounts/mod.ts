@@ -5,8 +5,8 @@ import { clockSymbol, snowflakeIDGenerator } from '../id/mod.js';
 import { argon2idPasswordEncoder } from '../password/mod.js';
 import { AccountController } from './adaptor/controller/account.js';
 import {
-  newFollowRepo,
   newAccountRepo,
+  newFollowRepo,
   verifyTokenRepo,
 } from './adaptor/repository/dummy.js';
 import type { AccountName } from './model/account.js';
@@ -86,7 +86,7 @@ export const controller = new AccountController({
   freezeService: Ether.runEther(
     Cat.cat(freeze).feed(Ether.compose(accountRepository)).value,
   ),
-  registerAccountService: Ether.runEther(
+  registerService: Ether.runEther(
     Cat.cat(register)
       .feed(Ether.compose(accountRepository))
       .feed(Ether.compose(idGenerator))

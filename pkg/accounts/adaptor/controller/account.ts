@@ -8,7 +8,7 @@ import type { EditService } from '../../service/edit.js';
 import type { FetchService } from '../../service/fetch.js';
 import type { FollowService } from '../../service/follow.js';
 import type { FreezeService } from '../../service/freeze.js';
-import type { RegisterAccountService } from '../../service/register.js';
+import type { RegisterService } from '../../service/register.js';
 import type { ResendVerifyTokenService } from '../../service/resendToken.js';
 import type { SilenceService } from '../../service/silence.js';
 import { type UnfollowService } from '../../service/unfollow.js';
@@ -21,7 +21,7 @@ import {
 } from '../validator/schema.js';
 
 export class AccountController {
-  private readonly registerAccountService: RegisterAccountService;
+  private readonly registerService: RegisterService;
   private readonly editService: EditService;
   private readonly fetchService: FetchService;
   private readonly freezeService: FreezeService;
@@ -33,7 +33,7 @@ export class AccountController {
   private readonly resendTokenService: ResendVerifyTokenService;
 
   constructor(args: {
-    registerAccountService: RegisterAccountService;
+    registerService: RegisterService;
     editService: EditService;
     fetchService: FetchService;
     freezeService: FreezeService;
@@ -44,7 +44,7 @@ export class AccountController {
     unFollowService: UnfollowService;
     resendTokenService: ResendVerifyTokenService;
   }) {
-    this.registerAccountService = args.registerAccountService;
+    this.registerService = args.registerService;
     this.editService = args.editService;
     this.fetchService = args.fetchService;
     this.freezeService = args.freezeService;
@@ -63,7 +63,7 @@ export class AccountController {
   ): Promise<
     Result.Result<Error, z.infer<typeof CreateAccountResponseSchema>>
   > {
-    const res = await this.registerAccountService.handle(
+    const res = await this.registerService.handle(
       name as AccountName,
       email,
       '',

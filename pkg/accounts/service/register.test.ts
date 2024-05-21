@@ -1,14 +1,14 @@
 import { Result } from '@mikuroxina/mini-fn';
 import { describe, expect, it } from 'vitest';
 
-import { SnowflakeIDGenerator, MockClock } from '../../id/mod.js';
+import { MockClock, SnowflakeIDGenerator } from '../../id/mod.js';
 import { Argon2idPasswordEncoder } from '../../password/mod.js';
 import {
   InMemoryAccountRepository,
   InMemoryAccountVerifyTokenRepository,
 } from '../adaptor/repository/dummy.js';
 import { type AccountName, type AccountRole } from '../model/account.js';
-import { RegisterAccountService } from './register.js';
+import { RegisterService } from './register.js';
 import { DummySendNotificationService } from './sendNotification.js';
 import { VerifyAccountTokenService } from './verifyToken.js';
 
@@ -16,7 +16,7 @@ const repository = new InMemoryAccountRepository();
 const verifyRepository = new InMemoryAccountVerifyTokenRepository();
 const mockClock = new MockClock(new Date('2023-09-10T00:00:00Z'));
 
-const registerService: RegisterAccountService = new RegisterAccountService({
+const registerService: RegisterService = new RegisterService({
   repository,
   idGenerator: new SnowflakeIDGenerator(1, mockClock),
   passwordEncoder: new Argon2idPasswordEncoder(),
@@ -37,7 +37,7 @@ const exampleInput = {
   role: 'normal' as AccountRole,
 };
 
-describe('RegisterAccountService', () => {
+describe('RegisterService', () => {
   it('register account', async () => {
     const res = await registerService.handle(
       exampleInput.name,

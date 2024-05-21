@@ -35,7 +35,7 @@ export class AccountAlreadyExistsError extends Error {
   }
 }
 
-export class RegisterAccountService {
+export class RegisterService {
   private readonly accountRepository: AccountRepository;
   private readonly snowflakeIDGenerator: SnowflakeIDGenerator;
   private readonly passwordEncoder: PasswordEncoder;
@@ -122,10 +122,10 @@ export class RegisterAccountService {
   }
 }
 
-export const registerSymbol = Ether.newEtherSymbol<RegisterAccountService>();
+export const registerSymbol = Ether.newEtherSymbol<RegisterService>();
 export const register = Ether.newEther(
   registerSymbol,
-  (deps) => new RegisterAccountService(deps),
+  (deps) => new RegisterService(deps),
   {
     repository: accountRepoSymbol,
     idGenerator: snowflakeIDGeneratorSymbol,
