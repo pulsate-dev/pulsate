@@ -6,7 +6,7 @@ import { AccountModule } from '../intermodule/account.js';
 import { NoteController } from './adaptor/controller/note.js';
 import { InMemoryNoteRepository } from './adaptor/repository/dummy.js';
 import { CreateNoteRoute, GetNoteRoute, RenoteRoute } from './router.js';
-import { CreateNoteService } from './service/create.js';
+import { CreateService } from './service/create.js';
 import { FetchNoteService } from './service/fetch.js';
 import { RenoteService } from './service/renote.js';
 
@@ -20,11 +20,11 @@ const idGenerator = new SnowflakeIDGenerator(0, {
 const accountModule = new AccountModule();
 
 // Note
-const createNoteService = new CreateNoteService(noteRepository, idGenerator);
+const createService = new CreateService(noteRepository, idGenerator);
 const fetchNoteService = new FetchNoteService(noteRepository, accountModule);
 const renoteService = new RenoteService(noteRepository, idGenerator);
 const controller = new NoteController(
-  createNoteService,
+  createService,
   fetchNoteService,
   renoteService,
   accountModule,

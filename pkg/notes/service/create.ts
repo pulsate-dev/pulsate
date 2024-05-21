@@ -6,7 +6,7 @@ import type { ID } from '../../id/type.js';
 import { Note, type NoteID, type NoteVisibility } from '../model/note.js';
 import type { NoteRepository } from '../model/repository.js';
 
-export class CreateNoteService {
+export class CreateService {
   async handle(
     content: string,
     contentsWarningComment: string,
