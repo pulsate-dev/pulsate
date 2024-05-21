@@ -1,7 +1,7 @@
-import { Option, Cat, Result, Ether } from '@mikuroxina/mini-fn';
+import { Cat, Ether, Option, Result } from '@mikuroxina/mini-fn';
 
-import type { AccountID, AccountName } from '../../accounts/model/account.js';
 import type { ID } from '../../id/type.js';
+import type { AccountID, AccountName } from '../model/account.js';
 import type { AccountFollow } from '../model/follow.js';
 import {
   accountRepoSymbol,
@@ -10,7 +10,7 @@ import {
   type AccountRepository,
 } from '../model/repository.js';
 
-export class FetchAccountFollowService {
+export class FetchFollowService {
   constructor(
     private readonly accountFollowRepository: AccountFollowRepository,
     private readonly accountRepository: AccountRepository,
@@ -57,11 +57,10 @@ export class FetchAccountFollowService {
   }
 }
 
-export const fetchFollowSymbol =
-  Ether.newEtherSymbol<FetchAccountFollowService>();
+export const fetchFollowSymbol = Ether.newEtherSymbol<FetchFollowService>();
 export const fetchFollow = Ether.newEther(
   fetchFollowSymbol,
   ({ accountRepository, followRepository }) =>
-    new FetchAccountFollowService(followRepository, accountRepository),
+    new FetchFollowService(followRepository, accountRepository),
   { followRepository: followRepoSymbol, accountRepository: accountRepoSymbol },
 );

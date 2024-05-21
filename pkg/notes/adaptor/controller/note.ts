@@ -5,8 +5,8 @@ import type { AccountID } from '../../../accounts/model/account.js';
 import type { ID } from '../../../id/type.js';
 import type { AccountModule } from '../../../intermodule/account.js';
 import type { NoteVisibility } from '../../model/note.js';
-import type { CreateNoteService } from '../../service/create.js';
-import type { FetchNoteService } from '../../service/fetch.js';
+import type { CreateService } from '../../service/create.js';
+import type { FetchService } from '../../service/fetch.js';
 import type { RenoteService } from '../../service/renote.js';
 import {
   type CreateNoteResponseSchema,
@@ -16,8 +16,8 @@ import {
 
 export class NoteController {
   constructor(
-    private readonly createNoteService: CreateNoteService,
-    private readonly fetchNoteService: FetchNoteService,
+    private readonly createService: CreateService,
+    private readonly fetchService: FetchService,
     private readonly renoteService: RenoteService,
     private readonly accountModule: AccountModule,
   ) {}
@@ -29,7 +29,7 @@ export class NoteController {
     contentsWarningComment: string,
     sendTo?: string,
   ): Promise<Result.Result<Error, z.infer<typeof CreateNoteResponseSchema>>> {
-    const res = await this.createNoteService.handle(
+    const res = await this.createService.handle(
       content,
       contentsWarningComment,
       !sendTo ? Option.none() : Option.some(sendTo as ID<AccountID>),
@@ -56,9 +56,7 @@ export class NoteController {
   async getNoteByID(
     noteID: string,
   ): Promise<Result.Result<Error, z.infer<typeof GetNoteResponseSchema>>> {
-    const res = await this.fetchNoteService.fetchNoteByID(
-      noteID as ID<AccountID>,
-    );
+    const res = await this.fetchService.fetchNoteByID(noteID as ID<AccountID>);
     if (Option.isNone(res)) {
       return Result.err(new Error('Note not found'));
     }

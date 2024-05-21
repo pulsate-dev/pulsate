@@ -5,8 +5,8 @@ import { clockSymbol, snowflakeIDGenerator } from '../id/mod.js';
 import { argon2idPasswordEncoder } from '../password/mod.js';
 import { AccountController } from './adaptor/controller/account.js';
 import {
-  newFollowRepo,
   newAccountRepo,
+  newFollowRepo,
   verifyTokenRepo,
 } from './adaptor/repository/dummy.js';
 import type { AccountName } from './model/account.js';
@@ -27,9 +27,9 @@ import {
 } from './router.js';
 import { authenticate } from './service/authenticate.js';
 import { authenticateToken } from './service/authenticationTokenService.js';
-import { edit } from './service/editAccount.js';
+import { edit } from './service/edit.js';
 import { etag } from './service/etagService.js';
-import { fetch } from './service/fetchAccount.js';
+import { fetch } from './service/fetch.js';
 import { follow } from './service/follow.js';
 import { freeze } from './service/freeze.js';
 import { register } from './service/register.js';
@@ -69,13 +69,13 @@ export const controller = new AccountController({
       .feed(composer(authenticateToken))
       .feed(composer(liftOverPromise(argon2idPasswordEncoder))).value,
   ),
-  editAccountService: Ether.runEther(
+  editService: Ether.runEther(
     Cat.cat(edit)
       .feed(Ether.compose(accountRepository))
       .feed(Ether.compose(etag))
       .feed(Ether.compose(argon2idPasswordEncoder)).value,
   ),
-  fetchAccountService: Ether.runEther(
+  fetchService: Ether.runEther(
     Cat.cat(fetch).feed(Ether.compose(accountRepository)).value,
   ),
   followService: Ether.runEther(
@@ -86,7 +86,7 @@ export const controller = new AccountController({
   freezeService: Ether.runEther(
     Cat.cat(freeze).feed(Ether.compose(accountRepository)).value,
   ),
-  registerAccountService: Ether.runEther(
+  registerService: Ether.runEther(
     Cat.cat(register)
       .feed(Ether.compose(accountRepository))
       .feed(Ether.compose(idGenerator))

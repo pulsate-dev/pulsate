@@ -11,7 +11,7 @@ import {
 } from '../model/repository.js';
 import { etagSymbol, type EtagService } from './etagService.js';
 
-export class EditAccountService {
+export class EditService {
   private readonly nicknameShortest = 1;
   private readonly nicknameLongest = 256;
   private readonly passphraseShortest = 8;
@@ -177,11 +177,11 @@ export class EditAccountService {
   }
 }
 
-export const editSymbol = Ether.newEtherSymbol<EditAccountService>();
+export const editSymbol = Ether.newEtherSymbol<EditService>();
 export const edit = Ether.newEther(
   editSymbol,
   ({ accountRepository, etagService, passwordEncoder }) =>
-    new EditAccountService(accountRepository, etagService, passwordEncoder),
+    new EditService(accountRepository, etagService, passwordEncoder),
   {
     accountRepository: accountRepoSymbol,
     etagService: etagSymbol,

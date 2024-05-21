@@ -5,19 +5,19 @@ import type { AccountID } from '../../accounts/model/account.js';
 import { SnowflakeIDGenerator } from '../../id/mod.js';
 import type { ID } from '../../id/type.js';
 import { InMemoryNoteRepository } from '../adaptor/repository/dummy.js';
-import { CreateNoteService } from './create.js';
+import { CreateService } from './create.js';
 
 const noteRepository = new InMemoryNoteRepository();
-const createNoteService = new CreateNoteService(
+const createService = new CreateService(
   noteRepository,
   new SnowflakeIDGenerator(0, {
     now: () => BigInt(Date.UTC(2023, 9, 10, 0, 0)),
   }),
 );
 
-describe('CreateNoteService', () => {
+describe('CreateService', () => {
   it('should create a note', async () => {
-    const res = await createNoteService.handle(
+    const res = await createService.handle(
       'Hello world',
       '',
       Option.none(),
@@ -29,7 +29,7 @@ describe('CreateNoteService', () => {
   });
 
   it('note content must be less than 3000 chars', async () => {
-    const res = await createNoteService.handle(
+    const res = await createService.handle(
       'a'.repeat(3001),
       '',
       Option.none(),
@@ -41,7 +41,7 @@ describe('CreateNoteService', () => {
   });
 
   it('note visibility DIRECT must have a destination', async () => {
-    const res = await createNoteService.handle(
+    const res = await createService.handle(
       'Hello world',
       '',
       Option.none(),
