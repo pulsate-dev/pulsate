@@ -7,7 +7,7 @@ import type { ID } from '../../id/type.js';
 import { AccountModule } from '../../intermodule/account.js';
 import { InMemoryNoteRepository } from '../adaptor/repository/dummy.js';
 import { Note, type NoteID } from '../model/note.js';
-import { FetchNoteService } from './fetch.js';
+import { FetchService } from './fetch.js';
 
 const testNote = Note.new({
   id: '1' as ID<NoteID>,
@@ -84,9 +84,9 @@ const accountRepository = new InMemoryAccountRepository([
   frozenAccount,
 ]);
 const accountModule = new AccountModule();
-const service = new FetchNoteService(repository, accountModule);
+const service = new FetchService(repository, accountModule);
 
-describe('FetchNoteService', () => {
+describe('FetchService', () => {
   afterEach(() => accountRepository.reset());
 
   it('should fetch notes', async () => {

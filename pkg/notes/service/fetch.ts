@@ -5,7 +5,7 @@ import type { AccountModule } from '../../intermodule/account.js';
 import { type Note, type NoteID } from '../model/note.js';
 import type { NoteRepository } from '../model/repository.js';
 
-export class FetchNoteService {
+export class FetchService {
   constructor(
     private readonly noteRepository: NoteRepository,
     private readonly accountModule: AccountModule,

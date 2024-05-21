@@ -7,7 +7,7 @@ import { NoteController } from './adaptor/controller/note.js';
 import { InMemoryNoteRepository } from './adaptor/repository/dummy.js';
 import { CreateNoteRoute, GetNoteRoute, RenoteRoute } from './router.js';
 import { CreateService } from './service/create.js';
-import { FetchNoteService } from './service/fetch.js';
+import { FetchService } from './service/fetch.js';
 import { RenoteService } from './service/renote.js';
 
 export const noteHandlers = new OpenAPIHono();
@@ -21,11 +21,11 @@ const accountModule = new AccountModule();
 
 // Note
 const createService = new CreateService(noteRepository, idGenerator);
-const fetchNoteService = new FetchNoteService(noteRepository, accountModule);
+const fetchService = new FetchService(noteRepository, accountModule);
 const renoteService = new RenoteService(noteRepository, idGenerator);
 const controller = new NoteController(
   createService,
-  fetchNoteService,
+  fetchService,
   renoteService,
   accountModule,
 );
