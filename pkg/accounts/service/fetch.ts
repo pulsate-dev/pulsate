@@ -7,7 +7,7 @@ import {
   type AccountRepository,
 } from '../model/repository.js';
 
-export class FetchAccountService {
+export class FetchService {
   private accountRepository: AccountRepository;
 
   constructor(accountRepository: AccountRepository) {
@@ -36,9 +36,9 @@ export class FetchAccountService {
   }
 }
 
-export const fetchSymbol = Ether.newEtherSymbol<FetchAccountService>();
+export const fetchSymbol = Ether.newEtherSymbol<FetchService>();
 export const fetch = Ether.newEther(
   fetchSymbol,
-  ({ accountRepository }) => new FetchAccountService(accountRepository),
+  ({ accountRepository }) => new FetchService(accountRepository),
   { accountRepository: accountRepoSymbol },
 );

@@ -29,7 +29,7 @@ import { authenticate } from './service/authenticate.js';
 import { authenticateToken } from './service/authenticationTokenService.js';
 import { edit } from './service/edit.js';
 import { etag } from './service/etagService.js';
-import { fetch } from './service/fetchAccount.js';
+import { fetch } from './service/fetch.js';
 import { follow } from './service/follow.js';
 import { freeze } from './service/freeze.js';
 import { register } from './service/register.js';
@@ -75,7 +75,7 @@ export const controller = new AccountController({
       .feed(Ether.compose(etag))
       .feed(Ether.compose(argon2idPasswordEncoder)).value,
   ),
-  fetchAccountService: Ether.runEther(
+  fetchService: Ether.runEther(
     Cat.cat(fetch).feed(Ether.compose(accountRepository)).value,
   ),
   followService: Ether.runEther(

@@ -5,7 +5,7 @@ import type { ID } from '../../../id/type.js';
 import { type AccountID, type AccountName } from '../../model/account.js';
 import type { AuthenticateService } from '../../service/authenticate.js';
 import type { EditService } from '../../service/edit.js';
-import type { FetchAccountService } from '../../service/fetchAccount.js';
+import type { FetchService } from '../../service/fetch.js';
 import type { FollowService } from '../../service/follow.js';
 import type { FreezeService } from '../../service/freeze.js';
 import type { RegisterAccountService } from '../../service/register.js';
@@ -23,7 +23,7 @@ import {
 export class AccountController {
   private readonly registerAccountService: RegisterAccountService;
   private readonly editService: EditService;
-  private readonly fetchAccountService: FetchAccountService;
+  private readonly fetchService: FetchService;
   private readonly freezeService: FreezeService;
   private readonly verifyAccountTokenService: VerifyAccountTokenService;
   private readonly authenticateService: AuthenticateService;
@@ -35,7 +35,7 @@ export class AccountController {
   constructor(args: {
     registerAccountService: RegisterAccountService;
     editService: EditService;
-    fetchAccountService: FetchAccountService;
+    fetchService: FetchService;
     freezeService: FreezeService;
     verifyAccountTokenService: VerifyAccountTokenService;
     authenticateService: AuthenticateService;
@@ -46,7 +46,7 @@ export class AccountController {
   }) {
     this.registerAccountService = args.registerAccountService;
     this.editService = args.editService;
-    this.fetchAccountService = args.fetchAccountService;
+    this.fetchService = args.fetchService;
     this.freezeService = args.freezeService;
     this.verifyAccountTokenService = args.verifyAccountTokenService;
     this.authenticateService = args.authenticateService;
@@ -135,9 +135,7 @@ export class AccountController {
       return Result.err(editedBioResp[1]);
     }
 
-    const res = await this.fetchAccountService.fetchAccount(
-      name as AccountName,
-    );
+    const res = await this.fetchService.fetchAccount(name as AccountName);
     if (Result.isErr(res)) {
       return res;
     }
@@ -187,9 +185,7 @@ export class AccountController {
   async getAccount(
     id: string,
   ): Promise<Result.Result<Error, z.infer<typeof GetAccountResponseSchema>>> {
-    const res = await this.fetchAccountService.fetchAccountByID(
-      id as ID<AccountID>,
-    );
+    const res = await this.fetchService.fetchAccountByID(id as ID<AccountID>);
     if (Result.isErr(res)) {
       return res;
     }
