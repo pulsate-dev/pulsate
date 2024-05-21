@@ -5,19 +5,15 @@ import type { ID } from '../../id/type.js';
 import { Argon2idPasswordEncoder } from '../../password/mod.js';
 import { InMemoryAccountRepository } from '../adaptor/repository/dummy.js';
 import { Account, type AccountID } from '../model/account.js';
-import { EditAccountService } from './editAccount.js';
+import { EditService } from './edit.js';
 import { EtagService } from './etagService.js';
 
 const passwordEncoder = new Argon2idPasswordEncoder();
 const repository = new InMemoryAccountRepository();
 const etagService = new EtagService();
-const editAccountService = new EditAccountService(
-  repository,
-  etagService,
-  passwordEncoder,
-);
+const editService = new EditService(repository, etagService, passwordEncoder);
 
-describe('EditAccountService', () => {
+describe('EditService', () => {
   let account: Account;
   let etag: string;
 
@@ -62,7 +58,7 @@ describe('EditAccountService', () => {
     ])(
       'should be success to update $title', //
       async ({ nickname }) => {
-        const updateRes = await editAccountService.editNickname(
+        const updateRes = await editService.editNickname(
           etag,
           '@john@example.com',
           nickname,
@@ -98,7 +94,7 @@ describe('EditAccountService', () => {
     ])(
       'should be fail to update nickname when $title',
       async ({ etag: invalid, name, nickname }) => {
-        const updateRes = await editAccountService.editNickname(
+        const updateRes = await editService.editNickname(
           invalid ?? etag,
           name ?? '@john@example.com',
           nickname,
@@ -125,7 +121,7 @@ describe('EditAccountService', () => {
     ])(
       'should be success to update $title', //
       async ({ passphrase }) => {
-        const updateRes = await editAccountService.editPassphrase(
+        const updateRes = await editService.editPassphrase(
           etag,
           '@john@example.com',
           passphrase,
@@ -166,7 +162,7 @@ describe('EditAccountService', () => {
     ])(
       'should be failed to update passphrase when $title',
       async ({ etag: invalid, name, passphrase }) => {
-        const updateRes = await editAccountService.editPassphrase(
+        const updateRes = await editService.editPassphrase(
           invalid ?? etag,
           name ?? '@john@example.com',
           passphrase,
@@ -198,7 +194,7 @@ describe('EditAccountService', () => {
     ])(
       'should be success to update $title', //
       async ({ email }) => {
-        const updateRes = await editAccountService.editEmail(
+        const updateRes = await editService.editEmail(
           etag,
           '@john@example.com',
           email,
@@ -230,7 +226,7 @@ describe('EditAccountService', () => {
     ])(
       'should be fail to update email when $title',
       async ({ etag: invalid, name, email }) => {
-        const updateRes = await editAccountService.editEmail(
+        const updateRes = await editService.editEmail(
           invalid ?? etag,
           name ?? '@john@example.com',
           email,
@@ -248,7 +244,7 @@ describe('EditAccountService', () => {
     ])(
       'should be success to update bio', //
       async ({ bio }) => {
-        const updateRes = await editAccountService.editBio(
+        const updateRes = await editService.editBio(
           etag,
           '@john@example.com',
           bio,
@@ -277,7 +273,7 @@ describe('EditAccountService', () => {
     ])(
       'should be fail to update bio when $title',
       async ({ etag: invalid, name, bio }) => {
-        const updateRes = await editAccountService.editBio(
+        const updateRes = await editService.editBio(
           invalid ?? etag,
           name ?? '@john@example.com',
           bio,

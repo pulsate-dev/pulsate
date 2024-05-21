@@ -4,7 +4,7 @@ import { Option, Result } from '@mikuroxina/mini-fn';
 import type { ID } from '../../../id/type.js';
 import { type AccountID, type AccountName } from '../../model/account.js';
 import type { AuthenticateService } from '../../service/authenticate.js';
-import type { EditAccountService } from '../../service/editAccount.js';
+import type { EditService } from '../../service/edit.js';
 import type { FetchAccountService } from '../../service/fetchAccount.js';
 import type { FollowService } from '../../service/follow.js';
 import type { FreezeService } from '../../service/freeze.js';
@@ -22,7 +22,7 @@ import {
 
 export class AccountController {
   private readonly registerAccountService: RegisterAccountService;
-  private readonly editAccountService: EditAccountService;
+  private readonly editService: EditService;
   private readonly fetchAccountService: FetchAccountService;
   private readonly freezeService: FreezeService;
   private readonly verifyAccountTokenService: VerifyAccountTokenService;
@@ -34,7 +34,7 @@ export class AccountController {
 
   constructor(args: {
     registerAccountService: RegisterAccountService;
-    editAccountService: EditAccountService;
+    editService: EditService;
     fetchAccountService: FetchAccountService;
     freezeService: FreezeService;
     verifyAccountTokenService: VerifyAccountTokenService;
@@ -45,7 +45,7 @@ export class AccountController {
     resendTokenService: ResendVerifyTokenService;
   }) {
     this.registerAccountService = args.registerAccountService;
-    this.editAccountService = args.editAccountService;
+    this.editService = args.editService;
     this.fetchAccountService = args.fetchAccountService;
     this.freezeService = args.freezeService;
     this.verifyAccountTokenService = args.verifyAccountTokenService;
@@ -96,7 +96,7 @@ export class AccountController {
     Result.Result<Error, z.infer<typeof UpdateAccountResponseSchema>>
   > {
     if (args.nickname) {
-      const res = await this.editAccountService.editNickname(
+      const res = await this.editService.editNickname(
         etag,
         name as AccountName,
         args.nickname,
@@ -106,7 +106,7 @@ export class AccountController {
       }
     }
     if (args.passphrase) {
-      const res = await this.editAccountService.editPassphrase(
+      const res = await this.editService.editPassphrase(
         etag,
         name as AccountName,
         args.passphrase,
@@ -116,7 +116,7 @@ export class AccountController {
       }
     }
     if (args.email) {
-      const res = await this.editAccountService.editEmail(
+      const res = await this.editService.editEmail(
         etag,
         name as AccountName,
         args.email,
@@ -126,7 +126,7 @@ export class AccountController {
       }
     }
 
-    const editedBioResp = await this.editAccountService.editBio(
+    const editedBioResp = await this.editService.editBio(
       etag,
       name as AccountName,
       args.bio,

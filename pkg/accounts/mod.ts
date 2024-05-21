@@ -27,7 +27,7 @@ import {
 } from './router.js';
 import { authenticate } from './service/authenticate.js';
 import { authenticateToken } from './service/authenticationTokenService.js';
-import { edit } from './service/editAccount.js';
+import { edit } from './service/edit.js';
 import { etag } from './service/etagService.js';
 import { fetch } from './service/fetchAccount.js';
 import { follow } from './service/follow.js';
@@ -69,7 +69,7 @@ export const controller = new AccountController({
       .feed(composer(authenticateToken))
       .feed(composer(liftOverPromise(argon2idPasswordEncoder))).value,
   ),
-  editAccountService: Ether.runEther(
+  editService: Ether.runEther(
     Cat.cat(edit)
       .feed(Ether.compose(accountRepository))
       .feed(Ether.compose(etag))
