@@ -8,7 +8,7 @@ import {
 } from '../adaptor/repository/dummy.js';
 import { Account, type AccountID } from '../model/account.js';
 import { AccountFollow } from '../model/follow.js';
-import { FetchAccountFollowService } from './fetchAccountFollow.js';
+import { FetchFollowService } from './fetchFollow.js';
 
 const accountRepository = new InMemoryAccountRepository();
 
@@ -67,9 +67,9 @@ await repository.follow(
   }),
 );
 
-const service = new FetchAccountFollowService(repository, accountRepository);
+const service = new FetchFollowService(repository, accountRepository);
 
-describe('FetchAccountFollowService', () => {
+describe('FetchFollowService', () => {
   const USER = {
     id: '1' as ID<AccountID>,
     name: '@johndoe@example.com' as const,
