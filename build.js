@@ -62,9 +62,13 @@ glob.stream(include).on('data', async (p) => {
       platform: 'node',
       outbase: '.',
       outdir: 'build',
+      metafile: true,
       sourcemap: 'external',
     })
     .catch(() => ctrl.fail(p));
 
   !r || ctrl.built(p);
+  fs.writeFile('build/meta.json', JSON.stringify(r.metafile)).catch(() =>
+    ctrl.fail('meta.json'),
+  );
 });
