@@ -57,3 +57,8 @@ jobs:
         with:
           files: ./coverage/coverage-final.json
           token: ${{ secrets.CODECOV_TOKEN }}
+
+      - name: Comment esbuild bundle size
+        uses: exoego/esbuild-bundle-analyzer@v1
+        with:
+          metafiles: 'build/meta.json'
