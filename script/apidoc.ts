@@ -1,7 +1,7 @@
 import { writeFileSync } from 'fs';
 import { testClient } from 'hono/testing';
 
-import { app } from './main.js';
+import { app } from '../main.js';
 
 const client = testClient(app);
 const res = await client.doc.$get();
