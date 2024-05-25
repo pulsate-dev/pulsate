@@ -1,5 +1,5 @@
 import { type z } from '@hono/zod-openapi';
-import { Option, Result } from '@mikuroxina/mini-fn';
+import { Cat, Option, Promise, Result } from '@mikuroxina/mini-fn';
 
 import type { ID } from '../../../id/type.js';
 import { type AccountID, type AccountName } from '../../model/account.js';
@@ -95,58 +95,71 @@ export class AccountController {
   ): Promise<
     Result.Result<Error, z.infer<typeof UpdateAccountResponseSchema>>
   > {
-    if (args.nickname) {
-      const res = await this.editService.editNickname(
-        etag,
-        name as AccountName,
-        args.nickname,
-      );
-      if (Result.isErr(res)) {
-        return res;
-      }
-    }
-    if (args.passphrase) {
-      const res = await this.editService.editPassphrase(
-        etag,
-        name as AccountName,
-        args.passphrase,
-      );
-      if (Result.isErr(res)) {
-        return res;
-      }
-    }
-    if (args.email) {
-      const res = await this.editService.editEmail(
-        etag,
-        name as AccountName,
-        args.email,
-      );
-      if (Result.isErr(res)) {
-        return res;
-      }
-    }
-
-    const editedBioResp = await this.editService.editBio(
-      etag,
-      name as AccountName,
-      args.bio,
-    );
-    if (Result.isErr(editedBioResp)) {
-      return Result.err(editedBioResp[1]);
-    }
-
-    const res = await this.fetchService.fetchAccount(name as AccountName);
-    if (Result.isErr(res)) {
-      return res;
-    }
-
-    return Result.ok({
-      id: res[1].getID(),
-      email: res[1].getMail(),
-      name: res[1].getName() as string,
-      nickname: res[1].getNickname(),
-      bio: res[1].getBio(),
-    });
+    const monad = Promise.monadT(Result.traversableMonad<Error>());
+    const discard = monad.map((): [] => []);
+    return Cat.doT(monad)
+      .when(
+        () => Boolean(args.nickname),
+        () =>
+          discard(
+            this.editService.editNickname(
+              etag,
+              name as AccountName,
+              args.nickname!,
+            ),
+          ),
+      )
+      .when(
+        () => Boolean(args.passphrase),
+        () =>
+          discard(
+            this.editService.editPassphrase(
+              etag,
+              name as AccountName,
+              args.passphrase!,
+            ),
+          ),
+      )
+      .when(
+        () => Boolean(args.nickname),
+        () =>
+          discard(
+            this.editService.editNickname(
+              etag,
+              name as AccountName,
+              args.nickname!,
+            ),
+          ),
+      )
+      .when(
+        () => Boolean(args.passphrase),
+        () =>
+          discard(
+            this.editService.editPassphrase(
+              etag,
+              name as AccountName,
+              args.passphrase!,
+            ),
+          ),
+      )
+      .when(
+        () => Boolean(args.email),
+        () =>
+          discard(
+            this.editService.editEmail(etag, name as AccountName, args.email!),
+          ),
+      )
+      .run(
+        discard(this.editService.editBio(etag, name as AccountName, args.bio)),
+      )
+      .addM('account', this.fetchService.fetchAccount(name as AccountName))
+      .finish(({ account }) => ({
+        id: account.getID(),
+        email: account.getMail(),
+        name: account.getName() as string,
+        nickname: account.getNickname(),
+        bio: account.getBio(),
+      }));
   }
 
   async freezeAccount(name: string): Promise<Result.Result<Error, void>> {
