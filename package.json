@@ -16,8 +16,8 @@
   },
   "scripts": {
     "start": "node ./build/main.js",
-    "build": "node ./script/build.js",
-    "build:api": "node ./build/script/apidoc.js",
+    "build": "node ./scripts/build.js",
+    "build:api": "node ./build/scripts/apidoc.js",
     "build:prisma": "prisma generate",
     "clean": "rm -r ./build",
     "test": "vitest run",
