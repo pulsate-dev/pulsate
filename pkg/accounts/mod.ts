@@ -3,7 +3,9 @@ import { Cat, Ether, Promise, Result } from '@mikuroxina/mini-fn';
 
 import { clockSymbol, snowflakeIDGenerator } from '../id/mod.js';
 import { argon2idPasswordEncoder } from '../password/mod.js';
+import { newTurnstileCaptchaValidator } from './adaptor/captcha/turnstile.js';
 import { AccountController } from './adaptor/controller/account.js';
+import { captchaMiddleware } from './adaptor/middileware/captcha.js';
 import {
   newAccountRepo,
   newFollowRepo,
@@ -111,6 +113,11 @@ export const controller = new AccountController({
   ),
 });
 
+const captchaValidator = newTurnstileCaptchaValidator;
+const CaptchaMiddleware = Ether.runEther(
+  Ether.compose(captchaValidator)(captchaMiddleware),
+);
+
 accounts.doc('/accounts/doc.json', {
   openapi: '3.0.0',
   info: {
@@ -121,6 +128,7 @@ accounts.doc('/accounts/doc.json', {
 
 export type AccountModuleHandlerType = typeof GetAccountHandler;
 
+accounts.use('/', CaptchaMiddleware.handle());
 accounts.openapi(CreateAccountRoute, async (c) => {
   const { name, email, passphrase } = c.req.valid('json');
 
