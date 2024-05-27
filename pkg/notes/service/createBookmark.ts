@@ -2,16 +2,27 @@ import { Option, Result } from '@mikuroxina/mini-fn';
 
 import type { AccountID } from '../../accounts/model/account.js';
 import type { ID } from '../../id/type.js';
-import type { NoteID } from '../model/note.js';
-import type { BookmarkRepository } from '../model/repository.js';
+import type { Note, NoteID } from '../model/note.js';
+import type {
+  BookmarkRepository,
+  NoteRepository,
+} from '../model/repository.js';
 
 export class CreateBookmarkService {
-  constructor(private readonly bookmarkRepository: BookmarkRepository) {}
+  constructor(
+    private readonly bookmarkRepository: BookmarkRepository,
+    private readonly noteRepository: NoteRepository,
+  ) {}
 
   async handle(
     noteID: ID<NoteID>,
     accountID: ID<AccountID>,
-  ): Promise<Result.Result<Error, void>> {
+  ): Promise<Result.Result<Error, Note>> {
+    const note = await this.noteRepository.findByID(noteID);
+    if (Option.isNone(note)) {
+      return Result.err(new Error('Note not found'));
+    }
+
     const existBookmark = await this.bookmarkRepository.findByID({
       noteID,
       accountID,
@@ -21,6 +32,8 @@ export class CreateBookmarkService {
       return Result.err(new Error('bookmark has already created'));
     }
 
-    return await this.bookmarkRepository.create({ noteID, accountID });
+    await this.bookmarkRepository.create({ noteID, accountID });
+
+    return Result.ok(Option.unwrap(note));
   }
 }
