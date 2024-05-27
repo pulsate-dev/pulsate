@@ -28,12 +28,6 @@
     "esModuleInterop": true,
     "resolveJsonModule": true
   },
-  "include": [
-    "**/*.ts",
-    "./eslint.config.js",
-    "./build.js"
-  ],
-  "exclude": [
-    "node_modules"
-  ]
+  "include": ["**/*.ts", "./eslint.config.js", "scripts/build.js"],
+  "exclude": ["node_modules"]
 }
