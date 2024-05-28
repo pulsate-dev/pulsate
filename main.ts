@@ -1,6 +1,7 @@
 import { serve } from '@hono/node-server';
 import { apiReference } from '@scalar/hono-api-reference';
 import { Hono } from 'hono';
+import { cors } from 'hono/cors';
 
 import { accounts } from './pkg/accounts/mod.js';
 import { noteHandlers } from './pkg/notes/mod.js';
@@ -47,6 +48,14 @@ export const app = new Hono().get('/doc', async (c) => {
 
   return c.json(openAPIBase);
 });
+
+app.use(
+  '*',
+  cors({
+    origin: '*',
+    allowMethods: ['POST', 'GET', 'OPTIONS', 'PUT', 'PATCH'],
+  }),
+);
 
 /*
 All routes must be "/"

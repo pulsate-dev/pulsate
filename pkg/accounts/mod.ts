@@ -7,11 +7,12 @@ import { newTurnstileCaptchaValidator } from './adaptor/captcha/turnstile.js';
 import { AccountController } from './adaptor/controller/account.js';
 import { captchaMiddleware } from './adaptor/middileware/captcha.js';
 import {
-  newAccountRepo,
+  InMemoryAccountRepository,
   newFollowRepo,
   verifyTokenRepo,
 } from './adaptor/repository/dummy.js';
-import type { AccountName } from './model/account.js';
+import { type AccountName } from './model/account.js';
+import { accountRepoSymbol } from './model/repository.js';
 import {
   CreateAccountRoute,
   FollowAccountRoute,
@@ -42,7 +43,11 @@ import { unfollow } from './service/unfollow.js';
 import { verifyAccountToken } from './service/verifyToken.js';
 
 export const accounts = new OpenAPIHono();
-const accountRepository = newAccountRepo();
+const accountRepoObject = new InMemoryAccountRepository([]);
+const accountRepository = Ether.newEther(
+  accountRepoSymbol,
+  () => accountRepoObject,
+);
 const accountFollowRepository = newFollowRepo();
 class Clock {
   now() {
@@ -113,9 +118,8 @@ export const controller = new AccountController({
   ),
 });
 
-const captchaValidator = newTurnstileCaptchaValidator;
 const CaptchaMiddleware = Ether.runEther(
-  Ether.compose(captchaValidator)(captchaMiddleware),
+  Ether.compose(newTurnstileCaptchaValidator)(captchaMiddleware),
 );
 
 accounts.doc('/accounts/doc.json', {
@@ -128,7 +132,7 @@ accounts.doc('/accounts/doc.json', {
 
 export type AccountModuleHandlerType = typeof GetAccountHandler;
 
-accounts.use('/', CaptchaMiddleware.handle());
+accounts.post('/accounts', CaptchaMiddleware.handle());
 accounts.openapi(CreateAccountRoute, async (c) => {
   const { name, email, passphrase } = c.req.valid('json');
 

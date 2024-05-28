@@ -4,8 +4,25 @@ import { type Captcha, captchaSymbol } from '../../model/captcha.js';
 
 export class TurnstileCaptchaValidator implements Captcha {
   async validate(token: string): Promise<Option.Option<Error>> {
-    console.log(token);
-    await fetch('');
+    const res = await fetch(
+      'https://challenges.cloudflare.com/turnstile/v0/siteverify',
+      {
+        body: JSON.stringify({
+          // ToDo: load settings from config file
+          secret: process.env.TURNSTILE_SECRET,
+          response: token,
+        }),
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        method: 'POST',
+      },
+    );
+    const response = await res.json();
+    if (!response.success) {
+      return Option.some(new Error('failed to verify captcha token'));
+    }
+
     return Option.none();
   }
 }
