@@ -32,8 +32,11 @@ export class CreateBookmarkService {
       return Result.err(new Error('bookmark has already created'));
     }
 
-    await this.bookmarkRepository.create({ noteID, accountID });
+    const creation = await this.bookmarkRepository.create({
+      noteID,
+      accountID,
+    });
 
-    return Result.ok(Option.unwrap(note));
+    return Result.map(() => Option.unwrap(note))(creation);
   }
 }
