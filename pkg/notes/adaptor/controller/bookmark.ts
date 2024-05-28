@@ -3,7 +3,7 @@ import { type Option, Result } from '@mikuroxina/mini-fn';
 import type { AccountID } from '../../../accounts/model/account.js';
 import type { ID } from '../../../id/type.js';
 import type { Bookmark } from '../../model/bookmark.js';
-import type { NoteID } from '../../model/note.js';
+import type { Note, NoteID } from '../../model/note.js';
 import type { CreateBookmarkService } from '../../service/createBookmark.js';
 import type { DeleteBookmarkService } from '../../service/deleteBookmark.js';
 import type { FetchBookmarkService } from '../../service/fetchBookmark.js';
@@ -18,12 +18,13 @@ export class BookmarkController {
   async createBookmark(
     noteID: string,
     accountID: string,
-  ): Promise<Result.Result<Error, void>> {
+  ): Promise<Result.Result<Error, Note>> {
     const res = await this.createBookmarkService.handle(
       noteID as ID<NoteID>,
       accountID as ID<AccountID>,
     );
-    return Result.map(() => undefined)(res);
+
+    return res;
   }
 
   async getBookmarkByID(
