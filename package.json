@@ -16,7 +16,8 @@
   },
   "scripts": {
     "start": "node --env-file=.env --enable-source-maps ./build/main.js",
-    "build": "node build.js",
+    "build": "node ./scripts/build.js",
+    "build:api": "node ./build/scripts/apidoc.js",
     "build:prisma": "prisma generate",
     "clean": "rm -r ./build",
     "test": "vitest run",
@@ -27,8 +28,7 @@
     "format:check": "prettier --check \"./**/*.{js,ts,md}\"",
     "lint": "eslint . ",
     "prepare": "pnpm run build:prisma",
-    "postinstall": "lefthook install",
-    "docs:api": "node ./build/apidoc.js"
+    "postinstall": "lefthook install"
   },
   "dependencies": {
     "@hono/node-server": "^1.7.0",
