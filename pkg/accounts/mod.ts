@@ -3,13 +3,16 @@ import { Cat, Ether, Promise, Result } from '@mikuroxina/mini-fn';
 
 import { clockSymbol, snowflakeIDGenerator } from '../id/mod.js';
 import { argon2idPasswordEncoder } from '../password/mod.js';
+import { newTurnstileCaptchaValidator } from './adaptor/captcha/turnstile.js';
 import { AccountController } from './adaptor/controller/account.js';
+import { captchaMiddleware } from './adaptor/middileware/captcha.js';
 import {
-  newAccountRepo,
+  InMemoryAccountRepository,
   newFollowRepo,
   verifyTokenRepo,
 } from './adaptor/repository/dummy.js';
-import type { AccountName } from './model/account.js';
+import { type AccountName } from './model/account.js';
+import { accountRepoSymbol } from './model/repository.js';
 import {
   CreateAccountRoute,
   FollowAccountRoute,
@@ -40,7 +43,11 @@ import { unfollow } from './service/unfollow.js';
 import { verifyAccountToken } from './service/verifyToken.js';
 
 export const accounts = new OpenAPIHono();
-const accountRepository = newAccountRepo();
+const accountRepoObject = new InMemoryAccountRepository([]);
+const accountRepository = Ether.newEther(
+  accountRepoSymbol,
+  () => accountRepoObject,
+);
 const accountFollowRepository = newFollowRepo();
 class Clock {
   now() {
@@ -111,6 +118,13 @@ export const controller = new AccountController({
   ),
 });
 
+// ToDo: load secret from config file
+const CaptchaMiddleware = Ether.runEther(
+  Ether.compose(
+    newTurnstileCaptchaValidator(process.env.TURNSTILE_SECRET ?? ''),
+  )(captchaMiddleware),
+);
+
 accounts.doc('/accounts/doc.json', {
   openapi: '3.0.0',
   info: {
@@ -121,6 +135,7 @@ accounts.doc('/accounts/doc.json', {
 
 export type AccountModuleHandlerType = typeof GetAccountHandler;
 
+accounts.post('/accounts', CaptchaMiddleware.handle());
 accounts.openapi(CreateAccountRoute, async (c) => {
   const { name, email, passphrase } = c.req.valid('json');
 

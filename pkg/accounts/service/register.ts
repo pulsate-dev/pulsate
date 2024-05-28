@@ -1,12 +1,12 @@
 import { Ether, Option, Result } from '@mikuroxina/mini-fn';
 
 import {
-  snowflakeIDGeneratorSymbol,
   type SnowflakeIDGenerator,
+  snowflakeIDGeneratorSymbol,
 } from '../../id/mod.js';
 import {
-  passwordEncoderSymbol,
   type PasswordEncoder,
+  passwordEncoderSymbol,
 } from '../../password/mod.js';
 import {
   Account,
@@ -15,16 +15,16 @@ import {
   type AccountRole,
 } from '../model/account.js';
 import {
-  accountRepoSymbol,
   type AccountRepository,
+  accountRepoSymbol,
 } from '../model/repository.js';
 import {
-  sendNotificationSymbol,
   type SendNotificationService,
+  sendNotificationSymbol,
 } from './sendNotification.js';
 import {
-  verifyAccountTokenSymbol,
   type VerifyAccountTokenService,
+  verifyAccountTokenSymbol,
 } from './verifyToken.js';
 
 export class AccountAlreadyExistsError extends Error {
@@ -64,16 +64,13 @@ export class RegisterService {
     bio: string,
     role: AccountRole,
   ): Promise<Result.Result<Error, Account>> {
-    // ToDo: verify with Captcha
     if (await this.isExists(mail, name)) {
       return Result.err(
         new AccountAlreadyExistsError('account already exists'),
       );
     }
-
     const passphraseHash =
       await this.passwordEncoder.encodePassword(passphrase);
-
     const generatedID = this.snowflakeIDGenerator.generate<AccountID>();
     if (Result.isErr(generatedID)) {
       return Result.err(generatedID[1]);
