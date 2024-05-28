@@ -118,8 +118,11 @@ export const controller = new AccountController({
   ),
 });
 
+// ToDo: load secret from config file
 const CaptchaMiddleware = Ether.runEther(
-  Ether.compose(newTurnstileCaptchaValidator)(captchaMiddleware),
+  Ether.compose(
+    newTurnstileCaptchaValidator(process.env.TURNSTILE_SECRET ?? ''),
+  )(captchaMiddleware),
 );
 
 accounts.doc('/accounts/doc.json', {

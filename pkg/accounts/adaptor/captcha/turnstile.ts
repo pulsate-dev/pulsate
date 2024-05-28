@@ -3,13 +3,15 @@ import { Ether, Option } from '@mikuroxina/mini-fn';
 import { type Captcha, captchaSymbol } from '../../model/captcha.js';
 
 export class TurnstileCaptchaValidator implements Captcha {
+  constructor(private readonly secret: string) {}
+
   async validate(token: string): Promise<Option.Option<Error>> {
     const res = await fetch(
       'https://challenges.cloudflare.com/turnstile/v0/siteverify',
       {
         body: JSON.stringify({
           // ToDo: load settings from config file
-          secret: process.env.TURNSTILE_SECRET,
+          secret: this.secret,
           response: token,
         }),
         headers: {
@@ -26,7 +28,6 @@ export class TurnstileCaptchaValidator implements Captcha {
     return Option.none();
   }
 }
-export const newTurnstileCaptchaValidator = Ether.newEther(
-  captchaSymbol,
-  () => new TurnstileCaptchaValidator(),
-);
+
+export const newTurnstileCaptchaValidator = (secret: string) =>
+  Ether.newEther(captchaSymbol, () => new TurnstileCaptchaValidator(secret));
