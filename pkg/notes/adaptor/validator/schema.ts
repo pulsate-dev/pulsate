@@ -156,6 +156,20 @@ export const RenoteResponseSchema = z.object({
   }),
 });
 
+export const CreateBookmarkRequestSchema = z.object({
+  id: z.string().openapi({
+    example: '38477395',
+    description: 'Account ID',
+  }),
+});
+
+export const DeleteBookmarkRequestSchema = z.object({
+  id: z.string().openapi({
+    example: '38477395',
+    description: 'Account ID',
+  }),
+});
+
 export const CreateBookmarkResponseSchema = z.object({
   id: z.string().openapi({
     example: '38477395',
@@ -168,10 +182,6 @@ export const CreateBookmarkResponseSchema = z.object({
   visibility: z.string().openapi({
     example: 'PUBLIC',
     description: 'Note visibility',
-  }),
-  original_note_id: z.string().openapi({
-    example: '38477395',
-    description: 'Original note ID',
   }),
   contents_warning_comment: z.string().openapi({
     example: 'This note contains sensitive content',
