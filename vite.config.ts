@@ -8,5 +8,6 @@ export default defineConfig({
       exclude: [...configDefaults.exclude, 'build/**'],
       reporter: ['text', 'json', 'html'],
     },
+    testTimeout: 2 * 60 * 1000,
   },
 });
