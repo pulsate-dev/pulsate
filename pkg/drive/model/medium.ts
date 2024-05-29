@@ -6,24 +6,24 @@ export type MediumID = string;
 export interface CreateMediumArgs {
   id: ID<MediumID>;
   name: string;
-  authorID: ID<AccountID>;
+  authorId: ID<AccountID>;
   hash: string;
   mime: string;
   nsfw: boolean;
   url: string;
-  thumbnailURL: string;
+  thumbnailUrl: string;
 }
 
 export class Medium {
   private constructor(arg: CreateMediumArgs) {
     this.id = arg.id;
     this.name = arg.name;
-    this.authorID = arg.authorID;
+    this.authorId = arg.authorId;
     this.hash = arg.hash;
     this.mime = arg.mime;
     this.nsfw = arg.nsfw;
     this.url = arg.url;
-    this.thumbnailURL = arg.thumbnailURL;
+    this.thumbnailUrl = arg.thumbnailUrl;
   }
 
   public static new(arg: CreateMediumArgs): Medium {
@@ -36,7 +36,7 @@ export class Medium {
 
   private readonly id: ID<MediumID>;
 
-  getID(): ID<MediumID> {
+  getId(): ID<MediumID> {
     return this.id;
   }
   private readonly name: string;
@@ -44,10 +44,10 @@ export class Medium {
   getName(): string {
     return this.name;
   }
-  private readonly authorID: ID<AccountID>;
+  private readonly authorId: ID<AccountID>;
 
-  getAuthorID(): ID<AccountID> {
-    return this.authorID;
+  getAuthorId(): ID<AccountID> {
+    return this.authorId;
   }
   private readonly hash: string;
 
@@ -61,17 +61,17 @@ export class Medium {
   }
   private readonly nsfw: boolean;
 
-  isNSFW(): boolean {
+  isNsfw(): boolean {
     return this.nsfw;
   }
   private readonly url: string;
 
-  getURL(): string {
+  getUrl(): string {
     return this.url;
   }
-  private readonly thumbnailURL: string;
+  private readonly thumbnailUrl: string;
 
-  getThumbnailURL(): string {
-    return this.thumbnailURL;
+  getThumbnailUrl(): string {
+    return this.thumbnailUrl;
   }
 }

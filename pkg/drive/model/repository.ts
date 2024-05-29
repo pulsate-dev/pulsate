@@ -6,7 +6,7 @@ import type { Medium, MediumID } from './medium.js';
 
 export interface MediaRepository {
   create(medium: Medium): Promise<Result.Result<Error, void>>;
-  findByID(id: ID<MediumID>): Promise<Option.Option<Medium>>;
-  findByAuthor(authorID: ID<AccountID>): Promise<Option.Option<Medium[]>>;
+  findById(id: ID<MediumID>): Promise<Option.Option<Medium>>;
+  findByAuthor(authorId: ID<AccountID>): Promise<Option.Option<Medium[]>>;
 }
 export const mediaRepoSymbol = Ether.newEtherSymbol<MediaRepository>();
