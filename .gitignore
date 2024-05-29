@@ -9,4 +9,4 @@ node_modules/
 .env
 .hooks/
 coverage/
-drive/
+drive/*.jpg
