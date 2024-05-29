@@ -28,7 +28,7 @@ importers:
         version: 0.5.50(hono@4.3.11)(nanoid@5.0.7)(postcss@8.4.38)(typescript@5.4.5)(unified@11.0.4)(vitest@1.6.0(@types/node@20.12.12))(vue-sonner@1.1.2)(vue@3.4.23(typescript@5.4.5))(yjs@13.6.14)
       argon2:
         specifier: ^0.40.0
-        version: 0.40.1
+        version: 0.40.3
       hono:
         specifier: ^4.0.0
         version: 4.3.11
@@ -1363,8 +1363,8 @@ packages:
     resolution: {integrity: sha512-bN798gFfQX+viw3R7yrGWRqnrN2oRkEkUjjl4JNn4E8GxxbjtG3FbrEIIY3l8/hrwUwIeCZvi4QuOTP4MErVug==}
     engines: {node: '>=12'}
 
-  argon2@0.40.1:
-    resolution: {integrity: sha512-DjtHDwd7pm12qeWyfihHoM8Bn5vGcgH6sKwgPqwNYroRmxlrzadHEvMyuvQxN/V8YSyRRKD5x6ito09q1e9OyA==}
+  argon2@0.40.3:
+    resolution: {integrity: sha512-FrSmz4VeM91jwFvvjsQv9GYp6o/kARWoYKjbjDB2U5io1H3e5X67PYGclFDeQff6UXIhUd4aHR3mxCdBbMMuQw==}
     engines: {node: '>=16.17.0'}
 
   argparse@2.0.1:
@@ -2430,16 +2430,16 @@ packages:
   natural-compare@1.4.0:
     resolution: {integrity: sha512-OWND8ei3VtNC9h7V60qff3SVobHr996CTwgxubgyQYEpg290h9J0buyECNNJexkFm5sOajh5G116RYA1c8ZMSw==}
 
-  node-addon-api@7.1.0:
-    resolution: {integrity: sha512-mNcltoe1R8o7STTegSOHdnJNN7s5EUvhoS7ShnTHDyOSd+8H+UdWODq6qSv67PjC8Zc5JRT8+oLAMCr0SIXw7g==}
-    engines: {node: ^16 || ^18 || >= 20}
+  node-addon-api@8.0.0:
+    resolution: {integrity: sha512-ipO7rsHEBqa9STO5C5T10fj732ml+5kLN1cAG8/jdHd56ldQeGj3Q7+scUS+VHK/qy1zLEwC4wMK5+yM0btPvw==}
+    engines: {node: ^18 || ^20 || >= 21}
 
   node-domexception@1.0.0:
     resolution: {integrity: sha512-/jKZoMpw0F8GRwl4/eLROPA3cfcXtLApP0QzLmUT/HuPCZWyB7IY9ZrMeKw2O/nFIqPQB3PVM9aYm0F312AXDQ==}
     engines: {node: '>=10.5.0'}
 
-  node-gyp-build@4.8.0:
-    resolution: {integrity: sha512-u6fs2AEUljNho3EYTJNBfImO5QTo/J/1Etd+NVdCj7qWKUSN/bSLkZwhDv7I+w/MSC6qJ4cknepkAYykDdK8og==}
+  node-gyp-build@4.8.1:
+    resolution: {integrity: sha512-OSs33Z9yWr148JZcbZd5WiAXhh/n9z8TxQcdMhIOlpN9AhWpLfvVFO73+m77bBABQMaY9XSvIa+qk0jlI7Gcaw==}
     hasBin: true
 
   npm-run-path@5.3.0:
@@ -4568,11 +4568,11 @@ snapshots:
 
   ansi-styles@6.2.1: {}
 
-  argon2@0.40.1:
+  argon2@0.40.3:
     dependencies:
       '@phc/format': 1.0.0
-      node-addon-api: 7.1.0
-      node-gyp-build: 4.8.0
+      node-addon-api: 8.0.0
+      node-gyp-build: 4.8.1
 
   argparse@2.0.1: {}
 
@@ -5907,11 +5907,11 @@ snapshots:
 
   natural-compare@1.4.0: {}
 
-  node-addon-api@7.1.0: {}
+  node-addon-api@8.0.0: {}
 
   node-domexception@1.0.0: {}
 
-  node-gyp-build@4.8.0: {}
+  node-gyp-build@4.8.1: {}
 
   npm-run-path@5.3.0:
     dependencies:
