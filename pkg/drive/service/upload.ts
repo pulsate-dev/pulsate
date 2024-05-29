@@ -78,31 +78,22 @@ export class UploadMediaService {
     if (!detected) {
       return Option.none();
     }
-    switch (detected.mime) {
-      case 'image/apng':
-        break;
-      case 'image/avif':
-        break;
-      case 'image/gif':
-        break;
-      case 'image/jpeg':
-        break;
-      case 'image/png':
-        break;
-      case 'image/webp':
-        break;
-      case 'audio/wav':
-        break;
-      case 'audio/mpeg':
-        break;
-      case 'audio/ogg':
-        break;
-      case 'video/webm':
-        break;
-      case 'video/mp4':
-        break;
-      default:
-        return Option.none();
+
+    const allowedTypes = [
+      'image/apng',
+      'image/avif',
+      'image/gif',
+      'image/jpeg',
+      'image/png',
+      'image/webp',
+      'audio/wav',
+      'audio/mpeg',
+      'audio/ogg',
+      'video/webm',
+      'video/mp4',
+    ];
+    if (!allowedTypes.includes(detected.mime)) {
+      return Option.none();
     }
     return Option.some(detected.mime);
   }

@@ -6,22 +6,24 @@ import { type Medium, type MediumID } from '../../model/medium.js';
 import type { MediaRepository } from '../../model/repository.js';
 
 export class InMemoryMediaRepository implements MediaRepository {
-  private readonly data: Set<Medium> = new Set();
+  private readonly data: Map<string, Medium> = new Map();
 
   async create(medium: Medium): Promise<Result.Result<Error, void>> {
-    this.data.add(medium);
+    this.data.set(medium.getId(), medium);
     return Result.ok(undefined);
   }
 
   async findByAuthor(
     authorId: ID<AccountID>,
   ): Promise<Option.Option<Medium[]>> {
-    const res = [...this.data].filter((m) => m.getAuthorId() === authorId);
+    const res = [...this.data]
+      .filter((m) => m[1].getAuthorId() === authorId)
+      .map((v) => v[1]);
     return Option.some(res);
   }
 
   async findById(id: ID<MediumID>): Promise<Option.Option<Medium>> {
-    const res = [...this.data].find((m) => m.getId() === id);
+    const res = this.data.get(id);
     if (!res) {
       return Option.none();
     }
