@@ -2,9 +2,11 @@ import { createRoute, z } from '@hono/zod-openapi';
 
 import { CommonErrorResponseSchema } from '../accounts/adaptor/validator/schema.js';
 import {
+  CreateBookmarkRequestSchema,
   CreateBookmarkResponseSchema,
   CreateNoteRequestSchema,
   CreateNoteResponseSchema,
+  DeleteBookmarkRequestSchema,
   GetNoteResponseSchema,
   RenoteRequestSchema,
   RenoteResponseSchema,
@@ -150,6 +152,13 @@ export const CreateBookmarkRoute = createRoute({
         example: '1',
       }),
     }),
+    body: {
+      content: {
+        'application/json': {
+          schema: CreateBookmarkRequestSchema,
+        },
+      },
+    },
   },
   responses: {
     200: {
@@ -182,6 +191,13 @@ export const DeleteBookmarkRoute = createRoute({
         example: '1',
       }),
     }),
+    body: {
+      content: {
+        'application/json': {
+          schema: DeleteBookmarkRequestSchema,
+        },
+      },
+    },
   },
   responses: {
     204: {
