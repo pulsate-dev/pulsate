@@ -35,22 +35,18 @@ export class UploadMediaService {
     if (Option.isNone(mime)) {
       return Result.err(new Error('Invalid file type'));
     }
-    // ToDo: サイズ検出
     if (args.file.length > this.MAX_MEDIA_SIZE) {
       return Result.err(new Error('File size is too large'));
     }
 
-    // 動画だったときの処理を考える
     const processed = await this.imageProcessing(args.file);
     if (Option.isNone(processed)) {
       return Result.err(new Error('Failed to process image'));
     }
 
-    // upload
     await this.storage.upload(args.name, processed[1].resized);
     await this.storage.upload(`thumbnail-${args.name}`, processed[1].thumbnail);
 
-    // ToDo: オブジェクトの生成
     const id = this.idGenerator.generate<MediumID>();
     if (Result.isErr(id)) {
       return id;
@@ -116,7 +112,6 @@ export class UploadMediaService {
   ): Promise<
     Option.Option<{ resized: Uint8Array; thumbnail: Uint8Array; hash: string }>
   > {
-    // ToDo: Webp-transform, resize, thumbnail generation
     // ToDo: separate cases when images are animated
 
     const webp = await sharp(file).webp().toBuffer();
