@@ -11,7 +11,7 @@ export class LocalStorage implements Storage {
     try {
       await fs.statfs(this.basePath);
     } catch (e) {
-      await fs.mkdir(this.basePath);
+      await fs.mkdir(this.basePath, { recursive: true });
     }
 
     const baseName = path.basename(name);
