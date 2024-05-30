@@ -9,3 +9,5 @@ node_modules/
 .env
 .hooks/
 coverage/
+drive/*.jpg
+drive/*.webp
