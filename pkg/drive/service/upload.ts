@@ -44,13 +44,18 @@ export class UploadMediaService {
       return Result.err(new Error('Failed to process image'));
     }
 
-    await this.storage.upload(args.name, processed[1].resized);
-    await this.storage.upload(`thumbnail-${args.name}`, processed[1].thumbnail);
-
     const id = this.idGenerator.generate<MediumID>();
+
     if (Result.isErr(id)) {
       return id;
     }
+
+    await this.storage.upload(`${id[1]}.webp`, processed[1].resized);
+    await this.storage.upload(
+      `thumbnail-${id[1]}.webp`,
+      processed[1].thumbnail,
+    );
+
     const medium = Medium.new({
       id: id[1],
       name: args.name,

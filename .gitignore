@@ -10,3 +10,4 @@ node_modules/
 .hooks/
 coverage/
 drive/*.jpg
+drive/*.webp
