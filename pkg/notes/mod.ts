@@ -1,7 +1,9 @@
 import { OpenAPIHono } from '@hono/zod-openapi';
 import { Result } from '@mikuroxina/mini-fn';
 
+import type { AccountID } from '../accounts/model/account.js';
 import { SnowflakeIDGenerator } from '../id/mod.js';
+import type { ID } from '../id/type.js';
 import { AccountModule } from '../intermodule/account.js';
 import { BookmarkController } from './adaptor/controller/bookmark.js';
 import { NoteController } from './adaptor/controller/note.js';
@@ -112,8 +114,11 @@ noteHandlers.openapi(RenoteRoute, async (c) => {
 
 noteHandlers.openapi(CreateBookmarkRoute, async (c) => {
   const { id: noteID } = c.req.valid('param');
-  const { id: accountID } = c.req.valid('json');
-  const res = await bookmarkController.createBookmark(noteID, accountID);
+  // ToDo: TokenからAccountIDを読み込む
+  const res = await bookmarkController.createBookmark(
+    noteID,
+    '' as ID<AccountID>,
+  );
 
   if (Result.isErr(res)) {
     return c.json({ error: res[1].message }, 400);
@@ -124,8 +129,11 @@ noteHandlers.openapi(CreateBookmarkRoute, async (c) => {
 
 noteHandlers.openapi(DeleteBookmarkRoute, async (c) => {
   const { id: noteID } = c.req.valid('param');
-  const { id: accountID } = c.req.valid('json');
-  const res = await bookmarkController.deleteBookmark(noteID, accountID);
+  // ToDo: TokenからAccountIDを読み込む
+  const res = await bookmarkController.deleteBookmark(
+    noteID,
+    '' as ID<AccountID>,
+  );
 
   if (Result.isErr(res)) {
     return c.json({ error: res[1].message }, 400);

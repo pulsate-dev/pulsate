@@ -156,20 +156,6 @@ export const RenoteResponseSchema = z.object({
   }),
 });
 
-export const CreateBookmarkRequestSchema = z.object({
-  id: z.string().openapi({
-    example: '38477395',
-    description: 'Account ID',
-  }),
-});
-
-export const DeleteBookmarkRequestSchema = z.object({
-  id: z.string().openapi({
-    example: '38477395',
-    description: 'Account ID',
-  }),
-});
-
 export const CreateBookmarkResponseSchema = z.object({
   id: z.string().openapi({
     example: '38477395',
