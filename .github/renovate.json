@@ -1,11 +1,4 @@
 {
   "$schema": "https://docs.renovatebot.com/renovate-schema.json",
-  "extends": ["github>pulsate-dev/renovate-conf"],
-  "reviewers": ["team:pulsate"],
-  "rollback": {
-    "additionalReviewers": ["m1sk9", "MikuroXina", "Colk-tech"]
-  },
-  "vulnerabilityAlerts": {
-    "additionalReviewers": ["m1sk9", "MikuroXina", "Colk-tech"]
-  }
+  "extends": ["github>pulsate-dev/renovate-conf"]
 }
