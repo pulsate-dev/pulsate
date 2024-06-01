@@ -10,7 +10,7 @@ permissions:
 jobs:
   assign:
     name: Assign PR to the author
-    if: ${{ github.event.pull_request.user.login != 'renovate[bot]' || toJSON(github.event.pull_request.assignees) == '[]' }}
+    if: ${{ github.event.pull_request.user.login != 'renovate[bot]' && toJSON(github.event.pull_request.assignees) == '[]' }}
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
