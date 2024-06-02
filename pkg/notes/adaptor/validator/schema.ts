@@ -169,10 +169,6 @@ export const CreateBookmarkResponseSchema = z.object({
     example: 'PUBLIC',
     description: 'Note visibility',
   }),
-  original_note_id: z.string().openapi({
-    example: '38477395',
-    description: 'Original note ID',
-  }),
   contents_warning_comment: z.string().openapi({
     example: 'This note contains sensitive content',
     description: 'Contents warning comment',
