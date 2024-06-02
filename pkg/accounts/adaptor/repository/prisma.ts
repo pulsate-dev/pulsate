@@ -13,12 +13,12 @@ import {
 } from '../../model/account.js';
 import { AccountFollow } from '../../model/follow.js';
 import {
-  accountRepoSymbol,
-  followRepoSymbol,
-  verifyTokenRepoSymbol,
   type AccountFollowRepository,
   type AccountRepository,
+  accountRepoSymbol,
   type AccountVerifyTokenRepository,
+  followRepoSymbol,
+  verifyTokenRepoSymbol,
 } from '../../model/repository.js';
 
 interface AccountPrismaArgs {
@@ -203,7 +203,7 @@ export class PrismaAccountRepository implements AccountRepository {
     });
   }
 }
-export const accountRepo = (client: PrismaClient) =>
+export const prismaAccountRepo = (client: PrismaClient) =>
   Ether.newEther(accountRepoSymbol, () => new PrismaAccountRepository(client));
 
 export class PrismaAccountVerifyTokenRepository
@@ -248,7 +248,7 @@ export class PrismaAccountVerifyTokenRepository
     });
   }
 }
-export const verifyTokenRepo = (client: PrismaClient) =>
+export const prismaVerifyTokenRepo = (client: PrismaClient) =>
   Ether.newEther(
     verifyTokenRepoSymbol,
     () => new PrismaAccountVerifyTokenRepository(client),
@@ -362,7 +362,7 @@ export class PrismaAccountFollowRepository implements AccountFollowRepository {
     });
   }
 }
-export const followRepo = (client: PrismaClient) =>
+export const prismaFollowRepo = (client: PrismaClient) =>
   Ether.newEther(
     followRepoSymbol,
     () => new PrismaAccountFollowRepository(client),
