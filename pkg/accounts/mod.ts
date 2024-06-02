@@ -1,6 +1,7 @@
 import { OpenAPIHono } from '@hono/zod-openapi';
 import { Cat, Ether, Promise, Result } from '@mikuroxina/mini-fn';
 
+import { prismaClient } from '../adaptors/prisma.js';
 import { clockSymbol, snowflakeIDGenerator } from '../id/mod.js';
 import { argon2idPasswordEncoder } from '../password/mod.js';
 import { newTurnstileCaptchaValidator } from './adaptor/captcha/turnstile.js';
@@ -11,6 +12,11 @@ import {
   newFollowRepo,
   verifyTokenRepo,
 } from './adaptor/repository/dummy.js';
+import {
+  PrismaAccountRepository,
+  prismaFollowRepo,
+  prismaVerifyTokenRepo,
+} from './adaptor/repository/prisma.js';
 import { type AccountName } from './model/account.js';
 import { accountRepoSymbol } from './model/repository.js';
 import {
@@ -42,13 +48,21 @@ import { silence } from './service/silence.js';
 import { unfollow } from './service/unfollow.js';
 import { verifyAccountToken } from './service/verifyToken.js';
 
+const isProduction = process.env.NODE_ENV === 'production';
+
 export const accounts = new OpenAPIHono();
-const accountRepoObject = new InMemoryAccountRepository([]);
+const accountRepoObject = isProduction
+  ? new PrismaAccountRepository(prismaClient)
+  : new InMemoryAccountRepository([]);
 const accountRepository = Ether.newEther(
   accountRepoSymbol,
   () => accountRepoObject,
 );
-const accountFollowRepository = newFollowRepo();
+
+const accountFollowRepository = isProduction
+  ? prismaFollowRepo(prismaClient)
+  : newFollowRepo();
+
 class Clock {
   now() {
     return BigInt(Date.now());
@@ -59,7 +73,11 @@ const idGenerator = Ether.compose(clock)(snowflakeIDGenerator(0));
 
 const verifyAccountTokenService = Cat.cat(verifyAccountToken)
   .feed(Ether.compose(clock))
-  .feed(Ether.compose(verifyTokenRepo))
+  .feed(
+    Ether.compose(
+      isProduction ? prismaVerifyTokenRepo(prismaClient) : verifyTokenRepo,
+    ),
+  )
   .feed(Ether.compose(accountRepository)).value;
 
 const composer = Ether.composeT(Promise.monad);
