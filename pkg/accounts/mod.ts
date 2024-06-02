@@ -1,7 +1,7 @@
 import { OpenAPIHono } from '@hono/zod-openapi';
 import { Cat, Ether, Promise, Result } from '@mikuroxina/mini-fn';
-import { PrismaClient } from '@prisma/client';
 
+import { prismaClient } from '../../client.js';
 import { clockSymbol, snowflakeIDGenerator } from '../id/mod.js';
 import { argon2idPasswordEncoder } from '../password/mod.js';
 import { newTurnstileCaptchaValidator } from './adaptor/captcha/turnstile.js';
@@ -49,8 +49,6 @@ import { unfollow } from './service/unfollow.js';
 import { verifyAccountToken } from './service/verifyToken.js';
 
 const isProduction = process.env.NODE_ENV === 'production';
-
-const prismaClient = new PrismaClient();
 
 export const accounts = new OpenAPIHono();
 const accountRepoObject = isProduction
