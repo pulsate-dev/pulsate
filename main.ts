@@ -18,7 +18,7 @@ export const app = new Hono().get('/doc', async (c) => {
     },
     servers: [
       {
-        url: 'http://localhost:3000/',
+        url: 'http://localhost:3000',
         description: 'Local server',
       },
     ],

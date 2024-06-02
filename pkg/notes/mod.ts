@@ -2,6 +2,7 @@ import { OpenAPIHono } from '@hono/zod-openapi';
 import { Result } from '@mikuroxina/mini-fn';
 
 import type { AccountID } from '../accounts/model/account.js';
+import { prismaClient } from '../adaptors/prisma.js';
 import { SnowflakeIDGenerator } from '../id/mod.js';
 import type { ID } from '../id/type.js';
 import { AccountModule } from '../intermodule/account.js';
@@ -11,6 +12,10 @@ import {
   InMemoryBookmarkRepository,
   InMemoryNoteRepository,
 } from './adaptor/repository/dummy.js';
+import {
+  PrismaBookmarkRepository,
+  PrismaNoteRepository,
+} from './adaptor/repository/prisma.js';
 import {
   CreateBookmarkRoute,
   CreateNoteRoute,
@@ -25,9 +30,14 @@ import { FetchService } from './service/fetch.js';
 import { FetchBookmarkService } from './service/fetchBookmark.js';
 import { RenoteService } from './service/renote.js';
 
+const isProduction = process.env.NODE_ENV === 'production';
 export const noteHandlers = new OpenAPIHono();
-const noteRepository = new InMemoryNoteRepository();
-const bookmarkRepository = new InMemoryBookmarkRepository();
+const noteRepository = isProduction
+  ? new PrismaNoteRepository(prismaClient)
+  : new InMemoryNoteRepository();
+const bookmarkRepository = isProduction
+  ? new PrismaBookmarkRepository(prismaClient)
+  : new InMemoryBookmarkRepository();
 const idGenerator = new SnowflakeIDGenerator(0, {
   now: () => BigInt(Date.now()),
 });
