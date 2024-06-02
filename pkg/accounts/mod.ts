@@ -1,7 +1,7 @@
 import { OpenAPIHono } from '@hono/zod-openapi';
 import { Cat, Ether, Promise, Result } from '@mikuroxina/mini-fn';
 
-import { prismaClient } from '../../client.js';
+import { prismaClient } from '../adaptors/prisma.js';
 import { clockSymbol, snowflakeIDGenerator } from '../id/mod.js';
 import { argon2idPasswordEncoder } from '../password/mod.js';
 import { newTurnstileCaptchaValidator } from './adaptor/captcha/turnstile.js';
