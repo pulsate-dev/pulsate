@@ -114,7 +114,7 @@ noteHandlers.openapi(RenoteRoute, async (c) => {
 
 noteHandlers.openapi(CreateBookmarkRoute, async (c) => {
   const { id: noteID } = c.req.valid('param');
-  // ToDo: TokenからAccountIDを読み込む
+  // ToDo: read AccountID from token
   const res = await bookmarkController.createBookmark(
     noteID,
     '' as ID<AccountID>,
@@ -129,7 +129,7 @@ noteHandlers.openapi(CreateBookmarkRoute, async (c) => {
 
 noteHandlers.openapi(DeleteBookmarkRoute, async (c) => {
   const { id: noteID } = c.req.valid('param');
-  // ToDo: TokenからAccountIDを読み込む
+  // ToDo: read AccountID from token
   const res = await bookmarkController.deleteBookmark(
     noteID,
     '' as ID<AccountID>,
