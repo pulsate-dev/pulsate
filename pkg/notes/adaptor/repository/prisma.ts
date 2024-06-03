@@ -18,7 +18,7 @@ type DeserializeNoteArgs = Prisma.PromiseReturnType<
 export class PrismaNoteRepository implements NoteRepository {
   constructor(private readonly client: PrismaClient) {}
 
-  private serialize(note: Note) {
+  private serialize(note: Note): Prisma.NoteCreateInput {
     const visibility = () => {
       switch (note.getVisibility()) {
         case 'PUBLIC':
@@ -33,10 +33,14 @@ export class PrismaNoteRepository implements NoteRepository {
     };
 
     return {
-      id: note.getID() as string,
+      id: note.getID(),
       text: note.getContent(),
       visibility: visibility(),
-      authorId: note.getAuthorID() as string,
+      author: {
+        connect: {
+          id: note.getAuthorID(),
+        },
+      },
       createdAt: note.getCreatedAt(),
       deletedAt: Option.isNone(note.getDeletedAt())
         ? undefined
