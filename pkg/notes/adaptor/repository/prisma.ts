@@ -1,7 +1,8 @@
 import { Option, Result } from '@mikuroxina/mini-fn';
-import type { PrismaClient } from '@prisma/client';
+import { type Prisma, type PrismaClient } from '@prisma/client';
 
 import type { AccountID } from '../../../accounts/model/account.js';
+import type { prismaClient } from '../../../adaptors/prisma.js';
 import type { ID } from '../../../id/type.js';
 import { Bookmark } from '../../model/bookmark.js';
 import { Note, type NoteID, type NoteVisibility } from '../../model/note.js';
@@ -10,16 +11,9 @@ import type {
   NoteRepository,
 } from '../../model/repository.js';
 
-interface DeserializeNoteArgs {
-  id: string;
-  visibility: number;
-  text: string;
-  authorId: string;
-  renoteId: string | null;
-  createdAt: Date;
-  deletedAt: Date | null;
-  updatedAt: Date | null;
-}
+type DeserializeNoteArgs = Prisma.PromiseReturnType<
+  typeof prismaClient.note.findUnique
+>;
 
 export class PrismaNoteRepository implements NoteRepository {
   constructor(private readonly client: PrismaClient) {}
@@ -51,6 +45,7 @@ export class PrismaNoteRepository implements NoteRepository {
   }
 
   private deserialize(data: DeserializeNoteArgs): Note {
+    if (!data) throw new Error('Invalid Note data');
     const visibility = (): NoteVisibility => {
       switch (data.visibility) {
         case 0:
@@ -77,7 +72,7 @@ export class PrismaNoteRepository implements NoteRepository {
         : Option.none(),
       // ToDo: add SendTo field to schema
       sendTo: Option.none(),
-      updatedAt: data.updatedAt ? Option.some(data.updatedAt) : Option.none(),
+      updatedAt: Option.none(),
       visibility: visibility() as NoteVisibility,
     });
   }
@@ -128,9 +123,7 @@ export class PrismaNoteRepository implements NoteRepository {
           createdAt: 'desc',
         },
       });
-      return Option.some(
-        res.map((v) => this.deserialize(v as DeserializeNoteArgs)),
-      );
+      return Option.some(res.map((v) => this.deserialize(v)));
     } catch {
       return Option.none();
     }
@@ -145,7 +138,7 @@ export class PrismaNoteRepository implements NoteRepository {
           deletedAt: undefined,
         },
       });
-      return Option.some(this.deserialize(res as DeserializeNoteArgs));
+      return Option.some(this.deserialize(res));
     } catch {
       return Option.none();
     }
