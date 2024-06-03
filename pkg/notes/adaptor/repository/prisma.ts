@@ -45,7 +45,9 @@ export class PrismaNoteRepository implements NoteRepository {
   }
 
   private deserialize(data: DeserializeNoteArgs): Note {
-    if (!data) throw new Error('Invalid Note data');
+    if (!data) {
+      throw new Error('Invalid Note data');
+    }
     const visibility = (): NoteVisibility => {
       switch (data.visibility) {
         case 0:
