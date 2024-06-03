@@ -10,7 +10,7 @@ import type {
   NoteRepository,
 } from '../../model/repository.js';
 
-interface deserializeNoteArgs {
+interface DeserializeNoteArgs {
   id: string;
   visibility: number;
   text: string;
@@ -50,8 +50,8 @@ export class PrismaNoteRepository implements NoteRepository {
     };
   }
 
-  private deserialize(data: deserializeNoteArgs): Note {
-    const visibility = () => {
+  private deserialize(data: DeserializeNoteArgs): Note {
+    const visibility = (): NoteVisibility => {
       switch (data.visibility) {
         case 0:
           return 'PUBLIC';
@@ -62,7 +62,7 @@ export class PrismaNoteRepository implements NoteRepository {
         case 3:
           return 'DIRECT';
         default:
-          return 'PUBLIC';
+          throw new Error('Invalid Visibility');
       }
     };
     return Note.reconstruct({
@@ -129,7 +129,7 @@ export class PrismaNoteRepository implements NoteRepository {
         },
       });
       return Option.some(
-        res.map((v) => this.deserialize(v as deserializeNoteArgs)),
+        res.map((v) => this.deserialize(v as DeserializeNoteArgs)),
       );
     } catch {
       return Option.none();
@@ -145,7 +145,7 @@ export class PrismaNoteRepository implements NoteRepository {
           deletedAt: undefined,
         },
       });
-      return Option.some(this.deserialize(res as deserializeNoteArgs));
+      return Option.some(this.deserialize(res as DeserializeNoteArgs));
     } catch {
       return Option.none();
     }
