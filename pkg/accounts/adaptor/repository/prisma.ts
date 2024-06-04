@@ -1,6 +1,7 @@
 import { Ether, Option, Result } from '@mikuroxina/mini-fn';
-import { type PrismaClient } from '@prisma/client';
+import { type Prisma, type PrismaClient } from '@prisma/client';
 
+import type { prismaClient } from '../../../adaptors/prisma.js';
 import type { ID } from '../../../id/type.js';
 import {
   Account,
@@ -21,21 +22,9 @@ import {
   verifyTokenRepoSymbol,
 } from '../../model/repository.js';
 
-interface AccountPrismaArgs {
-  id: string;
-  name: string;
-  nickname: string;
-  mail: string;
-  passphraseHash: string | null;
-  bio: string;
-  role: number;
-  frozen: number;
-  silenced: number;
-  status: number;
-  createdAt: Date;
-  updatedAt: Date | null;
-  deletedAt: Date | null;
-}
+type AccountPrismaArgs = Prisma.PromiseReturnType<
+  typeof prismaClient.account.findUnique
+>;
 
 export class PrismaAccountRepository implements AccountRepository {
   constructor(private readonly prisma: PrismaClient) {}
@@ -104,7 +93,7 @@ export class PrismaAccountRepository implements AccountRepository {
     return Result.ok(undefined);
   }
 
-  private toPrismaArgs(account: Account): AccountPrismaArgs {
+  private toPrismaArgs(account: Account): Prisma.AccountCreateInput {
     const role = (
       {
         normal: 0,
@@ -152,6 +141,9 @@ export class PrismaAccountRepository implements AccountRepository {
   }
 
   private fromPrismaArgs(args: AccountPrismaArgs): Account {
+    if (args === null) {
+      throw new Error('failed to serialize');
+    }
     const role =
       (
         {
