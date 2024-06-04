@@ -20,7 +20,7 @@ export class EtagService {
    * @returns Etag
    */
   async generate(account: Account): Promise<string> {
-    const src = `${account.getNickname}:${account.getMail}`;
+    const src = `${account.getNickname()}:${account.getMail()}`;
     const digest = await crypto.subtle.digest(
       'SHA-256',
       new TextEncoder().encode(src),
