@@ -54,4 +54,70 @@ export class AccountModule {
 
     return Result.ok(account);
   }
+
+  async fetchFollowings(
+    id: ID<AccountID>,
+  ): Promise<Result.Result<Error, Account[]>> {
+    const res = await this.client.accounts[':id'].following.$get({
+      param: { id },
+    });
+    if (!res.ok) {
+      return Result.err(new Error('Failed to fetch followings'));
+    }
+
+    const body = await res.json();
+    if ('error' in body) {
+      return Result.err(new Error(body.error));
+    }
+    return Result.ok(
+      body.map((v) =>
+        Account.new({
+          id: v.id as ID<AccountID>,
+          mail: v.email as string,
+          name: v.name as AccountName,
+          nickname: v.nickname,
+          bio: v.bio,
+          role: v.role as AccountRole,
+          frozen: v.frozen as AccountFrozen,
+          silenced: v.silenced as AccountSilenced,
+          status: v.status as AccountStatus,
+          createdAt: v.created_at as Date,
+          passphraseHash: undefined,
+        }),
+      ),
+    );
+  }
+
+  async fetchFollowers(
+    id: ID<AccountID>,
+  ): Promise<Result.Result<Error, Account[]>> {
+    const res = await this.client.accounts[':id'].follower.$get({
+      param: { id },
+    });
+    if (!res.ok) {
+      return Result.err(new Error('Failed to fetch followings'));
+    }
+
+    const body = await res.json();
+    if ('error' in body) {
+      return Result.err(new Error(body.error));
+    }
+    return Result.ok(
+      body.map((v) =>
+        Account.new({
+          id: v.id as ID<AccountID>,
+          mail: v.email as string,
+          name: v.name as AccountName,
+          nickname: v.nickname,
+          bio: v.bio,
+          role: v.role as AccountRole,
+          frozen: v.frozen as AccountFrozen,
+          silenced: v.silenced as AccountSilenced,
+          status: v.status as AccountStatus,
+          createdAt: v.created_at as Date,
+          passphraseHash: undefined,
+        }),
+      ),
+    );
+  }
 }

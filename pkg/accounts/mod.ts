@@ -23,6 +23,8 @@ import {
   CreateAccountRoute,
   FollowAccountRoute,
   FreezeAccountRoute,
+  GetAccountFollowerRoute,
+  GetAccountFollowingRoute,
   GetAccountRoute,
   LoginRoute,
   RefreshRoute,
@@ -39,6 +41,7 @@ import { authenticateToken } from './service/authenticationTokenService.js';
 import { edit } from './service/edit.js';
 import { etag } from './service/etagService.js';
 import { fetch } from './service/fetch.js';
+import { fetchFollow } from './service/fetchFollow.js';
 import { follow } from './service/follow.js';
 import { freeze } from './service/freeze.js';
 import { register } from './service/register.js';
@@ -134,6 +137,11 @@ export const controller = new AccountController({
       .feed(Ether.compose(verifyAccountTokenService))
       .feed(Ether.compose(dummy)).value,
   ),
+  fetchFollowService: Ether.runEther(
+    Cat.cat(fetchFollow)
+      .feed(Ether.compose(accountFollowRepository))
+      .feed(Ether.compose(accountRepository)).value,
+  ),
 });
 
 // ToDo: load secret from config file
@@ -151,7 +159,10 @@ accounts.doc('/accounts/doc.json', {
   },
 });
 
-export type AccountModuleHandlerType = typeof GetAccountHandler;
+export type AccountModuleHandlerType =
+  | typeof GetAccountHandler
+  | typeof getAccountFollowingRoute
+  | typeof getAccountFollowerRoute;
 
 accounts.post('/accounts', CaptchaMiddleware.handle());
 accounts.openapi(CreateAccountRoute, async (c) => {
@@ -313,3 +324,56 @@ accounts.openapi(UnFollowAccountRoute, async (c) => {
 
   return new Response(null, { status: 204 });
 });
+
+const getAccountFollowingRoute = accounts.openapi(
+  GetAccountFollowingRoute,
+  async (c) => {
+    const id = c.req.param('id');
+    const res = await controller.fetchFollowing(id);
+    if (Result.isErr(res)) {
+      return c.json({ error: res[1].message }, { status: 400 });
+    }
+    const unwrap = Result.unwrap(res);
+    return c.json(
+      unwrap.map((v) => {
+        return {
+          id: v.id,
+          name: v.name,
+          nickname: v.nickname,
+          bio: v.bio,
+          avatar: '',
+          header: '',
+          followed_count: v.followed_count,
+          following_count: v.following_count,
+          note_count: v.note_count,
+        };
+      }),
+    );
+  },
+);
+const getAccountFollowerRoute = accounts.openapi(
+  GetAccountFollowerRoute,
+  async (c) => {
+    const id = c.req.param('id');
+    const res = await controller.fetchFollower(id);
+    if (Result.isErr(res)) {
+      return c.json({ error: res[1].message }, { status: 400 });
+    }
+    const unwrap = Result.unwrap(res);
+    return c.json(
+      unwrap.map((v) => {
+        return {
+          id: v.id,
+          name: v.name,
+          nickname: v.nickname,
+          bio: v.bio,
+          avatar: '',
+          header: '',
+          followed_count: v.followed_count,
+          following_count: v.following_count,
+          note_count: v.note_count,
+        };
+      }),
+    );
+  },
+);
