@@ -11,7 +11,7 @@ import { NoteVisibilityService } from './noteVisibility.js';
 
 describe('AccountTimelineService', () => {
   const accountModule = new AccountModule();
-  const visibilityService = new NoteVisibilityService(accountModule);
+  const noteVisibilityService = new NoteVisibilityService(accountModule);
 
   const dummyPublicNote = Note.new({
     id: '1' as ID<NoteID>,
@@ -73,10 +73,10 @@ describe('AccountTimelineService', () => {
     dummyFollowersNote,
     dummyDirectNote,
   ]);
-  const accountTimelineService = new AccountTimelineService(
-    visibilityService,
+  const accountTimelineService = new AccountTimelineService({
+    noteVisibilityService,
     timelineRepository,
-  );
+  });
 
   it('if following', async () => {
     vi.spyOn(accountModule, 'fetchFollowers').mockImplementation(async () => {

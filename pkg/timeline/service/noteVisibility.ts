@@ -1,8 +1,8 @@
-import { Option, Result } from '@mikuroxina/mini-fn';
+import { Ether, Option, Result } from '@mikuroxina/mini-fn';
 
 import type { AccountID } from '../../accounts/model/account.js';
 import type { ID } from '../../id/type.js';
-import type { AccountModule } from '../../intermodule/account.js';
+import { type AccountModule } from '../../intermodule/account.js';
 import type { Note } from '../../notes/model/note.js';
 
 export interface NoteVisibilityCheckArgs {
@@ -44,3 +44,12 @@ export class NoteVisibilityService {
     return false;
   }
 }
+export const noteVisibilitySymbol =
+  Ether.newEtherSymbol<NoteVisibilityService>();
+export const noteVisibility = Ether.newEther(
+  noteVisibilitySymbol,
+  ({ accountModule }) => new NoteVisibilityService(accountModule),
+  {
+    accountModule: Ether.newEtherSymbol<AccountModule>(),
+  },
+);

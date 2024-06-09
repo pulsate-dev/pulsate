@@ -1,4 +1,4 @@
-import type { Result } from '@mikuroxina/mini-fn';
+import { Ether, type Result } from '@mikuroxina/mini-fn';
 
 import type { AccountID } from '../../accounts/model/account.js';
 import type { ID } from '../../id/type.js';
@@ -26,3 +26,4 @@ export interface TimelineRepository {
     filter: FetchAccountTimelineFilter,
   ): Promise<Result.Result<Error, Note[]>>;
 }
+export const timelineRepoSymbol = Ether.newEtherSymbol<TimelineRepository>();

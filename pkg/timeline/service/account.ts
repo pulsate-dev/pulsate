@@ -1,19 +1,29 @@
-import { Result } from '@mikuroxina/mini-fn';
+import { Ether, Result } from '@mikuroxina/mini-fn';
 
 import type { AccountID } from '../../accounts/model/account.js';
 import type { ID } from '../../id/type.js';
 import type { Note } from '../../notes/model/note.js';
-import type {
-  FetchAccountTimelineFilter,
-  TimelineRepository,
+import {
+  type FetchAccountTimelineFilter,
+  type TimelineRepository,
+  timelineRepoSymbol,
 } from '../model/repository.js';
-import type { NoteVisibilityService } from './noteVisibility.js';
+import {
+  type NoteVisibilityService,
+  noteVisibilitySymbol,
+} from './noteVisibility.js';
 
 export class AccountTimelineService {
-  constructor(
-    private readonly noteVisibilityService: NoteVisibilityService,
-    private readonly timelineRepository: TimelineRepository,
-  ) {}
+  private readonly noteVisibilityService: NoteVisibilityService;
+  private readonly timelineRepository: TimelineRepository;
+
+  constructor(args: {
+    noteVisibilityService: NoteVisibilityService;
+    timelineRepository: TimelineRepository;
+  }) {
+    this.noteVisibilityService = args.noteVisibilityService;
+    this.timelineRepository = args.timelineRepository;
+  }
 
   async handle(
     targetId: ID<AccountID>,
@@ -44,3 +54,13 @@ export class AccountTimelineService {
     return Result.ok(filtered);
   }
 }
+export const accountTimelineSymbol =
+  Ether.newEtherSymbol<AccountTimelineService>();
+export const accountTimeline = Ether.newEther(
+  accountTimelineSymbol,
+  (deps) => new AccountTimelineService(deps),
+  {
+    timelineRepository: timelineRepoSymbol,
+    noteVisibilityService: noteVisibilitySymbol,
+  },
+);
