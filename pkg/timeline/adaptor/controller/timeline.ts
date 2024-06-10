@@ -1,7 +1,10 @@
 import { type z } from '@hono/zod-openapi';
 import { Result } from '@mikuroxina/mini-fn';
 
-import { type AccountID } from '../../../accounts/model/account.js';
+import {
+  type Account,
+  type AccountID,
+} from '../../../accounts/model/account.js';
 import type { ID } from '../../../id/type.js';
 import type { AccountModule } from '../../../intermodule/account.js';
 import type { AccountTimelineService } from '../../service/account.js';
@@ -51,10 +54,13 @@ export class TimelineController {
     const accounts = accountData
       .filter((v) => Result.isOk(v))
       .map((v) => Result.unwrap(v));
+    const accountsMap = new Map<ID<AccountID>, Account>(
+      accounts.map((v) => [v.getID(), v]),
+    );
 
     try {
       const result = res[1].map((v) => {
-        const account = accounts.find((a) => a.getID() === v.getAuthorID());
+        const account = accountsMap.get(v.getAuthorID());
         if (!account) {
           throw new Error('Account not found');
         }

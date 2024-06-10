@@ -3,7 +3,10 @@ import { describe, expect, it, vi } from 'vitest';
 
 import { Account, type AccountID } from '../../accounts/model/account.js';
 import type { ID } from '../../id/type.js';
-import { AccountModule } from '../../intermodule/account.js';
+import {
+  AccountModule,
+  type PartialAccount,
+} from '../../intermodule/account.js';
 import { Note, type NoteID } from '../../notes/model/note.js';
 import { InMemoryTimelineRepository } from '../adaptor/repository/dummy.js';
 import { AccountTimelineService } from './account.js';
@@ -66,6 +69,12 @@ describe('AccountTimelineService', () => {
     frozen: 'normal',
     createdAt: new Date(),
   });
+  const partialAccount1: PartialAccount = {
+    id: dummyAccount1.getID(),
+    name: dummyAccount1.getName(),
+    nickname: dummyAccount1.getNickname(),
+    bio: dummyAccount1.getBio(),
+  };
   const timelineRepository = new InMemoryTimelineRepository([
     dummyPublicNote,
     dummyHomeNote,
@@ -80,7 +89,7 @@ describe('AccountTimelineService', () => {
 
   it('if following', async () => {
     vi.spyOn(accountModule, 'fetchFollowers').mockImplementation(async () => {
-      return Result.ok([dummyAccount1]);
+      return Result.ok([partialAccount1]);
     });
     const res = await accountTimelineService.handle('100' as ID<AccountID>, {
       id: '101' as ID<AccountID>,
@@ -98,7 +107,7 @@ describe('AccountTimelineService', () => {
 
   it('if not following', async () => {
     vi.spyOn(accountModule, 'fetchFollowers').mockImplementation(async () => {
-      return Result.ok([dummyAccount1]);
+      return Result.ok([partialAccount1]);
     });
     const res = await accountTimelineService.handle('100' as ID<AccountID>, {
       id: '0' as ID<AccountID>,

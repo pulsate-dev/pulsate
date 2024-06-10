@@ -13,6 +13,13 @@ import {
 } from '../accounts/model/account.js';
 import type { ID } from '../id/type.js';
 
+export interface PartialAccount {
+  id: ID<AccountID>;
+  name: AccountName;
+  nickname: string;
+  bio: string;
+}
+
 export class AccountModule {
   // NOTE: This is a temporary solution to use hono client
   // ToDo: base url should be configurable
@@ -57,7 +64,7 @@ export class AccountModule {
 
   async fetchFollowings(
     id: ID<AccountID>,
-  ): Promise<Result.Result<Error, Account[]>> {
+  ): Promise<Result.Result<Error, PartialAccount[]>> {
     const res = await this.client.accounts[':id'].following.$get({
       param: { id },
     });
@@ -70,32 +77,25 @@ export class AccountModule {
       return Result.err(new Error(body.error));
     }
     return Result.ok(
-      body.map((v) =>
-        Account.new({
+      body.map((v): PartialAccount => {
+        return {
           id: v.id as ID<AccountID>,
-          mail: v.email as string,
           name: v.name as AccountName,
           nickname: v.nickname,
           bio: v.bio,
-          role: v.role as AccountRole,
-          frozen: v.frozen as AccountFrozen,
-          silenced: v.silenced as AccountSilenced,
-          status: v.status as AccountStatus,
-          createdAt: v.created_at as Date,
-          passphraseHash: undefined,
-        }),
-      ),
+        };
+      }),
     );
   }
 
   async fetchFollowers(
     id: ID<AccountID>,
-  ): Promise<Result.Result<Error, Account[]>> {
+  ): Promise<Result.Result<Error, PartialAccount[]>> {
     const res = await this.client.accounts[':id'].follower.$get({
       param: { id },
     });
     if (!res.ok) {
-      return Result.err(new Error('Failed to fetch followings'));
+      return Result.err(new Error('Failed to fetch followers'));
     }
 
     const body = await res.json();
@@ -103,21 +103,14 @@ export class AccountModule {
       return Result.err(new Error(body.error));
     }
     return Result.ok(
-      body.map((v) =>
-        Account.new({
+      body.map((v): PartialAccount => {
+        return {
           id: v.id as ID<AccountID>,
-          mail: v.email as string,
           name: v.name as AccountName,
           nickname: v.nickname,
           bio: v.bio,
-          role: v.role as AccountRole,
-          frozen: v.frozen as AccountFrozen,
-          silenced: v.silenced as AccountSilenced,
-          status: v.status as AccountStatus,
-          createdAt: v.created_at as Date,
-          passphraseHash: undefined,
-        }),
-      ),
+        };
+      }),
     );
   }
 }

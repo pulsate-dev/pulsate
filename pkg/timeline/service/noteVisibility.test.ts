@@ -3,7 +3,10 @@ import { describe, expect, it, vi } from 'vitest';
 
 import { Account, type AccountID } from '../../accounts/model/account.js';
 import type { ID } from '../../id/type.js';
-import { AccountModule } from '../../intermodule/account.js';
+import {
+  AccountModule,
+  type PartialAccount,
+} from '../../intermodule/account.js';
 import { Note, type NoteID } from '../../notes/model/note.js';
 import { NoteVisibilityService } from './noteVisibility.js';
 
@@ -64,10 +67,16 @@ describe('NoteVisibilityService', () => {
     frozen: 'normal',
     createdAt: new Date(),
   });
+  const partialAccount1: PartialAccount = {
+    id: dummyAccount1.getID(),
+    name: dummyAccount1.getName(),
+    nickname: dummyAccount1.getNickname(),
+    bio: dummyAccount1.getBio(),
+  };
 
   it("when author's note: return true", async () => {
     vi.spyOn(accountModule, 'fetchFollowers').mockImplementation(async () => {
-      return Result.ok([dummyAccount1]);
+      return Result.ok([partialAccount1]);
     });
 
     const testObjects = [
@@ -88,7 +97,7 @@ describe('NoteVisibilityService', () => {
 
   it('when direct note: return true if sendTo is accountID', async () => {
     vi.spyOn(accountModule, 'fetchFollowers').mockImplementation(async () => {
-      return Result.ok([dummyAccount1]);
+      return Result.ok([partialAccount1]);
     });
 
     const res = await visibilityService.handle({
@@ -106,7 +115,7 @@ describe('NoteVisibilityService', () => {
 
   it('when following: return true if public,home,followers', async () => {
     vi.spyOn(accountModule, 'fetchFollowers').mockImplementation(async () => {
-      return Result.ok([dummyAccount1]);
+      return Result.ok([partialAccount1]);
     });
     // public
     expect(
@@ -133,7 +142,7 @@ describe('NoteVisibilityService', () => {
 
   it('when not following: return true if public, home', async () => {
     vi.spyOn(accountModule, 'fetchFollowers').mockImplementation(async () => {
-      return Result.ok([dummyAccount1]);
+      return Result.ok([partialAccount1]);
     });
 
     expect(
@@ -159,7 +168,7 @@ describe('NoteVisibilityService', () => {
 
   it('always return true if public', async () => {
     vi.spyOn(accountModule, 'fetchFollowers').mockImplementation(async () => {
-      return Result.ok([dummyAccount1]);
+      return Result.ok([partialAccount1]);
     });
 
     const res = await visibilityService.handle({

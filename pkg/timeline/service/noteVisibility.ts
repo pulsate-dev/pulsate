@@ -35,7 +35,7 @@ export class NoteVisibilityService {
         return false;
       }
       for (const v of followers[1]) {
-        if (v.getID() === args.accountID) {
+        if (v.id === args.accountID) {
           return true;
         }
       }

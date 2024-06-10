@@ -308,9 +308,7 @@ export class AccountController {
     );
     return Result.ok(
       accounts
-        .filter((v) => {
-          Result.isOk(v);
-        })
+        .filter((v) => Result.isOk(v))
         .map((v) => {
           const unwrapped = Result.unwrap(v);
           // ToDo: make optional some fields
@@ -352,9 +350,7 @@ export class AccountController {
     );
     return Result.ok(
       accounts
-        .filter((v) => {
-          Result.isOk(v);
-        })
+        .filter((v) => Result.isOk(v))
         .map((v) => {
           const unwrapped = Result.unwrap(v);
           // ToDo: make optional some fields

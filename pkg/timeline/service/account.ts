@@ -42,11 +42,11 @@ export class AccountTimelineService {
 
     const filtered: Note[] = [];
     for (const v of directFiltered) {
-      const visibility = await this.noteVisibilityService.handle({
+      const isVisible = await this.noteVisibilityService.handle({
         accountID: filter.id,
         note: v,
       });
-      if (visibility) {
+      if (isVisible) {
         filtered.push(v);
       }
     }
