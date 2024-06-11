@@ -1,10 +1,9 @@
 import { Result } from '@mikuroxina/mini-fn';
 import { describe, expect, it } from 'vitest';
 
-import type { ID } from '../../id/type.js';
 import { Argon2idPasswordEncoder } from '../../password/mod.js';
 import { InMemoryAccountRepository } from '../adaptor/repository/dummy.js';
-import { Account } from '../model/account.js';
+import { Account, type AccountID } from '../model/account.js';
 import { AuthenticateService } from './authenticate.js';
 import { AuthenticationTokenService } from './authenticationTokenService.js';
 
@@ -17,7 +16,7 @@ describe('AuthenticateService', () => {
     const accountRepository = new InMemoryAccountRepository();
     await accountRepository.create(
       Account.reconstruct({
-        id: '1' as ID<'Account'>,
+        id: '1' as AccountID,
         name: '@test@example.com',
         mail: 'test@example.com',
         bio: '',

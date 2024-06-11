@@ -1,12 +1,13 @@
 import { Option } from '@mikuroxina/mini-fn';
 import { describe, expect, it } from 'vitest';
 
+import type { AccountID } from '../../accounts/model/account.js';
 import type { ID } from '../../id/type.js';
 import { type CreateNoteArgs, Note, type NoteID } from './note.js';
 
 const exampleInput: CreateNoteArgs = {
   id: '1' as ID<NoteID>,
-  authorID: '2' as ID<'account'>,
+  authorID: '2' as AccountID,
   content: 'hello world!',
   createdAt: new Date('2023-09-10T00:00:00.000Z'),
   visibility: 'PUBLIC',

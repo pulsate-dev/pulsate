@@ -8,11 +8,11 @@ export type NoteVisibility = 'PUBLIC' | 'HOME' | 'FOLLOWERS' | 'DIRECT';
 
 export interface CreateNoteArgs {
   id: ID<NoteID>;
-  authorID: ID<AccountID>;
+  authorID: AccountID;
   content: string;
   visibility: NoteVisibility;
   contentsWarningComment: string;
-  sendTo: Option.Option<ID<AccountID>>;
+  sendTo: Option.Option<AccountID>;
   originalNoteID: Option.Option<ID<NoteID>>;
   createdAt: Date;
   updatedAt: Option.Option<Date>;
@@ -57,8 +57,8 @@ export class Note {
     return this.id;
   }
 
-  private readonly authorID: ID<AccountID>;
-  getAuthorID(): ID<AccountID> {
+  private readonly authorID: AccountID;
+  getAuthorID(): AccountID {
     return this.authorID;
   }
 
@@ -77,8 +77,8 @@ export class Note {
     return this.contentsWarningComment;
   }
 
-  private readonly sendTo: Option.Option<ID<AccountID>>;
-  getSendTo(): Option.Option<ID<AccountID>> {
+  private readonly sendTo: Option.Option<AccountID>;
+  getSendTo(): Option.Option<AccountID> {
     return this.sendTo;
   }
 

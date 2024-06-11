@@ -1,7 +1,6 @@
 import { Option, Result } from '@mikuroxina/mini-fn';
 import { describe, expect, it } from 'vitest';
 
-import type { ID } from '../../id/type.js';
 import {
   InMemoryAccountFollowRepository,
   InMemoryAccountRepository,
@@ -12,7 +11,7 @@ import { FollowService } from './follow.js';
 const accountRepository = new InMemoryAccountRepository();
 await accountRepository.create(
   Account.reconstruct({
-    id: '1' as ID<AccountID>,
+    id: '1' as AccountID,
     name: '@johndoe@example.com',
     bio: '',
     mail: '',
@@ -29,7 +28,7 @@ await accountRepository.create(
 );
 await accountRepository.create(
   Account.reconstruct({
-    id: '2' as ID<AccountID>,
+    id: '2' as AccountID,
     name: '@testuser@example.com',
     bio: '',
     mail: '',
@@ -55,8 +54,8 @@ describe('FollowService', () => {
     );
 
     expect(Result.isErr(res)).toBe(false);
-    expect(Result.unwrap(res).getFromID()).toBe('1' as ID<AccountID>);
-    expect(Result.unwrap(res).getTargetID()).toBe('2' as ID<AccountID>);
+    expect(Result.unwrap(res).getFromID()).toBe('1' as AccountID);
+    expect(Result.unwrap(res).getTargetID()).toBe('2' as AccountID);
     expect(Result.unwrap(res).getDeletedAt()).toStrictEqual(Option.none());
   });
 });

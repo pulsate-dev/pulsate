@@ -11,7 +11,7 @@ import { FetchService } from './fetch.js';
 
 const testNote = Note.new({
   id: '1' as ID<NoteID>,
-  authorID: '3' as ID<AccountID>,
+  authorID: '3' as AccountID,
   content: 'Hello world',
   contentsWarningComment: '',
   createdAt: new Date('2023-09-10T00:00:00Z'),
@@ -21,7 +21,7 @@ const testNote = Note.new({
 });
 const deletedNote = Note.reconstruct({
   id: '2' as ID<NoteID>,
-  authorID: '3' as ID<AccountID>,
+  authorID: '3' as AccountID,
   content: 'Hello world',
   contentsWarningComment: '',
   createdAt: new Date('2023-09-10T00:00:00Z'),
@@ -33,7 +33,7 @@ const deletedNote = Note.reconstruct({
 });
 const frozenUserNote = Note.reconstruct({
   id: '5' as ID<NoteID>,
-  authorID: '4' as ID<AccountID>,
+  authorID: '4' as AccountID,
   content: 'Hello world',
   contentsWarningComment: '',
   createdAt: new Date('2023-09-10T00:00:00Z'),
@@ -44,7 +44,7 @@ const frozenUserNote = Note.reconstruct({
   updatedAt: Option.none(),
 });
 const testAccount = Account.reconstruct({
-  id: '3' as ID<AccountID>,
+  id: '3' as AccountID,
   bio: '',
   frozen: 'normal',
   mail: '',
@@ -59,7 +59,7 @@ const testAccount = Account.reconstruct({
   updatedAt: undefined,
 });
 const frozenAccount = Account.reconstruct({
-  id: '4' as ID<AccountID>,
+  id: '4' as AccountID,
   bio: '',
   frozen: 'frozen',
   mail: '',

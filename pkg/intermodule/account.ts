@@ -11,10 +11,9 @@ import {
   type AccountSilenced,
   type AccountStatus,
 } from '../accounts/model/account.js';
-import type { ID } from '../id/type.js';
 
 export interface PartialAccount {
-  id: ID<AccountID>;
+  id: AccountID;
   name: AccountName;
   nickname: string;
   bio: string;
@@ -29,9 +28,7 @@ export class AccountModule {
 
   constructor() {}
 
-  async fetchAccount(
-    id: ID<AccountID>,
-  ): Promise<Result.Result<Error, Account>> {
+  async fetchAccount(id: AccountID): Promise<Result.Result<Error, Account>> {
     const res = await this.client.accounts[':id'].$get({
       param: { id },
     });
@@ -46,7 +43,7 @@ export class AccountModule {
     }
 
     const account = Account.new({
-      id: body.id as ID<AccountID>,
+      id: body.id as AccountID,
       mail: body.email as string,
       name: body.name as AccountName,
       nickname: body.nickname,
@@ -63,7 +60,7 @@ export class AccountModule {
   }
 
   async fetchFollowings(
-    id: ID<AccountID>,
+    id: AccountID,
   ): Promise<Result.Result<Error, PartialAccount[]>> {
     const res = await this.client.accounts[':id'].following.$get({
       param: { id },
@@ -79,7 +76,7 @@ export class AccountModule {
     return Result.ok(
       body.map((v): PartialAccount => {
         return {
-          id: v.id as ID<AccountID>,
+          id: v.id as AccountID,
           name: v.name as AccountName,
           nickname: v.nickname,
           bio: v.bio,
@@ -89,7 +86,7 @@ export class AccountModule {
   }
 
   async fetchFollowers(
-    id: ID<AccountID>,
+    id: AccountID,
   ): Promise<Result.Result<Error, PartialAccount[]>> {
     const res = await this.client.accounts[':id'].follower.$get({
       param: { id },
@@ -105,7 +102,7 @@ export class AccountModule {
     return Result.ok(
       body.map((v): PartialAccount => {
         return {
-          id: v.id as ID<AccountID>,
+          id: v.id as AccountID,
           name: v.name as AccountName,
           nickname: v.nickname,
           bio: v.bio,

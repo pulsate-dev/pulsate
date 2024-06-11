@@ -1,7 +1,6 @@
 import { Ether, Result } from '@mikuroxina/mini-fn';
 
 import type { AccountID } from '../../accounts/model/account.js';
-import type { ID } from '../../id/type.js';
 import type { Note } from '../../notes/model/note.js';
 import {
   type FetchAccountTimelineFilter,
@@ -26,7 +25,7 @@ export class AccountTimelineService {
   }
 
   async handle(
-    targetId: ID<AccountID>,
+    targetId: AccountID,
     filter: FetchAccountTimelineFilter,
   ): Promise<Result.Result<Error, Note[]>> {
     const res = await this.timelineRepository.getAccountTimeline(

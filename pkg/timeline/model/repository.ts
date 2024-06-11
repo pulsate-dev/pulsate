@@ -5,7 +5,7 @@ import type { ID } from '../../id/type.js';
 import type { Note, NoteID } from '../../notes/model/note.js';
 
 export interface FetchAccountTimelineFilter {
-  id: ID<AccountID>;
+  id: AccountID;
   /** @default false */
   hasAttachment: boolean;
   /** @default false */
@@ -22,7 +22,7 @@ export interface TimelineRepository {
    * @param filter Filter for fetching notes
    * */
   getAccountTimeline(
-    accountId: ID<AccountID>,
+    accountId: AccountID,
     filter: FetchAccountTimelineFilter,
   ): Promise<Result.Result<Error, Note[]>>;
 }

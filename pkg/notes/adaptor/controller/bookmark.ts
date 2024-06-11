@@ -1,5 +1,5 @@
 import type { z } from '@hono/zod-openapi';
-import { Result, type Option } from '@mikuroxina/mini-fn';
+import { type Option, Result } from '@mikuroxina/mini-fn';
 
 import type { AccountID } from '../../../accounts/model/account.js';
 import type { ID } from '../../../id/type.js';
@@ -25,7 +25,7 @@ export class BookmarkController {
   > {
     const res = await this.createBookmarkService.handle(
       noteID as ID<NoteID>,
-      accountID as ID<AccountID>,
+      accountID as AccountID,
     );
 
     if (Result.isErr(res)) {
@@ -48,7 +48,7 @@ export class BookmarkController {
   ): Promise<Option.Option<Bookmark>> {
     const res = await this.fetchBookmarkService.fetchBookmarkByID(
       noteID as ID<NoteID>,
-      accountID as ID<AccountID>,
+      accountID as AccountID,
     );
 
     return res;
@@ -58,7 +58,7 @@ export class BookmarkController {
     accountID: string,
   ): Promise<Option.Option<Bookmark[]>> {
     const res = await this.fetchBookmarkService.fetchBookmarkByAccountID(
-      accountID as ID<AccountID>,
+      accountID as AccountID,
     );
 
     return res;
@@ -70,7 +70,7 @@ export class BookmarkController {
   ): Promise<Result.Result<Error, void>> {
     const res = await this.deleteBookmarkService.handle(
       noteID as ID<NoteID>,
-      accountID as ID<AccountID>,
+      accountID as AccountID,
     );
 
     return Result.map(() => undefined)(res);

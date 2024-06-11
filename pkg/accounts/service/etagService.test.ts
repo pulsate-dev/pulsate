@@ -1,7 +1,6 @@
 import { Option } from '@mikuroxina/mini-fn';
 import { afterEach, describe, expect, it } from 'vitest';
 
-import type { ID } from '../../id/type.js';
 import { InMemoryAccountRepository } from '../adaptor/repository/dummy.js';
 import { Account, type AccountID } from '../model/account.js';
 import { EtagService } from './etagService.js';
@@ -9,7 +8,7 @@ import { EtagService } from './etagService.js';
 const repository = new InMemoryAccountRepository();
 await repository.create(
   Account.new({
-    id: '1' as ID<AccountID>,
+    id: '1' as AccountID,
     name: '@john@example.com',
     mail: 'johndoe@example.com',
     nickname: 'John Doe',

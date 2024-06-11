@@ -17,7 +17,7 @@ export class RenoteService {
     originalNoteID: ID<NoteID>,
     content: string,
     contentsWarningComment: string,
-    authorID: ID<AccountID>,
+    authorID: AccountID,
     visibility: NoteVisibility,
   ): Promise<Result.Result<Error, Note>> {
     if (visibility === 'DIRECT') {
@@ -36,7 +36,7 @@ export class RenoteService {
     }
 
     const renote = Note.new({
-      id: Result.unwrap(id),
+      id: Result.unwrap(id) as ID<NoteID>,
       authorID: authorID,
       content: content,
       contentsWarningComment: contentsWarningComment,

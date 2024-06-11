@@ -9,7 +9,7 @@ import type { NoteID } from '../model/note.js';
 import { DeleteBookmarkService } from './deleteBookmark.js';
 
 const noteID = '1' as ID<NoteID>;
-const accountID = '1' as ID<AccountID>;
+const accountID = '1' as AccountID;
 
 const bookmarkRepository = new InMemoryBookmarkRepository([
   Bookmark.new({ noteID, accountID }),

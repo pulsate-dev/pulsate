@@ -1,7 +1,7 @@
 import { Result } from '@mikuroxina/mini-fn';
-import { describe, it, expect } from 'vitest';
+import { describe, expect, it } from 'vitest';
 
-import { IDSchema, type Clock, SnowflakeIDGenerator } from './mod.js';
+import { type Clock, IDSchema, SnowflakeIDGenerator } from './mod.js';
 
 class DummyClock implements Clock {
   now(): bigint {
@@ -25,7 +25,7 @@ describe('SnowflakeIDGenerator', () => {
   it('generate at the same time but do not output the same ID', () => {
     let oldID = '';
     for (let i = 0; i < 4095; i++) {
-      const newID = generator.generate();
+      const newID = generator.generate<string>();
 
       if (Result.isOk(newID)) {
         expect(newID[1]).not.toBe(oldID);

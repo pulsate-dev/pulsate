@@ -1,7 +1,6 @@
 import { Option } from '@mikuroxina/mini-fn';
 import { describe, expect, it } from 'vitest';
 
-import type { ID } from '../../id/type.js';
 import {
   InMemoryAccountFollowRepository,
   InMemoryAccountRepository,
@@ -13,7 +12,7 @@ import { UnfollowService } from './unfollow.js';
 const accountRepository = new InMemoryAccountRepository();
 await accountRepository.create(
   Account.reconstruct({
-    id: '1' as ID<AccountID>,
+    id: '1' as AccountID,
     name: '@johndoe@example.com',
     bio: '',
     mail: '',
@@ -30,7 +29,7 @@ await accountRepository.create(
 );
 await accountRepository.create(
   Account.reconstruct({
-    id: '2' as ID<AccountID>,
+    id: '2' as AccountID,
     name: '@testuser@example.com',
     bio: '',
     mail: '',
@@ -47,8 +46,8 @@ await accountRepository.create(
 );
 const repository = new InMemoryAccountFollowRepository([
   AccountFollow.new({
-    fromID: '1' as ID<AccountID>,
-    targetID: '2' as ID<AccountID>,
+    fromID: '1' as AccountID,
+    targetID: '2' as AccountID,
     createdAt: new Date(),
   }),
 ]);

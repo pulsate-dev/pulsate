@@ -16,7 +16,7 @@ export class CreateBookmarkService {
 
   async handle(
     noteID: ID<NoteID>,
-    accountID: ID<AccountID>,
+    accountID: AccountID,
   ): Promise<Result.Result<Error, Note>> {
     const note = await this.noteRepository.findByID(noteID);
     if (Option.isNone(note)) {

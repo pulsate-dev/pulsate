@@ -1,13 +1,12 @@
 import { Cat, Ether, Option, Result } from '@mikuroxina/mini-fn';
 
-import type { ID } from '../../id/type.js';
 import type { AccountID, AccountName } from '../model/account.js';
 import type { AccountFollow } from '../model/follow.js';
 import {
-  accountRepoSymbol,
-  followRepoSymbol,
   type AccountFollowRepository,
   type AccountRepository,
+  accountRepoSymbol,
+  followRepoSymbol,
 } from '../model/repository.js';
 
 export class FetchFollowService {
@@ -17,7 +16,7 @@ export class FetchFollowService {
   ) {}
 
   async fetchFollowingsByID(
-    id: ID<AccountID>,
+    id: AccountID,
   ): Promise<Result.Result<Error, AccountFollow[]>> {
     return this.accountFollowRepository.fetchAllFollowing(id);
   }
@@ -37,7 +36,7 @@ export class FetchFollowService {
   }
 
   async fetchFollowersByID(
-    id: ID<AccountID>,
+    id: AccountID,
   ): Promise<Result.Result<Error, AccountFollow[]>> {
     return this.accountFollowRepository.fetchAllFollowers(id);
   }

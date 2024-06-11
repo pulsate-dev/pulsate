@@ -11,7 +11,7 @@ export class FetchBookmarkService {
 
   async fetchBookmarkByID(
     noteID: ID<NoteID>,
-    accountID: ID<AccountID>,
+    accountID: AccountID,
   ): Promise<Option.Option<Bookmark>> {
     const bookmark = await this.bookmarkRepository.findByID({
       noteID,
@@ -25,7 +25,7 @@ export class FetchBookmarkService {
   }
 
   async fetchBookmarkByAccountID(
-    accountID: ID<AccountID>,
+    accountID: AccountID,
   ): Promise<Option.Option<Bookmark[]>> {
     const bookmarks = await this.bookmarkRepository.findByAccountID(accountID);
 

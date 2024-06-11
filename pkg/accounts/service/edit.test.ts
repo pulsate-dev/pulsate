@@ -1,7 +1,6 @@
 import { Option, Result } from '@mikuroxina/mini-fn';
 import { afterEach, beforeEach, describe, expect, it } from 'vitest';
 
-import type { ID } from '../../id/type.js';
 import { Argon2idPasswordEncoder } from '../../password/mod.js';
 import { InMemoryAccountRepository } from '../adaptor/repository/dummy.js';
 import { Account, type AccountID } from '../model/account.js';
@@ -20,7 +19,7 @@ describe('EditService', () => {
   beforeEach(async () => {
     await repository.create(
       Account.new({
-        id: '1' as ID<AccountID>,
+        id: '1' as AccountID,
         name: '@john@example.com',
         mail: 'johndoe@example.com',
         nickname: 'John Doe',

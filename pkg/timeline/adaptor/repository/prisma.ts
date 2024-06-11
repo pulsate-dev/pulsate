@@ -37,7 +37,7 @@ export class PrismaTimelineRepository implements TimelineRepository {
       return Note.reconstruct({
         id: v.id as ID<NoteID>,
         content: v.text,
-        authorID: v.authorId as ID<AccountID>,
+        authorID: v.authorId as AccountID,
         createdAt: v.createdAt,
         deletedAt: !v.deletedAt ? Option.none() : Option.some(v.deletedAt),
         contentsWarningComment: '',
@@ -53,7 +53,7 @@ export class PrismaTimelineRepository implements TimelineRepository {
   }
 
   async getAccountTimeline(
-    accountId: ID<AccountID>,
+    accountId: AccountID,
     filter: FetchAccountTimelineFilter,
   ): Promise<Result.Result<Error, Note[]>> {
     console.log(filter);

@@ -1,7 +1,6 @@
 import { Result } from '@mikuroxina/mini-fn';
 import { afterEach, describe, expect, it } from 'vitest';
 
-import type { ID } from '../../id/type.js';
 import { InMemoryAccountRepository } from '../adaptor/repository/dummy.js';
 import { Account, type AccountID } from '../model/account.js';
 import { FetchService } from './fetch.js';
@@ -9,7 +8,7 @@ import { FetchService } from './fetch.js';
 const repository = new InMemoryAccountRepository();
 await repository.create(
   Account.new({
-    id: '1' as ID<AccountID>,
+    id: '1' as AccountID,
     name: '@john@example.com',
     mail: 'johndoe@example.com',
     nickname: 'John Doe',
@@ -52,14 +51,14 @@ describe('FetchService', () => {
   });
 
   it('fetch account by ID', async () => {
-    const account = await fetchService.fetchAccountByID('1' as ID<AccountID>);
+    const account = await fetchService.fetchAccountByID('1' as AccountID);
     if (Result.isErr(account)) {
       return;
     }
 
     expect(account[1]).toStrictEqual(
       Account.new({
-        id: '1' as ID<AccountID>,
+        id: '1' as AccountID,
         name: '@john@example.com',
         mail: 'johndoe@example.com',
         nickname: 'John Doe',
@@ -76,7 +75,7 @@ describe('FetchService', () => {
 
   it("fetch account by ID doesn't exist", async () => {
     // `2` is not registered.
-    const account = await fetchService.fetchAccountByID('2' as ID<AccountID>);
+    const account = await fetchService.fetchAccountByID('2' as AccountID);
 
     expect(Result.isErr(account)).toBe(true);
   });

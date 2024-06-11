@@ -4,7 +4,7 @@ import type { NoteID } from './note.js';
 
 export interface CreateBookmarkArgs {
   noteID: ID<NoteID>;
-  accountID: ID<AccountID>;
+  accountID: AccountID;
 }
 
 export class Bookmark {
@@ -23,9 +23,9 @@ export class Bookmark {
     return this.noteID;
   }
 
-  private readonly accountID: ID<AccountID>;
+  private readonly accountID: AccountID;
 
-  getAccountID(): ID<AccountID> {
+  getAccountID(): AccountID {
     return this.accountID;
   }
 }
