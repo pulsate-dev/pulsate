@@ -51,6 +51,7 @@ export class TimelineController {
       ),
     );
 
+    // ToDo: N+1
     const accounts = accountData
       .filter((v) => Result.isOk(v))
       .map((v) => Result.unwrap(v));

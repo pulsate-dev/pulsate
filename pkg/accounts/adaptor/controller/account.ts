@@ -299,12 +299,10 @@ export class AccountController {
       id as ID<AccountID>,
     );
     if (Result.isErr(res)) {
-      return Result.err(res[1]);
+      return res;
     }
     const accounts = await Promise.all(
-      res[1].map(
-        async (v) => await this.fetchService.fetchAccountByID(v.getTargetID()),
-      ),
+      res[1].map((v) => this.fetchService.fetchAccountByID(v.getTargetID())),
     );
     return Result.ok(
       accounts
