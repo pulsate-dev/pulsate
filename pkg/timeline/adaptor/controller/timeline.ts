@@ -63,7 +63,7 @@ export class TimelineController {
       .filter((v) => accountsMap.has(v.getAuthorID()))
       .map((v) => {
         // NOTE: This variable is safe because it is filtered by the above filter
-        const account = accountsMap.get(v.getAuthorID());
+        const account = accountsMap.get(v.getAuthorID())!;
 
         return {
           id: v.getID(),
@@ -72,10 +72,10 @@ export class TimelineController {
           visibility: v.getVisibility(),
           created_at: v.getCreatedAt().toUTCString(),
           author: {
-            id: account!.getID(),
-            name: account!.getName(),
-            display_name: account!.getNickname(),
-            bio: account!.getBio(),
+            id: account.getID(),
+            name: account.getName(),
+            display_name: account.getNickname(),
+            bio: account.getBio(),
             avatar: '',
             header: '',
             followed_count: 0,
