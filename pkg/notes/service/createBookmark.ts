@@ -1,7 +1,6 @@
 import { Option, Result } from '@mikuroxina/mini-fn';
 
 import type { AccountID } from '../../accounts/model/account.js';
-import type { ID } from '../../id/type.js';
 import type { Note, NoteID } from '../model/note.js';
 import type {
   BookmarkRepository,
@@ -15,7 +14,7 @@ export class CreateBookmarkService {
   ) {}
 
   async handle(
-    noteID: ID<NoteID>,
+    noteID: NoteID,
     accountID: AccountID,
   ): Promise<Result.Result<Error, Note>> {
     const note = await this.noteRepository.findByID(noteID);

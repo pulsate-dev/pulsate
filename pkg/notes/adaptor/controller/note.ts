@@ -2,7 +2,6 @@ import { type z } from '@hono/zod-openapi';
 import { Option, Result } from '@mikuroxina/mini-fn';
 
 import type { AccountID } from '../../../accounts/model/account.js';
-import type { ID } from '../../../id/type.js';
 import type { AccountModule } from '../../../intermodule/account.js';
 import type { NoteID, NoteVisibility } from '../../model/note.js';
 import type { CreateService } from '../../service/create.js';
@@ -56,7 +55,7 @@ export class NoteController {
   async getNoteByID(
     noteID: string,
   ): Promise<Result.Result<Error, z.infer<typeof GetNoteResponseSchema>>> {
-    const res = await this.fetchService.fetchNoteByID(noteID as ID<NoteID>);
+    const res = await this.fetchService.fetchNoteByID(noteID as NoteID);
     if (Option.isNone(res)) {
       return Result.err(new Error('Note not found'));
     }
@@ -99,7 +98,7 @@ export class NoteController {
     contentsWarningComment: string,
   ): Promise<Result.Result<Error, z.infer<typeof RenoteResponseSchema>>> {
     const res = await this.renoteService.handle(
-      originalNoteID as ID<NoteID>,
+      originalNoteID as NoteID,
       content,
       contentsWarningComment,
       authorID as AccountID,

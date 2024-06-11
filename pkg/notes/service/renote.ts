@@ -2,7 +2,6 @@ import { Option, Result } from '@mikuroxina/mini-fn';
 
 import type { AccountID } from '../../accounts/model/account.js';
 import type { SnowflakeIDGenerator } from '../../id/mod.js';
-import type { ID } from '../../id/type.js';
 import type { NoteID, NoteVisibility } from '../model/note.js';
 import { Note } from '../model/note.js';
 import type { NoteRepository } from '../model/repository.js';
@@ -14,7 +13,7 @@ export class RenoteService {
   ) {}
 
   async handle(
-    originalNoteID: ID<NoteID>,
+    originalNoteID: NoteID,
     content: string,
     contentsWarningComment: string,
     authorID: AccountID,
@@ -30,13 +29,13 @@ export class RenoteService {
       return Result.err(new Error('Original note not found'));
     }
 
-    const id = this.idGenerator.generate<NoteID>();
+    const id = this.idGenerator.generate<Note>();
     if (Result.isErr(id)) {
       return id;
     }
 
     const renote = Note.new({
-      id: Result.unwrap(id) as ID<NoteID>,
+      id: Result.unwrap(id) as NoteID,
       authorID: authorID,
       content: content,
       contentsWarningComment: contentsWarningComment,

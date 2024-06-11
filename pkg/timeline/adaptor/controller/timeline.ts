@@ -5,8 +5,8 @@ import {
   type Account,
   type AccountID,
 } from '../../../accounts/model/account.js';
-import type { ID } from '../../../id/type.js';
 import type { AccountModule } from '../../../intermodule/account.js';
+import type { NoteID } from '../../../notes/model/note.js';
 import type { AccountTimelineService } from '../../service/account.js';
 import type { GetAccountTimelineResponseSchema } from '../validator/timeline.js';
 
@@ -36,7 +36,7 @@ export class TimelineController {
         id: fromId as AccountID,
         hasAttachment,
         noNsfw,
-        beforeId: beforeId as ID<string>,
+        beforeId: beforeId as NoteID,
       },
     );
     if (Result.isErr(res)) {

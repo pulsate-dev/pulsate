@@ -2,7 +2,6 @@ import { Option, Result } from '@mikuroxina/mini-fn';
 import { describe, expect, it } from 'vitest';
 
 import type { AccountID } from '../../accounts/model/account.js';
-import type { ID } from '../../id/type.js';
 import {
   InMemoryBookmarkRepository,
   InMemoryNoteRepository,
@@ -10,15 +9,15 @@ import {
 import { Note, type NoteID } from '../model/note.js';
 import { CreateBookmarkService } from './createBookmark.js';
 
-const noteID = 'noteID_1' as ID<NoteID>;
-const anotherNoteID = 'noteID_2' as ID<NoteID>;
+const noteID = 'noteID_1' as NoteID;
+const anotherNoteID = 'noteID_2' as NoteID;
 const accountID = 'accountID_1' as AccountID;
 const anotherAccountID = 'accountID_2' as AccountID;
 
 const bookmarkRepository = new InMemoryBookmarkRepository();
 const noteRepository = new InMemoryNoteRepository([
   Note.new({
-    id: 'noteID_1' as ID<NoteID>,
+    id: 'noteID_1' as NoteID,
     authorID: '3' as AccountID,
     content: 'Hello world',
     contentsWarningComment: '',
@@ -28,7 +27,7 @@ const noteRepository = new InMemoryNoteRepository([
     visibility: 'PUBLIC',
   }),
   Note.new({
-    id: 'noteID_2' as ID<NoteID>,
+    id: 'noteID_2' as NoteID,
     authorID: '3' as AccountID,
     content: 'Another note',
     contentsWarningComment: '',
@@ -64,7 +63,7 @@ describe('CreateBookmarkService', () => {
 
   it('fail when note not found', async () => {
     const res = await createBookmarkService.handle(
-      'note_notexist' as ID<NoteID>,
+      'note_notexist' as NoteID,
       accountID,
     );
     expect(Result.isErr(res)).toBe(true);

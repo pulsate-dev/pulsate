@@ -3,13 +3,12 @@ import { describe, expect, it, vi } from 'vitest';
 
 import type { AccountID } from '../../accounts/model/account.js';
 import { SnowflakeIDGenerator } from '../../id/mod.js';
-import type { ID } from '../../id/type.js';
 import { InMemoryNoteRepository } from '../adaptor/repository/dummy.js';
 import { Note, type NoteID } from '../model/note.js';
 import { RenoteService } from './renote.js';
 
 const originalNote = Note.new({
-  id: '2' as ID<NoteID>,
+  id: '2' as NoteID,
   authorID: '1' as AccountID,
   content: 'original note',
   contentsWarningComment: '',
@@ -29,7 +28,7 @@ const service = new RenoteService(
 describe('RenoteService', () => {
   it('should create renote', async () => {
     const renote = await service.handle(
-      '2' as ID<NoteID>,
+      '2' as NoteID,
       'renote',
       '',
       '1' as AccountID,
@@ -39,14 +38,14 @@ describe('RenoteService', () => {
     expect(Result.unwrap(renote).getContent()).toBe('renote');
     expect(Result.unwrap(renote).getCwComment()).toBe('');
     expect(Result.unwrap(renote).getOriginalNoteID()).toStrictEqual(
-      Option.some('2' as ID<NoteID>),
+      Option.some('2' as NoteID),
     );
     expect(Result.unwrap(renote).getVisibility()).toBe('PUBLIC');
   });
 
   it('should not create renote with DIRECT visibility', async () => {
     const res = await service.handle(
-      '2' as ID<NoteID>,
+      '2' as NoteID,
       'direct renote',
       '',
       '1' as AccountID,
@@ -58,7 +57,7 @@ describe('RenoteService', () => {
 
   it('if original note not found', async () => {
     const res = await service.handle(
-      '3' as ID<NoteID>,
+      '3' as NoteID,
       'renote',
       '',
       '1' as AccountID,
@@ -77,7 +76,7 @@ describe('RenoteService', () => {
     );
 
     const res = await dummyService.handle(
-      '3' as ID<NoteID>,
+      '3' as NoteID,
       'renote',
       '',
       '1' as AccountID,
@@ -93,7 +92,7 @@ describe('RenoteService', () => {
     );
 
     const res = await service.handle(
-      '2' as ID<NoteID>,
+      '2' as NoteID,
       'renote',
       '',
       '1' as AccountID,

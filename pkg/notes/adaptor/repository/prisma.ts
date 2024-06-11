@@ -3,7 +3,6 @@ import { type Prisma, type PrismaClient } from '@prisma/client';
 
 import type { AccountID } from '../../../accounts/model/account.js';
 import type { prismaClient } from '../../../adaptors/prisma.js';
-import type { ID } from '../../../id/type.js';
 import { Bookmark } from '../../model/bookmark.js';
 import { Note, type NoteID, type NoteVisibility } from '../../model/note.js';
 import type {
@@ -67,14 +66,14 @@ export class PrismaNoteRepository implements NoteRepository {
       }
     };
     return Note.reconstruct({
-      id: data.id as ID<NoteID>,
+      id: data.id as NoteID,
       content: data.text,
       authorID: data.authorId as AccountID,
       createdAt: data.createdAt,
       deletedAt: !data.deletedAt ? Option.none() : Option.some(data.deletedAt),
       contentsWarningComment: '',
       originalNoteID: !data.renoteId
-        ? Option.some(data.renoteId as ID<NoteID>)
+        ? Option.some(data.renoteId as NoteID)
         : Option.none(),
       // ToDo: add SendTo field to schema
       sendTo: Option.none(),
@@ -95,7 +94,7 @@ export class PrismaNoteRepository implements NoteRepository {
     return Result.ok(undefined);
   }
 
-  async deleteByID(id: ID<NoteID>): Promise<Result.Result<Error, void>> {
+  async deleteByID(id: NoteID): Promise<Result.Result<Error, void>> {
     try {
       // NOTE: logical delete
       await this.client.note.update({
@@ -135,7 +134,7 @@ export class PrismaNoteRepository implements NoteRepository {
     }
   }
 
-  async findByID(id: ID<NoteID>): Promise<Option.Option<Note>> {
+  async findByID(id: NoteID): Promise<Option.Option<Note>> {
     try {
       const res = await this.client.note.findUniqueOrThrow({
         where: {
@@ -155,7 +154,7 @@ export class PrismaBookmarkRepository implements BookmarkRepository {
   constructor(private readonly client: PrismaClient) {}
 
   async create(id: {
-    noteID: ID<NoteID>;
+    noteID: NoteID;
     accountID: AccountID;
   }): Promise<Result.Result<Error, void>> {
     try {
@@ -172,7 +171,7 @@ export class PrismaBookmarkRepository implements BookmarkRepository {
   }
 
   async deleteByID(id: {
-    noteID: ID<NoteID>;
+    noteID: NoteID;
     accountID: AccountID;
   }): Promise<Result.Result<Error, void>> {
     try {
@@ -204,7 +203,7 @@ export class PrismaBookmarkRepository implements BookmarkRepository {
       return Option.some(
         res.map((v) =>
           Bookmark.new({
-            noteID: v.noteId as ID<NoteID>,
+            noteID: v.noteId as NoteID,
             accountID: v.accountId as AccountID,
           }),
         ),
@@ -215,7 +214,7 @@ export class PrismaBookmarkRepository implements BookmarkRepository {
   }
 
   async findByID(id: {
-    noteID: ID<NoteID>;
+    noteID: NoteID;
     accountID: AccountID;
   }): Promise<Option.Option<Bookmark>> {
     try {
@@ -230,7 +229,7 @@ export class PrismaBookmarkRepository implements BookmarkRepository {
       });
       return Option.some(
         Bookmark.new({
-          noteID: res.noteId as ID<NoteID>,
+          noteID: res.noteId as NoteID,
           accountID: res.accountId as AccountID,
         }),
       );

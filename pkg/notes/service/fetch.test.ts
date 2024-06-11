@@ -3,14 +3,13 @@ import { afterEach, describe, expect, it, vi } from 'vitest';
 
 import { InMemoryAccountRepository } from '../../accounts/adaptor/repository/dummy.js';
 import { Account, type AccountID } from '../../accounts/model/account.js';
-import type { ID } from '../../id/type.js';
 import { AccountModule } from '../../intermodule/account.js';
 import { InMemoryNoteRepository } from '../adaptor/repository/dummy.js';
 import { Note, type NoteID } from '../model/note.js';
 import { FetchService } from './fetch.js';
 
 const testNote = Note.new({
-  id: '1' as ID<NoteID>,
+  id: '1' as NoteID,
   authorID: '3' as AccountID,
   content: 'Hello world',
   contentsWarningComment: '',
@@ -20,7 +19,7 @@ const testNote = Note.new({
   visibility: 'PUBLIC',
 });
 const deletedNote = Note.reconstruct({
-  id: '2' as ID<NoteID>,
+  id: '2' as NoteID,
   authorID: '3' as AccountID,
   content: 'Hello world',
   contentsWarningComment: '',
@@ -32,7 +31,7 @@ const deletedNote = Note.reconstruct({
   updatedAt: Option.none(),
 });
 const frozenUserNote = Note.reconstruct({
-  id: '5' as ID<NoteID>,
+  id: '5' as NoteID,
   authorID: '4' as AccountID,
   content: 'Hello world',
   contentsWarningComment: '',
@@ -93,14 +92,14 @@ describe('FetchService', () => {
     vi.spyOn(accountModule, 'fetchAccount').mockImplementation(async () => {
       return Result.ok(testAccount);
     });
-    const res = await service.fetchNoteByID('1' as ID<NoteID>);
+    const res = await service.fetchNoteByID('1' as NoteID);
 
     expect(Option.isSome(res)).toBe(true);
     expect(res[1]).toStrictEqual(testNote);
   });
 
   it('note not found', async () => {
-    const res = await service.fetchNoteByID('999' as ID<NoteID>);
+    const res = await service.fetchNoteByID('999' as NoteID);
 
     expect(Option.isNone(res)).toBe(true);
   });

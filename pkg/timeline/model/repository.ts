@@ -1,7 +1,6 @@
 import { Ether, type Result } from '@mikuroxina/mini-fn';
 
 import type { AccountID } from '../../accounts/model/account.js';
-import type { ID } from '../../id/type.js';
 import type { Note, NoteID } from '../../notes/model/note.js';
 
 export interface FetchAccountTimelineFilter {
@@ -12,7 +11,7 @@ export interface FetchAccountTimelineFilter {
   noNsfw: boolean;
   /** @default undefined
    *  @description if undefined, Retrieved from latest notes */
-  beforeId?: ID<NoteID>;
+  beforeId?: NoteID;
 }
 
 export interface TimelineRepository {

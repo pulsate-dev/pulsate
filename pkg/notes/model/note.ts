@@ -3,17 +3,17 @@ import { Option } from '@mikuroxina/mini-fn';
 import type { AccountID } from '../../accounts/model/account.js';
 import type { ID } from '../../id/type.js';
 
-export type NoteID = string;
+export type NoteID = ID<Note>;
 export type NoteVisibility = 'PUBLIC' | 'HOME' | 'FOLLOWERS' | 'DIRECT';
 
 export interface CreateNoteArgs {
-  id: ID<NoteID>;
+  id: NoteID;
   authorID: AccountID;
   content: string;
   visibility: NoteVisibility;
   contentsWarningComment: string;
   sendTo: Option.Option<AccountID>;
-  originalNoteID: Option.Option<ID<NoteID>>;
+  originalNoteID: Option.Option<NoteID>;
   createdAt: Date;
   updatedAt: Option.Option<Date>;
   deletedAt: Option.Option<Date>;
@@ -52,8 +52,8 @@ export class Note {
     return new Note(arg);
   }
 
-  private readonly id: ID<NoteID>;
-  getID(): ID<NoteID> {
+  private readonly id: NoteID;
+  getID(): NoteID {
     return this.id;
   }
 
@@ -82,8 +82,8 @@ export class Note {
     return this.sendTo;
   }
 
-  private readonly originalNoteID: Option.Option<ID<NoteID>>;
-  getOriginalNoteID(): Option.Option<ID<NoteID>> {
+  private readonly originalNoteID: Option.Option<NoteID>;
+  getOriginalNoteID(): Option.Option<NoteID> {
     return this.originalNoteID;
   }
 
