@@ -25,7 +25,7 @@ export class InMemoryTimelineRepository implements TimelineRepository {
 
     // ToDo: filter hasAttachment, noNSFW
     accountNotes.sort((a, b) =>
-      a.getCreatedAt().getTime() > b.getCreatedAt().getTime() ? 1 : -1,
+      a.getCreatedAt().getTime() > b.getCreatedAt().getTime() ? -1 : 1,
     );
     const beforeIndex = filter.beforeId
       ? accountNotes.findIndex((note) => note.getID() === filter.beforeId)
