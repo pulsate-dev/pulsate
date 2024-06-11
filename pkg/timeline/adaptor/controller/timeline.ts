@@ -42,13 +42,13 @@ export class TimelineController {
     if (Result.isErr(res)) {
       return res;
     }
+    const accountNotes = Result.unwrap(res);
+
     const accountIDSet = new Set<ID<AccountID>>(
-      res[1].map((v) => v.getAuthorID()),
+      accountNotes.map((v) => v.getAuthorID()),
     );
     const accountData = await Promise.all(
-      [...accountIDSet].map(
-        async (v) => await this.accountModule.fetchAccount(v),
-      ),
+      [...accountIDSet].map((v) => this.accountModule.fetchAccount(v)),
     );
 
     // ToDo: N+1
@@ -59,12 +59,12 @@ export class TimelineController {
       accounts.map((v) => [v.getID(), v]),
     );
 
-    try {
-      const result = res[1].map((v) => {
+    const result = accountNotes
+      .filter((v) => accountsMap.has(v.getAuthorID()))
+      .map((v) => {
+        // NOTE: This variable is safe because it is filtered by the above filter
         const account = accountsMap.get(v.getAuthorID());
-        if (!account) {
-          throw new Error('Account not found');
-        }
+
         return {
           id: v.getID(),
           content: v.getContent(),
@@ -72,10 +72,10 @@ export class TimelineController {
           visibility: v.getVisibility(),
           created_at: v.getCreatedAt().toUTCString(),
           author: {
-            id: account.getID(),
-            name: account.getName(),
-            display_name: account.getNickname(),
-            bio: account.getBio(),
+            id: account!.getID(),
+            name: account!.getName(),
+            display_name: account!.getNickname(),
+            bio: account!.getBio(),
             avatar: '',
             header: '',
             followed_count: 0,
@@ -84,9 +84,6 @@ export class TimelineController {
         };
       });
 
-      return Result.ok(result);
-    } catch (e) {
-      return Result.err(e as Error);
-    }
+    return Result.ok(result);
   }
 }

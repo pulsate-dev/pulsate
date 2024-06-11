@@ -11,7 +11,7 @@ import type {
 export class InMemoryTimelineRepository implements TimelineRepository {
   private readonly data: Set<Note>;
 
-  constructor(data: Note[] = []) {
+  constructor(data: readonly Note[] = []) {
     this.data = new Set<Note>(data);
   }
 
@@ -24,8 +24,8 @@ export class InMemoryTimelineRepository implements TimelineRepository {
     );
 
     // ToDo: filter hasAttachment, noNSFW
-    accountNotes.sort((a, b) =>
-      a.getCreatedAt().getTime() > b.getCreatedAt().getTime() ? -1 : 1,
+    accountNotes.sort(
+      (a, b) => b.getCreatedAt().getTime() - a.getCreatedAt().getTime(),
     );
     const beforeIndex = filter.beforeId
       ? accountNotes.findIndex((note) => note.getID() === filter.beforeId)
