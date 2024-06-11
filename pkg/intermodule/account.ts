@@ -13,6 +13,13 @@ import {
 } from '../accounts/model/account.js';
 import type { ID } from '../id/type.js';
 
+export interface PartialAccount {
+  id: ID<AccountID>;
+  name: AccountName;
+  nickname: string;
+  bio: string;
+}
+
 export class AccountModule {
   // NOTE: This is a temporary solution to use hono client
   // ToDo: base url should be configurable
@@ -53,5 +60,57 @@ export class AccountModule {
     });
 
     return Result.ok(account);
+  }
+
+  async fetchFollowings(
+    id: ID<AccountID>,
+  ): Promise<Result.Result<Error, PartialAccount[]>> {
+    const res = await this.client.accounts[':id'].following.$get({
+      param: { id },
+    });
+    if (!res.ok) {
+      return Result.err(new Error('Failed to fetch followings'));
+    }
+
+    const body = await res.json();
+    if ('error' in body) {
+      return Result.err(new Error(body.error));
+    }
+    return Result.ok(
+      body.map((v): PartialAccount => {
+        return {
+          id: v.id as ID<AccountID>,
+          name: v.name as AccountName,
+          nickname: v.nickname,
+          bio: v.bio,
+        };
+      }),
+    );
+  }
+
+  async fetchFollowers(
+    id: ID<AccountID>,
+  ): Promise<Result.Result<Error, PartialAccount[]>> {
+    const res = await this.client.accounts[':id'].follower.$get({
+      param: { id },
+    });
+    if (!res.ok) {
+      return Result.err(new Error('Failed to fetch followers'));
+    }
+
+    const body = await res.json();
+    if ('error' in body) {
+      return Result.err(new Error(body.error));
+    }
+    return Result.ok(
+      body.map((v): PartialAccount => {
+        return {
+          id: v.id as ID<AccountID>,
+          name: v.name as AccountName,
+          nickname: v.nickname,
+          bio: v.bio,
+        };
+      }),
+    );
   }
 }

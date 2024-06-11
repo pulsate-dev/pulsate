@@ -6,6 +6,7 @@ import { type AccountID, type AccountName } from '../../model/account.js';
 import type { AuthenticateService } from '../../service/authenticate.js';
 import type { EditService } from '../../service/edit.js';
 import type { FetchService } from '../../service/fetch.js';
+import type { FetchFollowService } from '../../service/fetchFollow.js';
 import type { FollowService } from '../../service/follow.js';
 import type { FreezeService } from '../../service/freeze.js';
 import type { RegisterService } from '../../service/register.js';
@@ -15,6 +16,8 @@ import { type UnfollowService } from '../../service/unfollow.js';
 import type { VerifyAccountTokenService } from '../../service/verifyToken.js';
 import {
   type CreateAccountResponseSchema,
+  type GetAccountFollowerSchema,
+  type GetAccountFollowingSchema,
   type GetAccountResponseSchema,
   type LoginResponseSchema,
   type UpdateAccountResponseSchema,
@@ -30,6 +33,7 @@ export class AccountController {
   private readonly silenceService: SilenceService;
   private readonly followService: FollowService;
   private readonly unFollowService: UnfollowService;
+  private readonly fetchFollowService: FetchFollowService;
   private readonly resendTokenService: ResendVerifyTokenService;
 
   constructor(args: {
@@ -42,6 +46,7 @@ export class AccountController {
     silenceService: SilenceService;
     followService: FollowService;
     unFollowService: UnfollowService;
+    fetchFollowService: FetchFollowService;
     resendTokenService: ResendVerifyTokenService;
   }) {
     this.registerService = args.registerService;
@@ -53,6 +58,7 @@ export class AccountController {
     this.silenceService = args.silenceService;
     this.followService = args.followService;
     this.unFollowService = args.unFollowService;
+    this.fetchFollowService = args.fetchFollowService;
     this.resendTokenService = args.resendTokenService;
   }
 
@@ -284,5 +290,87 @@ export class AccountController {
     }
 
     return Result.ok(undefined);
+  }
+
+  async fetchFollowing(
+    id: string,
+  ): Promise<Result.Result<Error, z.infer<typeof GetAccountFollowingSchema>>> {
+    const res = await this.fetchFollowService.fetchFollowingsByID(
+      id as ID<AccountID>,
+    );
+    if (Result.isErr(res)) {
+      return res;
+    }
+    const accounts = await Promise.all(
+      res[1].map((v) => this.fetchService.fetchAccountByID(v.getTargetID())),
+    );
+    return Result.ok(
+      accounts
+        .filter((v) => Result.isOk(v))
+        .map((v) => {
+          const unwrapped = Result.unwrap(v);
+          // ToDo: make optional some fields
+          return {
+            id: unwrapped.getID(),
+            email: unwrapped.getMail(),
+            name: unwrapped.getName(),
+            nickname: unwrapped.getNickname(),
+            bio: unwrapped.getBio(),
+            // ToDo: fill the following fields
+            avatar: '',
+            header: '',
+            followed_count: 0,
+            following_count: 0,
+            note_count: 0,
+            created_at: unwrapped.getCreatedAt(),
+            role: unwrapped.getRole(),
+            frozen: unwrapped.getFrozen(),
+            status: unwrapped.getStatus(),
+            silenced: unwrapped.getSilenced(),
+          };
+        }),
+    );
+  }
+
+  async fetchFollower(
+    id: string,
+  ): Promise<Result.Result<Error, z.infer<typeof GetAccountFollowerSchema>>> {
+    const res = await this.fetchFollowService.fetchFollowersByID(
+      id as ID<AccountID>,
+    );
+    if (Result.isErr(res)) {
+      return Result.err(res[1]);
+    }
+    const accounts = await Promise.all(
+      res[1].map(
+        async (v) => await this.fetchService.fetchAccountByID(v.getFromID()),
+      ),
+    );
+    return Result.ok(
+      accounts
+        .filter((v) => Result.isOk(v))
+        .map((v) => {
+          const unwrapped = Result.unwrap(v);
+          // ToDo: make optional some fields
+          return {
+            id: unwrapped.getID(),
+            email: unwrapped.getMail(),
+            name: unwrapped.getName(),
+            nickname: unwrapped.getNickname(),
+            bio: unwrapped.getBio(),
+            // ToDo: fill the following fields
+            avatar: '',
+            header: '',
+            followed_count: 0,
+            following_count: 0,
+            note_count: 0,
+            created_at: unwrapped.getCreatedAt(),
+            role: unwrapped.getRole(),
+            frozen: unwrapped.getFrozen(),
+            status: unwrapped.getStatus(),
+            silenced: unwrapped.getSilenced(),
+          };
+        }),
+    );
   }
 }

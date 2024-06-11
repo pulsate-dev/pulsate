@@ -257,3 +257,10 @@ export const GetAccountResponseSchema = z
 export const FollowAccountResponseSchema = z
   .object({})
   .openapi('FollowAccountResponse');
+
+export const GetAccountFollowingSchema = z
+  .array(GetAccountResponseSchema)
+  .openapi('GetAccountFollowingResponse');
+export const GetAccountFollowerSchema = z
+  .array(GetAccountResponseSchema)
+  .openapi('GetAccountFollowerResponse');

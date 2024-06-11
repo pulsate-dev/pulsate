@@ -5,6 +5,7 @@ import {
   CreateAccountRequestSchema,
   CreateAccountResponseSchema,
   FollowAccountResponseSchema,
+  GetAccountFollowingSchema,
   GetAccountResponseSchema,
   LoginRequestSchema,
   LoginResponseSchema,
@@ -576,6 +577,71 @@ export const UnFollowAccountRoute = createRoute({
       content: {
         'application/json': {
           schema: CommonErrorResponseSchema,
+        },
+      },
+    },
+    404: {
+      description: 'Not Found',
+      content: {
+        'application/json': {
+          schema: CommonErrorResponseSchema,
+        },
+      },
+    },
+  },
+});
+
+export const GetAccountFollowingRoute = createRoute({
+  method: 'get',
+  tags: ['accounts'],
+  path: '/accounts/:id/following',
+  request: {
+    params: z.object({
+      id: z.string().min(3).max(64).openapi({
+        example: 'example_man',
+        description:
+          'Characters must be [A-Za-z0-9-.] The first and last characters must be [A-Za-z0-9-.]',
+      }),
+    }),
+  },
+  responses: {
+    200: {
+      description: 'OK',
+      content: {
+        'application/json': {
+          schema: GetAccountFollowingSchema,
+        },
+      },
+    },
+    404: {
+      description: 'Not Found',
+      content: {
+        'application/json': {
+          schema: CommonErrorResponseSchema,
+        },
+      },
+    },
+  },
+});
+export const GetAccountFollowerRoute = createRoute({
+  method: 'get',
+  tags: ['accounts'],
+  path: '/accounts/:id/follower',
+  request: {
+    params: z.object({
+      id: z.string().min(3).max(64).openapi({
+        example: 'example_man',
+        description:
+          'Characters must be [A-Za-z0-9-.] The first and last characters must be [A-Za-z0-9-.]',
+      }),
+    }),
+  },
+  responses: {
+    200: {
+      description: 'OK',
+      content: {
+        'application/json': {
+          schema: GetAccountFollowingSchema,
         },
       },
     },
