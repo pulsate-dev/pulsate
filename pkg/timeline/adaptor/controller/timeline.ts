@@ -52,9 +52,7 @@ export class TimelineController {
     );
 
     // ToDo: N+1
-    const accounts = accountData
-      .filter((v) => Result.isOk(v))
-      .map((v) => Result.unwrap(v));
+    const accounts = accountData.filter(Result.isOk).map(Result.unwrap);
     const accountsMap = new Map<ID<AccountID>, Account>(
       accounts.map((v) => [v.getID(), v]),
     );

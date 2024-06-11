@@ -5,9 +5,10 @@ import { cors } from 'hono/cors';
 
 import { accounts } from './pkg/accounts/mod.js';
 import { noteHandlers } from './pkg/notes/mod.js';
+import { timeline } from './pkg/timeline/mod.js';
 
 export const app = new Hono().get('/doc', async (c) => {
-  const modulePath: string[] = ['accounts', 'notes'];
+  const modulePath: string[] = ['accounts', 'notes', 'timeline'];
   const basePath = 'http://localhost:3000/';
   const openAPIBase = {
     openapi: '3.0.0',
@@ -63,6 +64,7 @@ All routes must be "/"
  */
 app.route('/', noteHandlers);
 app.route('/', accounts);
+app.route('/', timeline);
 
 app.get(
   '/reference',
@@ -71,6 +73,7 @@ app.get(
     spec: {
       url: '/doc',
     },
+    theme: 'bluePlanet',
   }),
 );
 
