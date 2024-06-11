@@ -10,7 +10,6 @@ import {
 } from '../../password/mod.js';
 import {
   Account,
-  type AccountID,
   type AccountName,
   type AccountRole,
 } from '../model/account.js';
@@ -71,7 +70,7 @@ export class RegisterService {
     }
     const passphraseHash =
       await this.passwordEncoder.encodePassword(passphrase);
-    const generatedID = this.snowflakeIDGenerator.generate<AccountID>();
+    const generatedID = this.snowflakeIDGenerator.generate<Account>();
     if (Result.isErr(generatedID)) {
       return Result.err(generatedID[1]);
     }

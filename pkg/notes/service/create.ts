@@ -20,8 +20,7 @@ export class CreateService {
     }
     try {
       const note = Note.new({
-        // ToDo: Replace here
-        id: id[1] as ID<(typeof id)[1]>,
+        id: id[1] as ID<NoteID>,
         content: content,
         contentsWarningComment: contentsWarningComment,
         createdAt: new Date(),

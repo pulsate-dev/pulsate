@@ -36,7 +36,7 @@ export class RenoteService {
     }
 
     const renote = Note.new({
-      id: Result.unwrap(id) as ID<(typeof id)[1]>,
+      id: Result.unwrap(id) as ID<NoteID>,
       authorID: authorID,
       content: content,
       contentsWarningComment: contentsWarningComment,
