@@ -2,7 +2,6 @@ import { Option, Result } from '@mikuroxina/mini-fn';
 import { describe, expect, it, vi } from 'vitest';
 
 import { Account, type AccountID } from '../../accounts/model/account.js';
-import type { ID } from '../../id/type.js';
 import {
   AccountModule,
   type PartialAccount,
@@ -17,7 +16,7 @@ describe('AccountTimelineService', () => {
   const noteVisibilityService = new NoteVisibilityService(accountModule);
 
   const dummyPublicNote = Note.new({
-    id: '1' as ID<NoteID>,
+    id: '1' as NoteID,
     authorID: '100' as AccountID,
     content: 'Hello world',
     contentsWarningComment: '',
@@ -27,7 +26,7 @@ describe('AccountTimelineService', () => {
     visibility: 'PUBLIC',
   });
   const dummyHomeNote = Note.new({
-    id: '2' as ID<NoteID>,
+    id: '2' as NoteID,
     authorID: '100' as AccountID,
     content: 'Hello world to Home',
     contentsWarningComment: '',
@@ -37,7 +36,7 @@ describe('AccountTimelineService', () => {
     visibility: 'HOME',
   });
   const dummyFollowersNote = Note.new({
-    id: '3' as ID<NoteID>,
+    id: '3' as NoteID,
     authorID: '100' as AccountID,
     content: 'Hello world to followers',
     contentsWarningComment: '',
@@ -47,7 +46,7 @@ describe('AccountTimelineService', () => {
     visibility: 'FOLLOWERS',
   });
   const dummyDirectNote = Note.new({
-    id: '4' as ID<NoteID>,
+    id: '4' as NoteID,
     authorID: '100' as AccountID,
     content: 'Hello world to direct',
     contentsWarningComment: '',

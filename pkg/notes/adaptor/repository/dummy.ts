@@ -1,7 +1,6 @@
 import { Option, Result } from '@mikuroxina/mini-fn';
 
 import type { AccountID } from '../../../accounts/model/account.js';
-import type { ID } from '../../../id/type.js';
 import { Bookmark } from '../../model/bookmark.js';
 import { type Note, type NoteID } from '../../model/note.js';
 import type {
@@ -10,7 +9,7 @@ import type {
 } from '../../model/repository.js';
 
 export class InMemoryNoteRepository implements NoteRepository {
-  private readonly notes: Map<ID<NoteID>, Note>;
+  private readonly notes: Map<NoteID, Note>;
 
   constructor(notes: Note[] = []) {
     this.notes = new Map(notes.map((note) => [note.getID(), note]));
@@ -21,7 +20,7 @@ export class InMemoryNoteRepository implements NoteRepository {
     return Result.ok(undefined);
   }
 
-  async deleteByID(id: ID<NoteID>): Promise<Result.Result<Error, void>> {
+  async deleteByID(id: NoteID): Promise<Result.Result<Error, void>> {
     const target = await this.findByID(id);
     if (Option.isNone(target)) {
       return Result.err(new Error('note not found'));
@@ -50,7 +49,7 @@ export class InMemoryNoteRepository implements NoteRepository {
     );
   }
 
-  findByID(id: ID<NoteID>): Promise<Option.Option<Note>> {
+  findByID(id: NoteID): Promise<Option.Option<Note>> {
     const res = this.notes.get(id);
     if (!res) {
       return Promise.resolve(Option.none());
@@ -60,12 +59,9 @@ export class InMemoryNoteRepository implements NoteRepository {
 }
 
 export class InMemoryBookmarkRepository implements BookmarkRepository {
-  private readonly bookmarks: Map<[ID<NoteID>, AccountID], Bookmark>;
+  private readonly bookmarks: Map<[NoteID, AccountID], Bookmark>;
 
-  private equalID(
-    a: [ID<NoteID>, AccountID],
-    b: [ID<NoteID>, AccountID],
-  ): boolean {
+  private equalID(a: [NoteID, AccountID], b: [NoteID, AccountID]): boolean {
     return a[0] === b[0] && a[1] === b[1];
   }
 
@@ -79,7 +75,7 @@ export class InMemoryBookmarkRepository implements BookmarkRepository {
   }
 
   async create(id: {
-    noteID: ID<NoteID>;
+    noteID: NoteID;
     accountID: AccountID;
   }): Promise<Result.Result<Error, void>> {
     const bookmark = Bookmark.new(id);
@@ -88,7 +84,7 @@ export class InMemoryBookmarkRepository implements BookmarkRepository {
   }
 
   async deleteByID(id: {
-    noteID: ID<NoteID>;
+    noteID: NoteID;
     accountID: AccountID;
   }): Promise<Result.Result<Error, void>> {
     const key = Array.from(this.bookmarks.keys()).find((k) =>
@@ -104,7 +100,7 @@ export class InMemoryBookmarkRepository implements BookmarkRepository {
   }
 
   async findByID(id: {
-    noteID: ID<NoteID>;
+    noteID: NoteID;
     accountID: AccountID;
   }): Promise<Option.Option<Bookmark>> {
     const bookmark = Array.from(this.bookmarks.entries()).find((v) =>

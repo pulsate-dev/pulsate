@@ -2,7 +2,6 @@ import { Option, Result } from '@mikuroxina/mini-fn';
 import type { Prisma, PrismaClient } from '@prisma/client';
 
 import type { AccountID } from '../../../accounts/model/account.js';
-import type { ID } from '../../../id/type.js';
 import {
   Note,
   type NoteID,
@@ -35,14 +34,14 @@ export class PrismaTimelineRepository implements TimelineRepository {
         }
       };
       return Note.reconstruct({
-        id: v.id as ID<NoteID>,
+        id: v.id as NoteID,
         content: v.text,
         authorID: v.authorId as AccountID,
         createdAt: v.createdAt,
         deletedAt: !v.deletedAt ? Option.none() : Option.some(v.deletedAt),
         contentsWarningComment: '',
         originalNoteID: !v.renoteId
-          ? Option.some(v.renoteId as ID<NoteID>)
+          ? Option.some(v.renoteId as NoteID)
           : Option.none(),
         // ToDo: add SendTo field to db schema
         sendTo: Option.none(),

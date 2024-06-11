@@ -1,6 +1,5 @@
 import { Option, Result } from '@mikuroxina/mini-fn';
 
-import type { ID } from '../../id/type.js';
 import type { AccountModule } from '../../intermodule/account.js';
 import { type Note, type NoteID } from '../model/note.js';
 import type { NoteRepository } from '../model/repository.js';
@@ -11,7 +10,7 @@ export class FetchService {
     private readonly accountModule: AccountModule,
   ) {}
 
-  async fetchNoteByID(noteID: ID<NoteID>): Promise<Option.Option<Note>> {
+  async fetchNoteByID(noteID: NoteID): Promise<Option.Option<Note>> {
     const note = await this.noteRepository.findByID(noteID);
     if (Option.isNone(note)) {
       return Option.none();

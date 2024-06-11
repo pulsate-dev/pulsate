@@ -2,7 +2,6 @@ import { Option } from '@mikuroxina/mini-fn';
 import { describe, expect, it } from 'vitest';
 
 import type { AccountID } from '../../accounts/model/account.js';
-import type { ID } from '../../id/type.js';
 import { InMemoryBookmarkRepository } from '../adaptor/repository/dummy.js';
 import { Bookmark } from '../model/bookmark.js';
 import type { NoteID } from '../model/note.js';
@@ -10,15 +9,15 @@ import { FetchBookmarkService } from './fetchBookmark.js';
 
 const bookmarkRepository = new InMemoryBookmarkRepository([
   Bookmark.new({
-    noteID: '1' as ID<NoteID>,
+    noteID: '1' as NoteID,
     accountID: '10' as AccountID,
   }),
   Bookmark.new({
-    noteID: '2' as ID<NoteID>,
+    noteID: '2' as NoteID,
     accountID: '10' as AccountID,
   }),
   Bookmark.new({
-    noteID: '2' as ID<NoteID>,
+    noteID: '2' as NoteID,
     accountID: '20' as AccountID,
   }),
 ]);
@@ -27,7 +26,7 @@ const fetchBookmarkService = new FetchBookmarkService(bookmarkRepository);
 describe('FetchBookmarkService', () => {
   it('should fetch bookmark', async () => {
     const res = await fetchBookmarkService.fetchBookmarkByID(
-      '1' as ID<NoteID>,
+      '1' as NoteID,
       '10' as AccountID,
     );
     expect(Option.isSome(res)).toBe(true);
@@ -43,7 +42,7 @@ describe('FetchBookmarkService', () => {
 
   it('bookmark not found', async () => {
     const res = await fetchBookmarkService.fetchBookmarkByID(
-      '42' as ID<NoteID>,
+      '42' as NoteID,
       '10' as AccountID,
     );
     expect(Option.isNone(res)).toBe(true);
