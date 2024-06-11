@@ -1,4 +1,3 @@
-import type { ID } from '../../id/type.js';
 import {
   Account,
   type AccountID,
@@ -7,7 +6,7 @@ import {
 } from './account.js';
 
 export interface CreateInactiveAccountArgs {
-  id: ID<AccountID>;
+  id: AccountID;
   name: AccountName;
   mail: string;
 }
@@ -39,7 +38,7 @@ export class InactiveAccount {
     return this.activated;
   }
 
-  private readonly id: ID<AccountID>;
+  private readonly id: AccountID;
   getID(): string {
     return this.id;
   }

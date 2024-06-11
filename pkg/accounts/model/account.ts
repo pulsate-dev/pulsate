@@ -9,7 +9,7 @@ import {
   AccountNickNameLengthError,
 } from './account.errors.js';
 
-export type AccountID = string;
+export type AccountID = ID<Account>;
 export type AccountName = `@${string}@${string}`;
 export type AccountRole = 'admin' | 'normal' | 'moderator';
 export type AccountStatus = 'active' | 'notActivated';
@@ -59,7 +59,7 @@ export const AccountNameSchema = z
   .transform((s) => s as AccountName);
 
 export interface CreateAccountArgs {
-  id: ID<AccountID>;
+  id: AccountID;
   name: AccountName;
   mail: string;
   nickname: string;
@@ -92,8 +92,8 @@ export class Account {
   }
 
   // 不変
-  private readonly id: ID<AccountID>;
-  getID(): ID<AccountID> {
+  private readonly id: AccountID;
+  getID(): AccountID {
     return this.id;
   }
 

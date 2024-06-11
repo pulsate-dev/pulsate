@@ -1,13 +1,12 @@
 import { Ether, Option, Result } from '@mikuroxina/mini-fn';
 
 import type { AccountID } from '../../accounts/model/account.js';
-import type { ID } from '../../id/type.js';
 import { type AccountModule } from '../../intermodule/account.js';
 import type { Note } from '../../notes/model/note.js';
 
 export interface NoteVisibilityCheckArgs {
   // account id of the user who is trying to see the note
-  accountID: ID<AccountID>;
+  accountID: AccountID;
   note: Note;
 }
 

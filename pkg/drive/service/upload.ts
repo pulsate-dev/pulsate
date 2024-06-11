@@ -57,7 +57,7 @@ export class UploadMediaService {
     );
 
     const medium = Medium.new({
-      id: id[1],
+      id: id[1] as ID<(typeof id)[1]>,
       name: args.name,
       authorId: args.authorId,
       nsfw: args.nsfw,

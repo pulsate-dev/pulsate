@@ -1,7 +1,6 @@
 import { type z } from '@hono/zod-openapi';
 import { Option, Result } from '@mikuroxina/mini-fn';
 
-import type { ID } from '../../../id/type.js';
 import { type AccountID, type AccountName } from '../../model/account.js';
 import type { AuthenticateService } from '../../service/authenticate.js';
 import type { EditService } from '../../service/edit.js';
@@ -191,7 +190,7 @@ export class AccountController {
   async getAccount(
     id: string,
   ): Promise<Result.Result<Error, z.infer<typeof GetAccountResponseSchema>>> {
-    const res = await this.fetchService.fetchAccountByID(id as ID<AccountID>);
+    const res = await this.fetchService.fetchAccountByID(id as AccountID);
     if (Result.isErr(res)) {
       return res;
     }
@@ -296,7 +295,7 @@ export class AccountController {
     id: string,
   ): Promise<Result.Result<Error, z.infer<typeof GetAccountFollowingSchema>>> {
     const res = await this.fetchFollowService.fetchFollowingsByID(
-      id as ID<AccountID>,
+      id as AccountID,
     );
     if (Result.isErr(res)) {
       return res;
@@ -336,7 +335,7 @@ export class AccountController {
     id: string,
   ): Promise<Result.Result<Error, z.infer<typeof GetAccountFollowerSchema>>> {
     const res = await this.fetchFollowService.fetchFollowersByID(
-      id as ID<AccountID>,
+      id as AccountID,
     );
     if (Result.isErr(res)) {
       return Result.err(res[1]);

@@ -18,7 +18,7 @@ describe('AccountTimelineService', () => {
 
   const dummyPublicNote = Note.new({
     id: '1' as ID<NoteID>,
-    authorID: '100' as ID<AccountID>,
+    authorID: '100' as AccountID,
     content: 'Hello world',
     contentsWarningComment: '',
     createdAt: new Date(),
@@ -28,7 +28,7 @@ describe('AccountTimelineService', () => {
   });
   const dummyHomeNote = Note.new({
     id: '2' as ID<NoteID>,
-    authorID: '100' as ID<AccountID>,
+    authorID: '100' as AccountID,
     content: 'Hello world to Home',
     contentsWarningComment: '',
     createdAt: new Date(),
@@ -38,7 +38,7 @@ describe('AccountTimelineService', () => {
   });
   const dummyFollowersNote = Note.new({
     id: '3' as ID<NoteID>,
-    authorID: '100' as ID<AccountID>,
+    authorID: '100' as AccountID,
     content: 'Hello world to followers',
     contentsWarningComment: '',
     createdAt: new Date(),
@@ -48,16 +48,16 @@ describe('AccountTimelineService', () => {
   });
   const dummyDirectNote = Note.new({
     id: '4' as ID<NoteID>,
-    authorID: '100' as ID<AccountID>,
+    authorID: '100' as AccountID,
     content: 'Hello world to direct',
     contentsWarningComment: '',
     createdAt: new Date(),
     originalNoteID: Option.none(),
-    sendTo: Option.some('101' as ID<AccountID>),
+    sendTo: Option.some('101' as AccountID),
     visibility: 'DIRECT',
   });
   const dummyAccount1 = Account.new({
-    id: '101' as ID<AccountID>,
+    id: '101' as AccountID,
     bio: 'this is test user',
     mail: 'john@example.com',
     name: '@john@example.com',
@@ -91,8 +91,8 @@ describe('AccountTimelineService', () => {
     vi.spyOn(accountModule, 'fetchFollowers').mockImplementation(async () => {
       return Result.ok([partialAccount1]);
     });
-    const res = await accountTimelineService.handle('100' as ID<AccountID>, {
-      id: '101' as ID<AccountID>,
+    const res = await accountTimelineService.handle('100' as AccountID, {
+      id: '101' as AccountID,
       hasAttachment: false,
       noNsfw: false,
     });
@@ -109,8 +109,8 @@ describe('AccountTimelineService', () => {
     vi.spyOn(accountModule, 'fetchFollowers').mockImplementation(async () => {
       return Result.ok([partialAccount1]);
     });
-    const res = await accountTimelineService.handle('100' as ID<AccountID>, {
-      id: '0' as ID<AccountID>,
+    const res = await accountTimelineService.handle('100' as AccountID, {
+      id: '0' as AccountID,
       hasAttachment: false,
       noNsfw: false,
     });

@@ -3,7 +3,6 @@ import { describe, expect, it } from 'vitest';
 
 import type { AccountID } from '../../accounts/model/account.js';
 import { SnowflakeIDGenerator } from '../../id/mod.js';
-import type { ID } from '../../id/type.js';
 import { InMemoryNoteRepository } from '../adaptor/repository/dummy.js';
 import { CreateService } from './create.js';
 
@@ -21,7 +20,7 @@ describe('CreateService', () => {
       'Hello world',
       '',
       Option.none(),
-      '1' as ID<AccountID>,
+      '1' as AccountID,
       'PUBLIC',
     );
 
@@ -33,7 +32,7 @@ describe('CreateService', () => {
       'a'.repeat(3001),
       '',
       Option.none(),
-      '1' as ID<AccountID>,
+      '1' as AccountID,
       'PUBLIC',
     );
 
@@ -45,7 +44,7 @@ describe('CreateService', () => {
       'Hello world',
       '',
       Option.none(),
-      '1' as ID<AccountID>,
+      '1' as AccountID,
       'DIRECT',
     );
 

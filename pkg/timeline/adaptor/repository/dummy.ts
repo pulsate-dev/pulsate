@@ -1,7 +1,6 @@
 import { Result } from '@mikuroxina/mini-fn';
 
 import type { AccountID } from '../../../accounts/model/account.js';
-import type { ID } from '../../../id/type.js';
 import type { Note } from '../../../notes/model/note.js';
 import type {
   FetchAccountTimelineFilter,
@@ -16,7 +15,7 @@ export class InMemoryTimelineRepository implements TimelineRepository {
   }
 
   async getAccountTimeline(
-    accountId: ID<AccountID>,
+    accountId: AccountID,
     filter: FetchAccountTimelineFilter,
   ): Promise<Result.Result<Error, Note[]>> {
     const accountNotes = [...this.data].filter(

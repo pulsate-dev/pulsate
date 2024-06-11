@@ -2,7 +2,6 @@ import { Option } from '@mikuroxina/mini-fn';
 import { afterEach, describe, expect, it } from 'vitest';
 
 import { MockClock } from '../../id/mod.js';
-import { type ID } from '../../id/type.js';
 import {
   InMemoryAccountRepository,
   InMemoryAccountVerifyTokenRepository,
@@ -15,7 +14,7 @@ import { VerifyAccountTokenService } from './verifyToken.js';
 const repository = new InMemoryAccountRepository();
 await repository.create(
   Account.new({
-    id: '1' as ID<AccountID>,
+    id: '1' as AccountID,
     name: '@john@example.com',
     mail: 'johndoe@example.com',
     nickname: 'John Doe',
@@ -32,7 +31,7 @@ const verifyRepository = new InMemoryAccountVerifyTokenRepository();
 const accountRepository = new InMemoryAccountRepository();
 await accountRepository.create(
   Account.reconstruct({
-    id: '1' as ID<AccountID>,
+    id: '1' as AccountID,
     name: '@john@example.com',
     bio: '',
     frozen: 'normal',

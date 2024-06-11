@@ -1,11 +1,10 @@
 import { Option } from '@mikuroxina/mini-fn';
 
-import type { ID } from '../../id/type.js';
 import type { AccountID } from './account.js';
 
 export interface CreateAccountFollowArgs {
-  fromID: ID<AccountID>;
-  targetID: ID<AccountID>;
+  fromID: AccountID;
+  targetID: AccountID;
   createdAt: Date;
   deletedAt?: Date;
 }
@@ -41,15 +40,15 @@ export class AccountFollow {
     return new AccountFollow(args);
   }
 
-  private readonly fromID: ID<AccountID>;
+  private readonly fromID: AccountID;
 
-  public getFromID(): ID<AccountID> {
+  public getFromID(): AccountID {
     return this.fromID;
   }
 
-  private readonly targetID: ID<AccountID>;
+  private readonly targetID: AccountID;
 
-  public getTargetID(): ID<AccountID> {
+  public getTargetID(): AccountID {
     return this.targetID;
   }
 

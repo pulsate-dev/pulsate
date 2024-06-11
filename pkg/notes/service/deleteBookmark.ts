@@ -10,7 +10,7 @@ export class DeleteBookmarkService {
 
   async handle(
     noteID: ID<NoteID>,
-    accountID: ID<AccountID>,
+    accountID: AccountID,
   ): Promise<Result.Result<Error, void>> {
     return await this.bookmarkRepository.deleteByID({ noteID, accountID });
   }

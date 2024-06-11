@@ -10,7 +10,7 @@ import { RenoteService } from './renote.js';
 
 const originalNote = Note.new({
   id: '2' as ID<NoteID>,
-  authorID: '1' as ID<AccountID>,
+  authorID: '1' as AccountID,
   content: 'original note',
   contentsWarningComment: '',
   createdAt: new Date(),
@@ -32,7 +32,7 @@ describe('RenoteService', () => {
       '2' as ID<NoteID>,
       'renote',
       '',
-      '1' as ID<AccountID>,
+      '1' as AccountID,
       'PUBLIC',
     );
 
@@ -49,7 +49,7 @@ describe('RenoteService', () => {
       '2' as ID<NoteID>,
       'direct renote',
       '',
-      '1' as ID<AccountID>,
+      '1' as AccountID,
       'DIRECT',
     );
 
@@ -61,7 +61,7 @@ describe('RenoteService', () => {
       '3' as ID<NoteID>,
       'renote',
       '',
-      '1' as ID<AccountID>,
+      '1' as AccountID,
       'PUBLIC',
     );
 
@@ -80,7 +80,7 @@ describe('RenoteService', () => {
       '3' as ID<NoteID>,
       'renote',
       '',
-      '1' as ID<AccountID>,
+      '1' as AccountID,
       'PUBLIC',
     );
 
@@ -96,7 +96,7 @@ describe('RenoteService', () => {
       '2' as ID<NoteID>,
       'renote',
       '',
-      '1' as ID<AccountID>,
+      '1' as AccountID,
       'PUBLIC',
     );
 

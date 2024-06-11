@@ -16,7 +16,7 @@ describe('NoteVisibilityService', () => {
 
   const dummyPublicNote = Note.new({
     id: '1' as ID<NoteID>,
-    authorID: '100' as ID<AccountID>,
+    authorID: '100' as AccountID,
     content: 'Hello world',
     contentsWarningComment: '',
     createdAt: new Date(),
@@ -26,7 +26,7 @@ describe('NoteVisibilityService', () => {
   });
   const dummyHomeNote = Note.new({
     id: '2' as ID<NoteID>,
-    authorID: '100' as ID<AccountID>,
+    authorID: '100' as AccountID,
     content: 'Hello world to Home',
     contentsWarningComment: '',
     createdAt: new Date(),
@@ -36,7 +36,7 @@ describe('NoteVisibilityService', () => {
   });
   const dummyFollowersNote = Note.new({
     id: '3' as ID<NoteID>,
-    authorID: '100' as ID<AccountID>,
+    authorID: '100' as AccountID,
     content: 'Hello world to followers',
     contentsWarningComment: '',
     createdAt: new Date(),
@@ -46,16 +46,16 @@ describe('NoteVisibilityService', () => {
   });
   const dummyDirectNote = Note.new({
     id: '4' as ID<NoteID>,
-    authorID: '100' as ID<AccountID>,
+    authorID: '100' as AccountID,
     content: 'Hello world to direct',
     contentsWarningComment: '',
     createdAt: new Date(),
     originalNoteID: Option.none(),
-    sendTo: Option.some('101' as ID<AccountID>),
+    sendTo: Option.some('101' as AccountID),
     visibility: 'DIRECT',
   });
   const dummyAccount1 = Account.new({
-    id: '101' as ID<AccountID>,
+    id: '101' as AccountID,
     bio: 'this is test user',
     mail: 'john@example.com',
     name: '@john@example.com',
@@ -88,7 +88,7 @@ describe('NoteVisibilityService', () => {
     for (const note of testObjects) {
       expect(
         await visibilityService.handle({
-          accountID: '100' as ID<AccountID>,
+          accountID: '100' as AccountID,
           note,
         }),
       ).toBe(true);
@@ -101,13 +101,13 @@ describe('NoteVisibilityService', () => {
     });
 
     const res = await visibilityService.handle({
-      accountID: '101' as ID<AccountID>,
+      accountID: '101' as AccountID,
       note: dummyDirectNote,
     });
     expect(res).toBe(true);
 
     const res2 = await visibilityService.handle({
-      accountID: '0' as ID<AccountID>,
+      accountID: '0' as AccountID,
       note: dummyDirectNote,
     });
     expect(res2).toBe(false);
@@ -120,21 +120,21 @@ describe('NoteVisibilityService', () => {
     // public
     expect(
       await visibilityService.handle({
-        accountID: '101' as ID<AccountID>,
+        accountID: '101' as AccountID,
         note: dummyPublicNote,
       }),
     ).toBe(true);
     // home
     expect(
       await visibilityService.handle({
-        accountID: '101' as ID<AccountID>,
+        accountID: '101' as AccountID,
         note: dummyHomeNote,
       }),
     ).toBe(true);
     // followers
     expect(
       await visibilityService.handle({
-        accountID: '101' as ID<AccountID>,
+        accountID: '101' as AccountID,
         note: dummyFollowersNote,
       }),
     ).toBe(true);
@@ -147,20 +147,20 @@ describe('NoteVisibilityService', () => {
 
     expect(
       await visibilityService.handle({
-        accountID: '102' as ID<AccountID>,
+        accountID: '102' as AccountID,
         note: dummyPublicNote,
       }),
     ).toBe(true);
     expect(
       await visibilityService.handle({
-        accountID: '102' as ID<AccountID>,
+        accountID: '102' as AccountID,
         note: dummyHomeNote,
       }),
     ).toBe(true);
 
     expect(
       await visibilityService.handle({
-        accountID: '102' as ID<AccountID>,
+        accountID: '102' as AccountID,
         note: dummyFollowersNote,
       }),
     ).toBe(false);
@@ -172,7 +172,7 @@ describe('NoteVisibilityService', () => {
     });
 
     const res = await visibilityService.handle({
-      accountID: '0' as ID<AccountID>,
+      accountID: '0' as AccountID,
       note: dummyPublicNote,
     });
     expect(res).toBe(true);

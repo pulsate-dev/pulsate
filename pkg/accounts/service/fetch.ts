@@ -1,10 +1,9 @@
 import { Ether, Option, Result } from '@mikuroxina/mini-fn';
 
-import type { ID } from '../../id/type.js';
 import { type Account, type AccountID } from '../model/account.js';
 import {
-  accountRepoSymbol,
   type AccountRepository,
+  accountRepoSymbol,
 } from '../model/repository.js';
 
 export class FetchService {
@@ -29,7 +28,7 @@ export class FetchService {
   }
 
   async fetchAccountByID(
-    id: ID<AccountID>,
+    id: AccountID,
   ): Promise<Result.Result<Error, Account>> {
     const res = await this.accountRepository.findByID(id);
     return Option.okOr(new Error('AccountNotFoundError'))(res);

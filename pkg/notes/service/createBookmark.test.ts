@@ -1,4 +1,4 @@
-import { Result, Option } from '@mikuroxina/mini-fn';
+import { Option, Result } from '@mikuroxina/mini-fn';
 import { describe, expect, it } from 'vitest';
 
 import type { AccountID } from '../../accounts/model/account.js';
@@ -12,14 +12,14 @@ import { CreateBookmarkService } from './createBookmark.js';
 
 const noteID = 'noteID_1' as ID<NoteID>;
 const anotherNoteID = 'noteID_2' as ID<NoteID>;
-const accountID = 'accountID_1' as ID<AccountID>;
-const anotherAccountID = 'accountID_2' as ID<AccountID>;
+const accountID = 'accountID_1' as AccountID;
+const anotherAccountID = 'accountID_2' as AccountID;
 
 const bookmarkRepository = new InMemoryBookmarkRepository();
 const noteRepository = new InMemoryNoteRepository([
   Note.new({
     id: 'noteID_1' as ID<NoteID>,
-    authorID: '3' as ID<AccountID>,
+    authorID: '3' as AccountID,
     content: 'Hello world',
     contentsWarningComment: '',
     createdAt: new Date('2023-09-10T00:00:00Z'),
@@ -29,7 +29,7 @@ const noteRepository = new InMemoryNoteRepository([
   }),
   Note.new({
     id: 'noteID_2' as ID<NoteID>,
-    authorID: '3' as ID<AccountID>,
+    authorID: '3' as AccountID,
     content: 'Another note',
     contentsWarningComment: '',
     createdAt: new Date('2023-09-10T00:00:00Z'),

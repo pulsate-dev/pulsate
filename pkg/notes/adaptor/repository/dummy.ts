@@ -32,11 +32,11 @@ export class InMemoryNoteRepository implements NoteRepository {
   }
 
   findByAuthorID(
-    authorID: ID<AccountID>,
+    authorID: AccountID,
     limit: number,
   ): Promise<Option.Option<Note[]>> {
     const res = [...this.notes.values()].filter(
-      (note) => note.getID() === authorID,
+      (note) => note.getAuthorID() === authorID,
     );
     if (res.length === 0) {
       return Promise.resolve(Option.none());
@@ -60,11 +60,11 @@ export class InMemoryNoteRepository implements NoteRepository {
 }
 
 export class InMemoryBookmarkRepository implements BookmarkRepository {
-  private readonly bookmarks: Map<[ID<NoteID>, ID<AccountID>], Bookmark>;
+  private readonly bookmarks: Map<[ID<NoteID>, AccountID], Bookmark>;
 
   private equalID(
-    a: [ID<NoteID>, ID<AccountID>],
-    b: [ID<NoteID>, ID<AccountID>],
+    a: [ID<NoteID>, AccountID],
+    b: [ID<NoteID>, AccountID],
   ): boolean {
     return a[0] === b[0] && a[1] === b[1];
   }
@@ -80,7 +80,7 @@ export class InMemoryBookmarkRepository implements BookmarkRepository {
 
   async create(id: {
     noteID: ID<NoteID>;
-    accountID: ID<AccountID>;
+    accountID: AccountID;
   }): Promise<Result.Result<Error, void>> {
     const bookmark = Bookmark.new(id);
     this.bookmarks.set([id.noteID, id.accountID], bookmark);
@@ -89,7 +89,7 @@ export class InMemoryBookmarkRepository implements BookmarkRepository {
 
   async deleteByID(id: {
     noteID: ID<NoteID>;
-    accountID: ID<AccountID>;
+    accountID: AccountID;
   }): Promise<Result.Result<Error, void>> {
     const key = Array.from(this.bookmarks.keys()).find((k) =>
       this.equalID(k, [id.noteID, id.accountID]),
@@ -105,7 +105,7 @@ export class InMemoryBookmarkRepository implements BookmarkRepository {
 
   async findByID(id: {
     noteID: ID<NoteID>;
-    accountID: ID<AccountID>;
+    accountID: AccountID;
   }): Promise<Option.Option<Bookmark>> {
     const bookmark = Array.from(this.bookmarks.entries()).find((v) =>
       this.equalID(v[0], [id.noteID, id.accountID]),
@@ -116,7 +116,7 @@ export class InMemoryBookmarkRepository implements BookmarkRepository {
     return Promise.resolve(Option.some(bookmark[1]));
   }
 
-  async findByAccountID(id: ID<AccountID>): Promise<Option.Option<Bookmark[]>> {
+  async findByAccountID(id: AccountID): Promise<Option.Option<Bookmark[]>> {
     const bookmarks = Array.from(this.bookmarks.entries())
       .filter((v) => v[0][1] === id)
       .map((v) => v[1]);

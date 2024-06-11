@@ -2,7 +2,6 @@ import { Ether, Option, Result } from '@mikuroxina/mini-fn';
 import { type Prisma, type PrismaClient } from '@prisma/client';
 
 import type { prismaClient } from '../../../adaptors/prisma.js';
-import type { ID } from '../../../id/type.js';
 import {
   Account,
   type AccountFrozen,
@@ -43,7 +42,7 @@ export class PrismaAccountRepository implements AccountRepository {
     return Result.ok(undefined);
   }
 
-  async findByID(id: ID<AccountID>): Promise<Option.Option<Account>> {
+  async findByID(id: AccountID): Promise<Option.Option<Account>> {
     const res = await this.prisma.account.findUnique({
       where: {
         id: id,
@@ -178,7 +177,7 @@ export class PrismaAccountRepository implements AccountRepository {
       )[args.silenced] ?? 'normal';
 
     return Account.reconstruct({
-      id: args.id as ID<AccountID>,
+      id: args.id as AccountID,
       name: args.name as AccountName,
       nickname: args.nickname,
       mail: args.mail,
@@ -204,7 +203,7 @@ export class PrismaAccountVerifyTokenRepository
   constructor(private readonly prisma: PrismaClient) {}
 
   async create(
-    accountID: ID<AccountID>,
+    accountID: AccountID,
     token: string,
     expire: Date,
   ): Promise<Result.Result<Error, void>> {
@@ -223,7 +222,7 @@ export class PrismaAccountVerifyTokenRepository
   }
 
   async findByID(
-    id: ID<AccountID>,
+    id: AccountID,
   ): Promise<Option.Option<{ token: string; expire: Date }>> {
     const res = await this.prisma.accountVerifyToken.findUnique({
       where: {
@@ -271,8 +270,8 @@ export class PrismaAccountFollowRepository implements AccountFollowRepository {
   }
 
   async unfollow(
-    fromID: ID<AccountID>,
-    targetID: ID<AccountID>,
+    fromID: AccountID,
+    targetID: AccountID,
   ): Promise<Result.Result<Error, void>> {
     try {
       await this.prisma.following.update({
@@ -293,7 +292,7 @@ export class PrismaAccountFollowRepository implements AccountFollowRepository {
   }
 
   async fetchAllFollowers(
-    accountID: ID<AccountID>,
+    accountID: AccountID,
   ): Promise<Result.Result<Error, AccountFollow[]>> {
     const res = await this.prisma.following.findMany({
       where: {
@@ -303,7 +302,7 @@ export class PrismaAccountFollowRepository implements AccountFollowRepository {
     return Result.ok(res.map((f) => this.fromPrismaArgs(f)));
   }
   async fetchAllFollowing(
-    accountID: ID<AccountID>,
+    accountID: AccountID,
   ): Promise<Result.Result<Error, AccountFollow[]>> {
     const res = await this.prisma.following.findMany({
       where: {
@@ -314,7 +313,7 @@ export class PrismaAccountFollowRepository implements AccountFollowRepository {
   }
 
   async fetchOrderedFollowers(
-    accountID: ID<AccountID>,
+    accountID: AccountID,
     limit: number,
   ): Promise<Result.Result<Error, AccountFollow[]>> {
     const res = await this.prisma.following.findMany({
@@ -330,7 +329,7 @@ export class PrismaAccountFollowRepository implements AccountFollowRepository {
   }
 
   async fetchOrderedFollowing(
-    accountID: ID<AccountID>,
+    accountID: AccountID,
     limit: number,
   ): Promise<Result.Result<Error, AccountFollow[]>> {
     const res = await this.prisma.following.findMany({
@@ -347,8 +346,8 @@ export class PrismaAccountFollowRepository implements AccountFollowRepository {
 
   private fromPrismaArgs(args: AccountFollowPrismaArgs): AccountFollow {
     return AccountFollow.reconstruct({
-      fromID: args.fromId as ID<AccountID>,
-      targetID: args.toId as ID<AccountID>,
+      fromID: args.fromId as AccountID,
+      targetID: args.toId as AccountID,
       createdAt: args.createdAt,
       deletedAt: args.deletedAt === null ? undefined : args.deletedAt,
     });

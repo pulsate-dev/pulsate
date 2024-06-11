@@ -1,18 +1,17 @@
 import { Ether, Option, Result } from '@mikuroxina/mini-fn';
 
-import { type ID } from '../../../id/type.js';
 import { type Account, type AccountID } from '../../model/account.js';
 import { type AccountFollow } from '../../model/follow.js';
 import type { InactiveAccount } from '../../model/inactiveAccount.js';
 import {
-  accountRepoSymbol,
-  followRepoSymbol,
-  inactiveAccountRepoSymbol,
-  verifyTokenRepoSymbol,
   type AccountFollowRepository,
   type AccountRepository,
+  accountRepoSymbol,
   type AccountVerifyTokenRepository,
+  followRepoSymbol,
   type InactiveAccountRepository,
+  inactiveAccountRepoSymbol,
+  verifyTokenRepoSymbol,
 } from '../../model/repository.js';
 
 export class InMemoryAccountRepository implements AccountRepository {
@@ -31,7 +30,7 @@ export class InMemoryAccountRepository implements AccountRepository {
     this.data.clear();
   }
 
-  findByID(id: ID<AccountID>): Promise<Option.Option<Account>> {
+  findByID(id: AccountID): Promise<Option.Option<Account>> {
     const account = Array.from(this.data).find((a) => a.getID() === id);
     if (!account) {
       return Promise.resolve(Option.none());
@@ -85,7 +84,7 @@ export class InMemoryAccountVerifyTokenRepository
   }
 
   create(
-    accountID: ID<AccountID>,
+    accountID: AccountID,
     token: string,
     expire: Date,
   ): Promise<Result.Result<Error, void>> {
@@ -94,7 +93,7 @@ export class InMemoryAccountVerifyTokenRepository
   }
 
   findByID(
-    id: ID<string>,
+    id: AccountID,
   ): Promise<Option.Option<{ token: string; expire: Date }>> {
     const data = this.data.get(id);
     if (!data) {
@@ -119,14 +118,14 @@ export class InMemoryAccountFollowRepository
   }
 
   async fetchAllFollowers(
-    accountID: ID<AccountID>,
+    accountID: AccountID,
   ): Promise<Result.Result<Error, AccountFollow[]>> {
     const res = [...this.data].filter((f) => f.getTargetID() === accountID);
     return Result.ok(res);
   }
 
   async fetchAllFollowing(
-    accountID: ID<AccountID>,
+    accountID: AccountID,
   ): Promise<Result.Result<Error, AccountFollow[]>> {
     const res = [...this.data].filter((f) => f.getFromID() === accountID);
     return Result.ok(res);
@@ -138,8 +137,8 @@ export class InMemoryAccountFollowRepository
   }
 
   async unfollow(
-    accountID: ID<AccountID>,
-    targetID: ID<AccountID>,
+    accountID: AccountID,
+    targetID: AccountID,
   ): Promise<Result.Result<Error, void>> {
     const follow = [...this.data].find(
       (f) => f.getFromID() === accountID && f.getTargetID() === targetID,
@@ -153,7 +152,7 @@ export class InMemoryAccountFollowRepository
   }
 
   async fetchOrderedFollowers(
-    accountID: ID<AccountID>,
+    accountID: AccountID,
     limit: number,
   ): Promise<Result.Result<Error, AccountFollow[]>> {
     return Result.ok(
@@ -167,7 +166,7 @@ export class InMemoryAccountFollowRepository
   }
 
   async fetchOrderedFollowing(
-    accountID: ID<AccountID>,
+    accountID: AccountID,
     limit: number,
   ): Promise<Result.Result<Error, AccountFollow[]>> {
     return Result.ok(

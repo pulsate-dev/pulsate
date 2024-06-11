@@ -10,8 +10,8 @@ export class CreateService {
   async handle(
     content: string,
     contentsWarningComment: string,
-    sendTo: Option.Option<ID<AccountID>>,
-    authorID: ID<AccountID>,
+    sendTo: Option.Option<AccountID>,
+    authorID: AccountID,
     visibility: NoteVisibility,
   ): Promise<Result.Result<Error, Note>> {
     const id = this.idGenerator.generate<NoteID>();
@@ -20,7 +20,8 @@ export class CreateService {
     }
     try {
       const note = Note.new({
-        id: id[1],
+        // ToDo: Replace here
+        id: id[1] as ID<(typeof id)[1]>,
         content: content,
         contentsWarningComment: contentsWarningComment,
         createdAt: new Date(),

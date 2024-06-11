@@ -45,7 +45,7 @@ export class SnowflakeIDGenerator {
   /**
    * @returns SnowflakeID (string)
    */
-  public generate<T>(): Result.Result<Error, ID<T>> {
+  public generate<T>(): Result.Result<Error, T> {
     const now = this.clock.now();
     const timeFromEpoch = now - OFFSET_FROM_UNIX_EPOCH;
     if (timeFromEpoch < 0) {
@@ -69,7 +69,7 @@ export class SnowflakeIDGenerator {
       (this.workerID << this.INCREMENTAL_BIT_LENGTH) |
       this.incremental;
 
-    return Result.ok(id.toString() as ID<T>);
+    return Result.ok(id.toString() as T);
   }
 }
 export const snowflakeIDGeneratorSymbol =

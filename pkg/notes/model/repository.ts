@@ -8,7 +8,7 @@ import type { Note, NoteID } from './note.js';
 export interface NoteRepository {
   create(note: Note): Promise<Result.Result<Error, void>>;
   findByAuthorID(
-    authorID: ID<AccountID>,
+    authorID: AccountID,
     limit: number,
   ): Promise<Option.Option<Note[]>>;
   findByID(id: ID<NoteID>): Promise<Option.Option<Note>>;
@@ -18,15 +18,15 @@ export interface NoteRepository {
 export interface BookmarkRepository {
   create(id: {
     noteID: ID<NoteID>;
-    accountID: ID<AccountID>;
+    accountID: AccountID;
   }): Promise<Result.Result<Error, void>>;
   findByID(id: {
     noteID: ID<NoteID>;
-    accountID: ID<AccountID>;
+    accountID: AccountID;
   }): Promise<Option.Option<Bookmark>>;
-  findByAccountID(id: ID<AccountID>): Promise<Option.Option<Bookmark[]>>;
+  findByAccountID(id: AccountID): Promise<Option.Option<Bookmark[]>>;
   deleteByID(id: {
     noteID: ID<NoteID>;
-    accountID: ID<AccountID>;
+    accountID: AccountID;
   }): Promise<Result.Result<Error, void>>;
 }

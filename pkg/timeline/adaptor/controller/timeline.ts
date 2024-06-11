@@ -31,9 +31,9 @@ export class TimelineController {
     Result.Result<Error, z.infer<typeof GetAccountTimelineResponseSchema>>
   > {
     const res = await this.accountTimelineService.handle(
-      targetId as ID<AccountID>,
+      targetId as AccountID,
       {
-        id: fromId as ID<AccountID>,
+        id: fromId as AccountID,
         hasAttachment,
         noNsfw,
         beforeId: beforeId as ID<string>,
@@ -44,7 +44,7 @@ export class TimelineController {
     }
     const accountNotes = Result.unwrap(res);
 
-    const accountIDSet = new Set<ID<AccountID>>(
+    const accountIDSet = new Set<AccountID>(
       accountNotes.map((v) => v.getAuthorID()),
     );
     const accountData = await Promise.all(
@@ -55,7 +55,7 @@ export class TimelineController {
     const accounts = accountData
       .filter((v) => Result.isOk(v))
       .map((v) => Result.unwrap(v));
-    const accountsMap = new Map<ID<AccountID>, Account>(
+    const accountsMap = new Map<AccountID, Account>(
       accounts.map((v) => [v.getID(), v]),
     );
 

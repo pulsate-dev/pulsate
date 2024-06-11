@@ -69,7 +69,7 @@ export class PrismaNoteRepository implements NoteRepository {
     return Note.reconstruct({
       id: data.id as ID<NoteID>,
       content: data.text,
-      authorID: data.authorId as ID<AccountID>,
+      authorID: data.authorId as AccountID,
       createdAt: data.createdAt,
       deletedAt: !data.deletedAt ? Option.none() : Option.some(data.deletedAt),
       contentsWarningComment: '',
@@ -114,7 +114,7 @@ export class PrismaNoteRepository implements NoteRepository {
   }
 
   async findByAuthorID(
-    authorId: ID<AccountID>,
+    authorId: AccountID,
     limit: number,
   ): Promise<Option.Option<Note[]>> {
     try {
@@ -156,7 +156,7 @@ export class PrismaBookmarkRepository implements BookmarkRepository {
 
   async create(id: {
     noteID: ID<NoteID>;
-    accountID: ID<AccountID>;
+    accountID: AccountID;
   }): Promise<Result.Result<Error, void>> {
     try {
       await this.client.bookmark.create({
@@ -173,7 +173,7 @@ export class PrismaBookmarkRepository implements BookmarkRepository {
 
   async deleteByID(id: {
     noteID: ID<NoteID>;
-    accountID: ID<AccountID>;
+    accountID: AccountID;
   }): Promise<Result.Result<Error, void>> {
     try {
       await this.client.bookmark.update({
@@ -193,7 +193,7 @@ export class PrismaBookmarkRepository implements BookmarkRepository {
     }
   }
 
-  async findByAccountID(id: ID<AccountID>): Promise<Option.Option<Bookmark[]>> {
+  async findByAccountID(id: AccountID): Promise<Option.Option<Bookmark[]>> {
     try {
       const res = await this.client.bookmark.findMany({
         where: {
@@ -205,7 +205,7 @@ export class PrismaBookmarkRepository implements BookmarkRepository {
         res.map((v) =>
           Bookmark.new({
             noteID: v.noteId as ID<NoteID>,
-            accountID: v.accountId as ID<AccountID>,
+            accountID: v.accountId as AccountID,
           }),
         ),
       );
@@ -216,7 +216,7 @@ export class PrismaBookmarkRepository implements BookmarkRepository {
 
   async findByID(id: {
     noteID: ID<NoteID>;
-    accountID: ID<AccountID>;
+    accountID: AccountID;
   }): Promise<Option.Option<Bookmark>> {
     try {
       const res = await this.client.bookmark.findUniqueOrThrow({
@@ -231,7 +231,7 @@ export class PrismaBookmarkRepository implements BookmarkRepository {
       return Option.some(
         Bookmark.new({
           noteID: res.noteId as ID<NoteID>,
-          accountID: res.accountId as ID<AccountID>,
+          accountID: res.accountId as AccountID,
         }),
       );
     } catch {

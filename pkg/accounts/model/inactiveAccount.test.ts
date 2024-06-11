@@ -1,20 +1,19 @@
-import { describe, it, expect } from 'vitest';
+import { describe, expect, it } from 'vitest';
 
-import { type ID } from '../../id/type.js';
 import { type AccountID, type CreateAccountArgs } from './account.js';
 import {
-  InactiveAccount,
   type CreateInactiveAccountArgs,
+  InactiveAccount,
 } from './inactiveAccount.js';
 
 const exampleInput: CreateInactiveAccountArgs = {
-  id: '1' as ID<AccountID>,
+  id: '1' as AccountID,
   name: '@johndoe@social.example.com',
   mail: 'test@mail.example.com',
 };
 
 const exampleActivateArgs: CreateAccountArgs = {
-  id: '1' as ID<AccountID>,
+  id: '1' as AccountID,
   bio: "this is john doe's account!",
   createdAt: new Date('2023-09-10T00:00:00.000Z'),
   mail: 'test@mail.example.com',
