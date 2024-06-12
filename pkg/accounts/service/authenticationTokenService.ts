@@ -42,7 +42,7 @@ export class AuthenticationTokenService {
     try {
       await jose.jwtVerify(token, this.publicKey);
       return true;
-    } catch {
+    } catch (e) {
       return false;
     }
   }
@@ -50,7 +50,8 @@ export class AuthenticationTokenService {
 
 export const authenticateTokenSymbol =
   Ether.newEtherSymbol<AuthenticationTokenService>();
+const authenticationTokenObject = AuthenticationTokenService.new();
 export const authenticateToken = Ether.newEtherT<Promise.PromiseHkt>()(
   authenticateTokenSymbol,
-  AuthenticationTokenService.new,
+  () => authenticationTokenObject,
 );

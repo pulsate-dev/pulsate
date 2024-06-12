@@ -1,6 +1,7 @@
 import { OpenAPIHono } from '@hono/zod-openapi';
 import { Cat, Ether, Promise, Result } from '@mikuroxina/mini-fn';
 
+import { authenticateMiddleware } from '../adaptors/authenticateMiddleware.js';
 import { prismaClient } from '../adaptors/prisma.js';
 import { clockSymbol, snowflakeIDGenerator } from '../id/mod.js';
 import { argon2idPasswordEncoder } from '../password/mod.js';
@@ -53,7 +54,23 @@ import { verifyAccountToken } from './service/verifyToken.js';
 
 const isProduction = process.env.NODE_ENV === 'production';
 
-export const accounts = new OpenAPIHono();
+export const accounts = new OpenAPIHono<{
+  Variables: {
+    /*
+     * @description authorization token (JWT, ES256)
+     */
+    token: string;
+    /*
+     * @description whether the token is checked (if allowUnAuthorized set true, this will be false)
+     */
+    isValidToken: boolean;
+    /*
+     * @description account name (if allowUnAuthorized set true, this will be undefined)
+     */
+    accountName?: string;
+  };
+}>();
+
 const accountRepoObject = isProduction
   ? new PrismaAccountRepository(prismaClient)
   : new InMemoryAccountRepository([]);
@@ -150,6 +167,11 @@ const CaptchaMiddleware = Ether.runEther(
     newTurnstileCaptchaValidator(process.env.TURNSTILE_SECRET ?? ''),
   )(captchaMiddleware),
 );
+const AuthMiddleware = await Ether.runEtherT(
+  Cat.cat(liftOverPromise(authenticateMiddleware)).feed(
+    composer(authenticateToken),
+  ).value,
+);
 
 accounts.doc('/accounts/doc.json', {
   openapi: '3.0.0',
@@ -176,6 +198,10 @@ accounts.openapi(CreateAccountRoute, async (c) => {
   return c.json(res[1]);
 });
 
+accounts[UpdateAccountRoute.method](
+  UpdateAccountRoute.path,
+  AuthMiddleware.handle({ allowUnAuthorized: false }),
+);
 accounts.openapi(UpdateAccountRoute, async (c) => {
   const name = c.req.param('name');
   const { email, passphrase, bio, nickname } = c.req.valid('json');
@@ -202,6 +228,10 @@ accounts.openapi(UpdateAccountRoute, async (c) => {
   return c.json(res[1]);
 });
 
+accounts[FreezeAccountRoute.method](
+  FreezeAccountRoute.path,
+  AuthMiddleware.handle({ allowUnAuthorized: false }),
+);
 accounts.openapi(FreezeAccountRoute, async (c) => {
   const name = c.req.param('name');
 
@@ -213,6 +243,10 @@ accounts.openapi(FreezeAccountRoute, async (c) => {
   return new Response(null, { status: 204 });
 });
 
+accounts[UnFreezeAccountRoute.method](
+  UnFreezeAccountRoute.path,
+  AuthMiddleware.handle({ allowUnAuthorized: false }),
+);
 accounts.openapi(UnFreezeAccountRoute, async (c) => {
   const name = c.req.param('name');
 
@@ -236,6 +270,10 @@ accounts.openapi(VerifyEmailRoute, async (c) => {
   return new Response(null, { status: 204 });
 });
 
+accounts[GetAccountRoute.method](
+  GetAccountRoute.path,
+  AuthMiddleware.handle({ allowUnAuthorized: true }),
+);
 const GetAccountHandler = accounts.openapi(GetAccountRoute, async (c) => {
   const id = c.req.param('id');
 
@@ -272,6 +310,10 @@ accounts.openapi(RefreshRoute, () => {
   throw new Error('Not implemented');
 });
 
+accounts[SilenceAccountRoute.method](
+  SilenceAccountRoute.path,
+  AuthMiddleware.handle({ allowUnAuthorized: false }),
+);
 accounts.openapi(SilenceAccountRoute, async (c) => {
   const name = c.req.param('name');
   const res = await controller.silenceAccount(name);
@@ -282,6 +324,10 @@ accounts.openapi(SilenceAccountRoute, async (c) => {
   return new Response(null, { status: 204 });
 });
 
+accounts[UnSilenceAccountRoute.method](
+  UnSilenceAccountRoute.path,
+  AuthMiddleware.handle({ allowUnAuthorized: false }),
+);
 accounts.openapi(UnSilenceAccountRoute, async (c) => {
   const name = c.req.param('name');
   const res = await controller.unSilenceAccount(name);
@@ -292,6 +338,10 @@ accounts.openapi(UnSilenceAccountRoute, async (c) => {
   return new Response(null, { status: 204 });
 });
 
+accounts[FollowAccountRoute.method](
+  FollowAccountRoute.path,
+  AuthMiddleware.handle({ allowUnAuthorized: false }),
+);
 accounts.openapi(FollowAccountRoute, async (c) => {
   const name = c.req.param('name');
 
@@ -303,10 +353,14 @@ accounts.openapi(FollowAccountRoute, async (c) => {
   return c.json({});
 });
 
-accounts.openapi(ResendVerificationEmailRoute, async (c) => {
+accounts[UnFollowAccountRoute.method](
+  UnFollowAccountRoute.path,
+  AuthMiddleware.handle({ allowUnAuthorized: false }),
+);
+accounts.openapi(UnFollowAccountRoute, async (c) => {
   const name = c.req.param('name');
 
-  const res = await controller.resendVerificationEmail(name);
+  const res = await controller.unFollowAccount(name);
   if (Result.isErr(res)) {
     return c.json({ error: res[1].message }, { status: 400 });
   }
@@ -314,10 +368,10 @@ accounts.openapi(ResendVerificationEmailRoute, async (c) => {
   return new Response(null, { status: 204 });
 });
 
-accounts.openapi(UnFollowAccountRoute, async (c) => {
+accounts.openapi(ResendVerificationEmailRoute, async (c) => {
   const name = c.req.param('name');
 
-  const res = await controller.unFollowAccount(name);
+  const res = await controller.resendVerificationEmail(name);
   if (Result.isErr(res)) {
     return c.json({ error: res[1].message }, { status: 400 });
   }
