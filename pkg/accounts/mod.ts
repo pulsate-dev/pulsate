@@ -1,5 +1,5 @@
 import { OpenAPIHono } from '@hono/zod-openapi';
-import { Cat, Ether, Promise, Result } from '@mikuroxina/mini-fn';
+import { Cat, Ether, type Option, Promise, Result } from '@mikuroxina/mini-fn';
 
 import { authenticateMiddleware } from '../adaptors/authenticateMiddleware.js';
 import { prismaClient } from '../adaptors/prisma.js';
@@ -61,13 +61,9 @@ export const accounts = new OpenAPIHono<{
      */
     token: string;
     /*
-     * @description whether the token is checked (if allowUnAuthorized set true, this will be false)
-     */
-    isValidToken: boolean;
-    /*
      * @description account name (if allowUnAuthorized set true, this will be undefined)
      */
-    accountName?: string;
+    accountName: Option.Option<string>;
   };
 }>();
 
@@ -200,7 +196,7 @@ accounts.openapi(CreateAccountRoute, async (c) => {
 
 accounts[UpdateAccountRoute.method](
   UpdateAccountRoute.path,
-  AuthMiddleware.handle({ allowUnAuthorized: false }),
+  AuthMiddleware.handle({ forceAuthorized: true }),
 );
 accounts.openapi(UpdateAccountRoute, async (c) => {
   const name = c.req.param('name');
@@ -230,7 +226,7 @@ accounts.openapi(UpdateAccountRoute, async (c) => {
 
 accounts[FreezeAccountRoute.method](
   FreezeAccountRoute.path,
-  AuthMiddleware.handle({ allowUnAuthorized: false }),
+  AuthMiddleware.handle({ forceAuthorized: true }),
 );
 accounts.openapi(FreezeAccountRoute, async (c) => {
   const name = c.req.param('name');
@@ -245,7 +241,7 @@ accounts.openapi(FreezeAccountRoute, async (c) => {
 
 accounts[UnFreezeAccountRoute.method](
   UnFreezeAccountRoute.path,
-  AuthMiddleware.handle({ allowUnAuthorized: false }),
+  AuthMiddleware.handle({ forceAuthorized: true }),
 );
 accounts.openapi(UnFreezeAccountRoute, async (c) => {
   const name = c.req.param('name');
@@ -272,7 +268,7 @@ accounts.openapi(VerifyEmailRoute, async (c) => {
 
 accounts[GetAccountRoute.method](
   GetAccountRoute.path,
-  AuthMiddleware.handle({ allowUnAuthorized: true }),
+  AuthMiddleware.handle({ forceAuthorized: false }),
 );
 const GetAccountHandler = accounts.openapi(GetAccountRoute, async (c) => {
   const id = c.req.param('id');
@@ -312,7 +308,7 @@ accounts.openapi(RefreshRoute, () => {
 
 accounts[SilenceAccountRoute.method](
   SilenceAccountRoute.path,
-  AuthMiddleware.handle({ allowUnAuthorized: false }),
+  AuthMiddleware.handle({ forceAuthorized: true }),
 );
 accounts.openapi(SilenceAccountRoute, async (c) => {
   const name = c.req.param('name');
@@ -326,7 +322,7 @@ accounts.openapi(SilenceAccountRoute, async (c) => {
 
 accounts[UnSilenceAccountRoute.method](
   UnSilenceAccountRoute.path,
-  AuthMiddleware.handle({ allowUnAuthorized: false }),
+  AuthMiddleware.handle({ forceAuthorized: true }),
 );
 accounts.openapi(UnSilenceAccountRoute, async (c) => {
   const name = c.req.param('name');
@@ -340,7 +336,7 @@ accounts.openapi(UnSilenceAccountRoute, async (c) => {
 
 accounts[FollowAccountRoute.method](
   FollowAccountRoute.path,
-  AuthMiddleware.handle({ allowUnAuthorized: false }),
+  AuthMiddleware.handle({ forceAuthorized: true }),
 );
 accounts.openapi(FollowAccountRoute, async (c) => {
   const name = c.req.param('name');
@@ -355,7 +351,7 @@ accounts.openapi(FollowAccountRoute, async (c) => {
 
 accounts[UnFollowAccountRoute.method](
   UnFollowAccountRoute.path,
-  AuthMiddleware.handle({ allowUnAuthorized: false }),
+  AuthMiddleware.handle({ forceAuthorized: true }),
 );
 accounts.openapi(UnFollowAccountRoute, async (c) => {
   const name = c.req.param('name');

@@ -109,7 +109,7 @@ noteHandlers.doc('/notes/doc.json', {
 
 noteHandlers[CreateNoteRoute.method](
   CreateNoteRoute.path,
-  AuthMiddleware.handle({ allowUnAuthorized: false }),
+  AuthMiddleware.handle({ forceAuthorized: true }),
 );
 noteHandlers.openapi(CreateNoteRoute, async (c) => {
   const { content, visibility, contents_warning_comment, send_to } =
@@ -130,7 +130,7 @@ noteHandlers.openapi(CreateNoteRoute, async (c) => {
 
 noteHandlers[GetNoteRoute.method](
   GetNoteRoute.path,
-  AuthMiddleware.handle({ allowUnAuthorized: true }),
+  AuthMiddleware.handle({ forceAuthorized: false }),
 );
 noteHandlers.openapi(GetNoteRoute, async (c) => {
   const { id } = c.req.param();
@@ -144,7 +144,7 @@ noteHandlers.openapi(GetNoteRoute, async (c) => {
 
 noteHandlers[RenoteRoute.method](
   RenoteRoute.path,
-  AuthMiddleware.handle({ allowUnAuthorized: false }),
+  AuthMiddleware.handle({ forceAuthorized: true }),
 );
 noteHandlers.openapi(RenoteRoute, async (c) => {
   const { id } = c.req.param();
@@ -166,7 +166,7 @@ noteHandlers.openapi(RenoteRoute, async (c) => {
 
 noteHandlers[CreateBookmarkRoute.method](
   CreateBookmarkRoute.path,
-  AuthMiddleware.handle({ allowUnAuthorized: false }),
+  AuthMiddleware.handle({ forceAuthorized: true }),
 );
 noteHandlers.openapi(CreateBookmarkRoute, async (c) => {
   const { id: noteID } = c.req.valid('param');
@@ -185,7 +185,7 @@ noteHandlers.openapi(CreateBookmarkRoute, async (c) => {
 
 noteHandlers[DeleteBookmarkRoute.method](
   DeleteBookmarkRoute.path,
-  AuthMiddleware.handle({ allowUnAuthorized: false }),
+  AuthMiddleware.handle({ forceAuthorized: true }),
 );
 noteHandlers.openapi(DeleteBookmarkRoute, async (c) => {
   const { id: noteID } = c.req.valid('param');

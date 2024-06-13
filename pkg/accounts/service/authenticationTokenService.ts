@@ -42,7 +42,7 @@ export class AuthenticationTokenService {
     try {
       await jose.jwtVerify(token, this.publicKey);
       return true;
-    } catch (e) {
+    } catch {
       return false;
     }
   }

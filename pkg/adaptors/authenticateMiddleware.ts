@@ -1,4 +1,5 @@
 import { Ether, Option } from '@mikuroxina/mini-fn';
+import type { MiddlewareHandler } from 'hono';
 import { createMiddleware } from 'hono/factory';
 
 import {
@@ -26,19 +27,19 @@ export class AuthenticateMiddlewareService {
 
   /**
    *
-   * @param options allowUnAuthorized: if true, allow request without token
+   * @param options forceAuthorized: if false, allow request without token
    * @returns Hono middleware handler object
    */
-  handle(options: { allowUnAuthorized: boolean }) {
+  handle(options: { forceAuthorized: boolean }): MiddlewareHandler {
     return createMiddleware(async (c, next) => {
       const rawToken = c.req.header('Authorization');
       if (!rawToken) {
-        if (options.allowUnAuthorized) {
-          c.set('isValidToken', false);
-          return await next();
+        if (options.forceAuthorized) {
+          return c.json({ error: 'UNAUTHORIZED' }, { status: 401 });
         }
 
-        return c.json({ error: 'UNAUTHORIZED' }, { status: 401 });
+        c.set('isValidToken', false);
+        return await next();
       }
 
       const token = rawToken.split(' ')[1];
@@ -48,18 +49,16 @@ export class AuthenticateMiddlewareService {
       c.set('token', token);
 
       const isValidToken = await this.authTokenService.verify(token);
+      const accountName = this.parseToken(token);
       if (!isValidToken) {
         return c.json({ error: 'UNAUTHORIZED' }, { status: 401 });
       }
-      c.set('isValidToken', true);
-
-      const accountName = this.parseToken(token);
 
       if (Option.isNone(accountName)) {
         return c.json({ error: 'UNAUTHORIZED' }, { status: 401 });
       }
 
-      c.set('accountName', accountName[1]);
+      c.set('accountName', accountName);
       return await next();
     });
   }
