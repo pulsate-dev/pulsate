@@ -1,7 +1,12 @@
 import { OpenAPIHono } from '@hono/zod-openapi';
-import { Result } from '@mikuroxina/mini-fn';
+import { Cat, Ether, Promise, Result } from '@mikuroxina/mini-fn';
 
 import type { AccountID } from '../accounts/model/account.js';
+import { authenticateToken } from '../accounts/service/authenticationTokenService.js';
+import {
+  authenticateMiddleware,
+  type AuthMiddlewareVariable,
+} from '../adaptors/authenticateMiddleware.js';
 import { prismaClient } from '../adaptors/prisma.js';
 import { SnowflakeIDGenerator } from '../id/mod.js';
 import type { ID } from '../id/type.js';
@@ -31,7 +36,9 @@ import { FetchBookmarkService } from './service/fetchBookmark.js';
 import { RenoteService } from './service/renote.js';
 
 const isProduction = process.env.NODE_ENV === 'production';
-export const noteHandlers = new OpenAPIHono();
+export const noteHandlers = new OpenAPIHono<{
+  Variables: AuthMiddlewareVariable;
+}>();
 const noteRepository = isProduction
   ? new PrismaNoteRepository(prismaClient)
   : new InMemoryNoteRepository();
@@ -41,6 +48,19 @@ const bookmarkRepository = isProduction
 const idGenerator = new SnowflakeIDGenerator(0, {
   now: () => BigInt(Date.now()),
 });
+
+const composer = Ether.composeT(Promise.monad);
+const liftOverPromise = <const D extends Record<string, symbol>, T>(
+  ether: Ether.Ether<D, T>,
+): Ether.EtherT<D, Promise.PromiseHkt, T> => ({
+  ...ether,
+  handler: (resolved) => Promise.pure(ether.handler(resolved)),
+});
+const AuthMiddleware = await Ether.runEtherT(
+  Cat.cat(liftOverPromise(authenticateMiddleware)).feed(
+    composer(authenticateToken),
+  ).value,
+);
 
 // Account
 const accountModule = new AccountModule();
@@ -77,6 +97,10 @@ noteHandlers.doc('/notes/doc.json', {
   },
 });
 
+noteHandlers[CreateNoteRoute.method](
+  CreateNoteRoute.path,
+  AuthMiddleware.handle({ forceAuthorized: true }),
+);
 noteHandlers.openapi(CreateNoteRoute, async (c) => {
   const { content, visibility, contents_warning_comment, send_to } =
     c.req.valid('json');
@@ -94,6 +118,10 @@ noteHandlers.openapi(CreateNoteRoute, async (c) => {
   return c.json(res[1]);
 });
 
+noteHandlers[GetNoteRoute.method](
+  GetNoteRoute.path,
+  AuthMiddleware.handle({ forceAuthorized: false }),
+);
 noteHandlers.openapi(GetNoteRoute, async (c) => {
   const { id } = c.req.param();
   const res = await controller.getNoteByID(id);
@@ -104,6 +132,10 @@ noteHandlers.openapi(GetNoteRoute, async (c) => {
   return c.json(res[1]);
 });
 
+noteHandlers[RenoteRoute.method](
+  RenoteRoute.path,
+  AuthMiddleware.handle({ forceAuthorized: true }),
+);
 noteHandlers.openapi(RenoteRoute, async (c) => {
   const { id } = c.req.param();
   const req = c.req.valid('json');
@@ -122,6 +154,10 @@ noteHandlers.openapi(RenoteRoute, async (c) => {
   return c.json(res[1]);
 });
 
+noteHandlers[CreateBookmarkRoute.method](
+  CreateBookmarkRoute.path,
+  AuthMiddleware.handle({ forceAuthorized: true }),
+);
 noteHandlers.openapi(CreateBookmarkRoute, async (c) => {
   const { id: noteID } = c.req.valid('param');
   // ToDo: read AccountID from token
@@ -137,6 +173,10 @@ noteHandlers.openapi(CreateBookmarkRoute, async (c) => {
   return c.json(res[1]);
 });
 
+noteHandlers[DeleteBookmarkRoute.method](
+  DeleteBookmarkRoute.path,
+  AuthMiddleware.handle({ forceAuthorized: true }),
+);
 noteHandlers.openapi(DeleteBookmarkRoute, async (c) => {
   const { id: noteID } = c.req.valid('param');
   // ToDo: read AccountID from token
