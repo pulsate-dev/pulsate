@@ -55,7 +55,6 @@ export class PrismaTimelineRepository implements TimelineRepository {
     accountId: AccountID,
     filter: FetchAccountTimelineFilter,
   ): Promise<Result.Result<Error, Note[]>> {
-    console.log(filter);
     const accountNotes = await this.prisma.note.findMany({
       where: {
         authorId: accountId,
@@ -67,7 +66,28 @@ export class PrismaTimelineRepository implements TimelineRepository {
         id: filter.beforeId ?? '',
       },
     });
-    console.log(accountNotes);
+
     return Result.ok(this.deserialize(accountNotes));
+  }
+
+  async getHomeTimeline(
+    noteIDs: NoteID[],
+    filter: FetchAccountTimelineFilter,
+  ): Promise<Result.Result<Error, Note[]>> {
+    const homeNotes = await this.prisma.note.findMany({
+      where: {
+        id: {
+          in: noteIDs,
+        },
+      },
+      orderBy: {
+        createdAt: 'desc',
+      },
+      cursor: {
+        id: filter.beforeId ?? '',
+      },
+      take: 20,
+    });
+    return Result.ok(this.deserialize(homeNotes));
   }
 }
