@@ -24,5 +24,28 @@ export interface TimelineRepository {
     accountId: AccountID,
     filter: FetchAccountTimelineFilter,
   ): Promise<Result.Result<Error, Note[]>>;
+
+  /**
+   * @description Fetch home timeline
+   * @param noteIDs IDs of the notes to be fetched
+   * @param filter Filter for fetching notes
+   * */
+  getHomeTimeline(
+    noteIDs: NoteID[],
+    filter: FetchAccountTimelineFilter,
+  ): Promise<Result.Result<Error, Note[]>>;
 }
 export const timelineRepoSymbol = Ether.newEtherSymbol<TimelineRepository>();
+
+export interface TimelineNotesCacheRepository {
+  addNotesToHomeTimeline(
+    accountID: AccountID,
+    notes: Note[],
+  ): Promise<Result.Result<Error, void>>;
+
+  getHomeTimeline(
+    accountID: AccountID,
+  ): Promise<Result.Result<Error, NoteID[]>>;
+}
+export const timelineNotesCacheRepoSymbol =
+  Ether.newEtherSymbol<TimelineNotesCacheRepository>();
