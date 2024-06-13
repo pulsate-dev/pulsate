@@ -7,6 +7,18 @@ import {
   type AuthenticationTokenService,
 } from '../accounts/service/authenticationTokenService.js';
 
+/* eslint-disable-next-line @typescript-eslint/consistent-type-definitions */
+export type AuthMiddlewareVariable = {
+  /*
+   * @description authorization token (JWT, ES256)
+   */
+  token: string;
+  /*
+   * @description account name, or none if not authorized
+   */
+  accountName: Option.Option<string>;
+};
+
 export class AuthenticateMiddlewareService {
   private readonly authTokenService: AuthenticationTokenService;
 
@@ -27,18 +39,19 @@ export class AuthenticateMiddlewareService {
 
   /**
    *
-   * @param options forceAuthorized: if false, allow request without token
+   * @param {Object} options - Configuration of this middleware.
+   * @param {boolean} options.forceAuthorized - Requires an access token oin the request if true, or not.
    * @returns Hono middleware handler object
    */
-  handle(options: { forceAuthorized: boolean }): MiddlewareHandler {
+  handle(options: {
+    forceAuthorized: boolean;
+  }): MiddlewareHandler<{ Variables: AuthMiddlewareVariable }> {
     return createMiddleware(async (c, next) => {
       const rawToken = c.req.header('Authorization');
       if (!rawToken) {
         if (options.forceAuthorized) {
           return c.json({ error: 'UNAUTHORIZED' }, { status: 401 });
         }
-
-        c.set('isValidToken', false);
         return await next();
       }
 

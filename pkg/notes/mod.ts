@@ -3,7 +3,10 @@ import { Cat, Ether, Promise, Result } from '@mikuroxina/mini-fn';
 
 import type { AccountID } from '../accounts/model/account.js';
 import { authenticateToken } from '../accounts/service/authenticationTokenService.js';
-import { authenticateMiddleware } from '../adaptors/authenticateMiddleware.js';
+import {
+  authenticateMiddleware,
+  type AuthMiddlewareVariable,
+} from '../adaptors/authenticateMiddleware.js';
 import { prismaClient } from '../adaptors/prisma.js';
 import { SnowflakeIDGenerator } from '../id/mod.js';
 import type { ID } from '../id/type.js';
@@ -34,20 +37,7 @@ import { RenoteService } from './service/renote.js';
 
 const isProduction = process.env.NODE_ENV === 'production';
 export const noteHandlers = new OpenAPIHono<{
-  Variables: {
-    /*
-     * @description authorization token (JWT, ES256)
-     */
-    token: string;
-    /*
-     * @description whether the token is checked (if allowUnAuthorized set true, this will be false)
-     */
-    isValidToken: boolean;
-    /*
-     * @description account name (if allowUnAuthorized set true, this will be undefined)
-     */
-    accountName?: string;
-  };
+  Variables: AuthMiddlewareVariable;
 }>();
 const noteRepository = isProduction
   ? new PrismaNoteRepository(prismaClient)

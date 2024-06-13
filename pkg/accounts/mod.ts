@@ -1,7 +1,10 @@
 import { OpenAPIHono } from '@hono/zod-openapi';
-import { Cat, Ether, type Option, Promise, Result } from '@mikuroxina/mini-fn';
+import { Cat, Ether, Promise, Result } from '@mikuroxina/mini-fn';
 
-import { authenticateMiddleware } from '../adaptors/authenticateMiddleware.js';
+import {
+  authenticateMiddleware,
+  type AuthMiddlewareVariable,
+} from '../adaptors/authenticateMiddleware.js';
 import { prismaClient } from '../adaptors/prisma.js';
 import { clockSymbol, snowflakeIDGenerator } from '../id/mod.js';
 import { argon2idPasswordEncoder } from '../password/mod.js';
@@ -55,16 +58,7 @@ import { verifyAccountToken } from './service/verifyToken.js';
 const isProduction = process.env.NODE_ENV === 'production';
 
 export const accounts = new OpenAPIHono<{
-  Variables: {
-    /*
-     * @description authorization token (JWT, ES256)
-     */
-    token: string;
-    /*
-     * @description account name (if allowUnAuthorized set true, this will be undefined)
-     */
-    accountName: Option.Option<string>;
-  };
+  Variables: AuthMiddlewareVariable;
 }>();
 
 const accountRepoObject = isProduction
