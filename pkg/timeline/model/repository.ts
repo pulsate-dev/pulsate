@@ -13,6 +13,7 @@ export interface FetchAccountTimelineFilter {
    *  @description if undefined, Retrieved from latest notes */
   beforeId?: NoteID;
 }
+export type FetchHomeTimelineFilter = Omit<FetchAccountTimelineFilter, 'id'>;
 
 export interface TimelineRepository {
   /**
@@ -37,6 +38,7 @@ export interface TimelineRepository {
 }
 export const timelineRepoSymbol = Ether.newEtherSymbol<TimelineRepository>();
 
+export type CacheObjectKey = `timeline:home:${AccountID}`;
 export interface TimelineNotesCacheRepository {
   addNotesToHomeTimeline(
     accountID: AccountID,
