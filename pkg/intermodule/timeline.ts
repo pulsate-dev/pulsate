@@ -15,7 +15,6 @@ export class TimelineModule {
    * @param note to be pushed
    * */
   async pushNoteToTimeline(note: Note): Promise<Option.Option<Error>> {
-    // ToDo: TimelineServiceを呼び出す
     const res = await this.client.timeline.index.$post({
       json: {
         id: note.getID(),
