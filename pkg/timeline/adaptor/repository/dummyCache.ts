@@ -28,14 +28,14 @@ export class InMemoryTimelineCacheRepository
     accountID: AccountID,
     notes: Note[],
   ): Promise<Result.Result<Error, void>> {
-    const fetched = this.data.get(this.generateObjectKey(accountID));
-    if (!fetched) {
+    if (!this.data.has(this.generateObjectKey(accountID))) {
       this.data.set(
         this.generateObjectKey(accountID),
         notes.map((note) => note.getID()),
       );
       return Result.ok(undefined);
     }
+    const fetched = this.data.get(this.generateObjectKey(accountID))!;
     // NOTE: replace by updated object
     this.data.delete(this.generateObjectKey(accountID));
 

@@ -13,6 +13,7 @@ import type {
 } from '../../model/repository.js';
 
 export class PrismaTimelineRepository implements TimelineRepository {
+  private readonly TIMELINE_NOTE_LIMIT = 20;
   constructor(private readonly prisma: PrismaClient) {}
 
   private deserialize(
@@ -86,7 +87,7 @@ export class PrismaTimelineRepository implements TimelineRepository {
       cursor: {
         id: filter.beforeId ?? '',
       },
-      take: 20,
+      take: this.TIMELINE_NOTE_LIMIT,
     });
     return Result.ok(this.deserialize(homeNotes));
   }

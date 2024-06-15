@@ -126,25 +126,25 @@ describe('NoteVisibilityService', () => {
     );
 
     expect(
-      await visibilityService.homeTimelineVisibilityCheck({
+      await visibilityService.isVisibleNoteInHomeTimeline({
         accountID: '0' as AccountID,
         note: dummyPublicNote,
       }),
     ).toBe(true);
     expect(
-      await visibilityService.homeTimelineVisibilityCheck({
+      await visibilityService.isVisibleNoteInHomeTimeline({
         accountID: '0' as AccountID,
         note: dummyHomeNote,
       }),
     ).toBe(true);
     expect(
-      await visibilityService.homeTimelineVisibilityCheck({
+      await visibilityService.isVisibleNoteInHomeTimeline({
         accountID: '0' as AccountID,
         note: dummyFollowersNote,
       }),
     ).toBe(true);
     expect(
-      await visibilityService.homeTimelineVisibilityCheck({
+      await visibilityService.isVisibleNoteInHomeTimeline({
         accountID: '0' as AccountID,
         note: dummyDirectNote,
       }),

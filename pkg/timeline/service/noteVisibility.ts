@@ -43,7 +43,7 @@ export class NoteVisibilityService {
     return false;
   }
 
-  public async homeTimelineVisibilityCheck(
+  public async isVisibleNoteInHomeTimeline(
     args: NoteVisibilityCheckArgs,
   ): Promise<boolean> {
     return args.note.getVisibility() !== 'DIRECT';

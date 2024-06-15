@@ -29,13 +29,12 @@ export class PushTimelineService {
     PUBLIC, HOME, FOLLOWER: OK
     DIRECT: reject (direct note is not pushed to home timeline)
      */
-    const isNeedReject =
-      !(await this.noteVisibility.homeTimelineVisibilityCheck({
-        accountID: note.getAuthorID(),
-        note,
-      }));
-    if (isNeedReject) {
-      return Result.err(new Error('Note is not visible'));
+    const visible = await this.noteVisibility.isVisibleNoteInHomeTimeline({
+      accountID: note.getAuthorID(),
+      note,
+    });
+    if (!visible) {
+      return Result.err(new Error('Note invisible'));
     }
 
     // ToDo: bulk insert
@@ -46,10 +45,7 @@ export class PushTimelineService {
         ]);
       }),
     );
-    if (res.some(Result.isErr)) {
-      return res.find(Result.isErr)!;
-    }
 
-    return Result.ok(undefined);
+    return res.find(Result.isErr) ?? Result.ok(undefined);
   }
 }

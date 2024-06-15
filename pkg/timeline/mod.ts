@@ -76,7 +76,7 @@ const pushNoteToTimeline = timeline.openapi(
       }),
     );
     if (Result.isErr(res)) {
-      return c.json({ error: res[1].message, status: 500 });
+      return c.json({ error: res[1].message, status: 400 });
     }
 
     return new Response(undefined, { status: 204 });

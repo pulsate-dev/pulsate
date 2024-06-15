@@ -33,6 +33,6 @@ export class HomeTimelineService {
       return res;
     }
 
-    return Result.ok(res[1]);
+    return res;
   }
 }

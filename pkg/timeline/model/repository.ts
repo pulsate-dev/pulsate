@@ -32,7 +32,7 @@ export interface TimelineRepository {
    * @param filter Filter for fetching notes
    * */
   getHomeTimeline(
-    noteIDs: NoteID[],
+    noteIDs: readonly NoteID[],
     filter: FetchAccountTimelineFilter,
   ): Promise<Result.Result<Error, Note[]>>;
 }
@@ -42,7 +42,7 @@ export type CacheObjectKey = `timeline:home:${AccountID}`;
 export interface TimelineNotesCacheRepository {
   addNotesToHomeTimeline(
     accountID: AccountID,
-    notes: Note[],
+    notes: readonly Note[],
   ): Promise<Result.Result<Error, void>>;
 
   getHomeTimeline(
