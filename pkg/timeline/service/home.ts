@@ -25,14 +25,9 @@ export class HomeTimelineService {
       return noteIDs;
     }
 
-    const res = await this.timelineRepository.getHomeTimeline(noteIDs[1], {
+    return await this.timelineRepository.getHomeTimeline(noteIDs[1], {
       id: accountID,
       ...filter,
     });
-    if (Result.isErr(res)) {
-      return res;
-    }
-
-    return res;
   }
 }

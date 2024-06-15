@@ -1,4 +1,4 @@
-import { Option } from '@mikuroxina/mini-fn';
+import { Result } from '@mikuroxina/mini-fn';
 import { hc } from 'hono/client';
 
 import type { Note } from '../notes/model/note.js';
@@ -14,7 +14,7 @@ export class TimelineModule {
    * @description Push note to timeline
    * @param note to be pushed
    * */
-  async pushNoteToTimeline(note: Note): Promise<Option.Option<Error>> {
+  async pushNoteToTimeline(note: Note): Promise<Result.Result<Error, void>> {
     const res = await this.client.timeline.index.$post({
       json: {
         id: note.getID(),
@@ -22,9 +22,9 @@ export class TimelineModule {
       },
     });
     if (!res.ok) {
-      return Option.some(new Error('Failed to push note'));
+      return Result.err(new Error('Failed to push note'));
     }
 
-    return Option.none();
+    return Result.ok(undefined);
   }
 }
