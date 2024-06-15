@@ -56,3 +56,54 @@ export const GetAccountTimelineRoute = createRoute({
     },
   },
 });
+
+export const PushNoteToTimelineRoute = createRoute({
+  method: 'post',
+  description: '',
+  tags: ['timeline'],
+  path: '/timeline/',
+  request: {
+    body: {
+      content: {
+        'application/json': {
+          schema: z.object({
+            id: z.string(),
+            authorId: z.string(),
+          }),
+        },
+      },
+    },
+  },
+  responses: {
+    204: {
+      description: 'OK',
+    },
+  },
+});
+
+export const DropNoteFromTimelineRoute = createRoute({
+  method: 'delete',
+  description: '',
+  tags: ['timeline'],
+  path: '/timeline/:id',
+  request: {
+    body: {
+      content: {
+        'application/json': {
+          schema: z.object({}),
+        },
+      },
+    },
+    params: z.object({
+      id: z.string().openapi('note authorID'),
+    }),
+  },
+  responses: {
+    204: {
+      description: 'OK',
+    },
+    500: {
+      description: 'Task failed',
+    },
+  },
+});

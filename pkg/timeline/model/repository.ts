@@ -13,6 +13,7 @@ export interface FetchAccountTimelineFilter {
    *  @description if undefined, Retrieved from latest notes */
   beforeId?: NoteID;
 }
+export type FetchHomeTimelineFilter = Omit<FetchAccountTimelineFilter, 'id'>;
 
 export interface TimelineRepository {
   /**
@@ -24,5 +25,29 @@ export interface TimelineRepository {
     accountId: AccountID,
     filter: FetchAccountTimelineFilter,
   ): Promise<Result.Result<Error, Note[]>>;
+
+  /**
+   * @description Fetch home timeline
+   * @param noteIDs IDs of the notes to be fetched
+   * @param filter Filter for fetching notes
+   * */
+  getHomeTimeline(
+    noteIDs: readonly NoteID[],
+    filter: FetchAccountTimelineFilter,
+  ): Promise<Result.Result<Error, Note[]>>;
 }
 export const timelineRepoSymbol = Ether.newEtherSymbol<TimelineRepository>();
+
+export type CacheObjectKey = `timeline:home:${AccountID}`;
+export interface TimelineNotesCacheRepository {
+  addNotesToHomeTimeline(
+    accountID: AccountID,
+    notes: readonly Note[],
+  ): Promise<Result.Result<Error, void>>;
+
+  getHomeTimeline(
+    accountID: AccountID,
+  ): Promise<Result.Result<Error, NoteID[]>>;
+}
+export const timelineNotesCacheRepoSymbol =
+  Ether.newEtherSymbol<TimelineNotesCacheRepository>();

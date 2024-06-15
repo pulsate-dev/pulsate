@@ -9,6 +9,15 @@ services:
     environment:
       - POSTGRES_USER=pulsate
       - POSTGRES_PASSWORD=pulsate_db_pass
+  kv:
+    image: valkey/valkey
+    container_name: kv
+    ports:
+      - "6379:6379"
+    volumes:
+      - kv_data:/data
+
 
 volumes:
   db_data:
+  kv_data:

@@ -42,6 +42,12 @@ export class NoteVisibilityService {
 
     return false;
   }
+
+  public async isVisibleNoteInHomeTimeline(
+    args: NoteVisibilityCheckArgs,
+  ): Promise<boolean> {
+    return args.note.getVisibility() !== 'DIRECT';
+  }
 }
 export const noteVisibilitySymbol =
   Ether.newEtherSymbol<NoteVisibilityService>();
