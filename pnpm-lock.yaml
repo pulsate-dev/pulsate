@@ -10,7 +10,7 @@ importers:
     dependencies:
       '@hono/node-server':
         specifier: ^1.7.0
-        version: 1.11.2
+        version: 1.11.3
       '@hono/swagger-ui':
         specifier: ^0.2.1
         version: 0.2.2(hono@4.4.6)
@@ -596,8 +596,8 @@ packages:
     peerDependencies:
       vue: ^3.2.0
 
-  '@hono/node-server@1.11.2':
-    resolution: {integrity: sha512-JhX0nUC66GeDxpIdMKWDRMEwtQBa64CY907iAF1sYqb4m2p2PdSU7zkbnNhAZLg/6IjSlTuj6CF307JlBXVvpg==}
+  '@hono/node-server@1.11.3':
+    resolution: {integrity: sha512-mFg3qlKkDtMWSalX5Gyh6Zd3MXay0biGobFlyJ49i6R1smBBS1CYkNZbvwLlw+4sSrHO4ZiH7kj4TcLpl2Jr3g==}
     engines: {node: '>=18.14.1'}
 
   '@hono/swagger-ui@0.2.2':
@@ -3790,7 +3790,7 @@ snapshots:
       '@tanstack/vue-virtual': 3.5.1(vue@3.4.23(typescript@5.4.5))
       vue: 3.4.23(typescript@5.4.5)
 
-  '@hono/node-server@1.11.2': {}
+  '@hono/node-server@1.11.3': {}
 
   '@hono/swagger-ui@0.2.2(hono@4.4.6)':
     dependencies:
