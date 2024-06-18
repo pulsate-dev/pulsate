@@ -51,10 +51,10 @@ timeline.openapi(GetAccountTimelineRoute, async (c) => {
     before_id,
   );
   if (Result.isErr(res)) {
-    return c.json({ error: res[1].message, status: 400 });
+    return c.json({ error: res[1].message }, 404);
   }
 
-  return c.json(res[1]);
+  return c.json(res[1], 200);
 });
 
 // ToDo: Require internal access token in this endpoint

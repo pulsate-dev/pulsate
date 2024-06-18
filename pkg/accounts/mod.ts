@@ -182,10 +182,10 @@ accounts.openapi(CreateAccountRoute, async (c) => {
 
   const res = await controller.createAccount(name, email, passphrase);
   if (Result.isErr(res)) {
-    return c.json({ error: res[1].message }, { status: 400 });
+    return c.json({ error: res[1].message }, 400);
   }
 
-  return c.json(res[1]);
+  return c.json(res[1], 200);
 });
 
 accounts[UpdateAccountRoute.method](
@@ -198,7 +198,7 @@ accounts.openapi(UpdateAccountRoute, async (c) => {
   const eTag = c.req.header('If-Match');
 
   if (!eTag) {
-    return c.json({ error: 'INVALID_ETAG' }, { status: 412 });
+    return c.json({ error: 'INVALID_ETAG' }, 412);
   }
 
   const res = await controller.updateAccount(
@@ -212,10 +212,10 @@ accounts.openapi(UpdateAccountRoute, async (c) => {
     eTag,
   );
   if (Result.isErr(res)) {
-    return c.json({ error: res[1].message }, { status: 400 });
+    return c.json({ error: res[1].message }, 400);
   }
 
-  return c.json(res[1]);
+  return c.json(res[1], 200);
 });
 
 accounts[FreezeAccountRoute.method](
@@ -227,7 +227,7 @@ accounts.openapi(FreezeAccountRoute, async (c) => {
 
   const res = await controller.freezeAccount(name);
   if (Result.isErr(res)) {
-    return c.json({ error: res[1].message }, { status: 400 });
+    return c.json({ error: res[1].message }, 400);
   }
 
   return new Response(null, { status: 204 });
@@ -242,7 +242,7 @@ accounts.openapi(UnFreezeAccountRoute, async (c) => {
 
   const res = await controller.unFreezeAccount(name);
   if (Result.isErr(res)) {
-    return c.json({ error: res[1].message }, { status: 400 });
+    return c.json({ error: res[1].message }, 400);
   }
 
   return new Response(null, { status: 204 });
@@ -254,7 +254,7 @@ accounts.openapi(VerifyEmailRoute, async (c) => {
 
   const res = await controller.verifyEmail(name, token);
   if (Result.isErr(res)) {
-    return c.json({ error: res[1].message }, { status: 400 });
+    return c.json({ error: res[1].message }, 400);
   }
 
   return new Response(null, { status: 204 });
@@ -269,20 +269,23 @@ const GetAccountHandler = accounts.openapi(GetAccountRoute, async (c) => {
 
   const res = await controller.getAccount(id);
   if (Result.isErr(res)) {
-    return c.json({ error: res[1].message }, { status: 404 });
+    return c.json({ error: res[1].message }, 404);
   }
 
-  return c.json({
-    id: res[1].id,
-    name: res[1].name,
-    nickname: res[1].nickname,
-    bio: res[1].bio,
-    avatar: '',
-    header: '',
-    followed_count: res[1].followed_count,
-    following_count: res[1].following_count,
-    note_count: res[1].note_count,
-  });
+  return c.json(
+    {
+      id: res[1].id,
+      name: res[1].name,
+      nickname: res[1].nickname,
+      bio: res[1].bio,
+      avatar: '',
+      header: '',
+      followed_count: res[1].followed_count,
+      following_count: res[1].following_count,
+      note_count: res[1].note_count,
+    },
+    200,
+  );
 });
 
 accounts.openapi(LoginRoute, async (c) => {
@@ -290,10 +293,10 @@ accounts.openapi(LoginRoute, async (c) => {
 
   const res = await controller.login(name as AccountName, passphrase);
   if (Result.isErr(res)) {
-    return c.json({ error: res[1].message }, { status: 400 });
+    return c.json({ error: res[1].message }, 400);
   }
 
-  return c.json(res[1]);
+  return c.json(res[1], 200);
 });
 
 accounts.openapi(RefreshRoute, () => {
@@ -322,7 +325,7 @@ accounts.openapi(UnSilenceAccountRoute, async (c) => {
   const name = c.req.param('name');
   const res = await controller.unSilenceAccount(name);
   if (Result.isErr(res)) {
-    return c.json({ error: res[1].message }, { status: 400 });
+    return c.json({ error: res[1].message }, 400);
   }
 
   return new Response(null, { status: 204 });
@@ -337,10 +340,10 @@ accounts.openapi(FollowAccountRoute, async (c) => {
 
   const res = await controller.followAccount(name);
   if (Result.isErr(res)) {
-    return c.json({ error: res[1].message }, { status: 400 });
+    return c.json({ error: res[1].message }, 403);
   }
 
-  return c.json({});
+  return c.json({}, 201);
 });
 
 accounts[UnFollowAccountRoute.method](
@@ -352,7 +355,7 @@ accounts.openapi(UnFollowAccountRoute, async (c) => {
 
   const res = await controller.unFollowAccount(name);
   if (Result.isErr(res)) {
-    return c.json({ error: res[1].message }, { status: 400 });
+    return c.json({ error: res[1].message }, 400);
   }
 
   return new Response(null, { status: 204 });
@@ -363,7 +366,7 @@ accounts.openapi(ResendVerificationEmailRoute, async (c) => {
 
   const res = await controller.resendVerificationEmail(name);
   if (Result.isErr(res)) {
-    return c.json({ error: res[1].message }, { status: 400 });
+    return c.json({ error: res[1].message }, 400);
   }
 
   return new Response(null, { status: 204 });
@@ -375,7 +378,7 @@ const getAccountFollowingRoute = accounts.openapi(
     const id = c.req.param('id');
     const res = await controller.fetchFollowing(id);
     if (Result.isErr(res)) {
-      return c.json({ error: res[1].message }, { status: 400 });
+      return c.json({ error: res[1].message }, 404);
     }
     const unwrap = Result.unwrap(res);
     return c.json(
@@ -392,6 +395,7 @@ const getAccountFollowingRoute = accounts.openapi(
           note_count: v.note_count,
         };
       }),
+      200,
     );
   },
 );
@@ -401,7 +405,7 @@ const getAccountFollowerRoute = accounts.openapi(
     const id = c.req.param('id');
     const res = await controller.fetchFollower(id);
     if (Result.isErr(res)) {
-      return c.json({ error: res[1].message }, { status: 400 });
+      return c.json({ error: res[1].message }, 404);
     }
     const unwrap = Result.unwrap(res);
     return c.json(
@@ -418,6 +422,7 @@ const getAccountFollowerRoute = accounts.openapi(
           note_count: v.note_count,
         };
       }),
+      200,
     );
   },
 );
