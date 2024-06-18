@@ -131,8 +131,11 @@ model Medium {
   id             String           @id
   name           String
   mime           String
+  hash           String
+  nsfw           Boolean
   authorId       String           @map("author_id")
   author         Account          @relation(fields: [authorId], references: [id])
+  thumbnailUrl   String
   url            String
   createdAt      DateTime         @default(now()) @map("created_at")
   deletedAt      DateTime?        @map("deleted_at")
