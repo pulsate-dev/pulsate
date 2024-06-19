@@ -16,7 +16,7 @@ importers:
         version: 0.2.2(hono@4.4.6)
       '@hono/zod-openapi':
         specifier: ^0.14.0
-        version: 0.14.5(hono@4.4.6)(zod@3.22.5)
+        version: 0.14.5(hono@4.4.6)(zod@3.23.8)
       '@mikuroxina/mini-fn':
         specifier: ^6.3.1
         version: 6.3.1
@@ -3368,6 +3368,11 @@ packages:
     engines: {node: '>= 14'}
     hasBin: true
 
+  yaml@2.4.5:
+    resolution: {integrity: sha512-aBx2bnqDzVOyNKfsysjA2ms5ZlnjSAW2eG3/L5G/CSujfjLJTJsEw1bGw8kCf04KodQWk1pxlGnZ56CRxiawmg==}
+    engines: {node: '>= 14'}
+    hasBin: true
+
   yjs@13.6.18:
     resolution: {integrity: sha512-GBTjO4QCmv2HFKFkYIJl7U77hIB1o22vSCSQD1Ge8ZxWbIbn8AltI4gyXbtL+g5/GJep67HCMq3Y5AmNwDSyEg==}
     engines: {node: '>=16.0.0', npm: '>=8.0.0'}
@@ -3400,7 +3405,7 @@ snapshots:
       '@jridgewell/gen-mapping': 0.3.5
       '@jridgewell/trace-mapping': 0.3.25
 
-  '@asteasolutions/zod-to-openapi@7.1.1(zod@3.22.5)':
+  '@asteasolutions/zod-to-openapi@7.1.1(zod@3.23.8)':
     dependencies:
       openapi3-ts: 4.3.1
       zod: 3.23.8
@@ -3831,14 +3836,14 @@ snapshots:
     dependencies:
       hono: 4.4.6
 
-  '@hono/zod-openapi@0.14.5(hono@4.4.6)(zod@3.22.5)':
+  '@hono/zod-openapi@0.14.5(hono@4.4.6)(zod@3.23.8)':
     dependencies:
-      '@asteasolutions/zod-to-openapi': 7.1.1(zod@3.22.5)
-      '@hono/zod-validator': 0.2.2(hono@4.4.6)(zod@3.22.5)
+      '@asteasolutions/zod-to-openapi': 7.1.1(zod@3.23.8)
+      '@hono/zod-validator': 0.2.2(hono@4.4.6)(zod@3.23.8)
       hono: 4.4.6
       zod: 3.23.8
 
-  '@hono/zod-validator@0.2.2(hono@4.4.6)(zod@3.22.5)':
+  '@hono/zod-validator@0.2.2(hono@4.4.6)(zod@3.23.8)':
     dependencies:
       hono: 4.4.6
       zod: 3.23.8
@@ -4300,7 +4305,7 @@ snapshots:
       ajv-formats: 3.0.1(ajv@8.16.0)
       jsonpointer: 5.0.1
       leven: 4.0.0
-      yaml: 2.4.5
+      yaml: 2.4.3
 
   '@scalar/snippetz-core@0.1.4':
     dependencies:
@@ -6510,7 +6515,7 @@ snapshots:
   postcss-load-config@4.0.2(postcss@8.4.38):
     dependencies:
       lilconfig: 3.1.2
-      yaml: 2.4.5
+      yaml: 2.4.3
     optionalDependencies:
       postcss: 8.4.38
 
@@ -7233,6 +7238,8 @@ snapshots:
   yallist@4.0.0: {}
 
   yaml@2.4.3: {}
+
+  yaml@2.4.5: {}
 
   yjs@13.6.18:
     dependencies:
