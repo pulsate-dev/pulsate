@@ -39,7 +39,7 @@ export class AccountModule {
 
     const body = await res.json();
     if ('error' in body) {
-      return Result.err(new Error(body.error));
+      return Result.err(new Error((body as { error: string }).error));
     }
 
     const account = Account.new({
@@ -52,7 +52,7 @@ export class AccountModule {
       frozen: body.frozen as AccountFrozen,
       silenced: body.silenced as AccountSilenced,
       status: body.status as AccountStatus,
-      createdAt: body.created_at as Date,
+      createdAt: new Date(body.created_at!),
       passphraseHash: undefined,
     });
 
@@ -71,7 +71,7 @@ export class AccountModule {
 
     const body = await res.json();
     if ('error' in body) {
-      return Result.err(new Error(body.error));
+      return Result.err(new Error((body as { error: string }).error));
     }
     return Result.ok(
       body.map((v): PartialAccount => {
@@ -97,7 +97,7 @@ export class AccountModule {
 
     const body = await res.json();
     if ('error' in body) {
-      return Result.err(new Error(body.error));
+      return Result.err(new Error((body as { error: string }).error));
     }
     return Result.ok(
       body.map((v): PartialAccount => {

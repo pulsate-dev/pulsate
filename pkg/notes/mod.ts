@@ -115,7 +115,7 @@ noteHandlers.openapi(CreateNoteRoute, async (c) => {
     return c.json({ error: res[1].message }, 400);
   }
 
-  return c.json(res[1]);
+  return c.json(res[1], 200);
 });
 
 noteHandlers[GetNoteRoute.method](
@@ -129,7 +129,7 @@ noteHandlers.openapi(GetNoteRoute, async (c) => {
     return c.json({ error: res[1].message }, 404);
   }
 
-  return c.json(res[1]);
+  return c.json(res[1], 200);
 });
 
 noteHandlers[RenoteRoute.method](
@@ -151,7 +151,7 @@ noteHandlers.openapi(RenoteRoute, async (c) => {
     return c.json({ error: res[1].message }, 400);
   }
 
-  return c.json(res[1]);
+  return c.json(res[1], 200);
 });
 
 noteHandlers[CreateBookmarkRoute.method](
@@ -167,10 +167,10 @@ noteHandlers.openapi(CreateBookmarkRoute, async (c) => {
   );
 
   if (Result.isErr(res)) {
-    return c.json({ error: res[1].message }, 400);
+    return c.json({ error: res[1].message }, 404);
   }
 
-  return c.json(res[1]);
+  return c.json(res[1], 200);
 });
 
 noteHandlers[DeleteBookmarkRoute.method](

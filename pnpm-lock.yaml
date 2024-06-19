@@ -15,8 +15,8 @@ importers:
         specifier: ^0.2.1
         version: 0.2.2(hono@4.4.6)
       '@hono/zod-openapi':
-        specifier: ^0.11.0
-        version: 0.11.1(hono@4.4.6)(zod@3.23.8)
+        specifier: ^0.14.0
+        version: 0.14.5(hono@4.4.6)(zod@3.23.8)
       '@mikuroxina/mini-fn':
         specifier: ^6.3.1
         version: 6.3.1
@@ -125,8 +125,8 @@ packages:
     resolution: {integrity: sha512-30iZtAPgz+LTIYoeivqYo853f02jBYSd5uGnGpkFV0M3xOt9aN73erkgYAmZU43x4VfqcnLxW9Kpg3R5LC4YYw==}
     engines: {node: '>=6.0.0'}
 
-  '@asteasolutions/zod-to-openapi@7.0.0':
-    resolution: {integrity: sha512-rJRKHD2m6nUb/9ZheeN8nqOURX24WTzY8Sex1ZKT0Kpx+xfpRcD0fTD6vEeXNHGaDGxzu65Jj/jb2x6nLTjcMw==}
+  '@asteasolutions/zod-to-openapi@7.1.1':
+    resolution: {integrity: sha512-lF0d1gAc0lYLO9/BAGivwTwE2Sh9h6CHuDcbk5KnGBfIuAsAkDC+Fdat4dkQY3CS/zUWKHRmFEma0B7X132Ymw==}
     peerDependencies:
       zod: ^3.20.2
 
@@ -615,15 +615,15 @@ packages:
     peerDependencies:
       hono: '*'
 
-  '@hono/zod-openapi@0.11.1':
-    resolution: {integrity: sha512-lCeAu1fH5cWRQccGsiiJBxHQKT1ueMYP3efdY/4VX6MvGNaLjFiIf5haXhbF2pr3+Eln7ZogKUVSVF+NoCWtgw==}
+  '@hono/zod-openapi@0.14.5':
+    resolution: {integrity: sha512-+CXmjUlWSvYd1dDUcq2umdCD5ReKpygIIsT8rAWYEM0EKFQOqg1w1y8SvWfwrP0dL8pkSZmcRatMjH9vPvzoGg==}
     engines: {node: '>=16.0.0'}
     peerDependencies:
-      hono: '>=3.11.3'
+      hono: '>=4.3.6'
       zod: 3.*
 
-  '@hono/zod-validator@0.2.1':
-    resolution: {integrity: sha512-HFoxln7Q6JsE64qz2WBS28SD33UB2alp3aRKmcWnNLDzEL1BLsWfbdX6e1HIiUprHYTIXf5y7ax8eYidKUwyaA==}
+  '@hono/zod-validator@0.2.2':
+    resolution: {integrity: sha512-dSDxaPV70Py8wuIU2QNpoVEIOSzSXZ/6/B/h4xA7eOMz7+AarKTSGV8E6QwrdcCbBLkpqfJ4Q2TmBO0eP1tCBQ==}
     peerDependencies:
       hono: '>=3.9.0'
       zod: ^3.19.1
@@ -3363,8 +3363,8 @@ packages:
   yallist@4.0.0:
     resolution: {integrity: sha512-3wdGidZyq5PB084XLES5TpOSRA3wjXAlIWMhum2kRcv/41Sn2emQ0dycQW4uZXLejwKvg6EsvbdlVL+FYEct7A==}
 
-  yaml@2.4.2:
-    resolution: {integrity: sha512-B3VqDZ+JAg1nZpaEmWtTXUlBneoGx6CPM9b0TENK6aoSu5t73dItudwdgmi6tHlIZZId4dZ9skcAQ2UbcyAeVA==}
+  yaml@2.4.3:
+    resolution: {integrity: sha512-sntgmxj8o7DE7g/Qi60cqpLBA3HG3STcDA0kO+WfB05jEKhZMbY7umNm2rBpQvsmZ16/lPXCJGW2672dgOUkrg==}
     engines: {node: '>= 14'}
     hasBin: true
 
@@ -3405,7 +3405,7 @@ snapshots:
       '@jridgewell/gen-mapping': 0.3.5
       '@jridgewell/trace-mapping': 0.3.25
 
-  '@asteasolutions/zod-to-openapi@7.0.0(zod@3.23.8)':
+  '@asteasolutions/zod-to-openapi@7.1.1(zod@3.23.8)':
     dependencies:
       openapi3-ts: 4.3.1
       zod: 3.23.8
@@ -3836,14 +3836,14 @@ snapshots:
     dependencies:
       hono: 4.4.6
 
-  '@hono/zod-openapi@0.11.1(hono@4.4.6)(zod@3.23.8)':
+  '@hono/zod-openapi@0.14.5(hono@4.4.6)(zod@3.23.8)':
     dependencies:
-      '@asteasolutions/zod-to-openapi': 7.0.0(zod@3.23.8)
-      '@hono/zod-validator': 0.2.1(hono@4.4.6)(zod@3.23.8)
+      '@asteasolutions/zod-to-openapi': 7.1.1(zod@3.23.8)
+      '@hono/zod-validator': 0.2.2(hono@4.4.6)(zod@3.23.8)
       hono: 4.4.6
       zod: 3.23.8
 
-  '@hono/zod-validator@0.2.1(hono@4.4.6)(zod@3.23.8)':
+  '@hono/zod-validator@0.2.2(hono@4.4.6)(zod@3.23.8)':
     dependencies:
       hono: 4.4.6
       zod: 3.23.8
@@ -4305,7 +4305,7 @@ snapshots:
       ajv-formats: 3.0.1(ajv@8.16.0)
       jsonpointer: 5.0.1
       leven: 4.0.0
-      yaml: 2.4.5
+      yaml: 2.4.3
 
   '@scalar/snippetz-core@0.1.4':
     dependencies:
@@ -6426,7 +6426,7 @@ snapshots:
 
   openapi3-ts@4.3.1:
     dependencies:
-      yaml: 2.4.2
+      yaml: 2.4.3
 
   optionator@0.9.4:
     dependencies:
@@ -6515,7 +6515,7 @@ snapshots:
   postcss-load-config@4.0.2(postcss@8.4.38):
     dependencies:
       lilconfig: 3.1.2
-      yaml: 2.4.5
+      yaml: 2.4.3
     optionalDependencies:
       postcss: 8.4.38
 
@@ -7237,7 +7237,7 @@ snapshots:
 
   yallist@4.0.0: {}
 
-  yaml@2.4.2: {}
+  yaml@2.4.3: {}
 
   yaml@2.4.5: {}
 
