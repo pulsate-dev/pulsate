@@ -4,7 +4,10 @@ import type { AccountID } from '../../accounts/model/account.js';
 import type { MediumID } from '../../drive/model/medium.js';
 import type { SnowflakeIDGenerator } from '../../id/mod.js';
 import { Note, type NoteID, type NoteVisibility } from '../model/note.js';
-import type { NoteRepository } from '../model/repository.js';
+import type {
+  NoteAttachmentRepository,
+  NoteRepository,
+} from '../model/repository.js';
 
 export class CreateService {
   async handle(
@@ -15,6 +18,9 @@ export class CreateService {
     attachmentFileID: MediumID[],
     visibility: NoteVisibility,
   ): Promise<Result.Result<Error, Note>> {
+    if (attachmentFileID.length > 16) {
+      return Result.err(new Error('Too many attachments'));
+    }
     const id = this.idGenerator.generate<Note>();
     if (Result.isErr(id)) {
       return id;
@@ -36,6 +42,16 @@ export class CreateService {
         return res;
       }
 
+      if (attachmentFileID.length !== 0) {
+        const attachmentRes = await this.noteAttachmentRepository.create(
+          note.getID(),
+          note.getAttachmentFileID(),
+        );
+        if (Result.isErr(attachmentRes)) {
+          return attachmentRes;
+        }
+      }
+
       return Result.ok(note);
     } catch (e) {
       return Result.err(e as unknown as Error);
@@ -45,5 +61,6 @@ export class CreateService {
   constructor(
     private readonly noteRepository: NoteRepository,
     private readonly idGenerator: SnowflakeIDGenerator,
+    private readonly noteAttachmentRepository: NoteAttachmentRepository,
   ) {}
 }

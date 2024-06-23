@@ -5,12 +5,16 @@ import type { MediumID } from '../../drive/model/medium.js';
 import type { SnowflakeIDGenerator } from '../../id/mod.js';
 import type { NoteID, NoteVisibility } from '../model/note.js';
 import { Note } from '../model/note.js';
-import type { NoteRepository } from '../model/repository.js';
+import type {
+  NoteAttachmentRepository,
+  NoteRepository,
+} from '../model/repository.js';
 
 export class RenoteService {
   constructor(
     private readonly noteRepository: NoteRepository,
     private readonly idGenerator: SnowflakeIDGenerator,
+    private readonly noteAttachmentRepository: NoteAttachmentRepository,
   ) {}
 
   async handle(
@@ -23,6 +27,9 @@ export class RenoteService {
   ): Promise<Result.Result<Error, Note>> {
     if (visibility === 'DIRECT') {
       return Result.err(new Error('Renote must not be direct note'));
+    }
+    if (attachmentFileID.length > 16) {
+      return Result.err(new Error('Too many attachments'));
     }
 
     // ToDo: check renote-able
@@ -52,6 +59,16 @@ export class RenoteService {
     const res = await this.noteRepository.create(renote);
     if (Result.isErr(res)) {
       return res;
+    }
+
+    if (attachmentFileID.length !== 0) {
+      const attachmentRes = await this.noteAttachmentRepository.create(
+        renote.getID(),
+        renote.getAttachmentFileID(),
+      );
+      if (Result.isErr(attachmentRes)) {
+        return attachmentRes;
+      }
     }
 
     return Result.ok(renote);
