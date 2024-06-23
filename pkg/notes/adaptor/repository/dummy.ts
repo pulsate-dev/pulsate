@@ -142,7 +142,7 @@ export class InMemoryNoteAttachmentRepository
     noteID: NoteID,
     attachmentFileID: MediumID[],
   ): Promise<Result.Result<Error, void>> {
-    if (attachmentFileID.map((v) => this.medium.has(v)).includes(false)) {
+    if (!attachmentFileID.every((v) => this.medium.has(v))) {
       return Result.err(new Error('medium not found'));
     }
 
