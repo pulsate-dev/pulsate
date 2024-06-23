@@ -11,10 +11,8 @@ export class FetchMediaService {
     authorID: AccountID,
   ): Promise<Result.Result<Error, Medium[]>> {
     const res = await this.mediaRepository.findByAuthor(authorID);
-    if (Option.isNone(res)) {
-      return Result.err(new Error('Failed to fetch media'));
-    }
-
-    return Result.ok(Option.unwrap(res));
+    return Option.okOrElse(
+      () => new Error('Failed to fetch media'),
+    )(res);
   }
 }
