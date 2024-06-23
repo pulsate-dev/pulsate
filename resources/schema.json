@@ -7,7 +7,7 @@
   },
   "servers": [
     {
-      "url": "http://localhost:3000/",
+      "url": "http://localhost:3000",
       "description": "Local server"
     }
   ],
@@ -350,6 +350,12 @@
         "required": [
           "captcha_token"
         ]
+      },
+      "GetAccountFollowingResponse": {
+        "type": "array",
+        "items": {
+          "$ref": "#/components/schemas/GetAccountResponse"
+        }
       }
     },
     "parameters": {}
@@ -1365,6 +1371,114 @@
         }
       }
     },
+    "/accounts/:id/following": {
+      "get": {
+        "tags": [
+          "accounts"
+        ],
+        "parameters": [
+          {
+            "schema": {
+              "type": "string",
+              "minLength": 3,
+              "maxLength": 64,
+              "description": "Characters must be [A-Za-z0-9-.] The first and last characters must be [A-Za-z0-9-.]",
+              "example": "example_man"
+            },
+            "required": true,
+            "name": "id",
+            "in": "path"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GetAccountFollowingResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string",
+                      "default": "",
+                      "description": "Error code",
+                      "example": "TEST_ERROR_CODE"
+                    }
+                  },
+                  "required": [
+                    "error"
+                  ]
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/accounts/:id/follower": {
+      "get": {
+        "tags": [
+          "accounts"
+        ],
+        "parameters": [
+          {
+            "schema": {
+              "type": "string",
+              "minLength": 3,
+              "maxLength": 64,
+              "description": "Characters must be [A-Za-z0-9-.] The first and last characters must be [A-Za-z0-9-.]",
+              "example": "example_man"
+            },
+            "required": true,
+            "name": "id",
+            "in": "path"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GetAccountFollowingResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string",
+                      "default": "",
+                      "description": "Error code",
+                      "example": "TEST_ERROR_CODE"
+                    }
+                  },
+                  "required": [
+                    "error"
+                  ]
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/notes": {
       "post": {
         "tags": [
@@ -1389,6 +1503,19 @@
                     "description": "Note visibility (PUBLIC/HOME/FOLLOWERS/DIRECT)",
                     "example": "PUBLIC"
                   },
+                  "attachment_file_ids": {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    },
+                    "maxItems": 16,
+                    "default": [],
+                    "description": "Attachment file IDs (max 16 files)",
+                    "example": [
+                      "38477395",
+                      "38477396"
+                    ]
+                  },
                   "contents_warning_comment": {
                     "type": "string",
                     "maxLength": 256,
@@ -1406,6 +1533,7 @@
                 "required": [
                   "content",
                   "visibility",
+                  "attachment_file_ids",
                   "contents_warning_comment"
                 ]
               }
@@ -1607,6 +1735,19 @@
                         "followed_count",
                         "following_count"
                       ]
+                    },
+                    "attachment_files": {
+                      "type": "array",
+                      "items": {
+                        "type": "string"
+                      },
+                      "maxItems": 16,
+                      "default": [],
+                      "description": "Attachment file IDs (max 16 files)",
+                      "example": [
+                        "38477395",
+                        "38477396"
+                      ]
                     }
                   },
                   "required": [
@@ -1615,7 +1756,8 @@
                     "contents_warning_comment",
                     "visibility",
                     "created_at",
-                    "author"
+                    "author",
+                    "attachment_files"
                   ]
                 }
               }
@@ -1700,6 +1842,19 @@
                     "description": "Note visibility (public/home/followers)",
                     "example": "public"
                   },
+                  "attachment_file_ids": {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    },
+                    "maxItems": 16,
+                    "default": [],
+                    "description": "Attachment file IDs (max 16 files)",
+                    "example": [
+                      "38477395",
+                      "38477396"
+                    ]
+                  },
                   "contents_warning_comment": {
                     "type": "string",
                     "maxLength": 256,
@@ -1711,6 +1866,7 @@
                 "required": [
                   "content",
                   "visibility",
+                  "attachment_file_ids",
                   "contents_warning_comment"
                 ]
               }
@@ -1759,6 +1915,19 @@
                       "type": "string",
                       "description": "Note created date",
                       "example": "2021-01-01T00:00:00Z"
+                    },
+                    "attachment_files": {
+                      "type": "array",
+                      "items": {
+                        "type": "string"
+                      },
+                      "maxItems": 16,
+                      "default": [],
+                      "description": "Attachment file IDs (max 16 files)",
+                      "example": [
+                        "38477395",
+                        "38477396"
+                      ]
                     }
                   },
                   "required": [
@@ -1768,7 +1937,8 @@
                     "original_note_id",
                     "contents_warning_comment",
                     "author_id",
-                    "created_at"
+                    "created_at",
+                    "attachment_files"
                   ]
                 }
               }
@@ -1818,6 +1988,241 @@
           },
           "404": {
             "description": "Note not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string",
+                      "default": "",
+                      "description": "Error code",
+                      "example": "TEST_ERROR_CODE"
+                    }
+                  },
+                  "required": [
+                    "error"
+                  ]
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/notes/:id/bookmark": {
+      "post": {
+        "tags": [
+          "bookmark"
+        ],
+        "parameters": [
+          {
+            "schema": {
+              "type": "string",
+              "description": "Note ID",
+              "example": "1"
+            },
+            "required": true,
+            "name": "id",
+            "in": "path"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "id": {
+                      "type": "string",
+                      "description": "Note ID",
+                      "example": "38477395"
+                    },
+                    "content": {
+                      "type": "string",
+                      "description": "Note content",
+                      "example": "hello world!"
+                    },
+                    "visibility": {
+                      "type": "string",
+                      "description": "Note visibility",
+                      "example": "PUBLIC"
+                    },
+                    "contents_warning_comment": {
+                      "type": "string",
+                      "description": "Contents warning comment",
+                      "example": "This note contains sensitive content"
+                    },
+                    "author_id": {
+                      "type": "string",
+                      "description": "Author account ID",
+                      "example": "38477395"
+                    },
+                    "created_at": {
+                      "type": "string",
+                      "description": "Note created date",
+                      "example": "2021-01-01T00:00:00Z"
+                    }
+                  },
+                  "required": [
+                    "id",
+                    "content",
+                    "visibility",
+                    "contents_warning_comment",
+                    "author_id",
+                    "created_at"
+                  ]
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Note not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string",
+                      "default": "",
+                      "description": "Error code",
+                      "example": "TEST_ERROR_CODE"
+                    }
+                  },
+                  "required": [
+                    "error"
+                  ]
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "bookmark"
+        ],
+        "parameters": [
+          {
+            "schema": {
+              "type": "string",
+              "description": "Note ID",
+              "example": "1"
+            },
+            "required": true,
+            "name": "id",
+            "in": "path"
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "OK"
+          },
+          "404": {
+            "description": "Bookmark not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string",
+                      "default": "",
+                      "description": "Error code",
+                      "example": "TEST_ERROR_CODE"
+                    }
+                  },
+                  "required": [
+                    "error"
+                  ]
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/drive": {
+      "get": {
+        "tags": [
+          "drive"
+        ],
+        "summary": "Get uploaded media",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "id": {
+                        "type": "string",
+                        "description": "medium ID",
+                        "example": "38477395"
+                      },
+                      "author_id": {
+                        "type": "string",
+                        "description": "account ID",
+                        "example": "38477395"
+                      },
+                      "name": {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 256,
+                        "description": "medium name",
+                        "example": "kyoto.jpg"
+                      },
+                      "hash": {
+                        "type": "string",
+                        "description": "medium hash (blurhash)",
+                        "example": "LEHLk~WB2yk8pyo0adR*.7kCMdnj"
+                      },
+                      "mime": {
+                        "type": "string",
+                        "description": "media mime type",
+                        "example": "image/jpeg"
+                      },
+                      "nsfw": {
+                        "type": "boolean",
+                        "description": "nsfw flag",
+                        "example": false
+                      },
+                      "url": {
+                        "type": "string",
+                        "format": "uri",
+                        "description": "media URL",
+                        "example": "https://example.com/38477395.jpg"
+                      },
+                      "thumbnail": {
+                        "type": "string",
+                        "format": "uri",
+                        "description": "thumbnail URL",
+                        "example": "https://example.com/38477395_thumb.jpg"
+                      }
+                    },
+                    "required": [
+                      "id",
+                      "author_id",
+                      "name",
+                      "hash",
+                      "mime",
+                      "nsfw",
+                      "url",
+                      "thumbnail"
+                    ]
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not found",
             "content": {
               "application/json": {
                 "schema": {

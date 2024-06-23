@@ -7,6 +7,12 @@ import type { MediaRepository } from '../../model/repository.js';
 export class InMemoryMediaRepository implements MediaRepository {
   private readonly data: Map<string, Medium> = new Map();
 
+  constructor(media: Medium[]) {
+    for (const medium of media) {
+      this.data.set(medium.getId(), medium);
+    }
+  }
+
   async create(medium: Medium): Promise<Result.Result<Error, void>> {
     this.data.set(medium.getId(), medium);
     return Result.ok(undefined);

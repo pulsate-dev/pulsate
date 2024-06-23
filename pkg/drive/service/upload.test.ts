@@ -10,7 +10,7 @@ import { UploadMediaService } from './upload.js';
 
 describe('upload', () => {
   const idGenerator = new SnowflakeIDGenerator(0, new MockClock(new Date()));
-  const repository = new InMemoryMediaRepository();
+  const repository = new InMemoryMediaRepository([]);
   const storageService = new LocalStorage();
   const service = new UploadMediaService(
     idGenerator,
