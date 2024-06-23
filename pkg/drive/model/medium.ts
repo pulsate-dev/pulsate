@@ -1,12 +1,12 @@
 import type { AccountID } from '../../accounts/model/account.js';
 import type { ID } from '../../id/type.js';
 
-export type MediumID = string;
+export type MediumID = ID<Medium>;
 
 export interface CreateMediumArgs {
-  id: ID<MediumID>;
+  id: MediumID;
   name: string;
-  authorId: ID<AccountID>;
+  authorId: AccountID;
   hash: string;
   mime: string;
   nsfw: boolean;
@@ -34,9 +34,9 @@ export class Medium {
     return new Medium(arg);
   }
 
-  private readonly id: ID<MediumID>;
+  private readonly id: MediumID;
 
-  getId(): ID<MediumID> {
+  getId(): MediumID {
     return this.id;
   }
   private readonly name: string;
@@ -44,9 +44,9 @@ export class Medium {
   getName(): string {
     return this.name;
   }
-  private readonly authorId: ID<AccountID>;
+  private readonly authorId: AccountID;
 
-  getAuthorId(): ID<AccountID> {
+  getAuthorId(): AccountID {
     return this.authorId;
   }
   private readonly hash: string;

@@ -5,8 +5,7 @@ import sharp from 'sharp';
 
 import type { AccountID } from '../../accounts/model/account.js';
 import type { SnowflakeIDGenerator } from '../../id/mod.js';
-import type { ID } from '../../id/type.js';
-import { Medium, type MediumID } from '../model/medium.js';
+import { Medium } from '../model/medium.js';
 import type { MediaRepository } from '../model/repository.js';
 import type { Storage } from '../model/storage.js';
 
@@ -27,7 +26,7 @@ export class UploadMediaService {
    */
   async handle(args: {
     name: string;
-    authorId: ID<AccountID>;
+    authorId: AccountID;
     nsfw: boolean;
     file: Uint8Array;
   }): Promise<Result.Result<Error, Medium>> {
@@ -44,7 +43,7 @@ export class UploadMediaService {
       return Result.err(new Error('Failed to process image'));
     }
 
-    const id = this.idGenerator.generate<MediumID>();
+    const id = this.idGenerator.generate<Medium>();
 
     if (Result.isErr(id)) {
       return id;
@@ -57,7 +56,7 @@ export class UploadMediaService {
     );
 
     const medium = Medium.new({
-      id: id[1] as ID<MediumID>,
+      id: id[1],
       name: args.name,
       authorId: args.authorId,
       nsfw: args.nsfw,
