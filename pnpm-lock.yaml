@@ -25,7 +25,7 @@ importers:
         version: 5.15.0(prisma@5.15.0)
       '@scalar/hono-api-reference':
         specifier: ^0.5.0
-        version: 0.5.74(postcss@8.4.38)(tailwindcss@3.4.4)(typescript@5.4.5)(vitest@1.6.0(@types/node@20.14.5))
+        version: 0.5.76(postcss@8.4.38)(tailwindcss@3.4.4)(typescript@5.4.5)(vitest@1.6.0(@types/node@20.14.5))
       argon2:
         specifier: ^0.40.0
         version: 0.40.3
@@ -953,12 +953,12 @@ packages:
     resolution: {integrity: sha512-2+Xil8ZFpU3JUiKhbz1q+SgdKUvkR4KitrA3HRjM7LQs4/umb5LhJw0DvJBFbKVas/SNputNUdQglRgXmgc2XQ==}
     engines: {node: '>=18'}
 
-  '@scalar/api-client@1.3.13':
-    resolution: {integrity: sha512-amPpLxJNuhoThgeGcDOtOHAm+da+5qLSrdblSr81aIJqz9aVlamYkVndKYbZHVfx0DYvByGi23mtCdmZ1q4otQ==}
+  '@scalar/api-client@1.3.14':
+    resolution: {integrity: sha512-7t3NH38pjqH0err229sQ88zWSh/8jIs06YDCZKDhQpAlKRxsxhhASylPaQPO0wb3gjfKO7klPcETNl077jvh+A==}
     engines: {node: '>=18'}
 
-  '@scalar/api-reference@1.24.13':
-    resolution: {integrity: sha512-2FVxGY6Yj1ah0YX2V3bts1cDcd2rdOmuQXZrdihgEyT7cITmI0wjGuJidlHSkpuXt1zJAK2p9an5CCJMoLxj+g==}
+  '@scalar/api-reference@1.24.15':
+    resolution: {integrity: sha512-FtPEUP6icrV8UIAcKjDLNPbbriByH3sOMToMzx45FJQypXJzlDj9BO0DAwGOklLCeFtjggR2ovO0G2Nm79rgFA==}
     engines: {node: '>=18'}
 
   '@scalar/client-app@0.1.9':
@@ -977,8 +977,8 @@ packages:
     resolution: {integrity: sha512-fcQMzJDWNCJkKxiua20LiZB0J3rkEANVdCX+2+z4x2uEpmRcQx3TqT2/aETs9OmNqr/jlNMtSubUqAgBnDpc/A==}
     engines: {node: '>=18'}
 
-  '@scalar/hono-api-reference@0.5.74':
-    resolution: {integrity: sha512-5w373JU8f0e0tIIs6flZ8/YB8WpjLSN1tB3emN3GOMEavSYoO2qnUFAvN1EUEyTUp7wSTDXM5EybN1OF7kWxZg==}
+  '@scalar/hono-api-reference@0.5.76':
+    resolution: {integrity: sha512-LtRnZ0/nijmA0VLzslNd/2oyvaLgyGxKml25OsJGRT7mJ8hS7MrkSE4/IPav8TqP6pJ0+3mhaS8SK+Vc5I+p1A==}
     engines: {node: '>=18'}
 
   '@scalar/oas-utils@0.2.3':
@@ -1280,6 +1280,11 @@ packages:
 
   '@unhead/shared@1.9.14':
     resolution: {integrity: sha512-7ZIC7uDV8gp3KHm5JxJ/NXMENQgkh+SCyTcsILSpOhkAGeszMHABrB6vjeZDGM4J9mRUxwyPn24KI2zG/R+XiQ==}
+
+  '@unhead/vue@1.9.14':
+    resolution: {integrity: sha512-Yc7Qv0ze+iLte4urHiA+ghkF7y+svrawrT+ZrCuGXkZ/eRTF/AY2SKex+rJQJZsP+fKEQ2pGb72IsI5kHFZT3A==}
+    peerDependencies:
+      vue: '>=2.7 || >=3'
 
   '@vitest/coverage-v8@1.6.0':
     resolution: {integrity: sha512-KvapcbMY/8GYIG0rlwwOKCVNRc0OL20rrhFkg/CHNzncV03TE2XWvO5w9uZYoxNiMEBacAJt3unSOiZ7svePew==}
@@ -4127,7 +4132,7 @@ snapshots:
       - typescript
       - vitest
 
-  '@scalar/api-client@1.3.13(typescript@5.4.5)(vitest@1.6.0(@types/node@20.14.5))':
+  '@scalar/api-client@1.3.14(typescript@5.4.5)(vitest@1.6.0(@types/node@20.14.5))':
     dependencies:
       '@floating-ui/vue': 1.0.6(vue@3.4.30(typescript@5.4.5))
       '@headlessui/vue': 1.7.22(vue@3.4.30(typescript@5.4.5))
@@ -4156,10 +4161,10 @@ snapshots:
       - typescript
       - vitest
 
-  '@scalar/api-reference@1.24.13(postcss@8.4.38)(tailwindcss@3.4.4)(typescript@5.4.5)(vitest@1.6.0(@types/node@20.14.5))':
+  '@scalar/api-reference@1.24.15(postcss@8.4.38)(tailwindcss@3.4.4)(typescript@5.4.5)(vitest@1.6.0(@types/node@20.14.5))':
     dependencies:
       '@headlessui/vue': 1.7.22(vue@3.4.30(typescript@5.4.5))
-      '@scalar/api-client': 1.3.13(typescript@5.4.5)(vitest@1.6.0(@types/node@20.14.5))
+      '@scalar/api-client': 1.3.14(typescript@5.4.5)(vitest@1.6.0(@types/node@20.14.5))
       '@scalar/api-client-modal': 0.0.11(tailwindcss@3.4.4)(typescript@5.4.5)(vitest@1.6.0(@types/node@20.14.5))
       '@scalar/components': 0.11.6(typescript@5.4.5)(vitest@1.6.0(@types/node@20.14.5))
       '@scalar/oas-utils': 0.2.3
@@ -4169,6 +4174,7 @@ snapshots:
       '@scalar/use-toasts': 0.7.2(typescript@5.4.5)
       '@scalar/use-tooltip': 0.7.3(typescript@5.4.5)
       '@unhead/schema': 1.9.14
+      '@unhead/vue': 1.9.14(vue@3.4.30(typescript@5.4.5))
       '@vueuse/core': 10.11.0(vue@3.4.30(typescript@5.4.5))
       axios: 1.7.2
       fuse.js: 7.0.0
@@ -4275,9 +4281,9 @@ snapshots:
     transitivePeerDependencies:
       - typescript
 
-  '@scalar/hono-api-reference@0.5.74(postcss@8.4.38)(tailwindcss@3.4.4)(typescript@5.4.5)(vitest@1.6.0(@types/node@20.14.5))':
+  '@scalar/hono-api-reference@0.5.76(postcss@8.4.38)(tailwindcss@3.4.4)(typescript@5.4.5)(vitest@1.6.0(@types/node@20.14.5))':
     dependencies:
-      '@scalar/api-reference': 1.24.13(postcss@8.4.38)(tailwindcss@3.4.4)(typescript@5.4.5)(vitest@1.6.0(@types/node@20.14.5))
+      '@scalar/api-reference': 1.24.15(postcss@8.4.38)(tailwindcss@3.4.4)(typescript@5.4.5)(vitest@1.6.0(@types/node@20.14.5))
       hono: 4.4.6
     transitivePeerDependencies:
       - '@jest/globals'
@@ -4737,6 +4743,14 @@ snapshots:
   '@unhead/shared@1.9.14':
     dependencies:
       '@unhead/schema': 1.9.14
+
+  '@unhead/vue@1.9.14(vue@3.4.30(typescript@5.4.5))':
+    dependencies:
+      '@unhead/schema': 1.9.14
+      '@unhead/shared': 1.9.14
+      hookable: 5.5.3
+      unhead: 1.9.14
+      vue: 3.4.30(typescript@5.4.5)
 
   '@vitest/coverage-v8@1.6.0(vitest@1.6.0(@types/node@20.14.5))':
     dependencies:
