@@ -4,7 +4,6 @@ import { describe, expect, it } from 'vitest';
 
 import type { AccountID } from '../../accounts/model/account.js';
 import { MockClock, SnowflakeIDGenerator } from '../../id/mod.js';
-import type { ID } from '../../id/type.js';
 import { InMemoryMediaRepository } from '../adaptor/repository/dummy.js';
 import { LocalStorage } from '../adaptor/storage/dummy.js';
 import { UploadMediaService } from './upload.js';
@@ -24,7 +23,7 @@ describe('upload', () => {
     const a = await readFile('./pkg/drive/testData/flower.jpeg');
     const res = await service.handle({
       name: 'flower.jpg',
-      authorId: '1' as ID<AccountID>,
+      authorId: '1' as AccountID,
       nsfw: false,
       file: a,
     });
@@ -47,7 +46,7 @@ describe('upload', () => {
     const a = await readFile('./pkg/drive/testData/flower.jpeg');
     const res = await s.handle({
       name: 'flower.jpg',
-      authorId: '1' as ID<AccountID>,
+      authorId: '1' as AccountID,
       nsfw: false,
       file: a,
     });
@@ -59,7 +58,7 @@ describe('upload', () => {
     const a = await readFile('./pkg/drive/testData/tokyo.heic');
     const res = await service.handle({
       name: 'tokyo.heic',
-      authorId: '1' as ID<AccountID>,
+      authorId: '1' as AccountID,
       nsfw: false,
       file: a,
     });

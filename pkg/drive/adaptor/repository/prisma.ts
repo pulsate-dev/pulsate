@@ -3,7 +3,6 @@ import { type Prisma, type PrismaClient } from '@prisma/client';
 
 import type { AccountID } from '../../../accounts/model/account.js';
 import type { prismaClient } from '../../../adaptors/prisma.js';
-import type { ID } from '../../../id/type.js';
 import { Medium, type MediumID } from '../../model/medium.js';
 import type { MediaRepository } from '../../model/repository.js';
 
@@ -41,9 +40,7 @@ export class PrismaMediaRepository implements MediaRepository {
     return Option.some(this.fromPrismaArgs(res));
   }
 
-  async findByAuthor(
-    authorId: ID<AccountID>,
-  ): Promise<Option.Option<Medium[]>> {
+  async findByAuthor(authorId: AccountID): Promise<Option.Option<Medium[]>> {
     try {
       const res = await this.prisma.medium.findMany({
         where: {
@@ -82,9 +79,9 @@ export class PrismaMediaRepository implements MediaRepository {
     }
 
     return Medium.reconstruct({
-      id: args.id as ID<MediumID>,
+      id: args.id as MediumID,
       name: args.name,
-      authorId: args.authorId as ID<AccountID>,
+      authorId: args.authorId as AccountID,
       hash: args.hash,
       mime: args.mime,
       nsfw: args.nsfw,
