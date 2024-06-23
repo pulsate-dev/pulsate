@@ -34,7 +34,7 @@ jobs:
 
       - name: Run fmt
         run: |
-          pnpm format:check
+          pnpm check:format
 
       - name: Run lint
         run: |
