@@ -75,6 +75,7 @@ export class PrismaNoteRepository implements NoteRepository {
       originalNoteID: !data.renoteId
         ? Option.some(data.renoteId as NoteID)
         : Option.none(),
+      attachmentFileID: [],
       // ToDo: add SendTo field to schema
       sendTo: Option.none(),
       updatedAt: Option.none(),

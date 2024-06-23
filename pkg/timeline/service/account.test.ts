@@ -22,6 +22,7 @@ describe('AccountTimelineService', () => {
     contentsWarningComment: '',
     createdAt: new Date(),
     originalNoteID: Option.none(),
+    attachmentFileID: [],
     sendTo: Option.none(),
     visibility: 'PUBLIC',
   });
@@ -32,6 +33,7 @@ describe('AccountTimelineService', () => {
     contentsWarningComment: '',
     createdAt: new Date(),
     originalNoteID: Option.none(),
+    attachmentFileID: [],
     sendTo: Option.none(),
     visibility: 'HOME',
   });
@@ -42,6 +44,7 @@ describe('AccountTimelineService', () => {
     contentsWarningComment: '',
     createdAt: new Date(),
     originalNoteID: Option.none(),
+    attachmentFileID: [],
     sendTo: Option.none(),
     visibility: 'FOLLOWERS',
   });
@@ -52,6 +55,7 @@ describe('AccountTimelineService', () => {
     contentsWarningComment: '',
     createdAt: new Date(),
     originalNoteID: Option.none(),
+    attachmentFileID: [],
     sendTo: Option.some('101' as AccountID),
     visibility: 'DIRECT',
   });

@@ -2,6 +2,7 @@ import { Option } from '@mikuroxina/mini-fn';
 import { describe, expect, it } from 'vitest';
 
 import type { AccountID } from '../../accounts/model/account.js';
+import type { MediumID } from '../../drive/model/medium.js';
 import { type CreateNoteArgs, Note, type NoteID } from './note.js';
 
 const exampleInput: CreateNoteArgs = {
@@ -13,6 +14,7 @@ const exampleInput: CreateNoteArgs = {
   contentsWarningComment: '',
   sendTo: Option.none(),
   originalNoteID: Option.none(),
+  attachmentFileID: ['10' as MediumID, '20' as MediumID, '30' as MediumID],
   updatedAt: Option.none(),
   deletedAt: Option.none(),
 };
@@ -26,6 +28,7 @@ describe('Note', () => {
     expect(note.getContent()).toBe(exampleInput.content);
     expect(note.getVisibility()).toBe(exampleInput.visibility);
     expect(note.getCwComment()).toBe(exampleInput.contentsWarningComment);
+    expect(note.getAttachmentFileID()).toBe(exampleInput.attachmentFileID);
     expect(note.getCreatedAt()).toBe(exampleInput.createdAt);
     expect(note.getUpdatedAt()).toStrictEqual(Option.none());
     expect(note.getDeletedAt()).toStrictEqual(Option.none());

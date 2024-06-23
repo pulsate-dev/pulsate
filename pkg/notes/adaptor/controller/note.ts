@@ -2,6 +2,7 @@ import { type z } from '@hono/zod-openapi';
 import { Option, Result } from '@mikuroxina/mini-fn';
 
 import type { AccountID } from '../../../accounts/model/account.js';
+import type { MediumID } from '../../../drive/model/medium.js';
 import type { AccountModule } from '../../../intermodule/account.js';
 import type { NoteID, NoteVisibility } from '../../model/note.js';
 import type { CreateService } from '../../service/create.js';
@@ -21,19 +22,21 @@ export class NoteController {
     private readonly accountModule: AccountModule,
   ) {}
 
-  async createNote(
-    authorID: string,
-    content: string,
-    visibility: string,
-    contentsWarningComment: string,
-    sendTo?: string,
-  ): Promise<Result.Result<Error, z.infer<typeof CreateNoteResponseSchema>>> {
+  async createNote(args: {
+    authorID: string;
+    content: string;
+    visibility: string;
+    contentsWarningComment: string;
+    attachmentFileID: string[];
+    sendTo?: string;
+  }): Promise<Result.Result<Error, z.infer<typeof CreateNoteResponseSchema>>> {
     const res = await this.createService.handle(
-      content,
-      contentsWarningComment,
-      !sendTo ? Option.none() : Option.some(sendTo as AccountID),
-      authorID as AccountID,
-      visibility as NoteVisibility,
+      args.content,
+      args.contentsWarningComment,
+      !args.sendTo ? Option.none() : Option.some(args.sendTo as AccountID),
+      args.authorID as AccountID,
+      args.attachmentFileID as MediumID[],
+      args.visibility as NoteVisibility,
     );
     if (Result.isErr(res)) {
       return res;
@@ -77,6 +80,8 @@ export class NoteController {
         : undefined,
       visibility: res[1].getVisibility(),
       created_at: res[1].getCreatedAt().toUTCString(),
+      // ToDo: return AttachmentFile meta data
+      attachment_files: [],
       author: {
         id: authorAccount[1].getID(),
         name: authorAccount[1].getName(),
@@ -90,19 +95,21 @@ export class NoteController {
     });
   }
 
-  async renote(
-    originalNoteID: string,
-    authorID: string,
-    content: string,
-    visibility: string,
-    contentsWarningComment: string,
-  ): Promise<Result.Result<Error, z.infer<typeof RenoteResponseSchema>>> {
+  async renote(args: {
+    originalNoteID: string;
+    authorID: string;
+    content: string;
+    visibility: string;
+    contentsWarningComment: string;
+    attachmentFileID: string[];
+  }): Promise<Result.Result<Error, z.infer<typeof RenoteResponseSchema>>> {
     const res = await this.renoteService.handle(
-      originalNoteID as NoteID,
-      content,
-      contentsWarningComment,
-      authorID as AccountID,
-      visibility as NoteVisibility,
+      args.originalNoteID as NoteID,
+      args.content,
+      args.contentsWarningComment,
+      args.authorID as AccountID,
+      args.attachmentFileID as MediumID[],
+      args.visibility as NoteVisibility,
     );
     if (Result.isErr(res)) {
       return res;
@@ -115,6 +122,8 @@ export class NoteController {
       contents_warning_comment: res[1].getCwComment(),
       original_note_id: Option.unwrap(res[1].getOriginalNoteID()),
       author_id: res[1].getAuthorID(),
+      // ToDo: return AttachmentFile meta data
+      attachment_files: [],
       created_at: res[1].getCreatedAt().toUTCString(),
     });
   }
