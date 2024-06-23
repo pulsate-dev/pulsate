@@ -15,7 +15,7 @@ export interface CreateNoteArgs {
   contentsWarningComment: string;
   sendTo: Option.Option<AccountID>;
   originalNoteID: Option.Option<NoteID>;
-  attachmentFileID: MediumID[];
+  attachmentFileID: readonly MediumID[];
   createdAt: Date;
   updatedAt: Option.Option<Date>;
   deletedAt: Option.Option<Date>;
@@ -90,8 +90,8 @@ export class Note {
     return this.originalNoteID;
   }
 
-  private readonly attachmentFileID: MediumID[];
-  getAttachmentFileID(): MediumID[] {
+  private readonly attachmentFileID: readonly MediumID[];
+  getAttachmentFileID(): readonly MediumID[] {
     return this.attachmentFileID;
   }
 

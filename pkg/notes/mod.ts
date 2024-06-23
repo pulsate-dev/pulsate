@@ -109,14 +109,14 @@ noteHandlers.openapi(CreateNoteRoute, async (c) => {
     send_to,
     attachment_file_ids,
   } = c.req.valid('json');
-  const res = await controller.createNote(
-    '',
-    content,
-    visibility,
-    contents_warning_comment,
-    attachment_file_ids,
-    send_to,
-  );
+  const res = await controller.createNote({
+    authorID: '',
+    content: content,
+    visibility: visibility,
+    contentsWarningComment: contents_warning_comment,
+    attachmentFileID: attachment_file_ids,
+    sendTo: send_to,
+  });
   if (Result.isErr(res)) {
     return c.json({ error: res[1].message }, 400);
   }
@@ -145,14 +145,14 @@ noteHandlers[RenoteRoute.method](
 noteHandlers.openapi(RenoteRoute, async (c) => {
   const { id } = c.req.param();
   const req = c.req.valid('json');
-  const res = await controller.renote(
-    id,
-    req.content,
-    req.contents_warning_comment,
-    '',
-    req.visibility,
-    req.attachment_file_ids,
-  );
+  const res = await controller.renote({
+    originalNoteID: id,
+    content: req.content,
+    contentsWarningComment: req.contents_warning_comment,
+    authorID: '',
+    visibility: req.visibility,
+    attachmentFileID: req.attachment_file_ids,
+  });
 
   if (Result.isErr(res)) {
     return c.json({ error: res[1].message }, 400);

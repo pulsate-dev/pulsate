@@ -22,21 +22,21 @@ export class NoteController {
     private readonly accountModule: AccountModule,
   ) {}
 
-  async createNote(
-    authorID: string,
-    content: string,
-    visibility: string,
-    contentsWarningComment: string,
-    attachmentFileID: string[],
-    sendTo?: string,
-  ): Promise<Result.Result<Error, z.infer<typeof CreateNoteResponseSchema>>> {
+  async createNote(args: {
+    authorID: string;
+    content: string;
+    visibility: string;
+    contentsWarningComment: string;
+    attachmentFileID: string[];
+    sendTo?: string;
+  }): Promise<Result.Result<Error, z.infer<typeof CreateNoteResponseSchema>>> {
     const res = await this.createService.handle(
-      content,
-      contentsWarningComment,
-      !sendTo ? Option.none() : Option.some(sendTo as AccountID),
-      authorID as AccountID,
-      attachmentFileID as MediumID[],
-      visibility as NoteVisibility,
+      args.content,
+      args.contentsWarningComment,
+      !args.sendTo ? Option.none() : Option.some(args.sendTo as AccountID),
+      args.authorID as AccountID,
+      args.attachmentFileID as MediumID[],
+      args.visibility as NoteVisibility,
     );
     if (Result.isErr(res)) {
       return res;
@@ -95,21 +95,21 @@ export class NoteController {
     });
   }
 
-  async renote(
-    originalNoteID: string,
-    authorID: string,
-    content: string,
-    visibility: string,
-    contentsWarningComment: string,
-    attachmentFileID: string[],
-  ): Promise<Result.Result<Error, z.infer<typeof RenoteResponseSchema>>> {
+  async renote(args: {
+    originalNoteID: string;
+    authorID: string;
+    content: string;
+    visibility: string;
+    contentsWarningComment: string;
+    attachmentFileID: string[];
+  }): Promise<Result.Result<Error, z.infer<typeof RenoteResponseSchema>>> {
     const res = await this.renoteService.handle(
-      originalNoteID as NoteID,
-      content,
-      contentsWarningComment,
-      authorID as AccountID,
-      attachmentFileID as MediumID[],
-      visibility as NoteVisibility,
+      args.originalNoteID as NoteID,
+      args.content,
+      args.contentsWarningComment,
+      args.authorID as AccountID,
+      args.attachmentFileID as MediumID[],
+      args.visibility as NoteVisibility,
     );
     if (Result.isErr(res)) {
       return res;
