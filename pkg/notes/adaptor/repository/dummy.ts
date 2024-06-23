@@ -1,10 +1,12 @@
 import { Option, Result } from '@mikuroxina/mini-fn';
 
 import type { AccountID } from '../../../accounts/model/account.js';
+import { type Medium, type MediumID } from '../../../drive/model/medium.js';
 import { Bookmark } from '../../model/bookmark.js';
 import { type Note, type NoteID } from '../../model/note.js';
 import type {
   BookmarkRepository,
+  NoteAttachmentRepository,
   NoteRepository,
 } from '../../model/repository.js';
 
@@ -122,5 +124,42 @@ export class InMemoryBookmarkRepository implements BookmarkRepository {
     }
 
     return Promise.resolve(Option.some(bookmarks));
+  }
+}
+
+export class InMemoryNoteAttachmentRepository
+  implements NoteAttachmentRepository
+{
+  private readonly attachments: Map<NoteID, MediumID[]>;
+  private readonly medium: Map<MediumID, Medium>;
+
+  constructor(medium: Medium[]) {
+    this.attachments = new Map();
+    this.medium = new Map(medium.map((m) => [m.getId(), m]));
+  }
+
+  async create(
+    noteID: NoteID,
+    attachmentFileID: MediumID[],
+  ): Promise<Result.Result<Error, void>> {
+    if (!attachmentFileID.every((v) => this.medium.has(v))) {
+      return Result.err(new Error('medium not found'));
+    }
+
+    this.attachments.set(noteID, attachmentFileID);
+    return Result.ok(undefined);
+  }
+
+  async findByNoteID(noteID: NoteID): Promise<Result.Result<Error, Medium[]>> {
+    const attachment = this.attachments.get(noteID);
+    if (!attachment) {
+      return Result.err(new Error('attachment not found'));
+    }
+
+    // ToDo: make filter more safe (may be fix at TypeScript 5.4)
+    const res = attachment
+      .map((id) => this.medium.get(id))
+      .filter((v): v is Medium => Boolean(v));
+    return Result.ok(res);
   }
 }

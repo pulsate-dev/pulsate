@@ -15,10 +15,12 @@ import { BookmarkController } from './adaptor/controller/bookmark.js';
 import { NoteController } from './adaptor/controller/note.js';
 import {
   InMemoryBookmarkRepository,
+  InMemoryNoteAttachmentRepository,
   InMemoryNoteRepository,
 } from './adaptor/repository/dummy.js';
 import {
   PrismaBookmarkRepository,
+  PrismaNoteAttachmentRepository,
   PrismaNoteRepository,
 } from './adaptor/repository/prisma.js';
 import {
@@ -45,6 +47,9 @@ const noteRepository = isProduction
 const bookmarkRepository = isProduction
   ? new PrismaBookmarkRepository(prismaClient)
   : new InMemoryBookmarkRepository();
+const attachmentRepository = isProduction
+  ? new PrismaNoteAttachmentRepository(prismaClient)
+  : new InMemoryNoteAttachmentRepository([]);
 const idGenerator = new SnowflakeIDGenerator(0, {
   now: () => BigInt(Date.now()),
 });
@@ -66,9 +71,17 @@ const AuthMiddleware = await Ether.runEtherT(
 const accountModule = new AccountModule();
 
 // Note
-const createService = new CreateService(noteRepository, idGenerator);
+const createService = new CreateService(
+  noteRepository,
+  idGenerator,
+  attachmentRepository,
+);
 const fetchService = new FetchService(noteRepository, accountModule);
-const renoteService = new RenoteService(noteRepository, idGenerator);
+const renoteService = new RenoteService(
+  noteRepository,
+  idGenerator,
+  attachmentRepository,
+);
 const controller = new NoteController(
   createService,
   fetchService,

@@ -1,6 +1,7 @@
 import type { Option, Result } from '@mikuroxina/mini-fn';
 
 import type { AccountID } from '../../accounts/model/account.js';
+import { type Medium, type MediumID } from '../../drive/model/medium.js';
 import type { Bookmark } from './bookmark.js';
 import type { Note, NoteID } from './note.js';
 
@@ -28,4 +29,12 @@ export interface BookmarkRepository {
     noteID: NoteID;
     accountID: AccountID;
   }): Promise<Result.Result<Error, void>>;
+}
+
+export interface NoteAttachmentRepository {
+  create(
+    noteID: NoteID,
+    attachmentFileID: readonly MediumID[],
+  ): Promise<Result.Result<Error, void>>;
+  findByNoteID(noteID: NoteID): Promise<Result.Result<Error, Medium[]>>;
 }

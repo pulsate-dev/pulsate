@@ -3,10 +3,12 @@ import { type Prisma, type PrismaClient } from '@prisma/client';
 
 import type { AccountID } from '../../../accounts/model/account.js';
 import type { prismaClient } from '../../../adaptors/prisma.js';
+import { Medium, type MediumID } from '../../../drive/model/medium.js';
 import { Bookmark } from '../../model/bookmark.js';
 import { Note, type NoteID, type NoteVisibility } from '../../model/note.js';
 import type {
   BookmarkRepository,
+  NoteAttachmentRepository,
   NoteRepository,
 } from '../../model/repository.js';
 
@@ -236,6 +238,72 @@ export class PrismaBookmarkRepository implements BookmarkRepository {
       );
     } catch {
       return Option.none();
+    }
+  }
+}
+
+type DeserializeNoteAttachmentArgs = Prisma.PromiseReturnType<
+  typeof prismaClient.noteAttachment.findMany<{ include: { medium: true } }>
+>;
+
+export class PrismaNoteAttachmentRepository
+  implements NoteAttachmentRepository
+{
+  constructor(private readonly client: PrismaClient) {}
+
+  private deserialize(data: DeserializeNoteAttachmentArgs): Medium[] {
+    data.map((v) => {
+      const medium = v.medium;
+      return Medium.reconstruct({
+        authorId: medium.authorId as AccountID,
+        hash: medium.hash,
+        id: medium.id as MediumID,
+        mime: medium.mime,
+        name: medium.name,
+        nsfw: medium.nsfw,
+        thumbnailUrl: medium.thumbnailUrl,
+        url: medium.url,
+      });
+    });
+
+    return [];
+  }
+
+  async create(
+    noteID: NoteID,
+    attachmentFileID: MediumID[],
+  ): Promise<Result.Result<Error, void>> {
+    const data = attachmentFileID.map((v) => {
+      return {
+        noteId: noteID,
+        mediumId: v,
+        alt: '',
+      };
+    });
+
+    try {
+      await this.client.noteAttachment.createMany({
+        data,
+      });
+      return Result.ok(undefined);
+    } catch (e) {
+      return Result.err(e as Error);
+    }
+  }
+
+  async findByNoteID(noteID: NoteID): Promise<Result.Result<Error, Medium[]>> {
+    try {
+      const res = await this.client.noteAttachment.findMany({
+        where: {
+          noteId: noteID,
+        },
+        include: {
+          medium: true,
+        },
+      });
+      return Result.ok(this.deserialize(res));
+    } catch (e) {
+      return Result.err(e as Error);
     }
   }
 }
