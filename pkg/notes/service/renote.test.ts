@@ -14,6 +14,7 @@ const originalNote = Note.new({
   contentsWarningComment: '',
   createdAt: new Date(),
   originalNoteID: Option.none(),
+  attachmentFileID: [],
   sendTo: Option.none(),
   visibility: 'PUBLIC',
 });
@@ -32,6 +33,7 @@ describe('RenoteService', () => {
       'renote',
       '',
       '1' as AccountID,
+      [],
       'PUBLIC',
     );
 
@@ -49,6 +51,7 @@ describe('RenoteService', () => {
       'direct renote',
       '',
       '1' as AccountID,
+      [],
       'DIRECT',
     );
 
@@ -61,6 +64,7 @@ describe('RenoteService', () => {
       'renote',
       '',
       '1' as AccountID,
+      [],
       'PUBLIC',
     );
 
@@ -80,6 +84,7 @@ describe('RenoteService', () => {
       'renote',
       '',
       '1' as AccountID,
+      [],
       'PUBLIC',
     );
 
@@ -96,6 +101,7 @@ describe('RenoteService', () => {
       'renote',
       '',
       '1' as AccountID,
+      [],
       'PUBLIC',
     );
 

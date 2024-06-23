@@ -21,6 +21,7 @@ describe('CreateService', () => {
       '',
       Option.none(),
       '1' as AccountID,
+      [],
       'PUBLIC',
     );
 
@@ -33,6 +34,7 @@ describe('CreateService', () => {
       '',
       Option.none(),
       '1' as AccountID,
+      [],
       'PUBLIC',
     );
 
@@ -45,6 +47,7 @@ describe('CreateService', () => {
       '',
       Option.none(),
       '1' as AccountID,
+      [],
       'DIRECT',
     );
 

@@ -1,6 +1,7 @@
 import { Option } from '@mikuroxina/mini-fn';
 
 import type { AccountID } from '../../accounts/model/account.js';
+import type { MediumID } from '../../drive/model/medium.js';
 import type { ID } from '../../id/type.js';
 
 export type NoteID = ID<Note>;
@@ -14,6 +15,7 @@ export interface CreateNoteArgs {
   contentsWarningComment: string;
   sendTo: Option.Option<AccountID>;
   originalNoteID: Option.Option<NoteID>;
+  attachmentFileID: MediumID[];
   createdAt: Date;
   updatedAt: Option.Option<Date>;
   deletedAt: Option.Option<Date>;
@@ -28,6 +30,7 @@ export class Note {
     this.contentsWarningComment = arg.contentsWarningComment;
     this.sendTo = arg.sendTo;
     this.originalNoteID = arg.originalNoteID;
+    this.attachmentFileID = arg.attachmentFileID;
     this.createdAt = arg.createdAt;
     this.updatedAt = arg.updatedAt;
     this.deletedAt = arg.deletedAt;
@@ -85,6 +88,11 @@ export class Note {
   private readonly originalNoteID: Option.Option<NoteID>;
   getOriginalNoteID(): Option.Option<NoteID> {
     return this.originalNoteID;
+  }
+
+  private readonly attachmentFileID: MediumID[];
+  getAttachmentFileID(): MediumID[] {
+    return this.attachmentFileID;
   }
 
   private readonly createdAt: Date;

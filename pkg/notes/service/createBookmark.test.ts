@@ -24,6 +24,7 @@ const noteRepository = new InMemoryNoteRepository([
     createdAt: new Date('2023-09-10T00:00:00Z'),
     sendTo: Option.none(),
     originalNoteID: Option.none(),
+    attachmentFileID: [],
     visibility: 'PUBLIC',
   }),
   Note.new({
@@ -34,6 +35,7 @@ const noteRepository = new InMemoryNoteRepository([
     createdAt: new Date('2023-09-10T00:00:00Z'),
     sendTo: Option.none(),
     originalNoteID: Option.none(),
+    attachmentFileID: [],
     visibility: 'PUBLIC',
   }),
 ]);

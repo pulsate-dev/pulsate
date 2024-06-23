@@ -1,6 +1,7 @@
 import { Option, Result } from '@mikuroxina/mini-fn';
 
 import type { AccountID } from '../../accounts/model/account.js';
+import type { MediumID } from '../../drive/model/medium.js';
 import type { SnowflakeIDGenerator } from '../../id/mod.js';
 import { Note, type NoteID, type NoteVisibility } from '../model/note.js';
 import type { NoteRepository } from '../model/repository.js';
@@ -11,6 +12,7 @@ export class CreateService {
     contentsWarningComment: string,
     sendTo: Option.Option<AccountID>,
     authorID: AccountID,
+    attachmentFileID: MediumID[],
     visibility: NoteVisibility,
   ): Promise<Result.Result<Error, Note>> {
     const id = this.idGenerator.generate<Note>();
@@ -25,6 +27,7 @@ export class CreateService {
         createdAt: new Date(),
         sendTo: sendTo,
         originalNoteID: Option.none(),
+        attachmentFileID: attachmentFileID,
         visibility: visibility,
         authorID: authorID,
       });

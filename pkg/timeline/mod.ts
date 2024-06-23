@@ -72,6 +72,7 @@ const pushNoteToTimeline = timeline.openapi(
         createdAt: new Date(),
         originalNoteID: Option.none(),
         sendTo: Option.none(),
+        attachmentFileID: [],
         visibility: 'FOLLOWERS',
       }),
     );

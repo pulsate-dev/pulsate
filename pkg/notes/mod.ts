@@ -102,13 +102,19 @@ noteHandlers[CreateNoteRoute.method](
   AuthMiddleware.handle({ forceAuthorized: true }),
 );
 noteHandlers.openapi(CreateNoteRoute, async (c) => {
-  const { content, visibility, contents_warning_comment, send_to } =
-    c.req.valid('json');
+  const {
+    content,
+    visibility,
+    contents_warning_comment,
+    send_to,
+    attachment_file_ids,
+  } = c.req.valid('json');
   const res = await controller.createNote(
     '',
     content,
     visibility,
     contents_warning_comment,
+    attachment_file_ids,
     send_to,
   );
   if (Result.isErr(res)) {
@@ -145,6 +151,7 @@ noteHandlers.openapi(RenoteRoute, async (c) => {
     req.contents_warning_comment,
     '',
     req.visibility,
+    req.attachment_file_ids,
   );
 
   if (Result.isErr(res)) {

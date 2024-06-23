@@ -44,6 +44,7 @@ export class PrismaTimelineRepository implements TimelineRepository {
         originalNoteID: !v.renoteId
           ? Option.some(v.renoteId as NoteID)
           : Option.none(),
+        attachmentFileID: [],
         // ToDo: add SendTo field to db schema
         sendTo: Option.none(),
         updatedAt: Option.none(),

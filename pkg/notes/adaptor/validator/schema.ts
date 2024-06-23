@@ -21,7 +21,14 @@ export const CreateNoteRequestSchema = z.object({
     description: 'Note visibility (PUBLIC/HOME/FOLLOWERS/DIRECT)',
     default: 'PUBLIC',
   }),
-  // ToDo: Define attachment schema
+  attachment_file_ids: z
+    .array(z.string())
+    .max(16)
+    .openapi({
+      example: ['38477395', '38477396'],
+      description: 'Attachment file IDs (max 16 files)',
+      default: [],
+    }),
   contents_warning_comment: z.string().max(256).openapi({
     example: 'This note contains sensitive content',
     description: 'Contents warning comment (max 256 characters)',
@@ -100,7 +107,15 @@ export const GetNoteResponseSchema = z.object({
     followed_count: z.number(),
     following_count: z.number(),
   }),
-  // ToDo: add attachment_files, reactions
+  // ToDo: add reactions
+  attachment_files: z
+    .array(z.string())
+    .max(16)
+    .openapi({
+      example: ['38477395', '38477396'],
+      description: 'Attachment file IDs (max 16 files)',
+      default: [],
+    }),
 });
 
 export const RenoteRequestSchema = z.object({
@@ -117,7 +132,14 @@ export const RenoteRequestSchema = z.object({
       description: 'Note visibility (public/home/followers)',
       default: 'public',
     }),
-  // ToDo: Define attachment schema
+  attachment_file_ids: z
+    .array(z.string())
+    .max(16)
+    .openapi({
+      example: ['38477395', '38477396'],
+      description: 'Attachment file IDs (max 16 files)',
+      default: [],
+    }),
   contents_warning_comment: z.string().max(256).openapi({
     example: 'This note contains sensitive content',
     description: 'Contents warning comment (max 256 characters)',
@@ -154,6 +176,14 @@ export const RenoteResponseSchema = z.object({
     example: '2021-01-01T00:00:00Z',
     description: 'Note created date',
   }),
+  attachment_files: z
+    .array(z.string())
+    .max(16)
+    .openapi({
+      example: ['38477395', '38477396'],
+      description: 'Attachment file IDs (max 16 files)',
+      default: [],
+    }),
 });
 
 export const CreateBookmarkResponseSchema = z.object({

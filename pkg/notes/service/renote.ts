@@ -1,6 +1,7 @@
 import { Option, Result } from '@mikuroxina/mini-fn';
 
 import type { AccountID } from '../../accounts/model/account.js';
+import type { MediumID } from '../../drive/model/medium.js';
 import type { SnowflakeIDGenerator } from '../../id/mod.js';
 import type { NoteID, NoteVisibility } from '../model/note.js';
 import { Note } from '../model/note.js';
@@ -17,6 +18,7 @@ export class RenoteService {
     content: string,
     contentsWarningComment: string,
     authorID: AccountID,
+    attachmentFileID: MediumID[],
     visibility: NoteVisibility,
   ): Promise<Result.Result<Error, Note>> {
     if (visibility === 'DIRECT') {
@@ -41,6 +43,8 @@ export class RenoteService {
       contentsWarningComment: contentsWarningComment,
       createdAt: new Date(),
       originalNoteID: Option.some(originalNoteID),
+      attachmentFileID: attachmentFileID,
+      // NOTE: Direct note is can not renote
       sendTo: Option.none(),
       visibility: visibility,
     });
