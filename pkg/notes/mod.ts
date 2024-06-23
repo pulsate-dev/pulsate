@@ -111,8 +111,8 @@ noteHandlers.openapi(CreateNoteRoute, async (c) => {
   } = c.req.valid('json');
   const res = await controller.createNote({
     authorID: '',
-    content: content,
-    visibility: visibility,
+    content,
+    visibility,
     contentsWarningComment: contents_warning_comment,
     attachmentFileID: attachment_file_ids,
     sendTo: send_to,
