@@ -30,7 +30,14 @@ const mediaRepository = isProduction
 const fetchService = new FetchMediaService(mediaRepository);
 const controller = new DriveController(fetchService);
 
-const drive = new OpenAPIHono();
+export const drive = new OpenAPIHono();
+drive.doc('/drive/doc.json', {
+  openapi: '3.0.0',
+  info: {
+    title: 'Drive API',
+    version: '0.1.0',
+  },
+});
 
 drive[GetMediaRoute.method](
   GetMediaRoute.path,
