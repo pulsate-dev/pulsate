@@ -25,7 +25,7 @@ importers:
         version: 5.16.1(prisma@5.16.1)
       '@scalar/hono-api-reference':
         specifier: ^0.5.0
-        version: 0.5.84(postcss@8.4.39)(tailwindcss@3.4.4)(typescript@5.4.5)(vitest@1.6.0(@types/node@20.14.9))
+        version: 0.5.87(postcss@8.4.39)(tailwindcss@3.4.4)(typescript@5.4.5)(vitest@1.6.0(@types/node@20.14.9))
       argon2:
         specifier: ^0.40.0
         version: 0.40.3
@@ -554,8 +554,8 @@ packages:
   '@floating-ui/utils@0.2.4':
     resolution: {integrity: sha512-dWO2pw8hhi+WrXq1YJy2yCuWoL20PddgGaqTgVe4cOS9Q6qklXCiA1tJEqX6BEwRNSCP84/afac9hd4MS+zEUA==}
 
-  '@floating-ui/vue@1.1.0':
-    resolution: {integrity: sha512-+Qq6K0zYcGZ6JoJXiL0z2gHh+77GyGhwXJMDiRx23tbYHLbQokw8DSC+cGIecjW8z7j3aWtSDtZyB1pNw2QBPA==}
+  '@floating-ui/vue@1.1.1':
+    resolution: {integrity: sha512-cyawjk9etPZPl/RVtMRnWrwtAhWbPVSrRVYARgOzhLIqxr0k2up1APrrFjqP9QwRQ0AwjKSvbWg4YC6jESutow==}
 
   '@headlessui/tailwindcss@0.2.1':
     resolution: {integrity: sha512-2+5+NZ+RzMyrVeCZOxdbvkUSssSxGvcUxphkIfSVLpRiKsj+/63T2TOL9dBYMXVfj/CGr6hMxSRInzXv6YY7sA==}
@@ -887,28 +887,28 @@ packages:
     cpu: [x64]
     os: [win32]
 
-  '@scalar/api-client@2.0.0':
-    resolution: {integrity: sha512-GQpdFVI00SoMe2KJLeE1x6hbSaFCN1w8JuulGHzRVicd8w+heHfz00maaAZiX7HL0Q8bD/nrhEAW9h0dK3gWJw==}
+  '@scalar/api-client@2.0.3':
+    resolution: {integrity: sha512-8B9RQB16FwAqFmB6xCcQoXCy5PFLsvK/G3CfJVqZXUlf0DkN+Q7PCWN89kmOIkmQT/A1YR1x5JT6QiDYvcarqA==}
     engines: {node: '>=18'}
 
-  '@scalar/api-reference@1.24.23':
-    resolution: {integrity: sha512-NZ79hA64fqTUTf0WJIPJX40AYldjI/O33JqBLBMzyGTn+eIvkMrvrtE1WYFagEvPykdZyz4tTvs2yg/W4hDv4g==}
+  '@scalar/api-reference@1.24.26':
+    resolution: {integrity: sha512-RdSy6yURczgAfjQ4RavqgpqFdvDYNYXt0YSWOKmBXoxUhxhRjc5hhYdFNEAOSu1qFVhRJGaHYwNlkNbB+qljFw==}
     engines: {node: '>=18'}
 
   '@scalar/code-highlight@0.0.5':
     resolution: {integrity: sha512-/8Q68WBvrVeqda5sW6E0mxmLwK0vbuDPHyfuugkYlHj9F7o5lKV+VviBxeaUh18nbGp3qWjdxv6X2mbUe2TyNA==}
     engines: {node: '>=18'}
 
-  '@scalar/components@0.12.6':
-    resolution: {integrity: sha512-NgRERj4Z5Rt8A9XcwDkFscR9oM8HYzN5fV95FuMpUykwGp0e1sahBUeUbDmNvBfHoKbCd/tC7sNITa0kRp9StQ==}
+  '@scalar/components@0.12.7':
+    resolution: {integrity: sha512-COOBcra5QuoISpLqr6UqrwgOOSJPEQxmDtgDf+JrjbqTfDBLc513y7SJd93JYPtMo1+k5idLVePCrHRmuAQC8A==}
     engines: {node: '>=18'}
 
   '@scalar/draggable@0.1.3':
     resolution: {integrity: sha512-A6lUgTV8q/zJGkzHerY1T+X3l3GXmCCg09Z7OU7j6yDyyuj2BSTblthncoD5sN3BdwLjHwkm9ecehfvaE0pj5w==}
     engines: {node: '>=18'}
 
-  '@scalar/hono-api-reference@0.5.84':
-    resolution: {integrity: sha512-wN299wK2j7ijU0yHVGjElN3XkivijgAzmFByK/4d9aoEKgOnU8sl2Kc4Wj0Lf2P2fDMKS32FTRSs95+6IvLskg==}
+  '@scalar/hono-api-reference@0.5.87':
+    resolution: {integrity: sha512-EHmX04IjQ2KPH2w8Uil3SeO+7y0R2ivSzX3Spvc22WTLBohWC2VYfeycJWrcTlWJhCnJQwlBNR3V/1Jt2qb+0A==}
     engines: {node: '>=18'}
 
   '@scalar/oas-utils@0.2.7':
@@ -968,8 +968,8 @@ packages:
   '@storybook/core-events@8.1.11':
     resolution: {integrity: sha512-vXaNe2KEW9BGlLrg0lzmf5cJ0xt+suPjWmEODH5JqBbrdZ67X6ApA2nb6WcxDQhykesWCuFN5gp1l+JuDOBi7A==}
 
-  '@storybook/csf@0.1.9':
-    resolution: {integrity: sha512-JlZ6v/iFn+iKohKGpYXnMeNeTiiAMeFoDhYnPLIC8GnyyIWqEI9wJYrOK9i9rxlJ8NZAH/ojGC/u/xVC41qSgQ==}
+  '@storybook/csf@0.1.11':
+    resolution: {integrity: sha512-dHYFQH3mA+EtnCkHXzicbLgsvzYjcDJ1JWsogbItZogkPHgSJM/Wr71uMkcvw8v9mmCyP4NpXJuu6bPoVsOnzg==}
 
   '@storybook/global@5.0.0':
     resolution: {integrity: sha512-FcOqPAXACP0I3oJ/ws6/rrPT9WGhu915Cg8D02a9YxLo0DE9zI+a9A5gRGvmQ09fiWPukqI8ZAEoQEdWUKMQdQ==}
@@ -2661,8 +2661,8 @@ packages:
     resolution: {integrity: sha512-vYt7UD1U9Wg6138shLtLOvdAu+8DsC/ilFtEVHcH+wydcSpNE20AfSOduf6MkRFahL5FY7X1oU7nKVZFtfq8Fg==}
     engines: {node: '>=6'}
 
-  qs@6.12.1:
-    resolution: {integrity: sha512-zWmv4RSuB9r2mYQw3zxQuHWeU+42aKi1wWig/j4ele4ygELZ7PEO6MM7rim9oAQH2A5MWfsAVf/jPvTPgCbvUQ==}
+  qs@6.12.2:
+    resolution: {integrity: sha512-x+NLUpx9SYrcwXtX7ob1gnkSems4i/mGZX5SlYxwIau6RrUSODO89TR/XDGGpn5RPWSYIB+aSfuSlV5+CmbTBg==}
     engines: {node: '>=0.6'}
 
   queue-microtask@1.2.3:
@@ -3529,7 +3529,7 @@ snapshots:
 
   '@floating-ui/utils@0.2.4': {}
 
-  '@floating-ui/vue@1.1.0(vue@3.4.31(typescript@5.4.5))':
+  '@floating-ui/vue@1.1.1(vue@3.4.31(typescript@5.4.5))':
     dependencies:
       '@floating-ui/dom': 1.6.7
       '@floating-ui/utils': 0.2.4
@@ -3782,11 +3782,11 @@ snapshots:
   '@rollup/rollup-win32-x64-msvc@4.17.2':
     optional: true
 
-  '@scalar/api-client@2.0.0(tailwindcss@3.4.4)(typescript@5.4.5)(vitest@1.6.0(@types/node@20.14.9))':
+  '@scalar/api-client@2.0.3(tailwindcss@3.4.4)(typescript@5.4.5)(vitest@1.6.0(@types/node@20.14.9))':
     dependencies:
       '@headlessui/tailwindcss': 0.2.1(tailwindcss@3.4.4)
       '@headlessui/vue': 1.7.22(vue@3.4.31(typescript@5.4.5))
-      '@scalar/components': 0.12.6(typescript@5.4.5)(vitest@1.6.0(@types/node@20.14.9))
+      '@scalar/components': 0.12.7(typescript@5.4.5)(vitest@1.6.0(@types/node@20.14.9))
       '@scalar/draggable': 0.1.3(typescript@5.4.5)
       '@scalar/oas-utils': 0.2.7
       '@scalar/object-utils': 1.1.2
@@ -3815,12 +3815,12 @@ snapshots:
       - typescript
       - vitest
 
-  '@scalar/api-reference@1.24.23(postcss@8.4.39)(tailwindcss@3.4.4)(typescript@5.4.5)(vitest@1.6.0(@types/node@20.14.9))':
+  '@scalar/api-reference@1.24.26(postcss@8.4.39)(tailwindcss@3.4.4)(typescript@5.4.5)(vitest@1.6.0(@types/node@20.14.9))':
     dependencies:
-      '@floating-ui/vue': 1.1.0(vue@3.4.31(typescript@5.4.5))
+      '@floating-ui/vue': 1.1.1(vue@3.4.31(typescript@5.4.5))
       '@headlessui/vue': 1.7.22(vue@3.4.31(typescript@5.4.5))
-      '@scalar/api-client': 2.0.0(tailwindcss@3.4.4)(typescript@5.4.5)(vitest@1.6.0(@types/node@20.14.9))
-      '@scalar/components': 0.12.6(typescript@5.4.5)(vitest@1.6.0(@types/node@20.14.9))
+      '@scalar/api-client': 2.0.3(tailwindcss@3.4.4)(typescript@5.4.5)(vitest@1.6.0(@types/node@20.14.9))
+      '@scalar/components': 0.12.7(typescript@5.4.5)(vitest@1.6.0(@types/node@20.14.9))
       '@scalar/oas-utils': 0.2.7
       '@scalar/openapi-parser': 0.7.1
       '@scalar/snippetz': 0.1.6
@@ -3874,10 +3874,10 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
-  '@scalar/components@0.12.6(typescript@5.4.5)(vitest@1.6.0(@types/node@20.14.9))':
+  '@scalar/components@0.12.7(typescript@5.4.5)(vitest@1.6.0(@types/node@20.14.9))':
     dependencies:
       '@floating-ui/utils': 0.2.4
-      '@floating-ui/vue': 1.1.0(vue@3.4.31(typescript@5.4.5))
+      '@floating-ui/vue': 1.1.1(vue@3.4.31(typescript@5.4.5))
       '@headlessui/vue': 1.7.22(vue@3.4.31(typescript@5.4.5))
       '@scalar/code-highlight': 0.0.5
       '@storybook/test': 8.1.11(vitest@1.6.0(@types/node@20.14.9))
@@ -3903,9 +3903,9 @@ snapshots:
     transitivePeerDependencies:
       - typescript
 
-  '@scalar/hono-api-reference@0.5.84(postcss@8.4.39)(tailwindcss@3.4.4)(typescript@5.4.5)(vitest@1.6.0(@types/node@20.14.9))':
+  '@scalar/hono-api-reference@0.5.87(postcss@8.4.39)(tailwindcss@3.4.4)(typescript@5.4.5)(vitest@1.6.0(@types/node@20.14.9))':
     dependencies:
-      '@scalar/api-reference': 1.24.23(postcss@8.4.39)(tailwindcss@3.4.4)(typescript@5.4.5)(vitest@1.6.0(@types/node@20.14.9))
+      '@scalar/api-reference': 1.24.26(postcss@8.4.39)(tailwindcss@3.4.4)(typescript@5.4.5)(vitest@1.6.0(@types/node@20.14.9))
       hono: 4.4.9
     transitivePeerDependencies:
       - '@jest/globals'
@@ -4012,10 +4012,10 @@ snapshots:
 
   '@storybook/core-events@8.1.11':
     dependencies:
-      '@storybook/csf': 0.1.9
+      '@storybook/csf': 0.1.11
       ts-dedent: 2.2.0
 
-  '@storybook/csf@0.1.9':
+  '@storybook/csf@0.1.11':
     dependencies:
       type-fest: 2.19.0
 
@@ -4036,14 +4036,14 @@ snapshots:
       '@storybook/channels': 8.1.11
       '@storybook/client-logger': 8.1.11
       '@storybook/core-events': 8.1.11
-      '@storybook/csf': 0.1.9
+      '@storybook/csf': 0.1.11
       '@storybook/global': 5.0.0
       '@storybook/types': 8.1.11
       '@types/qs': 6.9.15
       dequal: 2.0.3
       lodash: 4.17.21
       memoizerific: 1.11.3
-      qs: 6.12.1
+      qs: 6.12.2
       tiny-invariant: 1.3.3
       ts-dedent: 2.2.0
       util-deprecate: 1.0.2
@@ -6044,7 +6044,7 @@ snapshots:
 
   punycode@2.3.1: {}
 
-  qs@6.12.1:
+  qs@6.12.2:
     dependencies:
       side-channel: 1.0.6
 
@@ -6053,7 +6053,7 @@ snapshots:
   radix-vue@1.8.5(vue@3.4.31(typescript@5.4.5)):
     dependencies:
       '@floating-ui/dom': 1.6.7
-      '@floating-ui/vue': 1.1.0(vue@3.4.31(typescript@5.4.5))
+      '@floating-ui/vue': 1.1.1(vue@3.4.31(typescript@5.4.5))
       '@internationalized/date': 3.5.4
       '@internationalized/number': 3.5.3
       '@tanstack/vue-virtual': 3.8.1(vue@3.4.31(typescript@5.4.5))
