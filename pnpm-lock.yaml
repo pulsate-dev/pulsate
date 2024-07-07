@@ -95,7 +95,7 @@ importers:
         version: 10.4.2
       globals:
         specifier: ^15.0.0
-        version: 15.7.0
+        version: 15.8.0
       ignore:
         specifier: ^5.3.1
         version: 5.3.1
@@ -1828,6 +1828,11 @@ packages:
     engines: {node: '>=16 || 14 >=14.18'}
     hasBin: true
 
+  glob@10.4.3:
+    resolution: {integrity: sha512-Q38SGlYRpVtDBPSWEylRyctn7uDeTp4NQERTLiCT1FqA9JXPYWqAVmQU6qh4r/zMM5ehxTcbaO8EjhWnvEhmyg==}
+    engines: {node: '>=18'}
+    hasBin: true
+
   glob@7.2.3:
     resolution: {integrity: sha512-nFR0zLpU2YCaRxwoCJvL6UvCH2JFyFVIvwTLsIf21AuHlMskA1hhTdk+LlYJtOlYt9v6dvszD2BGRqBL+iQK9Q==}
     deprecated: Glob versions prior to v9 are no longer supported
@@ -1840,8 +1845,8 @@ packages:
     resolution: {integrity: sha512-oahGvuMGQlPw/ivIYBjVSrWAfWLBeku5tpPE2fOPLi+WHffIWbuh2tCjhyQhTBPMf5E9jDEH4FOmTYgYwbKwtQ==}
     engines: {node: '>=18'}
 
-  globals@15.7.0:
-    resolution: {integrity: sha512-ivatRXWwKC6ImcdKO7dOwXuXR5XFrdwo45qFwD7D0qOkEPzzJdLXC3BHceBdyrPOD3p1suPaWi4Y4NMm2D++AQ==}
+  globals@15.8.0:
+    resolution: {integrity: sha512-VZAJ4cewHTExBWDHR6yptdIBlx9YSSZuwojj9Nt5mBRXQzrKakDsVKQ1J63sklLvzAJm0X5+RpO4i3Y2hcOnFw==}
     engines: {node: '>=18'}
 
   globby@11.1.0:
@@ -2082,6 +2087,10 @@ packages:
   jackspeak@3.4.0:
     resolution: {integrity: sha512-JVYhQnN59LVPFCEcVa2C3CrEKYacvjRfqIQl+h8oi91aLYQVWRYbxjPcv1bUiUy/kLmQaANrYfNMCO3kuEDHfw==}
     engines: {node: '>=14'}
+
+  jackspeak@3.4.1:
+    resolution: {integrity: sha512-U23pQPDnmYybVkYjObcuYMk43VRlMLLqLI+RdZy8s8WV8WsxO9SnqSroKaluuvcNOdCAlauKszDwd+umbot5Mg==}
+    engines: {node: '>=18'}
 
   javascript-natural-sort@0.7.1:
     resolution: {integrity: sha512-nO6jcEfZWQXDhOiBtG2KvKyEptz7RVbpGP4vTD2hLBdmNQSsCiicO2Ioinv6UI4y9ukqnBpy+XZ9H6uLNgJTlw==}
@@ -5062,6 +5071,15 @@ snapshots:
       package-json-from-dist: 1.0.0
       path-scurry: 1.11.1
 
+  glob@10.4.3:
+    dependencies:
+      foreground-child: 3.2.1
+      jackspeak: 3.4.1
+      minimatch: 9.0.5
+      minipass: 7.1.2
+      package-json-from-dist: 1.0.0
+      path-scurry: 1.11.1
+
   glob@7.2.3:
     dependencies:
       fs.realpath: 1.0.0
@@ -5075,7 +5093,7 @@ snapshots:
 
   globals@14.0.0: {}
 
-  globals@15.7.0: {}
+  globals@15.8.0: {}
 
   globby@11.1.0:
     dependencies:
@@ -5358,6 +5376,12 @@ snapshots:
       istanbul-lib-report: 3.0.1
 
   jackspeak@3.4.0:
+    dependencies:
+      '@isaacs/cliui': 8.0.2
+    optionalDependencies:
+      '@pkgjs/parseargs': 0.11.0
+
+  jackspeak@3.4.1:
     dependencies:
       '@isaacs/cliui': 8.0.2
     optionalDependencies:
@@ -6374,7 +6398,7 @@ snapshots:
     dependencies:
       '@jridgewell/gen-mapping': 0.3.5
       commander: 4.1.1
-      glob: 10.4.2
+      glob: 10.4.3
       lines-and-columns: 1.2.4
       mz: 2.7.0
       pirates: 4.0.6
