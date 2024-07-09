@@ -9,7 +9,7 @@ on:
       - main
 
 jobs:
-  node:
+  build:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -52,8 +52,65 @@ jobs:
         run: |
           pnpm build
 
+      - name: Run build:api
+        run: |
+          pnpm build:api && mv ./resources/schema.json ./resources/schema-base.json
+
       - name: Upload coverage to codecov
         uses: codecov/codecov-action@v4
         with:
           files: ./coverage/coverage-final.json
           token: ${{ secrets.CODECOV_TOKEN }}
+
+      - name: Upload api reference
+        uses: actions/upload-artifact@v4
+        with:
+          name: api-reference-schema
+          path: ./resources/schema-base.json
+
+  api_report:
+    runs-on: ubuntu-latest
+    needs: build
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Pickup base schema
+        run: |
+          mkdir -p ./workflow-resources
+          mv ./resources/schema.json ./workflow-resources/schema-head.json
+
+      - name: Download artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: api-reference-schema
+          path: ./workflow-resources
+
+      - name: Compare schemas
+        id: diff
+        run: |
+          diff ./workflow-resources/schema-base.json ./workflow-resources/schema-head.json > diff.txt
+          if ! [ -s diff.txt ]; then
+            echo "::error::No differences found."
+            echo "SKIP_REMAINING_STEPS=true" >> $GITHUB_ENV
+          else
+            echo "DIFF_CONTENT<<EOF" >> $GITHUB_ENV
+            cat diff.txt >> $GITHUB_ENV
+            echo "EOF" >> $GITHUB_ENV
+          fi
+
+      - name: Comment on pull request
+        if: env.SKIP_REMAINING_STEPS != 'true'
+        uses: thollander/actions-comment-pull-request@v2
+        with:
+          message: |
+            The API reference schema has been updated. Please review the changes.
+
+            <details>
+            <summary>API reference diff</summary>
+
+            ```
+            ${{ env.DIFF_CONTENT }}
+            ```
+
+            </details>
