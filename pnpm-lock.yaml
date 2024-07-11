@@ -13,10 +13,10 @@ importers:
         version: 1.12.0
       '@hono/swagger-ui':
         specifier: ^0.2.1
-        version: 0.2.2(hono@4.4.11)
+        version: 0.2.2(hono@4.4.12)
       '@hono/zod-openapi':
         specifier: ^0.14.0
-        version: 0.14.7(hono@4.4.11)(zod@3.23.8)
+        version: 0.14.7(hono@4.4.12)(zod@3.23.8)
       '@mikuroxina/mini-fn':
         specifier: ^6.3.1
         version: 6.3.1
@@ -37,7 +37,7 @@ importers:
         version: 19.0.0
       hono:
         specifier: ^4.0.0
-        version: 4.4.11
+        version: 4.4.12
       ioredis:
         specifier: ^5.4.1
         version: 5.4.1
@@ -2032,8 +2032,8 @@ packages:
   highlightjs-vue@1.0.0:
     resolution: {integrity: sha512-PDEfEF102G23vHmPhLyPboFCD+BkMGu+GuJe2d9/eH4FsCwvgBpnc9n0pGE+ffKdph38s6foEZiEjdgHdzp+IA==}
 
-  hono@4.4.11:
-    resolution: {integrity: sha512-R5RADpjoRsR3/VsnFovpsYNLPnC1f+FgdfsePk3qIgjb4D41Sg7uW5QCj41kzEOwXCjBg0sVvOZMvUNZ0DKB7g==}
+  hono@4.4.12:
+    resolution: {integrity: sha512-Lx4Vwbws0IqFfXIVYychxUW0A4EE+7dn/jsjVeM34OXSA2Xs45MkDDP14Mzznp7LlDemUNHQG2uv2N5jQld0hA==}
     engines: {node: '>=16.0.0'}
 
   hookable@5.5.3:
@@ -2178,6 +2178,9 @@ packages:
   jackspeak@3.4.2:
     resolution: {integrity: sha512-qH3nOSj8q/8+Eg8LUPOq3C+6HWkpUioIjDsq1+D4zY91oZvpPttw8GwtF1nReRYKXl+1AORyFqtm2f5Q1SB6/Q==}
     engines: {node: 14 >=14.21 || 16 >=16.20 || >=18}
+
+  jackspeak@3.4.3:
+    resolution: {integrity: sha512-OGlZQpz2yfahA/Rd1Y8Cd9SIEsqvXkLVoSw/cgwhnhFMDbsQFeZYoJJ7bIZBS9BcamUW96asq/npPWugM+RQBw==}
 
   javascript-natural-sort@0.7.1:
     resolution: {integrity: sha512-nO6jcEfZWQXDhOiBtG2KvKyEptz7RVbpGP4vTD2hLBdmNQSsCiicO2Ioinv6UI4y9ukqnBpy+XZ9H6uLNgJTlw==}
@@ -3753,20 +3756,20 @@ snapshots:
 
   '@hono/node-server@1.12.0': {}
 
-  '@hono/swagger-ui@0.2.2(hono@4.4.11)':
+  '@hono/swagger-ui@0.2.2(hono@4.4.12)':
     dependencies:
-      hono: 4.4.11
+      hono: 4.4.12
 
-  '@hono/zod-openapi@0.14.7(hono@4.4.11)(zod@3.23.8)':
+  '@hono/zod-openapi@0.14.7(hono@4.4.12)(zod@3.23.8)':
     dependencies:
       '@asteasolutions/zod-to-openapi': 7.1.1(zod@3.23.8)
-      '@hono/zod-validator': 0.2.2(hono@4.4.11)(zod@3.23.8)
-      hono: 4.4.11
+      '@hono/zod-validator': 0.2.2(hono@4.4.12)(zod@3.23.8)
+      hono: 4.4.12
       zod: 3.23.8
 
-  '@hono/zod-validator@0.2.2(hono@4.4.11)(zod@3.23.8)':
+  '@hono/zod-validator@0.2.2(hono@4.4.12)(zod@3.23.8)':
     dependencies:
-      hono: 4.4.11
+      hono: 4.4.12
       zod: 3.23.8
 
   '@humanwhocodes/module-importer@1.0.1': {}
@@ -4158,7 +4161,7 @@ snapshots:
   '@scalar/hono-api-reference@0.5.96(postcss@8.4.39)(tailwindcss@3.4.4)(typescript@5.4.5)(vitest@1.6.0(@types/node@20.14.10))':
     dependencies:
       '@scalar/api-reference': 1.24.35(postcss@8.4.39)(tailwindcss@3.4.4)(typescript@5.4.5)(vitest@1.6.0(@types/node@20.14.10))
-      hono: 4.4.11
+      hono: 4.4.12
     transitivePeerDependencies:
       - '@jest/globals'
       - '@types/bun'
@@ -5357,7 +5360,7 @@ snapshots:
   glob@10.4.5:
     dependencies:
       foreground-child: 3.2.1
-      jackspeak: 3.4.2
+      jackspeak: 3.4.3
       minimatch: 9.0.5
       minipass: 7.1.2
       package-json-from-dist: 1.0.0
@@ -5538,7 +5541,7 @@ snapshots:
 
   highlightjs-vue@1.0.0: {}
 
-  hono@4.4.11: {}
+  hono@4.4.12: {}
 
   hookable@5.5.3: {}
 
@@ -5664,6 +5667,12 @@ snapshots:
       istanbul-lib-report: 3.0.1
 
   jackspeak@3.4.2:
+    dependencies:
+      '@isaacs/cliui': 8.0.2
+    optionalDependencies:
+      '@pkgjs/parseargs': 0.11.0
+
+  jackspeak@3.4.3:
     dependencies:
       '@isaacs/cliui': 8.0.2
     optionalDependencies:
