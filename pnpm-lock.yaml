@@ -13,10 +13,10 @@ importers:
         version: 1.12.0
       '@hono/swagger-ui':
         specifier: ^0.2.1
-        version: 0.2.2(hono@4.4.12)
+        version: 0.2.2(hono@4.4.13)
       '@hono/zod-openapi':
         specifier: ^0.14.0
-        version: 0.14.9(hono@4.4.12)(zod@3.23.8)
+        version: 0.14.9(hono@4.4.13)(zod@3.23.8)
       '@mikuroxina/mini-fn':
         specifier: ^6.3.1
         version: 6.3.1
@@ -37,7 +37,7 @@ importers:
         version: 19.0.0
       hono:
         specifier: ^4.0.0
-        version: 4.4.12
+        version: 4.4.13
       ioredis:
         specifier: ^5.4.1
         version: 5.4.1
@@ -3045,8 +3045,8 @@ packages:
   highlightjs-vue@1.0.0:
     resolution: {integrity: sha512-PDEfEF102G23vHmPhLyPboFCD+BkMGu+GuJe2d9/eH4FsCwvgBpnc9n0pGE+ffKdph38s6foEZiEjdgHdzp+IA==}
 
-  hono@4.4.12:
-    resolution: {integrity: sha512-Lx4Vwbws0IqFfXIVYychxUW0A4EE+7dn/jsjVeM34OXSA2Xs45MkDDP14Mzznp7LlDemUNHQG2uv2N5jQld0hA==}
+  hono@4.4.13:
+    resolution: {integrity: sha512-c6qqenclmQ6wpXzqiElMa2jt423PVCmgBreDfC5s2lPPpGk7d0lOymd8QTzFZyYC5mSSs6imiTMPip+gLwuW/g==}
     engines: {node: '>=16.0.0'}
 
   hookable@5.5.3:
@@ -6047,20 +6047,20 @@ snapshots:
 
   '@hono/node-server@1.12.0': {}
 
-  '@hono/swagger-ui@0.2.2(hono@4.4.12)':
+  '@hono/swagger-ui@0.2.2(hono@4.4.13)':
     dependencies:
-      hono: 4.4.12
+      hono: 4.4.13
 
-  '@hono/zod-openapi@0.14.9(hono@4.4.12)(zod@3.23.8)':
+  '@hono/zod-openapi@0.14.9(hono@4.4.13)(zod@3.23.8)':
     dependencies:
       '@asteasolutions/zod-to-openapi': 7.1.1(zod@3.23.8)
-      '@hono/zod-validator': 0.2.2(hono@4.4.12)(zod@3.23.8)
-      hono: 4.4.12
+      '@hono/zod-validator': 0.2.2(hono@4.4.13)(zod@3.23.8)
+      hono: 4.4.13
       zod: 3.23.8
 
-  '@hono/zod-validator@0.2.2(hono@4.4.12)(zod@3.23.8)':
+  '@hono/zod-validator@0.2.2(hono@4.4.13)(zod@3.23.8)':
     dependencies:
-      hono: 4.4.12
+      hono: 4.4.13
       zod: 3.23.8
 
   '@humanwhocodes/module-importer@1.0.1': {}
@@ -6455,7 +6455,7 @@ snapshots:
   '@scalar/hono-api-reference@0.5.101(postcss@8.4.39)(storybook@8.2.1(@babel/preset-env@7.24.8(@babel/core@7.24.9)))(tailwindcss@3.4.4)(typescript@5.4.5)(vitest@2.0.2(@types/node@20.14.10))':
     dependencies:
       '@scalar/api-reference': 1.24.40(postcss@8.4.39)(storybook@8.2.1(@babel/preset-env@7.24.8(@babel/core@7.24.9)))(tailwindcss@3.4.4)(typescript@5.4.5)(vitest@2.0.2(@types/node@20.14.10))
-      hono: 4.4.12
+      hono: 4.4.13
     transitivePeerDependencies:
       - '@jest/globals'
       - '@types/bun'
@@ -8192,7 +8192,7 @@ snapshots:
 
   highlightjs-vue@1.0.0: {}
 
-  hono@4.4.12: {}
+  hono@4.4.13: {}
 
   hookable@5.5.3: {}
 
