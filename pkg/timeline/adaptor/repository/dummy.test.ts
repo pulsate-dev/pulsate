@@ -1,0 +1,99 @@
+import { Option, Result } from '@mikuroxina/mini-fn';
+import { afterEach, describe, expect, it } from 'vitest';
+
+import { type AccountID } from '../../../accounts/model/account.js';
+import { Note, type NoteID } from '../../../notes/model/note.js';
+import { InMemoryTimelineRepository } from './dummy.js';
+
+describe('InMemoryTimelineRepository', () => {
+  const dummyPublicNote = Note.new({
+    id: '1' as NoteID,
+    authorID: '100' as AccountID,
+    content: 'Hello world',
+    contentsWarningComment: '',
+    createdAt: new Date('2023-09-10T00:00:00Z'),
+    originalNoteID: Option.none(),
+    attachmentFileID: [],
+    sendTo: Option.none(),
+    visibility: 'PUBLIC',
+  });
+  const dummyHomeNote = Note.new({
+    id: '2' as NoteID,
+    authorID: '100' as AccountID,
+    content: 'Hello world to Home',
+    contentsWarningComment: '',
+    createdAt: new Date('2023-09-11T00:00:00Z'),
+    originalNoteID: Option.none(),
+    attachmentFileID: [],
+    sendTo: Option.none(),
+    visibility: 'HOME',
+  });
+  const dummyFollowersNote = Note.new({
+    id: '3' as NoteID,
+    authorID: '100' as AccountID,
+    content: 'Hello world to followers',
+    contentsWarningComment: '',
+    createdAt: new Date('2023-09-12T00:00:00Z'),
+    originalNoteID: Option.none(),
+    attachmentFileID: [],
+    sendTo: Option.none(),
+    visibility: 'FOLLOWERS',
+  });
+  const dummyDirectNote = Note.new({
+    id: '4' as NoteID,
+    authorID: '100' as AccountID,
+    content: 'Hello world to direct',
+    contentsWarningComment: '',
+    createdAt: new Date('2023-09-13T00:00:00Z'),
+    originalNoteID: Option.none(),
+    attachmentFileID: [],
+    sendTo: Option.some('101' as AccountID),
+    visibility: 'DIRECT',
+  });
+
+  const repository = new InMemoryTimelineRepository([
+    dummyPublicNote,
+    dummyHomeNote,
+    dummyFollowersNote,
+    dummyDirectNote,
+  ]);
+  afterEach(() => {
+    repository.reset([
+      dummyPublicNote,
+      dummyHomeNote,
+      dummyFollowersNote,
+      dummyDirectNote,
+    ]);
+  });
+
+  it('Account Timeline only returns PUBLIC/HOME/FOLLOWERS notes', async () => {
+    const actual = await repository.getAccountTimeline('100' as AccountID, {
+      id: '100' as AccountID,
+      hasAttachment: true,
+      noNsfw: false,
+    });
+    expect(Result.isOk(actual)).toBe(true);
+    expect(Result.unwrap(actual).length).toBe(3);
+    expect(
+      Result.unwrap(actual)
+        .map((v) => v.getVisibility())
+        .includes('DIRECT'),
+    ).toBe(false);
+  });
+  it('Home Timeline only returns PUBLIC/HOME/FOLLOWERS notes', async () => {
+    const actual = await repository.getHomeTimeline(
+      ['1' as NoteID, '2' as NoteID, '3' as NoteID, '4' as NoteID],
+      {
+        hasAttachment: true,
+        noNsfw: false,
+      },
+    );
+    expect(Result.isOk(actual)).toBe(true);
+    expect(Result.unwrap(actual).length).toBe(3);
+    expect(
+      Result.unwrap(actual)
+        .map((v) => v.getVisibility())
+        .includes('DIRECT'),
+    ).toBe(false);
+  });
+});

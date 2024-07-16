@@ -9,7 +9,7 @@ import type {
 } from '../../model/repository.js';
 
 export class InMemoryTimelineRepository implements TimelineRepository {
-  private readonly data: Map<NoteID, Note>;
+  private data: Map<NoteID, Note>;
 
   constructor(data: readonly Note[] = []) {
     this.data = new Map(data.map((v) => [v.getID(), v]));
@@ -23,15 +23,20 @@ export class InMemoryTimelineRepository implements TimelineRepository {
       (note) => note[1].getAuthorID() === accountId,
     );
 
+    // NOTE: filter DIRECT notes
+    const filtered = accountNotes.filter(
+      (note) => note[1].getVisibility() !== 'DIRECT',
+    );
+
     // ToDo: filter hasAttachment, noNSFW
-    accountNotes.sort(
+    filtered.sort(
       (a, b) => b[1].getCreatedAt().getTime() - a[1].getCreatedAt().getTime(),
     );
     const beforeIndex = filter.beforeId
-      ? accountNotes.findIndex((note) => note[1].getID() === filter.beforeId)
-      : accountNotes.length - 1;
+      ? filtered.findIndex((note) => note[1].getID() === filter.beforeId)
+      : filtered.length;
 
-    return Result.ok(accountNotes.slice(0, beforeIndex).map((note) => note[1]));
+    return Result.ok(filtered.slice(0, beforeIndex).map((note) => note[1]));
   }
 
   async getHomeTimeline(
@@ -47,14 +52,21 @@ export class InMemoryTimelineRepository implements TimelineRepository {
       notes.push(n);
     }
 
+    // NOTE: filter DIRECT notes
+    const filtered = notes.filter((note) => note.getVisibility() !== 'DIRECT');
     // ToDo: filter hasAttachment, noNSFW
-    notes.sort(
+    filtered.sort(
       (a, b) => b.getCreatedAt().getTime() - a.getCreatedAt().getTime(),
     );
     const beforeIndex = filter.beforeId
-      ? notes.findIndex((note) => note.getID() === filter.beforeId)
-      : notes.length;
+      ? filtered.findIndex((note) => note.getID() === filter.beforeId)
+      : filtered.length;
 
-    return Result.ok(notes.slice(0, beforeIndex));
+    return Result.ok(filtered.slice(0, beforeIndex));
+  }
+
+  reset(data: readonly Note[] = []) {
+    this.data.clear();
+    this.data = new Map(data.map((v) => [v.getID(), v]));
   }
 }
