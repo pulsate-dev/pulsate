@@ -23,7 +23,7 @@ export class InMemoryTimelineRepository implements TimelineRepository {
       (note) => note[1].getAuthorID() === accountId,
     );
 
-    // NOTE: filter DIRECT notes
+    // NOTE: filter out DIRECT notes
     const filtered = accountNotes.filter(
       (note) => note[1].getVisibility() !== 'DIRECT',
     );
