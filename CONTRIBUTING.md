@@ -25,7 +25,7 @@ A guide on how to participate in this project.
 **Before "Contribution"**:
 
 - All Contributors and Maintainers are required to follow the [Code of Conduct](https://github.com/pulsate-dev/.github?tab=coc-ov-file).
-- The Pulsate model and design are summarised in [Pulsate Specification](https://spec.pulsate.dev). Please read it when developing.
+- See [Pulsate Specification](https://spec.pulsate.dev) about the Pulsate's model and design.
 
 ## Issues
 
