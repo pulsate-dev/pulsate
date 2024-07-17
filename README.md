@@ -6,7 +6,7 @@
 [![License Badge](https://img.shields.io/static/v1?label=Licence&message=Apache-2.0&color=BF485A)](./LICENSE)
 
 Pulsate is the next generation of distributed social networking in the
-[ActivityPub](#what-is-a-activitypub) implementation and is easy to modify,
+[ActivityPub](#what-is-activitypub) implementation and is easy to modify,
 fast, and developer and user-friendly.
 
 > [!IMPORTANT]\
@@ -21,6 +21,8 @@ fast, and developer and user-friendly.
 
 ## Table of Contents
 
+- [Navigation](#navigation)
+- [Table of Contents](#table-of-contents)
 - [Features](#features)
 - [Project Goals](#project-goals)
 - [What is ActivityPub?](#what-is-activitypub)
@@ -51,6 +53,10 @@ We provide software that focuses on performance improvement and security, includ
 For more information see [here](https://spec.pulsate.dev/project.html).
 
 ## What is ActivityPub?
+
+> [!WARNING]
+>
+> Pulsate has not initiated any ActivityPub-related implementations.
 
 ActivityPub is an open-source, decentralized social networking protocol. It
 provides a standardized model for the communication of applications, allowing
