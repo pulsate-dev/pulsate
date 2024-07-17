@@ -14,8 +14,12 @@ fast, and developer and user-friendly.
 > official release build may be missing some features or may have unforeseen
 > defects.
 
+## Navigation
+
 - [Discussions](https://link.pulsate.dev/discussions)
 - [Contributing Guide](./CONTRIBUTING.md)
+
+## Table of Contents
 
 - [Features](#features)
 - [Project Goals](#project-goals)
@@ -61,17 +65,16 @@ censorship.
 
 ## Contributing
 
-If you want to participate in the development of Pulsate, be sure to read the
-[contributing guide](./CONTRIBUTING.md).
+If you want to participate in the development of Pulsate, be sure to read the [contributing guide](./CONTRIBUTING.md).
 
 Discussions about Pulsate are on the official Discord. You can join [here](https://link.pulsate.dev/discord).
 
 ## Security Policy
 
-Check the [Security Policy](./SECURITY.md) for security advisories, where to
-report vulnerabilities, and support status.
+Check the [Security Policy](./SECURITY.md) for security advisories, where to report vulnerabilities, and support status.
 
 ## License
 
 Copyright © 2023-2024 Sho Sakuma & Pulsate Project Team ([List of contributors](./AUTHORS.md))
+
 Pulsate is open source software distributed under [**Apache License 2.0**](./LICENSE).
