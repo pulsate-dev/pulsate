@@ -19,7 +19,7 @@ importers:
         version: 0.14.9(hono@4.4.13)(zod@3.23.8)
       '@mikuroxina/mini-fn':
         specifier: ^6.3.1
-        version: 6.3.1
+        version: 6.4.0
       '@prisma/client':
         specifier: 5.16.2
         version: 5.16.2(prisma@5.16.2)
@@ -1406,8 +1406,8 @@ packages:
     os: [darwin, linux, win32]
     hasBin: true
 
-  '@mikuroxina/mini-fn@6.3.1':
-    resolution: {integrity: sha512-QzXW94riPQof+aM5ydnkQX6BAL1UlrAqTqP/XKuuWryq7oXy7XuTl12ibJBsnJQs0u4yeggN4zlZZidMTh7DNg==}
+  '@mikuroxina/mini-fn@6.4.0':
+    resolution: {integrity: sha512-uDkyLmdviOTGV1hL3dWxJjaxnYAG/um3/vnyPOYlstfOigbCfcLOvp6dTzWwxjp/1HLGgNgpOA3mv3yMU5OAqQ==}
 
   '@nodelib/fs.scandir@2.1.5':
     resolution: {integrity: sha512-vq24Bq3ym5HEQm2NKCr3yXDwjc7vTsEThRDnkp2DK9p1uqLR+DHurm/NOTo0KG7HYHU7eppKZj3MyqYuMBf62g==}
@@ -5991,7 +5991,7 @@ snapshots:
 
   '@ls-lint/ls-lint@2.2.3': {}
 
-  '@mikuroxina/mini-fn@6.3.1': {}
+  '@mikuroxina/mini-fn@6.4.0': {}
 
   '@nodelib/fs.scandir@2.1.5':
     dependencies:
