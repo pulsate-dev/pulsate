@@ -69,4 +69,17 @@ describe('List', () => {
 
     expect(list3.getMemberIds()).toStrictEqual([]);
   });
+
+  it('should no duplicate member when initialize', () => {
+    const args: CreateListArgs = {
+      id: '1' as ListID,
+      title: 'My List',
+      publicity: 'PUBLIC',
+      ownerId: '2' as AccountID,
+      memberIds: ['3' as AccountID, '3' as AccountID],
+      createdAt: new Date(),
+    } as const;
+    const list3 = List.new(args);
+    expect(list3.getMemberIds()).toStrictEqual(['3' as AccountID]);
+  });
 });
