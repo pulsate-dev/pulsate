@@ -1,8 +1,8 @@
+import fs from 'node:fs/promises';
 import esbuild from 'esbuild';
 import * as glob from 'glob';
 import ignore from 'ignore';
 import kleur from 'kleur';
-import fs from 'node:fs/promises';
 
 const ctrl = {
   error: (msg) => {

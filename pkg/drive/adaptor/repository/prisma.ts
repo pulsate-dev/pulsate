@@ -1,5 +1,5 @@
 import { Option, Result } from '@mikuroxina/mini-fn';
-import { type Prisma, type PrismaClient } from '@prisma/client';
+import type { Prisma, PrismaClient } from '@prisma/client';
 
 import type { AccountID } from '../../../accounts/model/account.js';
 import type { prismaClient } from '../../../adaptors/prisma.js';

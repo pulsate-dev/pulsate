@@ -1,4 +1,4 @@
-import { type z } from '@hono/zod-openapi';
+import type { z } from '@hono/zod-openapi';
 import { Result } from '@mikuroxina/mini-fn';
 
 import type { AccountID } from '../../../accounts/model/account.js';

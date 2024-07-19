@@ -7,7 +7,7 @@ import {
   InMemoryAccountRepository,
   InMemoryAccountVerifyTokenRepository,
 } from '../adaptor/repository/dummy.js';
-import { type AccountName, type AccountRole } from '../model/account.js';
+import type { AccountName, AccountRole } from '../model/account.js';
 import { RegisterService } from './register.js';
 import { DummySendNotificationService } from './sendNotification.js';
 import { VerifyAccountTokenService } from './verifyToken.js';

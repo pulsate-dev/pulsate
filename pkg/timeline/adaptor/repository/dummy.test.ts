@@ -1,7 +1,7 @@
 import { Option, Result } from '@mikuroxina/mini-fn';
 import { afterEach, describe, expect, it } from 'vitest';
 
-import { type AccountID } from '../../../accounts/model/account.js';
+import type { AccountID } from '../../../accounts/model/account.js';
 import { Note, type NoteID } from '../../../notes/model/note.js';
 import { InMemoryTimelineRepository } from './dummy.js';
 

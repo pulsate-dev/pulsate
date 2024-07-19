@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 
-import { type AccountID, type CreateAccountArgs } from './account.js';
+import type { AccountID, CreateAccountArgs } from './account.js';
 import {
   type CreateInactiveAccountArgs,
   InactiveAccount,

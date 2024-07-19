@@ -3,8 +3,8 @@ import type { MiddlewareHandler } from 'hono';
 import { createMiddleware } from 'hono/factory';
 
 import {
-  authenticateTokenSymbol,
   type AuthenticationTokenService,
+  authenticateTokenSymbol,
 } from '../accounts/service/authenticationTokenService.js';
 
 /* eslint-disable-next-line @typescript-eslint/consistent-type-definitions */

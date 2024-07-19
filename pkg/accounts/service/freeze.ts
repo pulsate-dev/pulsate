@@ -2,8 +2,8 @@ import { Ether, Option, Result } from '@mikuroxina/mini-fn';
 
 import type { AccountName } from '../model/account.js';
 import {
-  accountRepoSymbol,
   type AccountRepository,
+  accountRepoSymbol,
 } from '../model/repository.js';
 
 export class FreezeService {

@@ -1,7 +1,7 @@
 import { Option, Result } from '@mikuroxina/mini-fn';
 
 import type { AccountID } from '../../../accounts/model/account.js';
-import { type Medium, type MediumID } from '../../model/medium.js';
+import type { Medium, MediumID } from '../../model/medium.js';
 import type { MediaRepository } from '../../model/repository.js';
 
 export class InMemoryMediaRepository implements MediaRepository {

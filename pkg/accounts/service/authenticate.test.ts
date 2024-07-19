@@ -10,8 +10,9 @@ import { AuthenticationTokenService } from './authenticationTokenService.js';
 describe('AuthenticateService', () => {
   it('Generate valid token pair', async () => {
     const encoder = new Argon2idPasswordEncoder();
-    const passphraseHash =
-      await encoder.encodePassword('じゃすた・いぐざんぽぅ');
+    const passphraseHash = await encoder.encodePassword(
+      'じゃすた・いぐざんぽぅ',
+    );
 
     const accountRepository = new InMemoryAccountRepository();
     await accountRepository.create(

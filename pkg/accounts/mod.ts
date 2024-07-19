@@ -2,8 +2,8 @@ import { OpenAPIHono } from '@hono/zod-openapi';
 import { Cat, Ether, Promise, Result } from '@mikuroxina/mini-fn';
 
 import {
-  authenticateMiddleware,
   type AuthMiddlewareVariable,
+  authenticateMiddleware,
 } from '../adaptors/authenticateMiddleware.js';
 import { prismaClient } from '../adaptors/prisma.js';
 import { clockSymbol, snowflakeIDGenerator } from '../id/mod.js';
@@ -21,7 +21,7 @@ import {
   prismaFollowRepo,
   prismaVerifyTokenRepo,
 } from './adaptor/repository/prisma.js';
-import { type AccountName } from './model/account.js';
+import type { AccountName } from './model/account.js';
 import { accountRepoSymbol } from './model/repository.js';
 import {
   CreateAccountRoute,

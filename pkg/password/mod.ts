@@ -1,5 +1,5 @@
 import { Ether } from '@mikuroxina/mini-fn';
-import { hash, verify, argon2id } from 'argon2';
+import { argon2id, hash, verify } from 'argon2';
 
 export type EncodedPassword = string;
 

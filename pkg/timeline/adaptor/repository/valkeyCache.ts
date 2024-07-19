@@ -1,8 +1,8 @@
 import { Result } from '@mikuroxina/mini-fn';
-import { type Redis } from 'ioredis';
+import type { Redis } from 'ioredis';
 
 import type { AccountID } from '../../../accounts/model/account.js';
-import { type Note, type NoteID } from '../../../notes/model/note.js';
+import type { Note, NoteID } from '../../../notes/model/note.js';
 import type {
   CacheObjectKey,
   TimelineNotesCacheRepository,

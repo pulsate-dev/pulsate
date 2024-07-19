@@ -1,7 +1,7 @@
 import { Result } from '@mikuroxina/mini-fn';
 import { hc } from 'hono/client';
 
-import { type AccountModuleHandlerType } from '../accounts/mod.js';
+import type { AccountModuleHandlerType } from '../accounts/mod.js';
 import {
   Account,
   type AccountFrozen,
@@ -25,8 +25,6 @@ export class AccountModule {
   private readonly client = hc<AccountModuleHandlerType>(
     'http://localhost:3000',
   );
-
-  constructor() {}
 
   async fetchAccount(id: AccountID): Promise<Result.Result<Error, Account>> {
     const res = await this.client.accounts[':id'].$get({

@@ -1,7 +1,7 @@
 import type { Option, Result } from '@mikuroxina/mini-fn';
 
 import type { AccountID } from '../../accounts/model/account.js';
-import { type Medium, type MediumID } from '../../drive/model/medium.js';
+import type { Medium, MediumID } from '../../drive/model/medium.js';
 import type { Bookmark } from './bookmark.js';
 import type { Note, NoteID } from './note.js';
 

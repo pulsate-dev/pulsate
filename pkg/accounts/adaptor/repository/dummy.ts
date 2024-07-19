@@ -1,15 +1,15 @@
 import { Ether, Option, Result } from '@mikuroxina/mini-fn';
 
-import { type Account, type AccountID } from '../../model/account.js';
-import { type AccountFollow } from '../../model/follow.js';
+import type { Account, AccountID } from '../../model/account.js';
+import type { AccountFollow } from '../../model/follow.js';
 import type { InactiveAccount } from '../../model/inactiveAccount.js';
 import {
   type AccountFollowRepository,
   type AccountRepository,
-  accountRepoSymbol,
   type AccountVerifyTokenRepository,
-  followRepoSymbol,
   type InactiveAccountRepository,
+  accountRepoSymbol,
+  followRepoSymbol,
   inactiveAccountRepoSymbol,
   verifyTokenRepoSymbol,
 } from '../../model/repository.js';

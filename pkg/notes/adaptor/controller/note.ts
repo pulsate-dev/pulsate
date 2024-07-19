@@ -1,4 +1,4 @@
-import { type z } from '@hono/zod-openapi';
+import type { z } from '@hono/zod-openapi';
 import { Option, Result } from '@mikuroxina/mini-fn';
 
 import type { AccountID } from '../../../accounts/model/account.js';
@@ -8,10 +8,10 @@ import type { NoteID, NoteVisibility } from '../../model/note.js';
 import type { CreateService } from '../../service/create.js';
 import type { FetchService } from '../../service/fetch.js';
 import type { RenoteService } from '../../service/renote.js';
-import {
-  type CreateNoteResponseSchema,
-  type GetNoteResponseSchema,
-  type RenoteResponseSchema,
+import type {
+  CreateNoteResponseSchema,
+  GetNoteResponseSchema,
+  RenoteResponseSchema,
 } from '../validator/schema.js';
 
 export class NoteController {

@@ -4,8 +4,8 @@ import { Cat, Ether, Promise, Result } from '@mikuroxina/mini-fn';
 import type { AccountID } from '../accounts/model/account.js';
 import { authenticateToken } from '../accounts/service/authenticationTokenService.js';
 import {
-  authenticateMiddleware,
   type AuthMiddlewareVariable,
+  authenticateMiddleware,
 } from '../adaptors/authenticateMiddleware.js';
 import { prismaClient } from '../adaptors/prisma.js';
 import { SnowflakeIDGenerator } from '../id/mod.js';

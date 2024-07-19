@@ -8,7 +8,6 @@ export class TimelineModule {
   private readonly client = hc<TimelineModuleHandlerType>(
     'http://localhost:3000',
   );
-  constructor() {}
 
   /*
    * @description Push note to timeline
