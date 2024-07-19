@@ -1,12 +1,10 @@
 {
-  // editor settings
-  "editor.defaultFormatter": "esbenp.prettier-vscode",
+  "biome.enabled": true,
   "editor.formatOnSave": true,
-
-  // Markdown All in One settings
+  "editor.defaultFormatter": "biomejs.biome",
   "markdown.extension.toc.levels": "2..6",
-
-  // prettier extension settings
-  "prettier.requireConfig": true,
-  "prettier.configPath": ".prettierrc"
+  "editor.codeActionsOnSave": {
+    "source.organizeImports.biome": "explicit",
+    "quickfix.biome": "explicit"
+  }
 }
