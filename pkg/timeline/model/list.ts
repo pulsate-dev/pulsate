@@ -2,20 +2,21 @@ import type { AccountID } from '../../accounts/model/account.js';
 import type { ID } from '../../id/type.js';
 
 export type ListID = ID<List>;
-export interface CreateListArgs {
+export type CreateListArgs = Readonly<{
   id: ListID;
   title: string;
   publicity: 'PUBLIC' | 'PRIVATE';
   ownerId: AccountID;
-  memberIds: AccountID[];
+  memberIds: readonly AccountID[];
   createdAt: Date;
-}
+}>;
+
 export class List {
   private readonly id: ListID;
   private readonly title: string;
   private readonly publicity: 'PUBLIC' | 'PRIVATE';
   private readonly ownerId: AccountID;
-  private memberIds: Set<AccountID>;
+  private readonly memberIds: Set<AccountID>;
   private readonly createdAt: Date;
 
   private constructor(args: CreateListArgs) {
@@ -47,7 +48,7 @@ export class List {
     return this.ownerId;
   }
 
-  getMemberIds(): AccountID[] {
+  getMemberIds(): readonly AccountID[] {
     return [...this.memberIds];
   }
 
@@ -57,7 +58,6 @@ export class List {
 
   addMember(memberId: AccountID): void {
     // ToDo: member limit
-    if (this.memberIds.has(memberId)) return;
     this.memberIds.add(memberId);
   }
 
