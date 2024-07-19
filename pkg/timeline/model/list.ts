@@ -15,7 +15,7 @@ export class List {
   private readonly title: string;
   private readonly publicity: 'PUBLIC' | 'PRIVATE';
   private readonly ownerId: AccountID;
-  private memberIds: AccountID[];
+  private memberIds: Set<AccountID>;
   private readonly createdAt: Date;
 
   private constructor(args: CreateListArgs) {
@@ -23,7 +23,7 @@ export class List {
     this.title = args.title;
     this.publicity = args.publicity;
     this.ownerId = args.ownerId;
-    this.memberIds = args.memberIds;
+    this.memberIds = new Set<AccountID>(args.memberIds);
     this.createdAt = args.createdAt;
   }
 
@@ -48,20 +48,20 @@ export class List {
   }
 
   getMemberIds(): AccountID[] {
-    return this.memberIds;
+    return [...this.memberIds];
   }
 
   getCreatedAt(): Date {
     return this.createdAt;
   }
 
-  addMember(memberId: AccountID) {
+  addMember(memberId: AccountID): void {
     // ToDo: member limit
-    if (this.memberIds.includes(memberId)) return;
-    this.memberIds.push(memberId);
+    if (this.memberIds.has(memberId)) return;
+    this.memberIds.add(memberId);
   }
 
-  removeMember(memberId: AccountID) {
-    this.memberIds = this.memberIds.filter((id) => id !== memberId);
+  removeMember(memberId: AccountID): void {
+    this.memberIds.delete(memberId);
   }
 }
