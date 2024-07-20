@@ -1,4 +1,4 @@
-name: CI
+name: Build CI
 
 on:
   push:
@@ -9,7 +9,7 @@ on:
       - main
 
 jobs:
-  node:
+  build:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -32,13 +32,9 @@ jobs:
         run: |
           pnpm check:type
 
-      - name: Run fmt
+      - name: Run biome check
         run: |
-          pnpm check:format
-
-      - name: Run lint
-        run: |
-          pnpm lint
+          pnpm biome ci
 
       - name: Run ls-lint
         run: |
