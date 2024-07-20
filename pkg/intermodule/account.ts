@@ -50,6 +50,7 @@ export class AccountModule {
       frozen: body.frozen as AccountFrozen,
       silenced: body.silenced as AccountSilenced,
       status: body.status as AccountStatus,
+      // biome-ignore lint/style/noNonNullAssertion: Use assertion to avoid compile errors because type inference has failed.
       createdAt: new Date(body.created_at!),
       passphraseHash: undefined,
     });

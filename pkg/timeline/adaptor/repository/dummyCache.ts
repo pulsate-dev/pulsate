@@ -36,6 +36,7 @@ export class InMemoryTimelineCacheRepository
       );
       return Result.ok(undefined);
     }
+    // biome-ignore lint/style/noNonNullAssertion: Use assertion to avoid compile errors because type inference has failed.
     const fetched = this.data.get(objectKey)!;
     // NOTE: replace by updated object
     this.data.delete(objectKey);

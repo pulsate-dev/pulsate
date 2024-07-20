@@ -59,7 +59,7 @@ export class TimelineController {
     const result = accountNotes
       .filter((v) => accountsMap.has(v.getAuthorID()))
       .map((v) => {
-        // NOTE: This variable is safe because it is filtered by the above filter
+        // biome-ignore lint/style/noNonNullAssertion: This variable is safe because it is filtered by the above filter.
         const account = accountsMap.get(v.getAuthorID())!;
 
         return {
