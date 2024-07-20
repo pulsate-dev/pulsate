@@ -1,15 +1,15 @@
 import { Ether, Option, Result } from '@mikuroxina/mini-fn';
 
 import {
-  passwordEncoderSymbol,
   type PasswordEncoder,
+  passwordEncoderSymbol,
 } from '../../password/mod.js';
 import type { AccountName } from '../model/account.js';
 import {
-  accountRepoSymbol,
   type AccountRepository,
+  accountRepoSymbol,
 } from '../model/repository.js';
-import { etagSymbol, type EtagService } from './etagService.js';
+import { type EtagService, etagSymbol } from './etagService.js';
 
 export class EditService {
   private readonly nicknameShortest = 1;

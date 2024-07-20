@@ -6,4 +6,3 @@ ignore:
   - coverage
   - build
   - vite.config.ts
-  - eslint.config.js

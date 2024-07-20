@@ -1,7 +1,7 @@
 import { Result } from '@mikuroxina/mini-fn';
 import { describe, expect, it, vi } from 'vitest';
 
-import { type AccountID } from '../../accounts/model/account.js';
+import type { AccountID } from '../../accounts/model/account.js';
 import { AccountModule } from '../../intermodule/account.js';
 import {
   dummyDirectNote,

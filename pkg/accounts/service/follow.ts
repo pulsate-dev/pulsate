@@ -3,10 +3,10 @@ import { Ether, Option, Result } from '@mikuroxina/mini-fn';
 import type { AccountName } from '../model/account.js';
 import { AccountFollow } from '../model/follow.js';
 import {
-  accountRepoSymbol,
-  followRepoSymbol,
   type AccountFollowRepository,
   type AccountRepository,
+  accountRepoSymbol,
+  followRepoSymbol,
 } from '../model/repository.js';
 
 export class FollowService {

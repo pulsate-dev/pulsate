@@ -1,7 +1,7 @@
 import { Result } from '@mikuroxina/mini-fn';
 import { hc } from 'hono/client';
 
-import { type AccountModuleHandlerType } from '../accounts/mod.js';
+import type { AccountModuleHandlerType } from '../accounts/mod.js';
 import {
   Account,
   type AccountFrozen,
@@ -25,8 +25,6 @@ export class AccountModule {
   private readonly client = hc<AccountModuleHandlerType>(
     'http://localhost:3000',
   );
-
-  constructor() {}
 
   async fetchAccount(id: AccountID): Promise<Result.Result<Error, Account>> {
     const res = await this.client.accounts[':id'].$get({
@@ -52,6 +50,7 @@ export class AccountModule {
       frozen: body.frozen as AccountFrozen,
       silenced: body.silenced as AccountSilenced,
       status: body.status as AccountStatus,
+      // biome-ignore lint/style/noNonNullAssertion: Use assertion to avoid compile errors because type inference has failed.
       createdAt: new Date(body.created_at!),
       passphraseHash: undefined,
     });

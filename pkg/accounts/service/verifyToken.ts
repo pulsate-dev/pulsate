@@ -1,11 +1,11 @@
 import { Ether, Option, Result } from '@mikuroxina/mini-fn';
 
 import { type Clock, clockSymbol } from '../../id/mod.js';
-import { type AccountName } from '../model/account.js';
+import type { AccountName } from '../model/account.js';
 import {
   type AccountRepository,
-  accountRepoSymbol,
   type AccountVerifyTokenRepository,
+  accountRepoSymbol,
   verifyTokenRepoSymbol,
 } from '../model/repository.js';
 

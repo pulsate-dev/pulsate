@@ -1,6 +1,6 @@
 # Pulsate
 
-[![Build CI Badge](https://github.com/pulsate-dev/pulsate/actions/workflows/ci.yaml/badge.svg)](https://github.com/pulsate-dev/pulsate/actions/workflows/ci.yaml)
+[![Build CI Badge](https://github.com/pulsate-dev/pulsate/actions/workflows/build.yaml/badge.svg)](https://github.com/pulsate-dev/pulsate/actions/workflows/build.yaml)
 [![Discord Badge](https://img.shields.io/discord/1155472831744856164?label=Discord&color=5865F2)](https://link.pulsate.dev/discord)
 [![Follow Badge](https://img.shields.io/badge/Follow_me!-black?logo=x&logoColor=white)](https://link.pulsate.dev/x)
 [![License Badge](https://img.shields.io/static/v1?label=Licence&message=Apache-2.0&color=BF485A)](./LICENSE)

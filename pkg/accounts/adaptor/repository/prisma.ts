@@ -1,5 +1,5 @@
 import { Ether, Option, Result } from '@mikuroxina/mini-fn';
-import { type Prisma, type PrismaClient } from '@prisma/client';
+import type { Prisma, PrismaClient } from '@prisma/client';
 
 import type { prismaClient } from '../../../adaptors/prisma.js';
 import {
@@ -15,8 +15,8 @@ import { AccountFollow } from '../../model/follow.js';
 import {
   type AccountFollowRepository,
   type AccountRepository,
-  accountRepoSymbol,
   type AccountVerifyTokenRepository,
+  accountRepoSymbol,
   followRepoSymbol,
   verifyTokenRepoSymbol,
 } from '../../model/repository.js';

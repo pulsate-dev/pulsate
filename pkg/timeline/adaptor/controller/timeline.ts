@@ -1,10 +1,7 @@
-import { type z } from '@hono/zod-openapi';
+import type { z } from '@hono/zod-openapi';
 import { Result } from '@mikuroxina/mini-fn';
 
-import {
-  type Account,
-  type AccountID,
-} from '../../../accounts/model/account.js';
+import type { Account, AccountID } from '../../../accounts/model/account.js';
 import type { AccountModule } from '../../../intermodule/account.js';
 import type { NoteID } from '../../../notes/model/note.js';
 import type { AccountTimelineService } from '../../service/account.js';
@@ -62,7 +59,7 @@ export class TimelineController {
     const result = accountNotes
       .filter((v) => accountsMap.has(v.getAuthorID()))
       .map((v) => {
-        // NOTE: This variable is safe because it is filtered by the above filter
+        // biome-ignore lint/style/noNonNullAssertion: This variable is safe because it is filtered by the above filter.
         const account = accountsMap.get(v.getAuthorID())!;
 
         return {

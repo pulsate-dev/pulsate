@@ -20,13 +20,13 @@
     "build:api": "node ./build/scripts/apidoc.js",
     "build:prisma": "prisma generate",
     "clean": "rm -r ./build",
-    "format": "prettier --write \"./**/*.{js,ts,md}\"",
-    "lint": "eslint . ",
+    "format": "biome format --write .",
+    "lint": "biome lint .",
     "test": "vitest run",
     "test:coverage": "vitest run --coverage",
     "check:type": "tsc -p .",
     "check:filename": "ls-lint",
-    "check:format": "prettier --check \"./**/*.{js,ts,md}\"",
+    "check:format": "biome format \"./**/*.{js,ts,md}\"",
     "prepare": "pnpm run build:prisma",
     "postinstall": "lefthook install"
   },
@@ -48,24 +48,15 @@
     "typescript": "^5.3.3"
   },
   "devDependencies": {
-    "@eslint/eslintrc": "^3.0.0",
-    "@eslint/js": "^9.0.0",
+    "@biomejs/biome": "^1.8.3",
     "@ls-lint/ls-lint": "^2.2.3",
-    "@trivago/prettier-plugin-sort-imports": "^4.3.0",
     "@types/node": "^20.11.16",
-    "@typescript-eslint/eslint-plugin": "^7.0.0",
-    "@typescript-eslint/parser": "^7.0.0",
     "@vitest/coverage-v8": "^2.0.0",
     "esbuild": "^0.23.0",
-    "eslint": "^9.0.0",
-    "eslint-config-prettier": "^9.1.0",
-    "eslint-plugin-vitest": "^0.5.0",
     "glob": "^11.0.0",
-    "globals": "^15.0.0",
     "ignore": "^5.3.1",
     "kleur": "^4.1.5",
     "lefthook": "^1.6.1",
-    "prettier": "^3.2.5",
     "vitest": "^2.0.0"
   }
 }

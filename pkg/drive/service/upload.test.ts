@@ -1,5 +1,5 @@
-import { Result } from '@mikuroxina/mini-fn';
 import { readFile } from 'node:fs/promises';
+import { Result } from '@mikuroxina/mini-fn';
 import { describe, expect, it } from 'vitest';
 
 import type { AccountID } from '../../accounts/model/account.js';

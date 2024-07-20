@@ -1,7 +1,7 @@
 import { Ether, type Option, type Result } from '@mikuroxina/mini-fn';
 
 import type { Account } from './account.js';
-import { type AccountID } from './account.js';
+import type { AccountID } from './account.js';
 import type { AccountFollow } from './follow.js';
 import type { InactiveAccount } from './inactiveAccount.js';
 

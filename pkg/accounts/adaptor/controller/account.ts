@@ -1,7 +1,7 @@
-import { type z } from '@hono/zod-openapi';
+import type { z } from '@hono/zod-openapi';
 import { Option, Result } from '@mikuroxina/mini-fn';
 
-import { type AccountID, type AccountName } from '../../model/account.js';
+import type { AccountID, AccountName } from '../../model/account.js';
 import type { AuthenticateService } from '../../service/authenticate.js';
 import type { EditService } from '../../service/edit.js';
 import type { FetchService } from '../../service/fetch.js';
@@ -11,15 +11,15 @@ import type { FreezeService } from '../../service/freeze.js';
 import type { RegisterService } from '../../service/register.js';
 import type { ResendVerifyTokenService } from '../../service/resendToken.js';
 import type { SilenceService } from '../../service/silence.js';
-import { type UnfollowService } from '../../service/unfollow.js';
+import type { UnfollowService } from '../../service/unfollow.js';
 import type { VerifyAccountTokenService } from '../../service/verifyToken.js';
-import {
-  type CreateAccountResponseSchema,
-  type GetAccountFollowerSchema,
-  type GetAccountFollowingSchema,
-  type GetAccountResponseSchema,
-  type LoginResponseSchema,
-  type UpdateAccountResponseSchema,
+import type {
+  CreateAccountResponseSchema,
+  GetAccountFollowerSchema,
+  GetAccountFollowingSchema,
+  GetAccountResponseSchema,
+  LoginResponseSchema,
+  UpdateAccountResponseSchema,
 } from '../validator/schema.js';
 
 export class AccountController {

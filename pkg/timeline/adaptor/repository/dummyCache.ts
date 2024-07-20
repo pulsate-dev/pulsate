@@ -1,7 +1,7 @@
 import { Result } from '@mikuroxina/mini-fn';
 
 import type { AccountID } from '../../../accounts/model/account.js';
-import { type Note, type NoteID } from '../../../notes/model/note.js';
+import type { Note, NoteID } from '../../../notes/model/note.js';
 import type {
   CacheObjectKey,
   TimelineNotesCacheRepository,
@@ -36,6 +36,7 @@ export class InMemoryTimelineCacheRepository
       );
       return Result.ok(undefined);
     }
+    // biome-ignore lint/style/noNonNullAssertion: Use assertion to avoid compile errors because type inference has failed.
     const fetched = this.data.get(objectKey)!;
     // NOTE: replace by updated object
     this.data.delete(objectKey);

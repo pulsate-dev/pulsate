@@ -1,6 +1,6 @@
 import { Ether, Option, Result } from '@mikuroxina/mini-fn';
 
-import { type Account, type AccountID } from '../model/account.js';
+import type { Account, AccountID } from '../model/account.js';
 import {
   type AccountRepository,
   accountRepoSymbol,

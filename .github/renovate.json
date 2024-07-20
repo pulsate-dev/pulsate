@@ -1,4 +1,7 @@
 {
   "$schema": "https://docs.renovatebot.com/renovate-schema.json",
-  "extends": ["github>pulsate-dev/renovate-conf"]
+  "extends": [
+    "github>pulsate-dev/renovate-conf",
+    "customManagers:biomeVersions"
+  ]
 }
