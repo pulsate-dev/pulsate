@@ -17,10 +17,7 @@ export type ActivateArgs = Omit<
 >;
 
 export class AlreadyActivatedError extends Error {
-  constructor(message?: string) {
-    if (message) {
-      super('This account was already activated.');
-    }
+  constructor(message = 'This account was already activated.') {
     super(message);
   }
 }
