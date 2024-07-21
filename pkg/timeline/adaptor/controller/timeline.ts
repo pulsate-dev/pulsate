@@ -4,8 +4,10 @@ import { Result } from '@mikuroxina/mini-fn';
 import type { Account, AccountID } from '../../../accounts/model/account.js';
 import type { AccountModule } from '../../../intermodule/account.js';
 import type { NoteID } from '../../../notes/model/note.js';
+import type { ListID } from '../../model/list.js';
 import type { AccountTimelineService } from '../../service/account.js';
 import type { CreateListService } from '../../service/createList.js';
+import type { DeleteListService } from '../../service/deleteList.js';
 import type {
   CreateListResponseSchema,
   GetAccountTimelineResponseSchema,
@@ -15,14 +17,17 @@ export class TimelineController {
   private readonly accountTimelineService: AccountTimelineService;
   private readonly accountModule: AccountModule;
   private readonly createListService: CreateListService;
+  private readonly deleteListService: DeleteListService;
   constructor(args: {
     accountTimelineService: AccountTimelineService;
     accountModule: AccountModule;
     createListService: CreateListService;
+    deleteListService: DeleteListService;
   }) {
     this.accountTimelineService = args.accountTimelineService;
     this.accountModule = args.accountModule;
     this.createListService = args.createListService;
+    this.deleteListService = args.deleteListService;
   }
 
   async getAccountTimeline(
@@ -111,5 +116,10 @@ export class TimelineController {
       title: unwrapped.getTitle(),
       public: unwrapped.isPublic(),
     });
+  }
+
+  async deleteList(id: string): Promise<Result.Result<Error, void>> {
+    const res = await this.deleteListService.handle(id as ListID);
+    return res;
   }
 }
