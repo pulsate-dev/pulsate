@@ -6,9 +6,9 @@ import type { AccountModule } from '../../../intermodule/account.js';
 import type { NoteID } from '../../../notes/model/note.js';
 import type { AccountTimelineService } from '../../service/account.js';
 import type { CreateListService } from '../../service/createList.js';
-import {
-  type CreateListResponseSchema,
-  type GetAccountTimelineResponseSchema,
+import type {
+  CreateListResponseSchema,
+  GetAccountTimelineResponseSchema,
 } from '../validator/timeline.js';
 
 export class TimelineController {

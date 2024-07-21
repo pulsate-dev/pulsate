@@ -3,7 +3,7 @@ import { Ether, type Result } from '@mikuroxina/mini-fn';
 import type { AccountID } from '../../accounts/model/account.js';
 import type { Note, NoteID } from '../../notes/model/note.js';
 import type { ListID } from './list.js';
-import { type List } from './list.js';
+import type { List } from './list.js';
 
 export interface FetchAccountTimelineFilter {
   id: AccountID;
