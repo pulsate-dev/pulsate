@@ -2,18 +2,32 @@ import { OpenAPIHono } from '@hono/zod-openapi';
 import { Option, Result } from '@mikuroxina/mini-fn';
 
 import type { AccountID } from '../accounts/model/account.js';
+import { SnowflakeIDGenerator } from '../id/mod.js';
 import { AccountModule } from '../intermodule/account.js';
 import { Note, type NoteID } from '../notes/model/note.js';
 import { TimelineController } from './adaptor/controller/timeline.js';
-import { InMemoryTimelineRepository } from './adaptor/repository/dummy.js';
+import {
+  InMemoryListRepository,
+  InMemoryTimelineRepository,
+} from './adaptor/repository/dummy.js';
 import { InMemoryTimelineCacheRepository } from './adaptor/repository/dummyCache.js';
-import { GetAccountTimelineRoute, PushNoteToTimelineRoute } from './router.js';
+import {
+  CreateListRoute,
+  GetAccountTimelineRoute,
+  PushNoteToTimelineRoute,
+} from './router.js';
 import { AccountTimelineService } from './service/account.js';
+import { CreateListService } from './service/createList.js';
 import { NoteVisibilityService } from './service/noteVisibility.js';
 import { PushTimelineService } from './service/push.js';
 
+const idGenerator = new SnowflakeIDGenerator(0, {
+  now: () => BigInt(Date.now()),
+});
+
 const accountModule = new AccountModule();
 const timelineRepository = new InMemoryTimelineRepository();
+const listRepository = new InMemoryListRepository();
 const timelineNotesCacheRepository = new InMemoryTimelineCacheRepository();
 const noteVisibilityService = new NoteVisibilityService(accountModule);
 const controller = new TimelineController({
@@ -21,6 +35,7 @@ const controller = new TimelineController({
     noteVisibilityService: noteVisibilityService,
     timelineRepository: timelineRepository,
   }),
+  createListService: new CreateListService(idGenerator, listRepository),
   accountModule,
 });
 const pushTimelineService = new PushTimelineService(
@@ -85,3 +100,16 @@ const pushNoteToTimeline = timeline.openapi(
 );
 
 // ToDo: impl DropNoteFromTimelineRoute
+
+timeline.openapi(CreateListRoute, async (c) => {
+  // NOTE: `public` is a reserved keyword
+  const req = c.req.valid('json');
+
+  // ToDo: fill ownerId
+  const res = await controller.createList(req.title, req.public, '1');
+  if (Result.isErr(res)) {
+    return c.json({ error: res[1].message }, 400);
+  }
+
+  return c.json(res[1], 200);
+});
