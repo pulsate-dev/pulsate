@@ -4,10 +4,12 @@ import type { AccountID } from '../../../accounts/model/account.js';
 import type { Medium, MediumID } from '../../../drive/model/medium.js';
 import { Bookmark } from '../../model/bookmark.js';
 import type { Note, NoteID } from '../../model/note.js';
+import { Reaction } from '../../model/reaction.js';
 import type {
   BookmarkRepository,
   NoteAttachmentRepository,
   NoteRepository,
+  ReactionRepository,
 } from '../../model/repository.js';
 
 export class InMemoryNoteRepository implements NoteRepository {
@@ -124,6 +126,76 @@ export class InMemoryBookmarkRepository implements BookmarkRepository {
     }
 
     return Promise.resolve(Option.some(bookmarks));
+  }
+}
+
+export class InMemoryReactionRepository implements ReactionRepository {
+  private readonly reactions: Map<[NoteID, AccountID], Reaction>;
+
+  private equalID(a: [NoteID, AccountID], b: [NoteID, AccountID]): boolean {
+    return a[0] === b[0] && a[1] === b[1];
+  }
+
+  constructor(reactions: Reaction[] = []) {
+    this.reactions = new Map(
+      reactions.map((reaction) => [
+        [reaction.getNoteID(), reaction.getAccountID()],
+        reaction,
+      ]),
+    );
+  }
+
+  async create(
+    id: {
+      noteID: NoteID;
+      accountID: AccountID;
+    },
+    emoji: string,
+  ): Promise<Result.Result<Error, void>> {
+    const reaction = Reaction.new({ ...id, emoji });
+    this.reactions.set([id.noteID, id.accountID], reaction);
+    return Result.ok(undefined);
+  }
+
+  async deleteByID(id: {
+    noteID: NoteID;
+    accountID: AccountID;
+  }): Promise<Result.Result<Error, void>> {
+    const key = Array.from(this.reactions.keys()).find((k) =>
+      this.equalID(k, [id.noteID, id.accountID]),
+    );
+
+    if (!key) {
+      return Result.err(new Error('reaction not found'));
+    }
+
+    this.reactions.delete(key);
+    return Result.ok(undefined);
+  }
+
+  async findByID(id: {
+    noteID: NoteID;
+    accountID: AccountID;
+  }): Promise<Option.Option<Reaction>> {
+    const reaction = Array.from(this.reactions.entries()).find((v) =>
+      this.equalID(v[0], [id.noteID, id.accountID]),
+    );
+    if (!reaction) {
+      return Promise.resolve(Option.none());
+    }
+    return Promise.resolve(Option.some(reaction[1]));
+  }
+
+  async findByAccountID(id: AccountID): Promise<Option.Option<Reaction[]>> {
+    const reactions = Array.from(this.reactions.entries())
+      .filter((v) => v[0][1] === id)
+      .map((v) => v[1]);
+
+    if (reactions.length === 0) {
+      return Promise.resolve(Option.none());
+    }
+
+    return Promise.resolve(Option.some(reactions));
   }
 }
 
