@@ -2,8 +2,7 @@ import { Ether, type Result } from '@mikuroxina/mini-fn';
 
 import type { AccountID } from '../../accounts/model/account.js';
 import type { Note, NoteID } from '../../notes/model/note.js';
-import type { ListID } from './list.js';
-import type { List } from './list.js';
+import type { List, ListID } from './list.js';
 
 export interface FetchAccountTimelineFilter {
   id: AccountID;
@@ -37,6 +36,12 @@ export interface TimelineRepository {
     noteIDs: readonly NoteID[],
     filter: FetchAccountTimelineFilter,
   ): Promise<Result.Result<Error, Note[]>>;
+
+  /**
+   * @description Fetch list timeline
+   * @param noteId IDs of the notes to be fetched
+   * */
+  fetchListTimeline(noteId: NoteID[]): Promise<Result.Result<Error, Note[]>>;
 }
 export const timelineRepoSymbol = Ether.newEtherSymbol<TimelineRepository>();
 
@@ -61,5 +66,4 @@ export interface ListRepository {
     ownerId: AccountID,
   ): Promise<Result.Result<Error, List[]>>;
   fetchListMembers(listId: ListID): Promise<Result.Result<Error, AccountID[]>>;
-  fetchListTimeline(noteId: NoteID[]): Promise<Result.Result<Error, Note[]>>;
 }

@@ -67,6 +67,25 @@ export class InMemoryTimelineRepository implements TimelineRepository {
     return Result.ok(filtered.slice(0, beforeIndex));
   }
 
+  async fetchListTimeline(
+    noteId: NoteID[],
+  ): Promise<Result.Result<Error, Note[]>> {
+    const notes: Note[] = [];
+    for (const noteID of noteId) {
+      const n = this.data.get(noteID);
+      if (!n) {
+        return Result.err(new Error('Not found'));
+      }
+      notes.push(n);
+    }
+
+    // NOTE: filter out DIRECT notes
+    // ToDo: Consider whether to filter out when Visibility is ‘FOLLOWERS’.
+    const filtered = notes.filter((note) => note.getVisibility() !== 'DIRECT');
+
+    return Result.ok(filtered);
+  }
+
   reset(data: readonly Note[] = []) {
     this.data.clear();
     this.data = new Map(data.map((v) => [v.getID(), v]));
@@ -115,25 +134,6 @@ export class InMemoryListRepository implements ListRepository {
       return Result.err(new Error('Not found'));
     }
     return Result.ok(list.getMemberIds() as AccountID[]);
-  }
-
-  async fetchListTimeline(
-    noteId: NoteID[],
-  ): Promise<Result.Result<Error, Note[]>> {
-    const notes: Note[] = [];
-    for (const noteID of noteId) {
-      const n = this.notes.get(noteID);
-      if (!n) {
-        return Result.err(new Error('Not found'));
-      }
-      notes.push(n);
-    }
-
-    // NOTE: filter out DIRECT notes
-    // ToDo: Consider whether to filter out when Visibility is ‘FOLLOWERS’.
-    const filtered = notes.filter((note) => note.getVisibility() !== 'DIRECT');
-
-    return Result.ok(filtered);
   }
 
   reset(data: readonly List[] = [], notes: readonly Note[] = []) {

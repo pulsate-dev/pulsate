@@ -97,6 +97,23 @@ describe('InMemoryTimelineRepository', () => {
         .includes('DIRECT'),
     ).toBe(false);
   });
+
+  it('should fetch list timeline', async () => {
+    const actual = await repository.fetchListTimeline(['1' as NoteID]);
+    expect(Result.isOk(actual)).toBe(true);
+  });
+
+  it('should not return DIRECT notes', async () => {
+    const actual = await repository.fetchListTimeline([
+      '1' as NoteID,
+      '4' as NoteID,
+    ]);
+    expect(Result.unwrap(actual)).toStrictEqual([dummyPublicNote]);
+    expect(Result.unwrap(actual)).not.toStrictEqual([
+      dummyPublicNote,
+      dummyDirectNote,
+    ]);
+  });
 });
 
 describe('InMemoryListRepository', () => {
@@ -181,23 +198,6 @@ describe('InMemoryListRepository', () => {
     expect(Result.unwrap(actual)).toStrictEqual([
       '100' as AccountID,
       '101' as AccountID,
-    ]);
-  });
-
-  it('should fetch list timeline', async () => {
-    const actual = await repository.fetchListTimeline(['10' as NoteID]);
-    expect(Result.isOk(actual)).toBe(true);
-  });
-
-  it('should not return DIRECT notes', async () => {
-    const actual = await repository.fetchListTimeline([
-      '10' as NoteID,
-      '14' as NoteID,
-    ]);
-    expect(Result.unwrap(actual)).toStrictEqual([dummyPublicNote]);
-    expect(Result.unwrap(actual)).not.toStrictEqual([
-      dummyPublicNote,
-      dummyDirectNote,
     ]);
   });
 });
