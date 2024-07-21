@@ -335,10 +335,6 @@
           "refresh_token"
         ]
       },
-      "FollowAccountResponse": {
-        "type": "object",
-        "properties": {}
-      },
       "ResendVerificationEmailRequest": {
         "type": "object",
         "properties": {
@@ -1273,15 +1269,8 @@
           }
         },
         "responses": {
-          "201": {
-            "description": "Accepted",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/FollowAccountResponse"
-                }
-              }
-            }
+          "204": {
+            "description": "Accepted(No Content)"
           },
           "403": {
             "description": "Forbidden",
