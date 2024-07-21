@@ -140,3 +140,27 @@ export const CreateListRoute = createRoute({
     },
   },
 });
+
+export const DeleteListRoute = createRoute({
+  method: 'delete',
+  tags: ['timeline'],
+  path: '/lists',
+  request: {
+    params: z.object({
+      id: z.string().openapi('List ID'),
+    }),
+  },
+  responses: {
+    204: {
+      description: 'OK',
+    },
+    404: {
+      content: {
+        'application/json': {
+          schema: CommonErrorResponseSchema,
+        },
+      },
+      description: 'LIST_NOTFOUND',
+    },
+  },
+});
