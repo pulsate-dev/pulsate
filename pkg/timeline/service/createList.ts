@@ -22,7 +22,7 @@ export class CreateListService {
     }
 
     const list = List.new({
-      id: id[1],
+      id: Result.unwrap(id),
       title,
       publicity: isPublic ? 'PUBLIC' : 'PRIVATE',
       ownerId,

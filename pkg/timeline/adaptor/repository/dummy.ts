@@ -68,7 +68,7 @@ export class InMemoryTimelineRepository implements TimelineRepository {
   }
 
   async fetchListTimeline(
-    noteId: NoteID[],
+    noteId: readonly NoteID[],
   ): Promise<Result.Result<Error, Note[]>> {
     const notes: Note[] = [];
     for (const noteID of noteId) {

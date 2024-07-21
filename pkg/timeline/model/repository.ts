@@ -41,7 +41,9 @@ export interface TimelineRepository {
    * @description Fetch list timeline
    * @param noteId IDs of the notes to be fetched
    * */
-  fetchListTimeline(noteId: NoteID[]): Promise<Result.Result<Error, Note[]>>;
+  fetchListTimeline(
+    noteId: readonly NoteID[],
+  ): Promise<Result.Result<Error, Note[]>>;
 }
 export const timelineRepoSymbol = Ether.newEtherSymbol<TimelineRepository>();
 

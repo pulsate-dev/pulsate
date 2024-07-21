@@ -94,13 +94,14 @@ export class PrismaTimelineRepository implements TimelineRepository {
   }
 
   async fetchListTimeline(
-    noteIDs: NoteID[],
+    noteIDs: readonly NoteID[],
   ): Promise<Result.Result<Error, Note[]>> {
     // ToDo: Add filter
     const listNotes = await this.prisma.note.findMany({
       where: {
         id: {
-          in: noteIDs,
+          // NOTE: prisma requires non-readonly Array in here
+          in: noteIDs as NoteID[],
         },
       },
       orderBy: {
