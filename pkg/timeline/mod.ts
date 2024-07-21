@@ -13,11 +13,13 @@ import {
 import { InMemoryTimelineCacheRepository } from './adaptor/repository/dummyCache.js';
 import {
   CreateListRoute,
+  DeleteListRoute,
   GetAccountTimelineRoute,
   PushNoteToTimelineRoute,
 } from './router.js';
 import { AccountTimelineService } from './service/account.js';
 import { CreateListService } from './service/createList.js';
+import { DeleteListService } from './service/deleteList.js';
 import { NoteVisibilityService } from './service/noteVisibility.js';
 import { PushTimelineService } from './service/push.js';
 
@@ -36,6 +38,7 @@ const controller = new TimelineController({
     timelineRepository: timelineRepository,
   }),
   createListService: new CreateListService(idGenerator, listRepository),
+  deleteListService: new DeleteListService(listRepository),
   accountModule,
 });
 const pushTimelineService = new PushTimelineService(
@@ -112,4 +115,15 @@ timeline.openapi(CreateListRoute, async (c) => {
   }
 
   return c.json(res[1], 200);
+});
+
+timeline.openapi(DeleteListRoute, async (c) => {
+  const { id } = c.req.valid('param');
+
+  const res = await controller.deleteList(id);
+  if (Result.isErr(res)) {
+    return c.json({ error: res[1].message }, 404);
+  }
+
+  return new Response(undefined, { status: 204 });
 });
