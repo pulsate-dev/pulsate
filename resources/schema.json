@@ -484,6 +484,9 @@
           "title",
           "public"
         ]
+      },
+      "List ID": {
+        "type": "string"
       }
     },
     "parameters": {}
@@ -2511,6 +2514,47 @@
           },
           "400": {
             "description": "TITLE_TOO_LONG",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string",
+                      "default": "",
+                      "description": "Error code",
+                      "example": "TEST_ERROR_CODE"
+                    }
+                  },
+                  "required": [
+                    "error"
+                  ]
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "timeline"
+        ],
+        "parameters": [
+          {
+            "schema": {
+              "$ref": "#/components/schemas/List ID"
+            },
+            "required": true,
+            "name": "id",
+            "in": "path"
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "OK"
+          },
+          "404": {
+            "description": "LIST_NOTFOUND",
             "content": {
               "application/json": {
                 "schema": {
