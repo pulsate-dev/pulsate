@@ -1,7 +1,11 @@
 import { createRoute, z } from '@hono/zod-openapi';
 
 import { CommonErrorResponseSchema } from '../accounts/adaptor/validator/schema.js';
-import { GetAccountTimelineResponseSchema } from './adaptor/validator/timeline.js';
+import {
+  CreateListRequestSchema,
+  CreateListResponseSchema,
+  GetAccountTimelineResponseSchema,
+} from './adaptor/validator/timeline.js';
 
 export const GetAccountTimelineRoute = createRoute({
   method: 'get',
@@ -104,6 +108,35 @@ export const DropNoteFromTimelineRoute = createRoute({
     },
     500: {
       description: 'Task failed',
+    },
+  },
+});
+
+export const CreateListRoute = createRoute({
+  method: 'post',
+  tags: ['timeline'],
+  path: '/lists',
+  request: {
+    body: {
+      content: { 'application/json': { schema: CreateListRequestSchema } },
+    },
+  },
+  responses: {
+    200: {
+      content: {
+        'application/json': {
+          schema: CreateListResponseSchema,
+        },
+      },
+      description: 'OK',
+    },
+    400: {
+      content: {
+        'application/json': {
+          schema: CommonErrorResponseSchema,
+        },
+      },
+      description: 'TITLE_TOO_LONG',
     },
   },
 });

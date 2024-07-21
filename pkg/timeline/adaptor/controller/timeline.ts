@@ -5,17 +5,24 @@ import type { Account, AccountID } from '../../../accounts/model/account.js';
 import type { AccountModule } from '../../../intermodule/account.js';
 import type { NoteID } from '../../../notes/model/note.js';
 import type { AccountTimelineService } from '../../service/account.js';
-import type { GetAccountTimelineResponseSchema } from '../validator/timeline.js';
+import type { CreateListService } from '../../service/createList.js';
+import type {
+  CreateListResponseSchema,
+  GetAccountTimelineResponseSchema,
+} from '../validator/timeline.js';
 
 export class TimelineController {
   private readonly accountTimelineService: AccountTimelineService;
   private readonly accountModule: AccountModule;
+  private readonly createListService: CreateListService;
   constructor(args: {
     accountTimelineService: AccountTimelineService;
     accountModule: AccountModule;
+    createListService: CreateListService;
   }) {
     this.accountTimelineService = args.accountTimelineService;
     this.accountModule = args.accountModule;
+    this.createListService = args.createListService;
   }
 
   async getAccountTimeline(
@@ -82,5 +89,27 @@ export class TimelineController {
       });
 
     return Result.ok(result);
+  }
+
+  async createList(
+    title: string,
+    isPublic: boolean,
+    ownerId: string,
+  ): Promise<Result.Result<Error, z.infer<typeof CreateListResponseSchema>>> {
+    const res = await this.createListService.handle(
+      title,
+      isPublic,
+      ownerId as AccountID,
+    );
+    if (Result.isErr(res)) {
+      return res;
+    }
+
+    const unwrapped = Result.unwrap(res);
+    return Result.ok({
+      id: unwrapped.getId(),
+      title: unwrapped.getTitle(),
+      public: unwrapped.isPublic(),
+    });
   }
 }

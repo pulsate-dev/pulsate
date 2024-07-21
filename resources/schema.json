@@ -356,6 +356,134 @@
         "items": {
           "$ref": "#/components/schemas/GetAccountResponse"
         }
+      },
+      "GetAccountTimelineResponse": {
+        "type": "array",
+        "items": {
+          "type": "object",
+          "properties": {
+            "id": {
+              "type": "string",
+              "description": "Note ID",
+              "example": "38477395"
+            },
+            "content": {
+              "type": "string",
+              "description": "Note content",
+              "example": "hello world!"
+            },
+            "contents_warning_comment": {
+              "type": "string",
+              "description": "Contents warning comment",
+              "example": "(if length not 0) This note contains sensitive content"
+            },
+            "visibility": {
+              "type": "string",
+              "description": "Note visibility (PUBLIC/HOME/FOLLOWERS/DIRECT)",
+              "example": "PUBLIC"
+            },
+            "created_at": {
+              "type": "string",
+              "format": "date-time",
+              "description": "Note created date",
+              "example": "2021-01-01T00:00:00Z"
+            },
+            "author": {
+              "type": "object",
+              "properties": {
+                "id": {
+                  "type": "string"
+                },
+                "name": {
+                  "type": "string"
+                },
+                "display_name": {
+                  "type": "string"
+                },
+                "bio": {
+                  "type": "string"
+                },
+                "avatar": {
+                  "type": "string"
+                },
+                "header": {
+                  "type": "string"
+                },
+                "followed_count": {
+                  "type": "number"
+                },
+                "following_count": {
+                  "type": "number"
+                }
+              },
+              "required": [
+                "id",
+                "name",
+                "display_name",
+                "bio",
+                "avatar",
+                "header",
+                "followed_count",
+                "following_count"
+              ]
+            }
+          },
+          "required": [
+            "id",
+            "content",
+            "contents_warning_comment",
+            "visibility",
+            "created_at",
+            "author"
+          ]
+        }
+      },
+      "Account ID": {
+        "type": "string"
+      },
+      "CreateListResponse": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "List ID",
+            "example": "38477395"
+          },
+          "title": {
+            "type": "string",
+            "description": "List title",
+            "example": "Pulsate developers"
+          },
+          "public": {
+            "type": "boolean",
+            "description": "If true, list is public",
+            "example": false
+          }
+        },
+        "required": [
+          "id",
+          "title",
+          "public"
+        ]
+      },
+      "CreateListRequest": {
+        "type": "object",
+        "properties": {
+          "title": {
+            "type": "string",
+            "description": "List title (1-100 characters)",
+            "example": "Pulsate developers"
+          },
+          "public": {
+            "type": "boolean",
+            "description": "If true, list is public",
+            "example": false
+          }
+        },
+        "required": [
+          "title",
+          "public"
+        ]
       }
     },
     "parameters": {}
@@ -2223,6 +2351,166 @@
           },
           "404": {
             "description": "Not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string",
+                      "default": "",
+                      "description": "Error code",
+                      "example": "TEST_ERROR_CODE"
+                    }
+                  },
+                  "required": [
+                    "error"
+                  ]
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/timeline/accounts/:id": {
+      "get": {
+        "tags": [
+          "timeline"
+        ],
+        "parameters": [
+          {
+            "schema": {
+              "$ref": "#/components/schemas/Account ID"
+            },
+            "required": true,
+            "name": "id",
+            "in": "path"
+          },
+          {
+            "schema": {
+              "type": "boolean",
+              "description": "If true, only return notes with attachment"
+            },
+            "required": false,
+            "name": "has_attachment",
+            "in": "query"
+          },
+          {
+            "schema": {
+              "type": "boolean",
+              "description": "If true, only return notes without sensitive content"
+            },
+            "required": false,
+            "name": "no_nsfw",
+            "in": "query"
+          },
+          {
+            "schema": {
+              "type": "string",
+              "description": "Return notes before this note ID. specified note ID is not included"
+            },
+            "required": false,
+            "name": "before_id",
+            "in": "query"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GetAccountTimelineResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Account not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string",
+                      "default": "",
+                      "description": "Error code",
+                      "example": "TEST_ERROR_CODE"
+                    }
+                  },
+                  "required": [
+                    "error"
+                  ]
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/timeline/": {
+      "post": {
+        "description": "",
+        "tags": [
+          "timeline"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "id": {
+                    "type": "string"
+                  },
+                  "authorId": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "id",
+                  "authorId"
+                ]
+              }
+            }
+          }
+        },
+        "responses": {
+          "204": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/lists": {
+      "post": {
+        "tags": [
+          "timeline"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateListRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CreateListResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "TITLE_TOO_LONG",
             "content": {
               "application/json": {
                 "schema": {

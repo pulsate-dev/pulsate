@@ -92,4 +92,22 @@ export class PrismaTimelineRepository implements TimelineRepository {
     });
     return Result.ok(this.deserialize(homeNotes));
   }
+
+  async fetchListTimeline(
+    noteIDs: readonly NoteID[],
+  ): Promise<Result.Result<Error, Note[]>> {
+    // ToDo: Add filter
+    const listNotes = await this.prisma.note.findMany({
+      where: {
+        id: {
+          // NOTE: prisma requires non-readonly Array in here
+          in: noteIDs as NoteID[],
+        },
+      },
+      orderBy: {
+        createdAt: 'desc',
+      },
+    });
+    return Result.ok(this.deserialize(listNotes));
+  }
 }

@@ -36,3 +36,34 @@ export const GetAccountTimelineResponseSchema = z
     }),
   )
   .openapi('GetAccountTimelineResponse');
+
+export const CreateListRequestSchema = z
+  .object({
+    title: z.string().openapi({
+      example: 'Pulsate developers',
+      description: 'List title (1-100 characters)',
+    }),
+    public: z.boolean().pipe(z.coerce.boolean().default(false)).openapi({
+      type: 'boolean',
+      example: false,
+      description: 'If true, list is public',
+    }),
+  })
+  .openapi('CreateListRequest');
+export const CreateListResponseSchema = z
+  .object({
+    id: z.string().openapi({
+      example: '38477395',
+      description: 'List ID',
+    }),
+    title: z.string().openapi({
+      example: 'Pulsate developers',
+      description: 'List title',
+    }),
+    public: z.boolean().pipe(z.coerce.boolean().default(false)).openapi({
+      type: 'boolean',
+      example: false,
+      description: 'If true, list is public',
+    }),
+  })
+  .openapi('CreateListResponse');
