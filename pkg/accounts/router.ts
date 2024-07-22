@@ -4,7 +4,6 @@ import {
   CommonErrorResponseSchema,
   CreateAccountRequestSchema,
   CreateAccountResponseSchema,
-  FollowAccountResponseSchema,
   GetAccountFollowingSchema,
   GetAccountResponseSchema,
   LoginRequestSchema,
@@ -520,13 +519,8 @@ export const FollowAccountRoute = createRoute({
     },
   },
   responses: {
-    201: {
-      description: 'Accepted',
-      content: {
-        'application/json': {
-          schema: FollowAccountResponseSchema,
-        },
-      },
+    204: {
+      description: 'Accepted(No Content)',
     },
     403: {
       description: 'Forbidden',

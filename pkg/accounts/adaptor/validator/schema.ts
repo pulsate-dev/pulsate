@@ -253,11 +253,6 @@ export const GetAccountResponseSchema = z
     }),
   })
   .openapi('GetAccountResponse');
-
-export const FollowAccountResponseSchema = z
-  .object({})
-  .openapi('FollowAccountResponse');
-
 export const GetAccountFollowingSchema = z
   .array(GetAccountResponseSchema)
   .openapi('GetAccountFollowingResponse');
