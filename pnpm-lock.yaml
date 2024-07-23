@@ -13,10 +13,10 @@ importers:
         version: 1.12.0
       '@hono/swagger-ui':
         specifier: ^0.4.0
-        version: 0.4.0(hono@4.5.0)
+        version: 0.4.0(hono@4.5.1)
       '@hono/zod-openapi':
         specifier: ^0.15.0
-        version: 0.15.0(hono@4.5.0)(zod@3.23.8)
+        version: 0.15.0(hono@4.5.1)(zod@3.23.8)
       '@mikuroxina/mini-fn':
         specifier: ^6.3.1
         version: 6.4.0
@@ -37,7 +37,7 @@ importers:
         version: 19.2.0
       hono:
         specifier: ^4.0.0
-        version: 4.5.0
+        version: 4.5.1
       ioredis:
         specifier: ^5.4.1
         version: 5.4.1
@@ -1978,8 +1978,8 @@ packages:
     resolution: {integrity: sha512-QOSvevhslijgYwRx6Rv7zKdMF8lbRmx+uQGx2+vDc+KI/eBnsy9kit5aj23AgGu3pa4t9AgwbnXWqS+iOY+2aA==}
     engines: {node: '>= 6'}
 
-  caniuse-lite@1.0.30001642:
-    resolution: {integrity: sha512-3XQ0DoRgLijXJErLSl+bLnJ+Et4KqV1PY6JJBGAFlsNsz31zeAIncyeZfLCabHK/jtSh+671RM9YMldxjUPZtA==}
+  caniuse-lite@1.0.30001643:
+    resolution: {integrity: sha512-ERgWGNleEilSrHM6iUz/zJNSQTP8Mr21wDWpdgvRwcTXGAq6jMtOUPP4dqFPTdKqZ2wKTdtB+uucZ3MRpAUSmg==}
 
   ccount@2.0.1:
     resolution: {integrity: sha512-eyrF0jiFpY+3drT6383f1qhkbGsLSifNAjA61IUjZjmLCWjItY6LB9ft9YhoDgwfmclB2zhu51Lc7+95b8NRAg==}
@@ -2248,8 +2248,8 @@ packages:
   ee-first@1.1.1:
     resolution: {integrity: sha512-WMwm9LhRUo+WUaRN+vRuETqG89IgZphVSNkdFgeb6sS/E4OrDIN7t48CAewSHXc6C8lefD8KKfr5vY61brQlow==}
 
-  electron-to-chromium@1.4.832:
-    resolution: {integrity: sha512-cTen3SB0H2SGU7x467NRe1eVcQgcuS6jckKfWJHia2eo0cHIGOqHoAxevIYZD4eRHcWjkvFzo93bi3vJ9W+1lA==}
+  electron-to-chromium@1.5.0:
+    resolution: {integrity: sha512-Vb3xHHYnLseK8vlMJQKJYXJ++t4u1/qJ3vykuVrVjvdiOEhYyT1AuP4x03G8EnPmYvYOhe9T+dADTmthjRQMkA==}
 
   emoji-regex@8.0.0:
     resolution: {integrity: sha512-MSjYzcWNOA0ewAHpz0MxpYFvwg6yjy1NG3xteoqz644VCo/RPgnr1/GGt+ic3iJTzQ8Eu3TdM14SawnVUmGE6A==}
@@ -2591,8 +2591,8 @@ packages:
   highlightjs-vue@1.0.0:
     resolution: {integrity: sha512-PDEfEF102G23vHmPhLyPboFCD+BkMGu+GuJe2d9/eH4FsCwvgBpnc9n0pGE+ffKdph38s6foEZiEjdgHdzp+IA==}
 
-  hono@4.5.0:
-    resolution: {integrity: sha512-ZbezypZfn4odyApjCCv+Fw5OgweBqRLA/EsMyc4FUknFvBJcBIKhHy4sqmD1rWpBc/3wUlaQ6tqOPjk36R1ckg==}
+  hono@4.5.1:
+    resolution: {integrity: sha512-6q8AugoWG5wlrjdGG8OFFiqEsPlPGjODjUik48sEJeko4Tae1UsLS2vUiYHLEJx1gJvOZa4BWkQC+urwDmkEvQ==}
     engines: {node: '>=16.0.0'}
 
   hookable@5.5.3:
@@ -3219,8 +3219,8 @@ packages:
     resolution: {integrity: sha512-OSs33Z9yWr148JZcbZd5WiAXhh/n9z8TxQcdMhIOlpN9AhWpLfvVFO73+m77bBABQMaY9XSvIa+qk0jlI7Gcaw==}
     hasBin: true
 
-  node-releases@2.0.17:
-    resolution: {integrity: sha512-Ww6ZlOiEQfPfXM45v17oabk77Z7mg5bOt7AjDyzy7RjK9OrLrLC8dyZQoAPEOtFX9SaNf1Tdvr5gRJWdTJj7GA==}
+  node-releases@2.0.18:
+    resolution: {integrity: sha512-d9VeXT4SJ7ZeOqGX6R5EM022wpL+eWPooLI+5UpWn2jCT1aosUQEhQP214x33Wkwx3JQMvIm+tIoVOdodFS40g==}
 
   normalize-path@3.0.0:
     resolution: {integrity: sha512-6eZs5Ls3WtCisHWp9S2GUy8dqkpGi4BVSz3GaqiE6ezub0512ESztXUwUB6C6IKbQkY2Pnb/mD4WYojCRwcwLA==}
@@ -5321,20 +5321,20 @@ snapshots:
 
   '@hono/node-server@1.12.0': {}
 
-  '@hono/swagger-ui@0.4.0(hono@4.5.0)':
+  '@hono/swagger-ui@0.4.0(hono@4.5.1)':
     dependencies:
-      hono: 4.5.0
+      hono: 4.5.1
 
-  '@hono/zod-openapi@0.15.0(hono@4.5.0)(zod@3.23.8)':
+  '@hono/zod-openapi@0.15.0(hono@4.5.1)(zod@3.23.8)':
     dependencies:
       '@asteasolutions/zod-to-openapi': 7.1.1(zod@3.23.8)
-      '@hono/zod-validator': 0.2.2(hono@4.5.0)(zod@3.23.8)
-      hono: 4.5.0
+      '@hono/zod-validator': 0.2.2(hono@4.5.1)(zod@3.23.8)
+      hono: 4.5.1
       zod: 3.23.8
 
-  '@hono/zod-validator@0.2.2(hono@4.5.0)(zod@3.23.8)':
+  '@hono/zod-validator@0.2.2(hono@4.5.1)(zod@3.23.8)':
     dependencies:
-      hono: 4.5.0
+      hono: 4.5.1
       zod: 3.23.8
 
   '@img/sharp-darwin-arm64@0.33.4':
@@ -5725,7 +5725,7 @@ snapshots:
   '@scalar/hono-api-reference@0.5.111(postcss@8.4.39)(storybook@8.2.5(@babel/preset-env@7.24.8(@babel/core@7.24.9)))(tailwindcss@3.4.6)(typescript@5.5.3)(vitest@2.0.3(@types/node@20.14.11))':
     dependencies:
       '@scalar/api-reference': 1.24.50(postcss@8.4.39)(storybook@8.2.5(@babel/preset-env@7.24.8(@babel/core@7.24.9)))(tailwindcss@3.4.6)(typescript@5.5.3)(vitest@2.0.3(@types/node@20.14.11))
-      hono: 4.5.0
+      hono: 4.5.1
     transitivePeerDependencies:
       - '@jest/globals'
       - '@types/bun'
@@ -6390,9 +6390,9 @@ snapshots:
 
   browserslist@4.23.2:
     dependencies:
-      caniuse-lite: 1.0.30001642
-      electron-to-chromium: 1.4.832
-      node-releases: 2.0.17
+      caniuse-lite: 1.0.30001643
+      electron-to-chromium: 1.5.0
+      node-releases: 2.0.18
       update-browserslist-db: 1.1.0(browserslist@4.23.2)
 
   buffer-from@1.1.2: {}
@@ -6416,7 +6416,7 @@ snapshots:
 
   camelcase-css@2.0.1: {}
 
-  caniuse-lite@1.0.30001642: {}
+  caniuse-lite@1.0.30001643: {}
 
   ccount@2.0.1: {}
 
@@ -6656,7 +6656,7 @@ snapshots:
 
   ee-first@1.1.1: {}
 
-  electron-to-chromium@1.4.832: {}
+  electron-to-chromium@1.5.0: {}
 
   emoji-regex@8.0.0: {}
 
@@ -7146,7 +7146,7 @@ snapshots:
 
   highlightjs-vue@1.0.0: {}
 
-  hono@4.5.0: {}
+  hono@4.5.1: {}
 
   hookable@5.5.3: {}
 
@@ -7883,7 +7883,7 @@ snapshots:
 
   node-gyp-build@4.8.1: {}
 
-  node-releases@2.0.17: {}
+  node-releases@2.0.18: {}
 
   normalize-path@3.0.0: {}
 
