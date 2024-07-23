@@ -12,7 +12,7 @@ export interface PartialAccount {
   bio: string;
 }
 
-export interface AccountModuleInterface {
+export interface AccountModuleFacade {
   fetchAccount(id: AccountID): Promise<Result.Result<Error, Account>>;
   fetchFollowings(
     id: AccountID,

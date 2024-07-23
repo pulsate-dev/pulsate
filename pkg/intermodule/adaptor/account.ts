@@ -3,23 +3,18 @@ import type { Account, AccountID } from '../../accounts/model/account.js';
 import type { FetchService } from '../../accounts/service/fetch.js';
 import type { FetchFollowService } from '../../accounts/service/fetchFollow.js';
 import type {
-  AccountModuleInterface,
+  AccountModuleFacade,
   PartialAccount,
 } from '../interfaces/account.js';
 
-export class AccountModule implements AccountModuleInterface {
+export class AccountModule implements AccountModuleFacade {
   constructor(
     private readonly fetchService: FetchService,
     private readonly fetchFollowService: FetchFollowService,
   ) {}
 
   async fetchAccount(id: AccountID): Promise<Result.Result<Error, Account>> {
-    const res = await this.fetchService.fetchAccountByID(id);
-    if (Result.isErr(res)) {
-      return res;
-    }
-
-    return res;
+    return await this.fetchService.fetchAccountByID(id);
   }
 
   async fetchFollowings(
@@ -31,18 +26,21 @@ export class AccountModule implements AccountModuleInterface {
     }
 
     const accounts = await Promise.all(
-      res[1].map((v) => this.fetchService.fetchAccountByID(v.getTargetID())),
+      Result.unwrap(res).map((v) =>
+        this.fetchService.fetchAccountByID(v.getTargetID()),
+      ),
     );
 
     return Result.ok(
       accounts
         .filter((v) => Result.isOk(v))
         .map((v): PartialAccount => {
+          const unwrapped = Result.unwrap(v);
           return {
-            id: v[1].getID(),
-            name: v[1].getName(),
-            nickname: v[1].getNickname(),
-            bio: v[1].getBio(),
+            id: unwrapped.getID(),
+            name: unwrapped.getName(),
+            nickname: unwrapped.getNickname(),
+            bio: unwrapped.getBio(),
           };
         }),
     );
@@ -57,18 +55,21 @@ export class AccountModule implements AccountModuleInterface {
     }
 
     const accounts = await Promise.all(
-      res[1].map((v) => this.fetchService.fetchAccountByID(v.getFromID())),
+      Result.unwrap(res).map((v) =>
+        this.fetchService.fetchAccountByID(v.getFromID()),
+      ),
     );
 
     return Result.ok(
       accounts
         .filter((v) => Result.isOk(v))
         .map((v): PartialAccount => {
+          const unwrapped = Result.unwrap(v);
           return {
-            id: v[1].getID(),
-            name: v[1].getName(),
-            nickname: v[1].getNickname(),
-            bio: v[1].getBio(),
+            id: unwrapped.getID(),
+            name: unwrapped.getName(),
+            nickname: unwrapped.getNickname(),
+            bio: unwrapped.getBio(),
           };
         }),
     );
