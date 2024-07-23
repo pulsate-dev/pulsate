@@ -1,7 +1,7 @@
 import { Ether, Option, Result } from '@mikuroxina/mini-fn';
 
 import type { AccountID } from '../../accounts/model/account.js';
-import type { AccountModule } from '../../intermodule/account.js';
+import type { AccountModuleInterface } from '../../intermodule/interfaces/account.js';
 import type { Note } from '../../notes/model/note.js';
 
 export interface NoteVisibilityCheckArgs {
@@ -11,7 +11,7 @@ export interface NoteVisibilityCheckArgs {
 }
 
 export class NoteVisibilityService {
-  constructor(private readonly accountModule: AccountModule) {}
+  constructor(private readonly accountModule: AccountModuleInterface) {}
 
   public async handle(args: NoteVisibilityCheckArgs): Promise<boolean> {
     if (args.accountID === args.note.getAuthorID()) {
@@ -55,6 +55,6 @@ export const noteVisibility = Ether.newEther(
   noteVisibilitySymbol,
   ({ accountModule }) => new NoteVisibilityService(accountModule),
   {
-    accountModule: Ether.newEtherSymbol<AccountModule>(),
+    accountModule: Ether.newEtherSymbol<AccountModuleInterface>(),
   },
 );

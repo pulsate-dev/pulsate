@@ -1,8 +1,14 @@
 import { Result } from '@mikuroxina/mini-fn';
 import { describe, expect, it, vi } from 'vitest';
 
+import {
+  InMemoryAccountFollowRepository,
+  InMemoryAccountRepository,
+} from '../../accounts/adaptor/repository/dummy.js';
 import type { AccountID } from '../../accounts/model/account.js';
-import { AccountModule } from '../../intermodule/account.js';
+import { FetchService as AccountFetchService } from '../../accounts/service/fetch.js';
+import { FetchFollowService } from '../../accounts/service/fetchFollow.js';
+import { AccountModule } from '../../intermodule/adaptor/account.js';
 import {
   dummyDirectNote,
   dummyFollowersNote,
@@ -13,7 +19,12 @@ import {
 import { NoteVisibilityService } from './noteVisibility.js';
 
 describe('NoteVisibilityService', () => {
-  const accountModule = new AccountModule();
+  const accountRepository = new InMemoryAccountRepository([]);
+  const accountFollowRepository = new InMemoryAccountFollowRepository();
+  const accountModule = new AccountModule(
+    new AccountFetchService(accountRepository),
+    new FetchFollowService(accountFollowRepository, accountRepository),
+  );
   const visibilityService = new NoteVisibilityService(accountModule);
 
   it("when author's note: return true", async () => {

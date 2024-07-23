@@ -2,7 +2,7 @@ import type { z } from '@hono/zod-openapi';
 import { Result } from '@mikuroxina/mini-fn';
 
 import type { Account, AccountID } from '../../../accounts/model/account.js';
-import type { AccountModule } from '../../../intermodule/account.js';
+import type { AccountModuleInterface } from '../../../intermodule/interfaces/account.js';
 import type { NoteID } from '../../../notes/model/note.js';
 import type { ListID } from '../../model/list.js';
 import type { AccountTimelineService } from '../../service/account.js';
@@ -15,12 +15,12 @@ import type {
 
 export class TimelineController {
   private readonly accountTimelineService: AccountTimelineService;
-  private readonly accountModule: AccountModule;
+  private readonly accountModule: AccountModuleInterface;
   private readonly createListService: CreateListService;
   private readonly deleteListService: DeleteListService;
   constructor(args: {
     accountTimelineService: AccountTimelineService;
-    accountModule: AccountModule;
+    accountModule: AccountModuleInterface;
     createListService: CreateListService;
     deleteListService: DeleteListService;
   }) {

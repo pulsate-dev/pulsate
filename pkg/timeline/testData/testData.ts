@@ -4,7 +4,7 @@
 import { Option } from '@mikuroxina/mini-fn';
 
 import { Account, type AccountID } from '../../accounts/model/account.js';
-import type { PartialAccount } from '../../intermodule/account.js';
+import type { PartialAccount } from '../../intermodule/interfaces/account.js';
 import { Note, type NoteID } from '../../notes/model/note.js';
 
 export const dummyPublicNote = Note.new({

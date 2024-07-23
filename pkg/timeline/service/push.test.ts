@@ -1,14 +1,25 @@
 import { Result } from '@mikuroxina/mini-fn';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
-import { AccountModule } from '../../intermodule/account.js';
+import {
+  InMemoryAccountFollowRepository,
+  InMemoryAccountRepository,
+} from '../../accounts/adaptor/repository/dummy.js';
+import { FetchService as AccountFetchService } from '../../accounts/service/fetch.js';
+import { FetchFollowService } from '../../accounts/service/fetchFollow.js';
+import { AccountModule } from '../../intermodule/adaptor/account.js';
 import { InMemoryTimelineCacheRepository } from '../adaptor/repository/dummyCache.js';
 import { dummyPublicNote, partialAccount1 } from '../testData/testData.js';
 import { NoteVisibilityService } from './noteVisibility.js';
 import { PushTimelineService } from './push.js';
 
 describe('PushTimelineService', () => {
-  const accountModule = new AccountModule();
+  const accountRepository = new InMemoryAccountRepository([]);
+  const accountFollowRepository = new InMemoryAccountFollowRepository();
+  const accountModule = new AccountModule(
+    new AccountFetchService(accountRepository),
+    new FetchFollowService(accountFollowRepository, accountRepository),
+  );
   const noteVisibility = new NoteVisibilityService(accountModule);
   const timelineCacheRepository = new InMemoryTimelineCacheRepository();
   const pushTimelineService = new PushTimelineService(

@@ -1,13 +1,13 @@
 import { Option, Result } from '@mikuroxina/mini-fn';
 
-import type { AccountModule } from '../../intermodule/account.js';
+import type { AccountModuleInterface } from '../../intermodule/interfaces/account.js';
 import type { Note, NoteID } from '../model/note.js';
 import type { NoteRepository } from '../model/repository.js';
 
 export class FetchService {
   constructor(
     private readonly noteRepository: NoteRepository,
-    private readonly accountModule: AccountModule,
+    private readonly accountModule: AccountModuleInterface,
   ) {}
 
   async fetchNoteByID(noteID: NoteID): Promise<Option.Option<Note>> {

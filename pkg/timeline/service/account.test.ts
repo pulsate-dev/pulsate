@@ -1,18 +1,27 @@
 import { Option, Result } from '@mikuroxina/mini-fn';
 import { describe, expect, it, vi } from 'vitest';
 
-import { Account, type AccountID } from '../../accounts/model/account.js';
 import {
-  AccountModule,
-  type PartialAccount,
-} from '../../intermodule/account.js';
+  InMemoryAccountFollowRepository,
+  InMemoryAccountRepository,
+} from '../../accounts/adaptor/repository/dummy.js';
+import { Account, type AccountID } from '../../accounts/model/account.js';
+import { FetchService as AccountFetchService } from '../../accounts/service/fetch.js';
+import { FetchFollowService } from '../../accounts/service/fetchFollow.js';
+import { AccountModule } from '../../intermodule/adaptor/account.js';
+import type { PartialAccount } from '../../intermodule/interfaces/account.js';
 import { Note, type NoteID } from '../../notes/model/note.js';
 import { InMemoryTimelineRepository } from '../adaptor/repository/dummy.js';
 import { AccountTimelineService } from './account.js';
 import { NoteVisibilityService } from './noteVisibility.js';
 
 describe('AccountTimelineService', () => {
-  const accountModule = new AccountModule();
+  const accountRepository = new InMemoryAccountRepository([]);
+  const accountFollowRepository = new InMemoryAccountFollowRepository();
+  const accountModule = new AccountModule(
+    new AccountFetchService(accountRepository),
+    new FetchFollowService(accountFollowRepository, accountRepository),
+  );
   const noteVisibilityService = new NoteVisibilityService(accountModule);
 
   const dummyPublicNote = Note.new({

@@ -3,7 +3,7 @@ import { Option, Result } from '@mikuroxina/mini-fn';
 
 import type { AccountID } from '../../../accounts/model/account.js';
 import type { MediumID } from '../../../drive/model/medium.js';
-import type { AccountModule } from '../../../intermodule/account.js';
+import type { AccountModuleInterface } from '../../../intermodule/interfaces/account.js';
 import type { NoteID, NoteVisibility } from '../../model/note.js';
 import type { CreateService } from '../../service/create.js';
 import type { FetchService } from '../../service/fetch.js';
@@ -19,7 +19,7 @@ export class NoteController {
     private readonly createService: CreateService,
     private readonly fetchService: FetchService,
     private readonly renoteService: RenoteService,
-    private readonly accountModule: AccountModule,
+    private readonly accountModule: AccountModuleInterface,
   ) {}
 
   async createNote(args: {
