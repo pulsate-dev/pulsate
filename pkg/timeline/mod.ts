@@ -1,15 +1,9 @@
 import { OpenAPIHono } from '@hono/zod-openapi';
 import { Option, Result } from '@mikuroxina/mini-fn';
 
-import {
-  InMemoryAccountFollowRepository,
-  InMemoryAccountRepository,
-} from '../accounts/adaptor/repository/dummy.js';
 import type { AccountID } from '../accounts/model/account.js';
-import { FetchService as AccountFetchService } from '../accounts/service/fetch.js';
-import { FetchFollowService } from '../accounts/service/fetchFollow.js';
 import { SnowflakeIDGenerator } from '../id/mod.js';
-import { AccountModuleFacade } from '../intermodule/account.js';
+import { accountModule } from '../intermodule/account.js';
 import { Note, type NoteID } from '../notes/model/note.js';
 import { TimelineController } from './adaptor/controller/timeline.js';
 import {
@@ -33,12 +27,6 @@ const idGenerator = new SnowflakeIDGenerator(0, {
   now: () => BigInt(Date.now()),
 });
 
-const accountRepository = new InMemoryAccountRepository([]);
-const accountFollowRepository = new InMemoryAccountFollowRepository();
-const accountModule = new AccountModuleFacade(
-  new AccountFetchService(accountRepository),
-  new FetchFollowService(accountFollowRepository, accountRepository),
-);
 const timelineRepository = new InMemoryTimelineRepository();
 const listRepository = new InMemoryListRepository();
 const timelineNotesCacheRepository = new InMemoryTimelineCacheRepository();

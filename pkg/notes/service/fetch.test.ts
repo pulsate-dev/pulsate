@@ -1,14 +1,9 @@
 import { Option, Result } from '@mikuroxina/mini-fn';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 
-import {
-  InMemoryAccountFollowRepository,
-  InMemoryAccountRepository,
-} from '../../accounts/adaptor/repository/dummy.js';
+import { InMemoryAccountRepository } from '../../accounts/adaptor/repository/dummy.js';
 import { Account, type AccountID } from '../../accounts/model/account.js';
-import { FetchService as AccountFetchService } from '../../accounts/service/fetch.js';
-import { FetchFollowService } from '../../accounts/service/fetchFollow.js';
-import { AccountModuleFacade } from '../../intermodule/account.js';
+import { dummyAccountModuleFacade } from '../../intermodule/account.js';
 import { InMemoryNoteRepository } from '../adaptor/repository/dummy.js';
 import { Note, type NoteID } from '../model/note.js';
 import { FetchService } from './fetch.js';
@@ -90,20 +85,17 @@ const accountRepository = new InMemoryAccountRepository([
   testAccount,
   frozenAccount,
 ]);
-const accountFollowRepository = new InMemoryAccountFollowRepository();
-const accountModule = new AccountModuleFacade(
-  new AccountFetchService(accountRepository),
-  new FetchFollowService(accountFollowRepository, accountRepository),
-);
-const service = new FetchService(repository, accountModule);
+const service = new FetchService(repository, dummyAccountModuleFacade);
 
 describe('FetchService', () => {
   afterEach(() => accountRepository.reset());
 
   it('should fetch notes', async () => {
-    vi.spyOn(accountModule, 'fetchAccount').mockImplementation(async () => {
-      return Result.ok(testAccount);
-    });
+    vi.spyOn(dummyAccountModuleFacade, 'fetchAccount').mockImplementation(
+      async () => {
+        return Result.ok(testAccount);
+      },
+    );
     const res = await service.fetchNoteByID('1' as NoteID);
 
     expect(Option.isSome(res)).toBe(true);
@@ -123,9 +115,11 @@ describe('FetchService', () => {
   });
 
   it('account frozen', async () => {
-    vi.spyOn(accountModule, 'fetchAccount').mockImplementation(async () => {
-      return Result.ok(frozenAccount);
-    });
+    vi.spyOn(dummyAccountModuleFacade, 'fetchAccount').mockImplementation(
+      async () => {
+        return Result.ok(frozenAccount);
+      },
+    );
     const res = await service.fetchNoteByID(frozenUserNote.getID());
 
     expect(Option.isNone(res)).toBe(true);

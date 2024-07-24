@@ -1,11 +1,24 @@
 import { Result } from '@mikuroxina/mini-fn';
+import { Cat, Ether } from '@mikuroxina/mini-fn';
+import {
+  InMemoryAccountRepository,
+  newFollowRepo,
+} from '../accounts/adaptor/repository/dummy.js';
+import {
+  PrismaAccountRepository,
+  prismaFollowRepo,
+} from '../accounts/adaptor/repository/prisma.js';
 import type {
   Account,
   AccountID,
   AccountName,
 } from '../accounts/model/account.js';
+import { accountRepoSymbol } from '../accounts/model/repository.js';
 import type { FetchService } from '../accounts/service/fetch.js';
+import { fetch } from '../accounts/service/fetch.js';
 import type { FetchFollowService } from '../accounts/service/fetchFollow.js';
+import { fetchFollow } from '../accounts/service/fetchFollow.js';
+import { prismaClient } from '../adaptors/prisma.js';
 
 export type { Account } from '../accounts/model/account.js';
 
@@ -84,3 +97,41 @@ export class AccountModuleFacade {
     );
   }
 }
+
+const isProduction = process.env.NODE_ENV === 'production';
+const accountRepoObject = isProduction
+  ? new PrismaAccountRepository(prismaClient)
+  : new InMemoryAccountRepository([]);
+const accountRepository = Ether.newEther(
+  accountRepoSymbol,
+  () => accountRepoObject,
+);
+
+const accountFollowRepository = isProduction
+  ? prismaFollowRepo(prismaClient)
+  : newFollowRepo();
+
+export const accountModule = new AccountModuleFacade(
+  Ether.runEther(Cat.cat(fetch).feed(Ether.compose(accountRepository)).value),
+  Ether.runEther(
+    Cat.cat(fetchFollow)
+      .feed(Ether.compose(accountFollowRepository))
+      .feed(Ether.compose(accountRepository)).value,
+  ),
+);
+
+const inMemoryAccountRepository = Ether.newEther(
+  accountRepoSymbol,
+  () => new InMemoryAccountRepository([]),
+);
+const inMemoryFollowRepository = newFollowRepo();
+export const dummyAccountModuleFacade = new AccountModuleFacade(
+  Ether.runEther(
+    Cat.cat(fetch).feed(Ether.compose(inMemoryAccountRepository)).value,
+  ),
+  Ether.runEther(
+    Cat.cat(fetchFollow)
+      .feed(Ether.compose(inMemoryFollowRepository))
+      .feed(Ether.compose(inMemoryAccountRepository)).value,
+  ),
+);

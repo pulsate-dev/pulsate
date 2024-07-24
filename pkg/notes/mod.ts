@@ -1,19 +1,8 @@
 import { OpenAPIHono } from '@hono/zod-openapi';
 import { Cat, Ether, Promise, Result } from '@mikuroxina/mini-fn';
 
-import {
-  InMemoryAccountRepository,
-  newFollowRepo,
-} from '../accounts/adaptor/repository/dummy.js';
-import {
-  PrismaAccountRepository,
-  prismaFollowRepo,
-} from '../accounts/adaptor/repository/prisma.js';
 import type { AccountID } from '../accounts/model/account.js';
-import { accountRepoSymbol } from '../accounts/model/repository.js';
 import { authenticateToken } from '../accounts/service/authenticationTokenService.js';
-import { fetch } from '../accounts/service/fetch.js';
-import { fetchFollow } from '../accounts/service/fetchFollow.js';
 import {
   type AuthMiddlewareVariable,
   authenticateMiddleware,
@@ -21,7 +10,7 @@ import {
 import { prismaClient } from '../adaptors/prisma.js';
 import { SnowflakeIDGenerator } from '../id/mod.js';
 import type { ID } from '../id/type.js';
-import { AccountModuleFacade } from '../intermodule/account.js';
+import { accountModule } from '../intermodule/account.js';
 import { BookmarkController } from './adaptor/controller/bookmark.js';
 import { NoteController } from './adaptor/controller/note.js';
 import {
@@ -76,28 +65,6 @@ const AuthMiddleware = await Ether.runEtherT(
   Cat.cat(liftOverPromise(authenticateMiddleware)).feed(
     composer(authenticateToken),
   ).value,
-);
-
-// Account
-const accountRepoObject = isProduction
-  ? new PrismaAccountRepository(prismaClient)
-  : new InMemoryAccountRepository([]);
-const accountRepository = Ether.newEther(
-  accountRepoSymbol,
-  () => accountRepoObject,
-);
-
-const accountFollowRepository = isProduction
-  ? prismaFollowRepo(prismaClient)
-  : newFollowRepo();
-
-const accountModule = new AccountModuleFacade(
-  Ether.runEther(Cat.cat(fetch).feed(Ether.compose(accountRepository)).value),
-  Ether.runEther(
-    Cat.cat(fetchFollow)
-      .feed(Ether.compose(accountFollowRepository))
-      .feed(Ether.compose(accountRepository)).value,
-  ),
 );
 
 // Note
