@@ -47,6 +47,13 @@ export class InMemoryAccountRepository implements AccountRepository {
     return Promise.resolve(Option.some(account));
   }
 
+  findManyByID(id: AccountID[]): Promise<Result.Result<Error, Account[]>> {
+    const accounts = Array.from(this.data).filter((a) =>
+      id.includes(a.getID()),
+    );
+    return Promise.resolve(Result.ok(accounts));
+  }
+
   findByMail(mail: string): Promise<Option.Option<Account>> {
     const account = Array.from(this.data).find((a) => a.getMail() === mail);
     if (!account) {
