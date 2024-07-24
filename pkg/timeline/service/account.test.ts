@@ -8,8 +8,8 @@ import {
 import { Account, type AccountID } from '../../accounts/model/account.js';
 import { FetchService as AccountFetchService } from '../../accounts/service/fetch.js';
 import { FetchFollowService } from '../../accounts/service/fetchFollow.js';
-import { AccountModule } from '../../intermodule/adaptor/account.js';
-import type { PartialAccount } from '../../intermodule/interfaces/account.js';
+import { AccountModuleFacade } from '../../intermodule/account.js';
+import type { PartialAccount } from '../../intermodule/account.js';
 import { Note, type NoteID } from '../../notes/model/note.js';
 import { InMemoryTimelineRepository } from '../adaptor/repository/dummy.js';
 import { AccountTimelineService } from './account.js';
@@ -18,7 +18,7 @@ import { NoteVisibilityService } from './noteVisibility.js';
 describe('AccountTimelineService', () => {
   const accountRepository = new InMemoryAccountRepository([]);
   const accountFollowRepository = new InMemoryAccountFollowRepository();
-  const accountModule = new AccountModule(
+  const accountModule = new AccountModuleFacade(
     new AccountFetchService(accountRepository),
     new FetchFollowService(accountFollowRepository, accountRepository),
   );

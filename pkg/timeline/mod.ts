@@ -9,7 +9,7 @@ import type { AccountID } from '../accounts/model/account.js';
 import { FetchService as AccountFetchService } from '../accounts/service/fetch.js';
 import { FetchFollowService } from '../accounts/service/fetchFollow.js';
 import { SnowflakeIDGenerator } from '../id/mod.js';
-import { AccountModule } from '../intermodule/adaptor/account.js';
+import { AccountModuleFacade } from '../intermodule/account.js';
 import { Note, type NoteID } from '../notes/model/note.js';
 import { TimelineController } from './adaptor/controller/timeline.js';
 import {
@@ -35,7 +35,7 @@ const idGenerator = new SnowflakeIDGenerator(0, {
 
 const accountRepository = new InMemoryAccountRepository([]);
 const accountFollowRepository = new InMemoryAccountFollowRepository();
-const accountModule = new AccountModule(
+const accountModule = new AccountModuleFacade(
   new AccountFetchService(accountRepository),
   new FetchFollowService(accountFollowRepository, accountRepository),
 );

@@ -1,6 +1,6 @@
 import { Result } from '@mikuroxina/mini-fn';
 
-import type { AccountModuleFacade } from '../../intermodule/interfaces/account.js';
+import type { AccountModuleFacade } from '../../intermodule/account.js';
 import type { Note } from '../../notes/model/note.js';
 import type { TimelineNotesCacheRepository } from '../model/repository.js';
 import type { NoteVisibilityService } from './noteVisibility.js';

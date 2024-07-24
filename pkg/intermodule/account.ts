@@ -1,13 +1,20 @@
 import { Result } from '@mikuroxina/mini-fn';
-import type { Account, AccountID } from '../../accounts/model/account.js';
-import type { FetchService } from '../../accounts/service/fetch.js';
-import type { FetchFollowService } from '../../accounts/service/fetchFollow.js';
 import type {
-  AccountModuleFacade,
-  PartialAccount,
-} from '../interfaces/account.js';
+  Account,
+  AccountID,
+  AccountName,
+} from '../accounts/model/account.js';
+import type { FetchService } from '../accounts/service/fetch.js';
+import type { FetchFollowService } from '../accounts/service/fetchFollow.js';
 
-export class AccountModule implements AccountModuleFacade {
+export interface PartialAccount {
+  id: AccountID;
+  name: AccountName;
+  nickname: string;
+  bio: string;
+}
+
+export class AccountModuleFacade {
   constructor(
     private readonly fetchService: FetchService,
     private readonly fetchFollowService: FetchFollowService,

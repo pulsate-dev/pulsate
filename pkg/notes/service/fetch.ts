@@ -1,6 +1,6 @@
 import { Option, Result } from '@mikuroxina/mini-fn';
 
-import type { AccountModuleFacade } from '../../intermodule/interfaces/account.js';
+import type { AccountModuleFacade } from '../../intermodule/account.js';
 import type { Note, NoteID } from '../model/note.js';
 import type { NoteRepository } from '../model/repository.js';
 

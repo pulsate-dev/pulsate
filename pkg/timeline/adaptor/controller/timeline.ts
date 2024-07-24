@@ -2,7 +2,7 @@ import type { z } from '@hono/zod-openapi';
 import { Result } from '@mikuroxina/mini-fn';
 
 import type { Account, AccountID } from '../../../accounts/model/account.js';
-import type { AccountModuleFacade } from '../../../intermodule/interfaces/account.js';
+import type { AccountModuleFacade } from '../../../intermodule/account.js';
 import type { NoteID } from '../../../notes/model/note.js';
 import type { ListID } from '../../model/list.js';
 import type { AccountTimelineService } from '../../service/account.js';

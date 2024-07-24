@@ -3,7 +3,7 @@ import { Option, Result } from '@mikuroxina/mini-fn';
 
 import type { AccountID } from '../../../accounts/model/account.js';
 import type { MediumID } from '../../../drive/model/medium.js';
-import type { AccountModuleFacade } from '../../../intermodule/interfaces/account.js';
+import type { AccountModuleFacade } from '../../../intermodule/account.js';
 import type { NoteID, NoteVisibility } from '../../model/note.js';
 import type { CreateService } from '../../service/create.js';
 import type { FetchService } from '../../service/fetch.js';

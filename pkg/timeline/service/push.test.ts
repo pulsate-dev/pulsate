@@ -7,7 +7,7 @@ import {
 } from '../../accounts/adaptor/repository/dummy.js';
 import { FetchService as AccountFetchService } from '../../accounts/service/fetch.js';
 import { FetchFollowService } from '../../accounts/service/fetchFollow.js';
-import { AccountModule } from '../../intermodule/adaptor/account.js';
+import { AccountModuleFacade } from '../../intermodule/account.js';
 import { InMemoryTimelineCacheRepository } from '../adaptor/repository/dummyCache.js';
 import { dummyPublicNote, partialAccount1 } from '../testData/testData.js';
 import { NoteVisibilityService } from './noteVisibility.js';
@@ -16,7 +16,7 @@ import { PushTimelineService } from './push.js';
 describe('PushTimelineService', () => {
   const accountRepository = new InMemoryAccountRepository([]);
   const accountFollowRepository = new InMemoryAccountFollowRepository();
-  const accountModule = new AccountModule(
+  const accountModule = new AccountModuleFacade(
     new AccountFetchService(accountRepository),
     new FetchFollowService(accountFollowRepository, accountRepository),
   );

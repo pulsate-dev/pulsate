@@ -8,7 +8,7 @@ import {
 import { Account, type AccountID } from '../../accounts/model/account.js';
 import { FetchService as AccountFetchService } from '../../accounts/service/fetch.js';
 import { FetchFollowService } from '../../accounts/service/fetchFollow.js';
-import { AccountModule } from '../../intermodule/adaptor/account.js';
+import { AccountModuleFacade } from '../../intermodule/account.js';
 import { InMemoryNoteRepository } from '../adaptor/repository/dummy.js';
 import { Note, type NoteID } from '../model/note.js';
 import { FetchService } from './fetch.js';
@@ -91,7 +91,7 @@ const accountRepository = new InMemoryAccountRepository([
   frozenAccount,
 ]);
 const accountFollowRepository = new InMemoryAccountFollowRepository();
-const accountModule = new AccountModule(
+const accountModule = new AccountModuleFacade(
   new AccountFetchService(accountRepository),
   new FetchFollowService(accountFollowRepository, accountRepository),
 );

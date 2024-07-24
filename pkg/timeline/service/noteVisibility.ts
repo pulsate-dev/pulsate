@@ -1,7 +1,7 @@
 import { Ether, Option, Result } from '@mikuroxina/mini-fn';
 
 import type { AccountID } from '../../accounts/model/account.js';
-import type { AccountModuleFacade } from '../../intermodule/interfaces/account.js';
+import type { AccountModuleFacade } from '../../intermodule/account.js';
 import type { Note } from '../../notes/model/note.js';
 
 export interface NoteVisibilityCheckArgs {

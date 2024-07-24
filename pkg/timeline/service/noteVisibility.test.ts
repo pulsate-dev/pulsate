@@ -8,7 +8,7 @@ import {
 import type { AccountID } from '../../accounts/model/account.js';
 import { FetchService as AccountFetchService } from '../../accounts/service/fetch.js';
 import { FetchFollowService } from '../../accounts/service/fetchFollow.js';
-import { AccountModule } from '../../intermodule/adaptor/account.js';
+import { AccountModuleFacade } from '../../intermodule/account.js';
 import {
   dummyDirectNote,
   dummyFollowersNote,
@@ -21,7 +21,7 @@ import { NoteVisibilityService } from './noteVisibility.js';
 describe('NoteVisibilityService', () => {
   const accountRepository = new InMemoryAccountRepository([]);
   const accountFollowRepository = new InMemoryAccountFollowRepository();
-  const accountModule = new AccountModule(
+  const accountModule = new AccountModuleFacade(
     new AccountFetchService(accountRepository),
     new FetchFollowService(accountFollowRepository, accountRepository),
   );

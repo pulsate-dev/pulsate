@@ -21,7 +21,7 @@ import {
 import { prismaClient } from '../adaptors/prisma.js';
 import { SnowflakeIDGenerator } from '../id/mod.js';
 import type { ID } from '../id/type.js';
-import { AccountModule } from '../intermodule/adaptor/account.js';
+import { AccountModuleFacade } from '../intermodule/account.js';
 import { BookmarkController } from './adaptor/controller/bookmark.js';
 import { NoteController } from './adaptor/controller/note.js';
 import {
@@ -91,10 +91,7 @@ const accountFollowRepository = isProduction
   ? prismaFollowRepo(prismaClient)
   : newFollowRepo();
 
-// const accountFetchService = new AccountFetchService(accountRepoObject);
-// const accountFetchFollowservice = new FetchFollowService();
-
-const accountModule = new AccountModule(
+const accountModule = new AccountModuleFacade(
   Ether.runEther(Cat.cat(fetch).feed(Ether.compose(accountRepository)).value),
   Ether.runEther(
     Cat.cat(fetchFollow)
