@@ -2,7 +2,7 @@ import { Result } from '@mikuroxina/mini-fn';
 import { describe, expect, it, vi } from 'vitest';
 
 import type { AccountID } from '../../accounts/model/account.js';
-import { AccountModule } from '../../intermodule/account.js';
+import { dummyAccountModuleFacade } from '../../intermodule/account.js';
 import {
   dummyDirectNote,
   dummyFollowersNote,
@@ -13,13 +13,14 @@ import {
 import { NoteVisibilityService } from './noteVisibility.js';
 
 describe('NoteVisibilityService', () => {
-  const accountModule = new AccountModule();
-  const visibilityService = new NoteVisibilityService(accountModule);
+  const visibilityService = new NoteVisibilityService(dummyAccountModuleFacade);
 
   it("when author's note: return true", async () => {
-    vi.spyOn(accountModule, 'fetchFollowers').mockImplementation(async () => {
-      return Result.ok([partialAccount1]);
-    });
+    vi.spyOn(dummyAccountModuleFacade, 'fetchFollowers').mockImplementation(
+      async () => {
+        return Result.ok([partialAccount1]);
+      },
+    );
 
     const testObjects = [
       dummyPublicNote,
@@ -38,9 +39,11 @@ describe('NoteVisibilityService', () => {
   });
 
   it('when direct note: return true if sendTo is accountID', async () => {
-    vi.spyOn(accountModule, 'fetchFollowers').mockImplementation(async () => {
-      return Result.ok([partialAccount1]);
-    });
+    vi.spyOn(dummyAccountModuleFacade, 'fetchFollowers').mockImplementation(
+      async () => {
+        return Result.ok([partialAccount1]);
+      },
+    );
 
     const res = await visibilityService.handle({
       accountID: '101' as AccountID,
@@ -56,9 +59,11 @@ describe('NoteVisibilityService', () => {
   });
 
   it('when following: return true if public,home,followers', async () => {
-    vi.spyOn(accountModule, 'fetchFollowers').mockImplementation(async () => {
-      return Result.ok([partialAccount1]);
-    });
+    vi.spyOn(dummyAccountModuleFacade, 'fetchFollowers').mockImplementation(
+      async () => {
+        return Result.ok([partialAccount1]);
+      },
+    );
     // public
     expect(
       await visibilityService.handle({
@@ -83,9 +88,11 @@ describe('NoteVisibilityService', () => {
   });
 
   it('when not following: return true if public, home', async () => {
-    vi.spyOn(accountModule, 'fetchFollowers').mockImplementation(async () => {
-      return Result.ok([partialAccount1]);
-    });
+    vi.spyOn(dummyAccountModuleFacade, 'fetchFollowers').mockImplementation(
+      async () => {
+        return Result.ok([partialAccount1]);
+      },
+    );
 
     expect(
       await visibilityService.handle({
@@ -109,9 +116,11 @@ describe('NoteVisibilityService', () => {
   });
 
   it('always return true if public', async () => {
-    vi.spyOn(accountModule, 'fetchFollowers').mockImplementation(async () => {
-      return Result.ok([partialAccount1]);
-    });
+    vi.spyOn(dummyAccountModuleFacade, 'fetchFollowers').mockImplementation(
+      async () => {
+        return Result.ok([partialAccount1]);
+      },
+    );
 
     const res = await visibilityService.handle({
       accountID: '0' as AccountID,
@@ -121,8 +130,8 @@ describe('NoteVisibilityService', () => {
   });
 
   it("homeTimelineVisibilityCheck: return true if visibility is not 'DIRECT'", async () => {
-    vi.spyOn(accountModule, 'fetchFollowers').mockImplementation(async () =>
-      Result.ok([partialAccount1]),
+    vi.spyOn(dummyAccountModuleFacade, 'fetchFollowers').mockImplementation(
+      async () => Result.ok([partialAccount1]),
     );
 
     expect(

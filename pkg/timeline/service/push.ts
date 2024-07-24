@@ -1,13 +1,13 @@
 import { Result } from '@mikuroxina/mini-fn';
 
-import type { AccountModule } from '../../intermodule/account.js';
+import type { AccountModuleFacade } from '../../intermodule/account.js';
 import type { Note } from '../../notes/model/note.js';
 import type { TimelineNotesCacheRepository } from '../model/repository.js';
 import type { NoteVisibilityService } from './noteVisibility.js';
 
 export class PushTimelineService {
   constructor(
-    private readonly accountModule: AccountModule,
+    private readonly accountModule: AccountModuleFacade,
     private readonly noteVisibility: NoteVisibilityService,
     private readonly timelineNotesCacheRepository: TimelineNotesCacheRepository,
   ) {}

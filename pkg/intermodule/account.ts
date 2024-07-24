@@ -1,16 +1,26 @@
 import { Result } from '@mikuroxina/mini-fn';
-import { hc } from 'hono/client';
-
-import type { AccountModuleHandlerType } from '../accounts/mod.js';
+import { Cat, Ether } from '@mikuroxina/mini-fn';
 import {
+  InMemoryAccountRepository,
+  newFollowRepo,
+} from '../accounts/adaptor/repository/dummy.js';
+import {
+  PrismaAccountRepository,
+  prismaFollowRepo,
+} from '../accounts/adaptor/repository/prisma.js';
+import type {
   Account,
-  type AccountFrozen,
-  type AccountID,
-  type AccountName,
-  type AccountRole,
-  type AccountSilenced,
-  type AccountStatus,
+  AccountID,
+  AccountName,
 } from '../accounts/model/account.js';
+import { accountRepoSymbol } from '../accounts/model/repository.js';
+import type { FetchService } from '../accounts/service/fetch.js';
+import { fetch } from '../accounts/service/fetch.js';
+import type { FetchFollowService } from '../accounts/service/fetchFollow.js';
+import { fetchFollow } from '../accounts/service/fetchFollow.js';
+import { prismaClient } from '../adaptors/prisma.js';
+
+export type { Account } from '../accounts/model/account.js';
 
 export interface PartialAccount {
   id: AccountID;
@@ -19,94 +29,109 @@ export interface PartialAccount {
   bio: string;
 }
 
-export class AccountModule {
-  // NOTE: This is a temporary solution to use hono client
-  // ToDo: base url should be configurable
-  private readonly client = hc<AccountModuleHandlerType>(
-    'http://localhost:3000',
-  );
+export class AccountModuleFacade {
+  constructor(
+    private readonly fetchService: FetchService,
+    private readonly fetchFollowService: FetchFollowService,
+  ) {}
 
   async fetchAccount(id: AccountID): Promise<Result.Result<Error, Account>> {
-    const res = await this.client.accounts[':id'].$get({
-      param: { id },
-    });
-
-    if (!res.ok) {
-      return Result.err(new Error('Failed to fetch account'));
-    }
-
-    const body = await res.json();
-    if ('error' in body) {
-      return Result.err(new Error((body as { error: string }).error));
-    }
-
-    const account = Account.new({
-      id: body.id as AccountID,
-      mail: body.email as string,
-      name: body.name as AccountName,
-      nickname: body.nickname,
-      bio: body.bio,
-      role: body.role as AccountRole,
-      frozen: body.frozen as AccountFrozen,
-      silenced: body.silenced as AccountSilenced,
-      status: body.status as AccountStatus,
-      // biome-ignore lint/style/noNonNullAssertion: Use assertion to avoid compile errors because type inference has failed.
-      createdAt: new Date(body.created_at!),
-      passphraseHash: undefined,
-    });
-
-    return Result.ok(account);
+    return await this.fetchService.fetchAccountByID(id);
   }
 
   async fetchFollowings(
     id: AccountID,
   ): Promise<Result.Result<Error, PartialAccount[]>> {
-    const res = await this.client.accounts[':id'].following.$get({
-      param: { id },
-    });
-    if (!res.ok) {
-      return Result.err(new Error('Failed to fetch followings'));
+    const res = await this.fetchFollowService.fetchFollowingsByID(id);
+    if (Result.isErr(res)) {
+      return res;
     }
 
-    const body = await res.json();
-    if ('error' in body) {
-      return Result.err(new Error((body as { error: string }).error));
-    }
+    const accounts = await Promise.all(
+      Result.unwrap(res).map((v) =>
+        this.fetchService.fetchAccountByID(v.getTargetID()),
+      ),
+    );
+
     return Result.ok(
-      body.map((v): PartialAccount => {
-        return {
-          id: v.id as AccountID,
-          name: v.name as AccountName,
-          nickname: v.nickname,
-          bio: v.bio,
-        };
-      }),
+      accounts
+        .filter((v) => Result.isOk(v))
+        .map((v): PartialAccount => {
+          const unwrapped = Result.unwrap(v);
+          return {
+            id: unwrapped.getID(),
+            name: unwrapped.getName(),
+            nickname: unwrapped.getNickname(),
+            bio: unwrapped.getBio(),
+          };
+        }),
     );
   }
 
   async fetchFollowers(
     id: AccountID,
   ): Promise<Result.Result<Error, PartialAccount[]>> {
-    const res = await this.client.accounts[':id'].follower.$get({
-      param: { id },
-    });
-    if (!res.ok) {
-      return Result.err(new Error('Failed to fetch followers'));
+    const res = await this.fetchFollowService.fetchFollowersByID(id);
+    if (Result.isErr(res)) {
+      return res;
     }
 
-    const body = await res.json();
-    if ('error' in body) {
-      return Result.err(new Error((body as { error: string }).error));
-    }
+    const accounts = await Promise.all(
+      Result.unwrap(res).map((v) =>
+        this.fetchService.fetchAccountByID(v.getFromID()),
+      ),
+    );
+
     return Result.ok(
-      body.map((v): PartialAccount => {
-        return {
-          id: v.id as AccountID,
-          name: v.name as AccountName,
-          nickname: v.nickname,
-          bio: v.bio,
-        };
-      }),
+      accounts
+        .filter((v) => Result.isOk(v))
+        .map((v): PartialAccount => {
+          const unwrapped = Result.unwrap(v);
+          return {
+            id: unwrapped.getID(),
+            name: unwrapped.getName(),
+            nickname: unwrapped.getNickname(),
+            bio: unwrapped.getBio(),
+          };
+        }),
     );
   }
 }
+
+const isProduction = process.env.NODE_ENV === 'production';
+const accountRepoObject = isProduction
+  ? new PrismaAccountRepository(prismaClient)
+  : new InMemoryAccountRepository([]);
+const accountRepository = Ether.newEther(
+  accountRepoSymbol,
+  () => accountRepoObject,
+);
+
+const accountFollowRepository = isProduction
+  ? prismaFollowRepo(prismaClient)
+  : newFollowRepo();
+
+export const accountModule = new AccountModuleFacade(
+  Ether.runEther(Cat.cat(fetch).feed(Ether.compose(accountRepository)).value),
+  Ether.runEther(
+    Cat.cat(fetchFollow)
+      .feed(Ether.compose(accountFollowRepository))
+      .feed(Ether.compose(accountRepository)).value,
+  ),
+);
+
+const inMemoryAccountRepository = Ether.newEther(
+  accountRepoSymbol,
+  () => new InMemoryAccountRepository([]),
+);
+const inMemoryFollowRepository = newFollowRepo();
+export const dummyAccountModuleFacade = new AccountModuleFacade(
+  Ether.runEther(
+    Cat.cat(fetch).feed(Ether.compose(inMemoryAccountRepository)).value,
+  ),
+  Ether.runEther(
+    Cat.cat(fetchFollow)
+      .feed(Ether.compose(inMemoryFollowRepository))
+      .feed(Ether.compose(inMemoryAccountRepository)).value,
+  ),
+);

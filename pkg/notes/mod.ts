@@ -10,7 +10,7 @@ import {
 import { prismaClient } from '../adaptors/prisma.js';
 import { SnowflakeIDGenerator } from '../id/mod.js';
 import type { ID } from '../id/type.js';
-import { AccountModule } from '../intermodule/account.js';
+import { accountModule } from '../intermodule/account.js';
 import { BookmarkController } from './adaptor/controller/bookmark.js';
 import { NoteController } from './adaptor/controller/note.js';
 import {
@@ -66,9 +66,6 @@ const AuthMiddleware = await Ether.runEtherT(
     composer(authenticateToken),
   ).value,
 );
-
-// Account
-const accountModule = new AccountModule();
 
 // Note
 const createService = new CreateService(

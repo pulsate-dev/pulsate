@@ -2,18 +2,17 @@ import { Option, Result } from '@mikuroxina/mini-fn';
 import { describe, expect, it, vi } from 'vitest';
 
 import { Account, type AccountID } from '../../accounts/model/account.js';
-import {
-  AccountModule,
-  type PartialAccount,
-} from '../../intermodule/account.js';
+import { dummyAccountModuleFacade } from '../../intermodule/account.js';
+import type { PartialAccount } from '../../intermodule/account.js';
 import { Note, type NoteID } from '../../notes/model/note.js';
 import { InMemoryTimelineRepository } from '../adaptor/repository/dummy.js';
 import { AccountTimelineService } from './account.js';
 import { NoteVisibilityService } from './noteVisibility.js';
 
 describe('AccountTimelineService', () => {
-  const accountModule = new AccountModule();
-  const noteVisibilityService = new NoteVisibilityService(accountModule);
+  const noteVisibilityService = new NoteVisibilityService(
+    dummyAccountModuleFacade,
+  );
 
   const dummyPublicNote = Note.new({
     id: '1' as NoteID,
@@ -91,9 +90,11 @@ describe('AccountTimelineService', () => {
   });
 
   it('if following', async () => {
-    vi.spyOn(accountModule, 'fetchFollowers').mockImplementation(async () => {
-      return Result.ok([partialAccount1]);
-    });
+    vi.spyOn(dummyAccountModuleFacade, 'fetchFollowers').mockImplementation(
+      async () => {
+        return Result.ok([partialAccount1]);
+      },
+    );
     const res = await accountTimelineService.handle('100' as AccountID, {
       id: '101' as AccountID,
       hasAttachment: false,
@@ -109,9 +110,11 @@ describe('AccountTimelineService', () => {
   });
 
   it('if not following', async () => {
-    vi.spyOn(accountModule, 'fetchFollowers').mockImplementation(async () => {
-      return Result.ok([partialAccount1]);
-    });
+    vi.spyOn(dummyAccountModuleFacade, 'fetchFollowers').mockImplementation(
+      async () => {
+        return Result.ok([partialAccount1]);
+      },
+    );
     const res = await accountTimelineService.handle('100' as AccountID, {
       id: '0' as AccountID,
       hasAttachment: false,

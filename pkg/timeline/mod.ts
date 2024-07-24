@@ -3,7 +3,7 @@ import { Option, Result } from '@mikuroxina/mini-fn';
 
 import type { AccountID } from '../accounts/model/account.js';
 import { SnowflakeIDGenerator } from '../id/mod.js';
-import { AccountModule } from '../intermodule/account.js';
+import { accountModule } from '../intermodule/account.js';
 import { Note, type NoteID } from '../notes/model/note.js';
 import { TimelineController } from './adaptor/controller/timeline.js';
 import {
@@ -27,7 +27,6 @@ const idGenerator = new SnowflakeIDGenerator(0, {
   now: () => BigInt(Date.now()),
 });
 
-const accountModule = new AccountModule();
 const timelineRepository = new InMemoryTimelineRepository();
 const listRepository = new InMemoryListRepository();
 const timelineNotesCacheRepository = new InMemoryTimelineCacheRepository();
