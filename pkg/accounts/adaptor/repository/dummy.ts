@@ -49,9 +49,8 @@ export class InMemoryAccountRepository implements AccountRepository {
   }
 
   findManyByID(id: AccountID[]): Promise<Result.Result<Error, Account[]>> {
-    const accounts = Array.from(this.data).filter((a) =>
-      id.includes(a.getID()),
-    );
+    const set = new Set(id);
+    const accounts = Array.from(this.data).filter((a) => set.has(a.getID()));
     return Promise.resolve(Result.ok(accounts));
   }
 
