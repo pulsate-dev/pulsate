@@ -7,6 +7,8 @@ import type {
 import type { FetchService } from '../accounts/service/fetch.js';
 import type { FetchFollowService } from '../accounts/service/fetchFollow.js';
 
+export type { Account } from '../accounts/model/account.js';
+
 export interface PartialAccount {
   id: AccountID;
   name: AccountName;
