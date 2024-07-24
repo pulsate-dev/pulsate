@@ -5,8 +5,7 @@ import { InMemoryAccountRepository } from '../adaptor/repository/dummy.js';
 import { Account, type AccountID } from '../model/account.js';
 import { FetchService } from './fetch.js';
 
-const repository = new InMemoryAccountRepository();
-await repository.create(
+const testAccounts = [
   Account.new({
     id: '1' as AccountID,
     name: '@john@example.com',
@@ -18,13 +17,38 @@ await repository.create(
     frozen: 'normal',
     silenced: 'normal',
     status: 'notActivated',
-    createdAt: new Date(),
+    createdAt: new Date('2023-09-10T12:00:00Z'),
   }),
-);
+  Account.new({
+    id: '2' as AccountID,
+    name: '@alice@example.com',
+    mail: 'alice@example.com',
+    nickname: 'Alice',
+    bio: 'Hello, World!',
+    role: 'normal',
+    frozen: 'normal',
+    silenced: 'normal',
+    status: 'active',
+    createdAt: new Date('2023-09-11T12:00:00Z'),
+  }),
+  Account.new({
+    id: '3' as AccountID,
+    name: '@bob@example.com',
+    mail: 'bob@example.com',
+    nickname: 'bob',
+    bio: 'Hello, World!',
+    role: 'normal',
+    frozen: 'normal',
+    silenced: 'normal',
+    status: 'active',
+    createdAt: new Date('2023-09-12T12:00:00Z'),
+  }),
+];
+const repository = new InMemoryAccountRepository(testAccounts);
 const fetchService = new FetchService(repository);
 
 describe('FetchService', () => {
-  afterEach(() => repository.reset());
+  afterEach(() => repository.reset(testAccounts));
 
   it('fetch account info', async () => {
     const account = await fetchService.fetchAccount('@john@example.com');
@@ -68,15 +92,25 @@ describe('FetchService', () => {
         frozen: 'normal',
         silenced: 'normal',
         status: 'notActivated',
-        createdAt: new Date(),
+        createdAt: new Date('2023-09-10T12:00:00.000Z'),
       }),
     );
   });
 
   it("fetch account by ID doesn't exist", async () => {
-    // `2` is not registered.
-    const account = await fetchService.fetchAccountByID('2' as AccountID);
+    // `20` is not registered.
+    const account = await fetchService.fetchAccountByID('20' as AccountID);
 
     expect(Result.isErr(account)).toBe(true);
+  });
+
+  it('should fetch many account by ID', async () => {
+    const accounts = await fetchService.fetchManyAccountsByID([
+      '2' as AccountID,
+      '3' as AccountID,
+    ]);
+
+    expect(Result.isOk(accounts)).toBe(true);
+    expect(Result.unwrap(accounts).length).toBe(2);
   });
 });

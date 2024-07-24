@@ -26,8 +26,9 @@ export class InMemoryAccountRepository implements AccountRepository {
     return Promise.resolve(Result.ok(undefined));
   }
 
-  reset(): void {
+  reset(data: Account[] = []): void {
     this.data.clear();
+    data.map((v) => this.data.add(v));
   }
 
   findByID(id: AccountID): Promise<Option.Option<Account>> {

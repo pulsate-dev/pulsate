@@ -39,6 +39,12 @@ export class AccountModuleFacade {
     return await this.fetchService.fetchAccountByID(id);
   }
 
+  async fetchAccounts(
+    id: AccountID[],
+  ): Promise<Result.Result<Error, Account[]>> {
+    return await this.fetchService.fetchManyAccountsByID(id);
+  }
+
   async fetchFollowings(
     id: AccountID,
   ): Promise<Result.Result<Error, PartialAccount[]>> {

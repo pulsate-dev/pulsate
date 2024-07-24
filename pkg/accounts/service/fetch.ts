@@ -33,6 +33,12 @@ export class FetchService {
     const res = await this.accountRepository.findByID(id);
     return Option.okOr(new Error('AccountNotFoundError'))(res);
   }
+
+  async fetchManyAccountsByID(
+    id: AccountID[],
+  ): Promise<Result.Result<Error, Account[]>> {
+    return await this.accountRepository.findManyByID(id);
+  }
 }
 
 export const fetchSymbol = Ether.newEtherSymbol<FetchService>();
