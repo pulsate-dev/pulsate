@@ -56,12 +56,12 @@ export class PrismaAccountRepository implements AccountRepository {
   }
 
   async findManyByID(
-    id: AccountID[],
+    id: readonly AccountID[],
   ): Promise<Result.Result<Error, Account[]>> {
     const res = await this.prisma.account.findMany({
       where: {
         id: {
-          in: id,
+          in: id as AccountID[],
         },
       },
     });

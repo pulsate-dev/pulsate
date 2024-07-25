@@ -9,7 +9,9 @@ export interface AccountRepository {
   create(account: Account): Promise<Result.Result<Error, void>>;
   findByName(name: string): Promise<Option.Option<Account>>;
   findByID(id: AccountID): Promise<Option.Option<Account>>;
-  findManyByID(id: AccountID[]): Promise<Result.Result<Error, Account[]>>;
+  findManyByID(
+    id: readonly AccountID[],
+  ): Promise<Result.Result<Error, Account[]>>;
   findByMail(mail: string): Promise<Option.Option<Account>>;
   edit(account: Account): Promise<Result.Result<Error, void>>;
 }
