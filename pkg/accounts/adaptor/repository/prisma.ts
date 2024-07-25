@@ -55,6 +55,20 @@ export class PrismaAccountRepository implements AccountRepository {
     return Option.some(this.fromPrismaArgs(res));
   }
 
+  async findManyByID(
+    id: readonly AccountID[],
+  ): Promise<Result.Result<Error, Account[]>> {
+    const res = await this.prisma.account.findMany({
+      where: {
+        id: {
+          in: id as AccountID[],
+        },
+      },
+    });
+
+    return Result.ok(res.map((a) => this.fromPrismaArgs(a)));
+  }
+
   async findByMail(mail: string): Promise<Option.Option<Account>> {
     const res = await this.prisma.account.findUnique({
       where: {

@@ -26,8 +26,9 @@ export class InMemoryAccountRepository implements AccountRepository {
     return Promise.resolve(Result.ok(undefined));
   }
 
-  reset(): void {
+  reset(data: Account[] = []): void {
     this.data.clear();
+    data.map((v) => this.data.add(v));
   }
 
   findByID(id: AccountID): Promise<Option.Option<Account>> {
@@ -45,6 +46,14 @@ export class InMemoryAccountRepository implements AccountRepository {
       return Promise.resolve(Option.none());
     }
     return Promise.resolve(Option.some(account));
+  }
+
+  findManyByID(
+    id: readonly AccountID[],
+  ): Promise<Result.Result<Error, Account[]>> {
+    const set = new Set(id);
+    const accounts = Array.from(this.data).filter((a) => set.has(a.getID()));
+    return Promise.resolve(Result.ok(accounts));
   }
 
   findByMail(mail: string): Promise<Option.Option<Account>> {
