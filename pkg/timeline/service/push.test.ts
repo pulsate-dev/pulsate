@@ -1,9 +1,10 @@
 import { Result } from '@mikuroxina/mini-fn';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
+import { partialAccount1 } from '../../accounts/testData/testData.js';
 import { dummyAccountModuleFacade } from '../../intermodule/account.js';
 import { InMemoryTimelineCacheRepository } from '../adaptor/repository/dummyCache.js';
-import { dummyPublicNote, partialAccount1 } from '../testData/testData.js';
+import { dummyPublicNote } from '../testData/testData.js';
 import { NoteVisibilityService } from './noteVisibility.js';
 import { PushTimelineService } from './push.js';
 
