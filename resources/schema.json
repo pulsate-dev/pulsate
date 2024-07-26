@@ -483,6 +483,49 @@
       },
       "List ID": {
         "type": "string"
+      },
+      "GetListMemberResponseSchema": {
+        "type": "object",
+        "properties": {
+          "assignees": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "id": {
+                  "type": "string",
+                  "description": "Assignee account ID",
+                  "example": "30984308495"
+                },
+                "name": {
+                  "type": "string",
+                  "description": "Assignee account name",
+                  "example": "@john@example.com"
+                },
+                "nickname": {
+                  "type": "string",
+                  "description": "Assignee nickname",
+                  "example": "John Doe"
+                },
+                "avatar": {
+                  "type": "string",
+                  "format": "uri",
+                  "description": "avatar URL",
+                  "example": "https://example.com/avatar.png"
+                }
+              },
+              "required": [
+                "id",
+                "name",
+                "nickname",
+                "avatar"
+              ]
+            }
+          }
+        },
+        "required": [
+          "assignees"
+        ]
       }
     },
     "parameters": {}
@@ -2541,6 +2584,46 @@
         "responses": {
           "204": {
             "description": "OK"
+          },
+          "404": {
+            "description": "LIST_NOTFOUND",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string",
+                      "default": "",
+                      "description": "Error code",
+                      "example": "TEST_ERROR_CODE"
+                    }
+                  },
+                  "required": [
+                    "error"
+                  ]
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/lists/:id/members": {
+      "get": {
+        "tags": [
+          "timeline"
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GetListMemberResponseSchema"
+                }
+              }
+            }
           },
           "404": {
             "description": "LIST_NOTFOUND",
