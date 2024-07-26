@@ -5,6 +5,7 @@ import {
   CreateListRequestSchema,
   CreateListResponseSchema,
   GetAccountTimelineResponseSchema,
+  GetListMemberResponseSchema,
 } from './adaptor/validator/timeline.js';
 
 export const GetAccountTimelineRoute = createRoute({
@@ -153,6 +154,30 @@ export const DeleteListRoute = createRoute({
   responses: {
     204: {
       description: 'OK',
+    },
+    404: {
+      content: {
+        'application/json': {
+          schema: CommonErrorResponseSchema,
+        },
+      },
+      description: 'LIST_NOTFOUND',
+    },
+  },
+});
+
+export const GetListMemberRoute = createRoute({
+  method: 'get',
+  tags: ['timeline'],
+  path: '/lists/:id/members',
+  responses: {
+    200: {
+      description: 'OK',
+      content: {
+        'application/json': {
+          schema: GetListMemberResponseSchema,
+        },
+      },
     },
     404: {
       content: {

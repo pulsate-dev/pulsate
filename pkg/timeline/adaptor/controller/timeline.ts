@@ -8,9 +8,11 @@ import type { ListID } from '../../model/list.js';
 import type { AccountTimelineService } from '../../service/account.js';
 import type { CreateListService } from '../../service/createList.js';
 import type { DeleteListService } from '../../service/deleteList.js';
+import type { FetchListMemberService } from '../../service/fetchMember.js';
 import type {
   CreateListResponseSchema,
   GetAccountTimelineResponseSchema,
+  GetListMemberResponseSchema,
 } from '../validator/timeline.js';
 
 export class TimelineController {
@@ -18,16 +20,20 @@ export class TimelineController {
   private readonly accountModule: AccountModuleFacade;
   private readonly createListService: CreateListService;
   private readonly deleteListService: DeleteListService;
+  private readonly fetchMemberService: FetchListMemberService;
+
   constructor(args: {
     accountTimelineService: AccountTimelineService;
     accountModule: AccountModuleFacade;
     createListService: CreateListService;
     deleteListService: DeleteListService;
+    fetchMemberService: FetchListMemberService;
   }) {
     this.accountTimelineService = args.accountTimelineService;
     this.accountModule = args.accountModule;
     this.createListService = args.createListService;
     this.deleteListService = args.deleteListService;
+    this.fetchMemberService = args.fetchMemberService;
   }
 
   async getAccountTimeline(
@@ -121,5 +127,28 @@ export class TimelineController {
   async deleteList(id: string): Promise<Result.Result<Error, void>> {
     const res = await this.deleteListService.handle(id as ListID);
     return res;
+  }
+
+  async getListMembers(
+    id: string,
+  ): Promise<
+    Result.Result<Error, z.infer<typeof GetListMemberResponseSchema>>
+  > {
+    const accounts = await this.fetchMemberService.handle(id as ListID);
+    if (Result.isErr(accounts)) {
+      return accounts;
+    }
+
+    const unwrapped = Result.unwrap(accounts);
+    const res = unwrapped.map((v) => {
+      return {
+        id: v.getID(),
+        name: v.getName(),
+        nickname: v.getNickname(),
+        avatar: '',
+      };
+    });
+
+    return Result.ok({ assignees: res });
   }
 }
