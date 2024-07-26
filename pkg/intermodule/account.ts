@@ -20,7 +20,7 @@ import type { FetchFollowService } from '../accounts/service/fetchFollow.js';
 import { fetchFollow } from '../accounts/service/fetchFollow.js';
 import { prismaClient } from '../adaptors/prisma.js';
 
-export { Account } from '../accounts/model/account.js';
+export type { Account } from '../accounts/model/account.js';
 
 export interface PartialAccount {
   id: AccountID;
