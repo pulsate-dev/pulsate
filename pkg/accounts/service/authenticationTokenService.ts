@@ -27,8 +27,11 @@ export class AuthenticationTokenService {
     subject: string,
     issuedAt: PulsateTime,
     expiredAt: PulsateTime,
+    accountName: string,
   ): Promise<Option.Option<string>> {
-    const token = await new jose.SignJWT()
+    const token = await new jose.SignJWT({
+      accountName: accountName,
+    })
       .setProtectedHeader({ alg: 'ES256' })
       .setIssuedAt(issuedAt)
       .setSubject(subject)

@@ -1,6 +1,7 @@
 import { OpenAPIHono } from '@hono/zod-openapi';
-import { Result } from '@mikuroxina/mini-fn';
+import { Option, Result } from '@mikuroxina/mini-fn';
 
+import type { AuthMiddlewareVariable } from '../adaptors/authenticateMiddleware.js';
 import { SnowflakeIDGenerator } from '../id/mod.js';
 import { accountModule } from '../intermodule/account.js';
 import { TimelineController } from './adaptor/controller/timeline.js';
@@ -39,13 +40,20 @@ const controller = new TimelineController({
   fetchMemberService: new FetchListMemberService(listRepository, accountModule),
 });
 
-export const timeline = new OpenAPIHono().doc('/timeline/doc.json', {
-  openapi: '3.0.0',
+export const timeline = new OpenAPIHono<{
+  Variables: AuthMiddlewareVariable;
+}>().doc31('/timeline/doc.json', {
+  openapi: '3.1.0',
   info: {
     title: 'Timeline API',
     version: '0.1.0',
   },
 });
+timeline.openAPIRegistry.registerComponent('securitySchemes', 'Bearer', {
+  type: 'http',
+  scheme: 'bearer',
+});
+
 timeline.openapi(GetAccountTimelineRoute, async (c) => {
   // ToDo: get account id who is trying to see the timeline
   const { id } = c.req.param();
@@ -65,12 +73,13 @@ timeline.openapi(GetAccountTimelineRoute, async (c) => {
   return c.json(res[1], 200);
 });
 
+// ToDo: add account authorization
 timeline.openapi(CreateListRoute, async (c) => {
   // NOTE: `public` is a reserved keyword
   const req = c.req.valid('json');
+  const ownerID = Option.unwrap(c.get('accountID'));
 
-  // ToDo: fill ownerId
-  const res = await controller.createList(req.title, req.public, '1');
+  const res = await controller.createList(req.title, req.public, ownerID);
   if (Result.isErr(res)) {
     return c.json({ error: res[1].message }, 400);
   }
@@ -78,6 +87,7 @@ timeline.openapi(CreateListRoute, async (c) => {
   return c.json(res[1], 200);
 });
 
+// ToDo: add account authorization
 timeline.openapi(DeleteListRoute, async (c) => {
   const { id } = c.req.valid('param');
 
@@ -89,6 +99,7 @@ timeline.openapi(DeleteListRoute, async (c) => {
   return new Response(undefined, { status: 204 });
 });
 
+// ToDo: add account authorization
 timeline.openapi(GetListMemberRoute, async (c) => {
   const { id } = c.req.param();
 

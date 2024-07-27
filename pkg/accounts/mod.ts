@@ -163,8 +163,13 @@ const AuthMiddleware = await Ether.runEtherT(
   ).value,
 );
 
-accounts.doc('/accounts/doc.json', {
-  openapi: '3.0.0',
+accounts.openAPIRegistry.registerComponent('securitySchemes', 'Bearer', {
+  type: 'http',
+  scheme: 'bearer',
+});
+
+accounts.doc31('/accounts/doc.json', {
+  openapi: '3.1.0',
   info: {
     title: 'Accounts API',
     version: '0.1.0',

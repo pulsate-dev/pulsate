@@ -56,6 +56,7 @@ export class AuthenticateService {
       Option.unwrap(account).getID(),
       convertTo(new Date()),
       convertTo(addSecondsToDate(new Date(), 900)),
+      Option.unwrap(account).getName(),
     );
 
     if (Option.isNone(authorizationToken)) {
@@ -66,6 +67,7 @@ export class AuthenticateService {
       Option.unwrap(account).getID(),
       convertTo(new Date()),
       convertTo(addSecondsToDate(new Date(), 2_592_000)),
+      Option.unwrap(account).getName(),
     );
 
     if (Option.isNone(refreshToken)) {

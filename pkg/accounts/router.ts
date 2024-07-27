@@ -60,6 +60,11 @@ export const UpdateAccountRoute = createRoute({
   method: 'patch',
   tags: ['accounts'],
   path: '/accounts/:name',
+  security: [
+    {
+      bearer: [],
+    },
+  ],
   request: {
     // ToDo: define ETag in header
     params: z.object({
@@ -125,6 +130,11 @@ export const FreezeAccountRoute = createRoute({
   method: 'put',
   tags: ['accounts'],
   path: '/accounts/:name/freeze',
+  security: [
+    {
+      bearer: [],
+    },
+  ],
   request: {
     params: z.object({
       name: z.string().min(3).max(64).openapi({
@@ -169,6 +179,11 @@ export const UnFreezeAccountRoute = createRoute({
   method: 'delete',
   tags: ['accounts'],
   path: '/accounts/:name/freeze',
+  security: [
+    {
+      bearer: [],
+    },
+  ],
   request: {
     params: z.object({
       name: z.string().min(3).max(64).openapi({
@@ -413,6 +428,11 @@ export const SilenceAccountRoute = createRoute({
   method: 'put',
   tags: ['accounts'],
   path: '/accounts/:name/silence',
+  security: [
+    {
+      bearer: [],
+    },
+  ],
   request: {
     params: z.object({
       name: z.string().min(3).max(64).openapi({
@@ -457,6 +477,11 @@ export const UnSilenceAccountRoute = createRoute({
   method: 'delete',
   tags: ['accounts'],
   path: '/accounts/:name/silence',
+  security: [
+    {
+      bearer: [],
+    },
+  ],
   request: {
     params: z.object({
       name: z.string().min(3).max(64).openapi({
@@ -501,6 +526,11 @@ export const FollowAccountRoute = createRoute({
   method: 'post',
   tags: ['accounts'],
   path: '/accounts/:name/follow',
+  security: [
+    {
+      bearer: [],
+    },
+  ],
   request: {
     params: z.object({
       name: z.string().min(3).max(64).openapi({
@@ -545,6 +575,11 @@ export const UnFollowAccountRoute = createRoute({
   method: 'delete',
   tags: ['accounts'],
   path: '/accounts/:name/follow',
+  security: [
+    {
+      bearer: [],
+    },
+  ],
   request: {
     params: z.object({
       name: z.string().min(3).max(64).openapi({

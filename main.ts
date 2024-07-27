@@ -7,12 +7,14 @@ import { accounts } from './pkg/accounts/mod.js';
 import { drive } from './pkg/drive/mod.js';
 import { noteHandlers } from './pkg/notes/mod.js';
 import { timeline } from './pkg/timeline/mod.js';
+import { swaggerUI } from '@hono/swagger-ui';
 
 export const app = new Hono().get('/doc', async (c) => {
+  // NOTE: If you create a new module, you must add module API doc base path here.
   const modulePath: string[] = ['accounts', 'notes', 'drive', 'timeline'];
   const basePath = 'http://localhost:3000/';
   const openAPIBase = {
-    openapi: '3.0.0',
+    openapi: '3.1.0',
     info: {
       description: '',
       title: 'Pulsate API Document',
@@ -25,6 +27,12 @@ export const app = new Hono().get('/doc', async (c) => {
       },
     ],
     components: {
+      securitySchemes: {
+        bearer: {
+          type: 'http',
+          scheme: 'bearer',
+        },
+      },
       schemas: {},
       parameters: {},
     },
@@ -77,5 +85,7 @@ app.get(
     },
   }),
 );
+
+app.get("/ddoc", swaggerUI({ url: "/doc" }));
 
 serve({ fetch: app.fetch, port: 3000 });

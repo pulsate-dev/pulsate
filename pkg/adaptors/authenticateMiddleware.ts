@@ -14,9 +14,13 @@ export type AuthMiddlewareVariable = {
    */
   token: string;
   /*
-   * @description account name, or none if not authorized
+   * @description account id, or none if not authorized
    */
   accountID: Option.Option<string>;
+  /*
+   * @description account name, or none if not authorized
+   */
+  accountName: Option.Option<string>;
 };
 
 export class AuthenticateMiddlewareService {
@@ -26,15 +30,17 @@ export class AuthenticateMiddlewareService {
     this.authTokenService = authTokenService;
   }
 
-  private parseToken(token: string): Option.Option<string> {
+  private parseToken(
+    token: string,
+  ): Option.Option<{ sub: string; accountName: string }> {
     const split = token.split('.')[1];
     if (!split) {
       return Option.none();
     }
     const payload = JSON.parse(
       Buffer.from(split, 'base64').toString('utf-8'),
-    ) as { sub: string };
-    return Option.some(payload.sub);
+    ) as { sub: string; accountName: string };
+    return Option.some({ sub: payload.sub, accountName: payload.accountName });
   }
 
   /**
@@ -62,16 +68,18 @@ export class AuthenticateMiddlewareService {
       c.set('token', token);
 
       const isValidToken = await this.authTokenService.verify(token);
-      const accountName = this.parseToken(token);
+      const parsed = this.parseToken(token);
       if (!isValidToken) {
         return c.json({ error: 'UNAUTHORIZED' }, { status: 401 });
       }
 
-      if (Option.isNone(accountName)) {
+      if (Option.isNone(parsed)) {
         return c.json({ error: 'UNAUTHORIZED' }, { status: 401 });
       }
 
-      c.set('accountID', accountName);
+      const unwrapped = Option.unwrap(parsed);
+      c.set('accountID', Option.some(unwrapped.sub));
+      c.set('accountName', Option.some(unwrapped.accountName));
       return await next();
     });
   }

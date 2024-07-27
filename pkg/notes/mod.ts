@@ -1,7 +1,6 @@
 import { OpenAPIHono } from '@hono/zod-openapi';
-import { Cat, Ether, Promise, Result } from '@mikuroxina/mini-fn';
+import { Cat, Ether, Option, Promise, Result } from '@mikuroxina/mini-fn';
 
-import type { AccountID } from '../accounts/model/account.js';
 import { authenticateToken } from '../accounts/service/authenticationTokenService.js';
 import {
   type AuthMiddlewareVariable,
@@ -9,7 +8,6 @@ import {
 } from '../adaptors/authenticateMiddleware.js';
 import { prismaClient } from '../adaptors/prisma.js';
 import { SnowflakeIDGenerator } from '../id/mod.js';
-import type { ID } from '../id/type.js';
 import { accountModule } from '../intermodule/account.js';
 import { BookmarkController } from './adaptor/controller/bookmark.js';
 import { NoteController } from './adaptor/controller/note.js';
@@ -99,8 +97,12 @@ const bookmarkController = new BookmarkController(
   deleteBookmarkService,
 );
 
-noteHandlers.doc('/notes/doc.json', {
-  openapi: '3.0.0',
+noteHandlers.openAPIRegistry.registerComponent('securitySchemes', 'Bearer', {
+  type: 'http',
+  scheme: 'bearer',
+});
+noteHandlers.doc31('/notes/doc.json', {
+  openapi: '3.1.0',
   info: {
     title: 'Notes API',
     version: '0.1.0',
@@ -119,8 +121,10 @@ noteHandlers.openapi(CreateNoteRoute, async (c) => {
     send_to,
     attachment_file_ids,
   } = c.req.valid('json');
+  const accountID = Option.unwrap(c.get('accountID'));
+
   const res = await controller.createNote({
-    authorID: '',
+    authorID: accountID,
     content,
     visibility,
     contentsWarningComment: contents_warning_comment,
@@ -155,11 +159,13 @@ noteHandlers[RenoteRoute.method](
 noteHandlers.openapi(RenoteRoute, async (c) => {
   const { id } = c.req.param();
   const req = c.req.valid('json');
+  const authorID = Option.unwrap(c.get('accountID'));
+
   const res = await controller.renote({
     originalNoteID: id,
     content: req.content,
     contentsWarningComment: req.contents_warning_comment,
-    authorID: '',
+    authorID: authorID,
     visibility: req.visibility,
     attachmentFileID: req.attachment_file_ids,
   });
@@ -177,11 +183,9 @@ noteHandlers[CreateBookmarkRoute.method](
 );
 noteHandlers.openapi(CreateBookmarkRoute, async (c) => {
   const { id: noteID } = c.req.valid('param');
-  // ToDo: read AccountID from token
-  const res = await bookmarkController.createBookmark(
-    noteID,
-    '' as ID<AccountID>,
-  );
+  const accountID = Option.unwrap(c.get('accountID'));
+
+  const res = await bookmarkController.createBookmark(noteID, accountID);
 
   if (Result.isErr(res)) {
     return c.json({ error: res[1].message }, 404);
@@ -196,11 +200,9 @@ noteHandlers[DeleteBookmarkRoute.method](
 );
 noteHandlers.openapi(DeleteBookmarkRoute, async (c) => {
   const { id: noteID } = c.req.valid('param');
-  // ToDo: read AccountID from token
-  const res = await bookmarkController.deleteBookmark(
-    noteID,
-    '' as ID<AccountID>,
-  );
+  const accountID = Option.unwrap(c.get('accountID'));
+
+  const res = await bookmarkController.deleteBookmark(noteID, accountID);
 
   if (Result.isErr(res)) {
     return c.json({ error: res[1].message }, 400);
