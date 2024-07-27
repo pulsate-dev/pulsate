@@ -86,6 +86,4 @@ app.get(
   }),
 );
 
-app.get("/ddoc", swaggerUI({ url: "/doc" }));
-
 serve({ fetch: app.fetch, port: 3000 });
