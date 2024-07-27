@@ -19,11 +19,6 @@ export class FetchListMemberService {
     }
     const unwrappedAccountID = Result.unwrap(list);
 
-    const accounts = await this.accountModule.fetchAccounts(unwrappedAccountID);
-    if (Result.isErr(accounts)) {
-      return accounts;
-    }
-
-    return Result.ok(Result.unwrap(accounts));
+    return await this.accountModule.fetchAccounts(unwrappedAccountID);
   }
 }

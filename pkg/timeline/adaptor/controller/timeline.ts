@@ -145,6 +145,7 @@ export class TimelineController {
         id: v.getID(),
         name: v.getName(),
         nickname: v.getNickname(),
+        // ToDo: fill avatar URL
         avatar: '',
       };
     });
