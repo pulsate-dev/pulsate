@@ -15,11 +15,13 @@ import {
   CreateListRoute,
   DeleteListRoute,
   GetAccountTimelineRoute,
+  GetListMemberRoute,
   PushNoteToTimelineRoute,
 } from './router.js';
 import { AccountTimelineService } from './service/account.js';
 import { CreateListService } from './service/createList.js';
 import { DeleteListService } from './service/deleteList.js';
+import { FetchListMemberService } from './service/fetchMember.js';
 import { NoteVisibilityService } from './service/noteVisibility.js';
 import { PushTimelineService } from './service/push.js';
 
@@ -31,6 +33,7 @@ const timelineRepository = new InMemoryTimelineRepository();
 const listRepository = new InMemoryListRepository();
 const timelineNotesCacheRepository = new InMemoryTimelineCacheRepository();
 const noteVisibilityService = new NoteVisibilityService(accountModule);
+
 const controller = new TimelineController({
   accountTimelineService: new AccountTimelineService({
     noteVisibilityService: noteVisibilityService,
@@ -39,6 +42,7 @@ const controller = new TimelineController({
   createListService: new CreateListService(idGenerator, listRepository),
   deleteListService: new DeleteListService(listRepository),
   accountModule,
+  fetchMemberService: new FetchListMemberService(listRepository, accountModule),
 });
 const pushTimelineService = new PushTimelineService(
   accountModule,
@@ -125,4 +129,16 @@ timeline.openapi(DeleteListRoute, async (c) => {
   }
 
   return new Response(undefined, { status: 204 });
+});
+
+timeline.openapi(GetListMemberRoute, async (c) => {
+  const { id } = c.req.param();
+
+  const res = await controller.getListMembers(id);
+  if (Result.isErr(res)) {
+    return c.json({ error: res[1].message }, 404);
+  }
+
+  const unwrapped = Result.unwrap(res);
+  return c.json(unwrapped, 200);
 });

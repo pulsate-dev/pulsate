@@ -2,13 +2,13 @@ import { Result } from '@mikuroxina/mini-fn';
 import { describe, expect, it, vi } from 'vitest';
 
 import type { AccountID } from '../../accounts/model/account.js';
+import { partialAccount1 } from '../../accounts/testData/testData.js';
 import { dummyAccountModuleFacade } from '../../intermodule/account.js';
 import {
   dummyDirectNote,
   dummyFollowersNote,
   dummyHomeNote,
   dummyPublicNote,
-  partialAccount1,
 } from '../testData/testData.js';
 import { NoteVisibilityService } from './noteVisibility.js';
 

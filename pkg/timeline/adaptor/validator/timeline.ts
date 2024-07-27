@@ -67,3 +67,28 @@ export const CreateListResponseSchema = z
     }),
   })
   .openapi('CreateListResponse');
+
+export const GetListMemberResponseSchema = z
+  .object({
+    assignees: z.array(
+      z.object({
+        id: z.string().openapi({
+          example: '30984308495',
+          description: 'Assignee account ID',
+        }),
+        name: z.string().openapi({
+          example: '@john@example.com',
+          description: 'Assignee account name',
+        }),
+        nickname: z.string().openapi({
+          example: 'John Doe',
+          description: 'Assignee nickname',
+        }),
+        avatar: z.string().url().openapi({
+          example: 'https://example.com/avatar.png',
+          description: 'avatar URL',
+        }),
+      }),
+    ),
+  })
+  .openapi('GetListMemberResponseSchema');
