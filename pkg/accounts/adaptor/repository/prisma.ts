@@ -288,6 +288,7 @@ export class PrismaAccountFollowRepository implements AccountFollowRepository {
     targetID: AccountID,
   ): Promise<Result.Result<Error, void>> {
     try {
+      // ToDo: use hard delete (Because it is a composite primary key, it will never be possible to follow it back again.)
       await this.prisma.following.update({
         where: {
           fromId_toId: {
