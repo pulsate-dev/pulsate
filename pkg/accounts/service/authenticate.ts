@@ -53,7 +53,7 @@ export class AuthenticateService {
     }
 
     const authorizationToken = await this.authenticationTokenService.generate(
-      Option.unwrap(account).getName(),
+      Option.unwrap(account).getID(),
       convertTo(new Date()),
       convertTo(addSecondsToDate(new Date(), 900)),
     );
@@ -63,7 +63,7 @@ export class AuthenticateService {
     }
 
     const refreshToken = await this.authenticationTokenService.generate(
-      Option.unwrap(account).getName(),
+      Option.unwrap(account).getID(),
       convertTo(new Date()),
       convertTo(addSecondsToDate(new Date(), 2_592_000)),
     );

@@ -16,7 +16,7 @@ export type AuthMiddlewareVariable = {
   /*
    * @description account name, or none if not authorized
    */
-  accountName: Option.Option<string>;
+  accountID: Option.Option<string>;
 };
 
 export class AuthenticateMiddlewareService {
@@ -71,7 +71,7 @@ export class AuthenticateMiddlewareService {
         return c.json({ error: 'UNAUTHORIZED' }, { status: 401 });
       }
 
-      c.set('accountName', accountName);
+      c.set('accountID', accountName);
       return await next();
     });
   }
