@@ -23,6 +23,8 @@ export type AuthMiddlewareVariable = {
   accountName: Option.Option<string>;
 };
 
+type tokenPayload = { sub: string; accountName: string };
+
 export class AuthenticateMiddlewareService {
   private readonly authTokenService: AuthenticationTokenService;
 
@@ -30,17 +32,34 @@ export class AuthenticateMiddlewareService {
     this.authTokenService = authTokenService;
   }
 
-  private parseToken(
-    token: string,
-  ): Option.Option<{ sub: string; accountName: string }> {
+  private parseToken(token: string): Option.Option<tokenPayload> {
     const split = token.split('.')[1];
     if (!split) {
       return Option.none();
     }
-    const payload = JSON.parse(
-      Buffer.from(split, 'base64').toString('utf-8'),
-    ) as { sub: string; accountName: string };
-    return Option.some({ sub: payload.sub, accountName: payload.accountName });
+    const payload = JSON.parse(Buffer.from(split, 'base64').toString('utf-8'));
+
+    const isPayloadValid = (p: object): p is tokenPayload => {
+      if (!('sub' in p) || !('accountName' in p)) {
+        return false;
+      }
+      if (
+        typeof payload.sub !== 'string' ||
+        typeof payload.accountName !== 'string'
+      ) {
+        return false;
+      }
+      return true;
+    };
+
+    if (!isPayloadValid(payload)) {
+      return Option.none();
+    }
+
+    return Option.some({
+      sub: payload.sub,
+      accountName: payload.accountName,
+    });
   }
 
   /**

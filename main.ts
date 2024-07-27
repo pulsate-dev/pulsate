@@ -7,7 +7,6 @@ import { accounts } from './pkg/accounts/mod.js';
 import { drive } from './pkg/drive/mod.js';
 import { noteHandlers } from './pkg/notes/mod.js';
 import { timeline } from './pkg/timeline/mod.js';
-import { swaggerUI } from '@hono/swagger-ui';
 
 export const app = new Hono().get('/doc', async (c) => {
   // NOTE: If you create a new module, you must add module API doc base path here.
