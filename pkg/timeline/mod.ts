@@ -1,29 +1,24 @@
 import { OpenAPIHono } from '@hono/zod-openapi';
-import { Option, Result } from '@mikuroxina/mini-fn';
+import { Result } from '@mikuroxina/mini-fn';
 
-import type { AccountID } from '../accounts/model/account.js';
 import { SnowflakeIDGenerator } from '../id/mod.js';
 import { accountModule } from '../intermodule/account.js';
-import { Note, type NoteID } from '../notes/model/note.js';
 import { TimelineController } from './adaptor/controller/timeline.js';
 import {
   InMemoryListRepository,
   InMemoryTimelineRepository,
 } from './adaptor/repository/dummy.js';
-import { InMemoryTimelineCacheRepository } from './adaptor/repository/dummyCache.js';
 import {
   CreateListRoute,
   DeleteListRoute,
   GetAccountTimelineRoute,
   GetListMemberRoute,
-  PushNoteToTimelineRoute,
 } from './router.js';
 import { AccountTimelineService } from './service/account.js';
 import { CreateListService } from './service/createList.js';
 import { DeleteListService } from './service/deleteList.js';
 import { FetchListMemberService } from './service/fetchMember.js';
 import { NoteVisibilityService } from './service/noteVisibility.js';
-import { PushTimelineService } from './service/push.js';
 
 const idGenerator = new SnowflakeIDGenerator(0, {
   now: () => BigInt(Date.now()),
@@ -31,7 +26,6 @@ const idGenerator = new SnowflakeIDGenerator(0, {
 
 const timelineRepository = new InMemoryTimelineRepository();
 const listRepository = new InMemoryListRepository();
-const timelineNotesCacheRepository = new InMemoryTimelineCacheRepository();
 const noteVisibilityService = new NoteVisibilityService(accountModule);
 
 const controller = new TimelineController({
@@ -44,13 +38,6 @@ const controller = new TimelineController({
   accountModule,
   fetchMemberService: new FetchListMemberService(listRepository, accountModule),
 });
-const pushTimelineService = new PushTimelineService(
-  accountModule,
-  noteVisibilityService,
-  timelineNotesCacheRepository,
-);
-
-export type TimelineModuleHandlerType = typeof pushNoteToTimeline;
 
 export const timeline = new OpenAPIHono().doc('/timeline/doc.json', {
   openapi: '3.0.0',
@@ -77,35 +64,6 @@ timeline.openapi(GetAccountTimelineRoute, async (c) => {
 
   return c.json(res[1], 200);
 });
-
-// ToDo: Require internal access token in this endpoint
-// NOTE: This is internal endpoint
-const pushNoteToTimeline = timeline.openapi(
-  PushNoteToTimelineRoute,
-  async (c) => {
-    const { id, authorId } = c.req.valid('json');
-    const res = await pushTimelineService.handle(
-      Note.new({
-        id: id as NoteID,
-        authorID: authorId as AccountID,
-        content: '',
-        contentsWarningComment: '',
-        createdAt: new Date(),
-        originalNoteID: Option.none(),
-        sendTo: Option.none(),
-        attachmentFileID: [],
-        visibility: 'FOLLOWERS',
-      }),
-    );
-    if (Result.isErr(res)) {
-      return c.json({ error: res[1].message, status: 400 });
-    }
-
-    return new Response(undefined, { status: 204 });
-  },
-);
-
-// ToDo: impl DropNoteFromTimelineRoute
 
 timeline.openapi(CreateListRoute, async (c) => {
   // NOTE: `public` is a reserved keyword
