@@ -109,6 +109,11 @@ export class InMemoryListRepository implements ListRepository {
     return Result.ok(undefined);
   }
 
+  async edit(list: List): Promise<Result.Result<Error, void>> {
+    this.listData.set(list.getId(), list);
+    return Result.ok(undefined);
+  }
+
   async deleteById(listId: ListID): Promise<Result.Result<Error, void>> {
     if (!this.listData.delete(listId)) {
       return Result.err(new Error('List not found'));
