@@ -13,8 +13,8 @@ export type CreateListArgs = Readonly<{
 
 export class List {
   private readonly id: ListID;
-  private readonly title: string;
-  private readonly publicity: 'PUBLIC' | 'PRIVATE';
+  private title: string;
+  private publicity: 'PUBLIC' | 'PRIVATE';
   private readonly ownerId: AccountID;
   private readonly memberIds: Set<AccountID>;
   private readonly createdAt: Date;
@@ -40,8 +40,16 @@ export class List {
     return this.title;
   }
 
+  setTitle(title: string) {
+    this.title = title;
+  }
+
   isPublic(): boolean {
     return this.publicity === 'PUBLIC';
+  }
+
+  setPublicity(publicity: 'PUBLIC' | 'PRIVATE') {
+    this.publicity = publicity;
   }
 
   getOwnerId(): AccountID {
