@@ -24,7 +24,6 @@ export type AuthMiddlewareVariable = {
   accountName: Option.Option<string>;
 };
 
-type tokenPayload = { sub: string; accountName: string };
 const tokenPayloadSchema = z.object({
   sub: z.string(),
   accountName: z.string(),
@@ -37,7 +36,9 @@ export class AuthenticateMiddlewareService {
     this.authTokenService = authTokenService;
   }
 
-  private parseToken(token: string): Option.Option<tokenPayload> {
+  private parseToken(
+    token: string,
+  ): Option.Option<z.infer<typeof tokenPayloadSchema>> {
     const split = token.split('.')[1];
     if (!split) {
       return Option.none();
