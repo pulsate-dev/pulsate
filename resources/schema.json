@@ -1,5 +1,5 @@
 {
-  "openapi": "3.0.0",
+  "openapi": "3.1.0",
   "info": {
     "description": "",
     "title": "Pulsate API Document",
@@ -12,6 +12,12 @@
     }
   ],
   "components": {
+    "securitySchemes": {
+      "bearer": {
+        "type": "http",
+        "scheme": "bearer"
+      }
+    },
     "schemas": {
       "CreateAccountResponse": {
         "type": "object",
@@ -606,6 +612,11 @@
         "tags": [
           "accounts"
         ],
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
         "parameters": [
           {
             "schema": {
@@ -721,6 +732,11 @@
         "tags": [
           "accounts"
         ],
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
         "parameters": [
           {
             "schema": {
@@ -807,6 +823,11 @@
       "delete": {
         "tags": [
           "accounts"
+        ],
+        "security": [
+          {
+            "bearer": []
+          }
         ],
         "parameters": [
           {
@@ -1145,6 +1166,11 @@
         "tags": [
           "accounts"
         ],
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
         "parameters": [
           {
             "schema": {
@@ -1217,6 +1243,11 @@
       "delete": {
         "tags": [
           "accounts"
+        ],
+        "security": [
+          {
+            "bearer": []
+          }
         ],
         "parameters": [
           {
@@ -1293,6 +1324,11 @@
         "tags": [
           "accounts"
         ],
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
         "parameters": [
           {
             "schema": {
@@ -1365,6 +1401,11 @@
       "delete": {
         "tags": [
           "accounts"
+        ],
+        "security": [
+          {
+            "bearer": []
+          }
         ],
         "parameters": [
           {
@@ -1646,6 +1687,11 @@
       "post": {
         "tags": [
           "notes"
+        ],
+        "security": [
+          {
+            "bearer": []
+          }
         ],
         "requestBody": {
           "content": {
@@ -1955,6 +2001,11 @@
         "tags": [
           "notes"
         ],
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
         "parameters": [
           {
             "schema": {
@@ -2178,6 +2229,11 @@
         "tags": [
           "bookmark"
         ],
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
         "parameters": [
           {
             "schema": {
@@ -2268,6 +2324,11 @@
         "tags": [
           "bookmark"
         ],
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
         "parameters": [
           {
             "schema": {
@@ -2314,6 +2375,11 @@
           "drive"
         ],
         "summary": "Get uploaded media",
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
         "responses": {
           "200": {
             "description": "OK",
@@ -2485,44 +2551,15 @@
         }
       }
     },
-    "/timeline/": {
-      "post": {
-        "description": "",
-        "tags": [
-          "timeline"
-        ],
-        "requestBody": {
-          "content": {
-            "application/json": {
-              "schema": {
-                "type": "object",
-                "properties": {
-                  "id": {
-                    "type": "string"
-                  },
-                  "authorId": {
-                    "type": "string"
-                  }
-                },
-                "required": [
-                  "id",
-                  "authorId"
-                ]
-              }
-            }
-          }
-        },
-        "responses": {
-          "204": {
-            "description": "OK"
-          }
-        }
-      }
-    },
     "/lists": {
       "post": {
         "tags": [
           "timeline"
+        ],
+        "security": [
+          {
+            "bearer": []
+          }
         ],
         "requestBody": {
           "content": {
@@ -2570,6 +2607,11 @@
       "delete": {
         "tags": [
           "timeline"
+        ],
+        "security": [
+          {
+            "bearer": []
+          }
         ],
         "parameters": [
           {

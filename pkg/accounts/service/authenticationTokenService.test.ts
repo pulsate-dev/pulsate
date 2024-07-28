@@ -12,6 +12,7 @@ describe('AuthenticationTokenService', () => {
       '',
       convertTo(new Date()),
       convertTo(new Date('2099-12-31T12:59:59Z')),
+      '',
     );
     if (Option.isNone(token)) {
       return;
@@ -25,6 +26,7 @@ describe('AuthenticationTokenService', () => {
       '',
       convertTo(new Date('2022-01-01T00:00:00Z')),
       convertTo(new Date('2022-01-02T00:00:00Z')),
+      '',
     );
     if (Option.isNone(expired)) return;
 

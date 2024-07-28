@@ -8,6 +8,11 @@ export const GetMediaRoute = createRoute({
   path: '/drive',
   tags: ['drive'],
   summary: 'Get uploaded media',
+  security: [
+    {
+      bearer: [],
+    },
+  ],
   request: {},
   responses: {
     200: {

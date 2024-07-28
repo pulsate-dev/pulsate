@@ -66,6 +66,11 @@ export const CreateListRoute = createRoute({
   method: 'post',
   tags: ['timeline'],
   path: '/lists',
+  security: [
+    {
+      bearer: [],
+    },
+  ],
   request: {
     body: {
       content: { 'application/json': { schema: CreateListRequestSchema } },
@@ -95,6 +100,11 @@ export const DeleteListRoute = createRoute({
   method: 'delete',
   tags: ['timeline'],
   path: '/lists',
+  security: [
+    {
+      bearer: [],
+    },
+  ],
   request: {
     params: z.object({
       id: z.string().openapi('List ID'),

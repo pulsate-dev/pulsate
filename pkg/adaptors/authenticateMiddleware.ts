@@ -2,6 +2,7 @@ import { Ether, Option } from '@mikuroxina/mini-fn';
 import type { MiddlewareHandler } from 'hono';
 import { createMiddleware } from 'hono/factory';
 
+import { z } from '@hono/zod-openapi';
 import {
   type AuthenticationTokenService,
   authenticateTokenSymbol,
@@ -14,10 +15,19 @@ export type AuthMiddlewareVariable = {
    */
   token: string;
   /*
+   * @description account id, or none if not authorized
+   */
+  accountID: Option.Option<string>;
+  /*
    * @description account name, or none if not authorized
    */
   accountName: Option.Option<string>;
 };
+
+const tokenPayloadSchema = z.object({
+  sub: z.string(),
+  accountName: z.string(),
+});
 
 export class AuthenticateMiddlewareService {
   private readonly authTokenService: AuthenticationTokenService;
@@ -26,15 +36,24 @@ export class AuthenticateMiddlewareService {
     this.authTokenService = authTokenService;
   }
 
-  private parseToken(token: string): Option.Option<string> {
+  private parseToken(
+    token: string,
+  ): Option.Option<z.infer<typeof tokenPayloadSchema>> {
     const split = token.split('.')[1];
     if (!split) {
       return Option.none();
     }
-    const payload = JSON.parse(
-      Buffer.from(split, 'base64').toString('utf-8'),
-    ) as { sub: string };
-    return Option.some(payload.sub);
+    const payload = JSON.parse(Buffer.from(split, 'base64').toString('utf-8'));
+
+    const parsed = tokenPayloadSchema.safeParse(payload);
+    if (!parsed.success) {
+      return Option.none();
+    }
+
+    return Option.some({
+      sub: parsed.data.sub,
+      accountName: parsed.data.accountName,
+    });
   }
 
   /**
@@ -62,16 +81,18 @@ export class AuthenticateMiddlewareService {
       c.set('token', token);
 
       const isValidToken = await this.authTokenService.verify(token);
-      const accountName = this.parseToken(token);
+      const parsed = this.parseToken(token);
       if (!isValidToken) {
         return c.json({ error: 'UNAUTHORIZED' }, { status: 401 });
       }
 
-      if (Option.isNone(accountName)) {
+      if (Option.isNone(parsed)) {
         return c.json({ error: 'UNAUTHORIZED' }, { status: 401 });
       }
 
-      c.set('accountName', accountName);
+      const unwrapped = Option.unwrap(parsed);
+      c.set('accountID', Option.some(unwrapped.sub));
+      c.set('accountName', Option.some(unwrapped.accountName));
       return await next();
     });
   }

@@ -254,11 +254,14 @@ export class AccountController {
     return Result.ok(undefined);
   }
 
-  async followAccount(name: string): Promise<Result.Result<Error, void>> {
+  async followAccount(
+    fromName: string,
+    targetName: string,
+  ): Promise<Result.Result<Error, void>> {
     // ToDo: get following account's name from request
     const res = await this.followService.handle(
-      '' as AccountName,
-      name as AccountName,
+      fromName as AccountName,
+      targetName as AccountName,
     );
     if (Result.isErr(res)) {
       return res;
@@ -267,10 +270,13 @@ export class AccountController {
     return Result.ok(undefined);
   }
 
-  async unFollowAccount(name: string): Promise<Result.Result<Error, void>> {
+  async unFollowAccount(
+    fromName: string,
+    targetName: string,
+  ): Promise<Result.Result<Error, void>> {
     const res = await this.unFollowService.handle(
-      name as AccountName,
-      '' as AccountName,
+      fromName as AccountName,
+      targetName as AccountName,
     );
 
     if (Option.isSome(res)) {
@@ -300,6 +306,7 @@ export class AccountController {
     if (Result.isErr(res)) {
       return res;
     }
+    // ToDo: use fetchManyAccountsByID
     const accounts = await Promise.all(
       res[1].map((v) => this.fetchService.fetchAccountByID(v.getTargetID())),
     );

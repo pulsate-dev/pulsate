@@ -14,6 +14,11 @@ export const CreateNoteRoute = createRoute({
   method: 'post',
   tags: ['notes'],
   path: '/notes',
+  security: [
+    {
+      bearer: [],
+    },
+  ],
   request: {
     body: {
       content: {
@@ -88,6 +93,11 @@ export const RenoteRoute = createRoute({
   method: 'post',
   tags: ['notes'],
   path: '/notes/:id/renote',
+  security: [
+    {
+      bearer: [],
+    },
+  ],
   request: {
     params: z.object({
       id: z.string().openapi({
@@ -143,6 +153,11 @@ export const CreateBookmarkRoute = createRoute({
   method: 'post',
   tags: ['bookmark'],
   path: '/notes/:id/bookmark',
+  security: [
+    {
+      bearer: [],
+    },
+  ],
   request: {
     params: z.object({
       id: z.string().openapi({
@@ -175,6 +190,11 @@ export const DeleteBookmarkRoute = createRoute({
   method: 'delete',
   tags: ['bookmark'],
   path: '/notes/:id/bookmark',
+  security: [
+    {
+      bearer: [],
+    },
+  ],
   request: {
     params: z.object({
       id: z.string().openapi({

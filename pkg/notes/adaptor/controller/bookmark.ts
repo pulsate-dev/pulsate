@@ -41,6 +41,7 @@ export class BookmarkController {
     });
   }
 
+  // ToDo: add pagination, impl handler function
   async getBookmarkByID(
     noteID: string,
     accountID: string,
@@ -53,6 +54,7 @@ export class BookmarkController {
     return res;
   }
 
+  // ToDo: impl handler function
   async getBookmarkByAccountID(
     accountID: string,
   ): Promise<Option.Option<Bookmark[]>> {

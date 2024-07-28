@@ -1,5 +1,5 @@
 import { OpenAPIHono } from '@hono/zod-openapi';
-import { Cat, Ether, Promise, Result } from '@mikuroxina/mini-fn';
+import { Cat, Ether, Option, Promise, Result } from '@mikuroxina/mini-fn';
 
 import {
   type AuthMiddlewareVariable,
@@ -163,8 +163,13 @@ const AuthMiddleware = await Ether.runEtherT(
   ).value,
 );
 
-accounts.doc('/accounts/doc.json', {
-  openapi: '3.0.0',
+accounts.openAPIRegistry.registerComponent('securitySchemes', 'Bearer', {
+  type: 'http',
+  scheme: 'bearer',
+});
+
+accounts.doc31('/accounts/doc.json', {
+  openapi: '3.1.0',
   info: {
     title: 'Accounts API',
     version: '0.1.0',
@@ -336,9 +341,10 @@ accounts[FollowAccountRoute.method](
   AuthMiddleware.handle({ forceAuthorized: true }),
 );
 accounts.openapi(FollowAccountRoute, async (c) => {
-  const name = c.req.param('name');
+  const targetName = c.req.param('name');
+  const fromName = Option.unwrap(c.get('accountName'));
 
-  const res = await controller.followAccount(name);
+  const res = await controller.followAccount(fromName, targetName);
   if (Result.isErr(res)) {
     return c.json({ error: res[1].message }, 403);
   }
@@ -351,9 +357,10 @@ accounts[UnFollowAccountRoute.method](
   AuthMiddleware.handle({ forceAuthorized: true }),
 );
 accounts.openapi(UnFollowAccountRoute, async (c) => {
-  const name = c.req.param('name');
+  const targetName = c.req.param('name');
+  const fromName = Option.unwrap(c.get('accountName'));
 
-  const res = await controller.unFollowAccount(name);
+  const res = await controller.unFollowAccount(fromName, targetName);
   if (Result.isErr(res)) {
     return c.json({ error: res[1].message }, 400);
   }

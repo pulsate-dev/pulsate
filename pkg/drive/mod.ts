@@ -1,9 +1,12 @@
 import { OpenAPIHono } from '@hono/zod-openapi';
-import { Cat, Ether, Promise, Result } from '@mikuroxina/mini-fn';
+import { Cat, Ether, Option, Promise, Result } from '@mikuroxina/mini-fn';
 
 import type { AccountID } from '../accounts/model/account.js';
 import { authenticateToken } from '../accounts/service/authenticationTokenService.js';
-import { authenticateMiddleware } from '../adaptors/authenticateMiddleware.js';
+import {
+  type AuthMiddlewareVariable,
+  authenticateMiddleware,
+} from '../adaptors/authenticateMiddleware.js';
 import { prismaClient } from '../adaptors/prisma.js';
 import { DriveController } from './adaptor/controller/drive.js';
 import { InMemoryMediaRepository } from './adaptor/repository/dummy.js';
@@ -30,13 +33,27 @@ const mediaRepository = isProduction
 const fetchService = new FetchMediaService(mediaRepository);
 const controller = new DriveController(fetchService);
 
-export const drive = new OpenAPIHono();
-drive.doc('/drive/doc.json', {
-  openapi: '3.0.0',
+export const drive = new OpenAPIHono<{
+  Variables: AuthMiddlewareVariable;
+}>();
+
+drive.openAPIRegistry.registerComponent('securitySchemes', 'Bearer', {
+  type: 'http',
+  scheme: 'bearer',
+});
+
+drive.doc31('/drive/doc.json', {
+  openapi: '3.1.0',
   info: {
     title: 'Drive API',
     version: '0.1.0',
   },
+  servers: [
+    {
+      url: 'http://localhost:3000',
+      description: 'Development server',
+    },
+  ],
 });
 
 drive[GetMediaRoute.method](
@@ -44,8 +61,8 @@ drive[GetMediaRoute.method](
   AuthMiddleware.handle({ forceAuthorized: true }),
 );
 drive.openapi(GetMediaRoute, async (c) => {
-  // ToDo: fill authorID
-  const res = await controller.getMediaByAuthorId('' as AccountID);
+  const accountID = Option.unwrap(c.get('accountID'));
+  const res = await controller.getMediaByAuthorId(accountID as AccountID);
   if (Result.isErr(res)) {
     return c.json({ error: res[1].message }, 404);
   }

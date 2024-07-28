@@ -16,6 +16,7 @@ export class FreezeService {
   async setFreeze(
     accountName: AccountName,
   ): Promise<Result.Result<Error, boolean>> {
+    // ToDo: Check Account role(permission)
     const account = await this.accountRepository.findByName(accountName);
     if (Option.isNone(account)) {
       return Result.err(new Error('account not found'));
@@ -32,6 +33,7 @@ export class FreezeService {
   async undoFreeze(
     accountName: AccountName,
   ): Promise<Result.Result<Error, boolean>> {
+    // ToDo: Check Account role(permission)
     const account = await this.accountRepository.findByName(accountName);
     if (Option.isNone(account)) {
       return Result.err(new Error('account not found'));
