@@ -69,4 +69,5 @@ export interface ListRepository {
   ): Promise<Result.Result<Error, List[]>>;
   fetchListMembers(listId: ListID): Promise<Result.Result<Error, AccountID[]>>;
   deleteById(listId: ListID): Promise<Result.Result<Error, void>>;
+  edit(list: List): Promise<Result.Result<Error, void>>;
 }
