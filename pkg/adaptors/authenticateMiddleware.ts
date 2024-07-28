@@ -2,6 +2,7 @@ import { Ether, Option } from '@mikuroxina/mini-fn';
 import type { MiddlewareHandler } from 'hono';
 import { createMiddleware } from 'hono/factory';
 
+import { z } from '@hono/zod-openapi';
 import {
   type AuthenticationTokenService,
   authenticateTokenSymbol,
@@ -24,6 +25,10 @@ export type AuthMiddlewareVariable = {
 };
 
 type tokenPayload = { sub: string; accountName: string };
+const tokenPayloadSchema = z.object({
+  sub: z.string(),
+  accountName: z.string(),
+});
 
 export class AuthenticateMiddlewareService {
   private readonly authTokenService: AuthenticationTokenService;
@@ -39,26 +44,14 @@ export class AuthenticateMiddlewareService {
     }
     const payload = JSON.parse(Buffer.from(split, 'base64').toString('utf-8'));
 
-    const isPayloadValid = (p: object): p is tokenPayload => {
-      if (!('sub' in p) || !('accountName' in p)) {
-        return false;
-      }
-      if (
-        typeof payload.sub !== 'string' ||
-        typeof payload.accountName !== 'string'
-      ) {
-        return false;
-      }
-      return true;
-    };
-
-    if (!isPayloadValid(payload)) {
+    const parsed = tokenPayloadSchema.safeParse(payload);
+    if (!parsed.success) {
       return Option.none();
     }
 
     return Option.some({
-      sub: payload.sub,
-      accountName: payload.accountName,
+      sub: parsed.data.sub,
+      accountName: parsed.data.accountName,
     });
   }
 
