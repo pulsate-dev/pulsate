@@ -127,10 +127,10 @@ export class InMemoryListRepository implements ListRepository {
   async fetchListsByMemberAccountID(
     accountID: AccountID,
   ): Promise<Result.Result<Error, List[]>> {
-    const lists = [...this.listData].filter((list) =>
-      list[1].getMemberIds().includes(accountID),
+    const lists = [...this.listData.values()].filter((list) =>
+      list.getMemberIds().includes(accountID),
     );
-    return Result.ok(lists.map((list) => list[1]));
+    return Result.ok(lists.map((list) => list));
   }
 
   async fetchListsByOwnerId(

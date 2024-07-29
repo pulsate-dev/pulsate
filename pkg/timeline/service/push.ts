@@ -24,12 +24,7 @@ export class PushTimelineService {
       return home;
     }
 
-    const list = await this.pushToList(note);
-    if (Result.isErr(list)) {
-      return list;
-    }
-
-    return Result.ok(undefined);
+    return await this.pushToList(note);
   }
 
   private async pushToHomeTimeline(
@@ -70,7 +65,7 @@ export class PushTimelineService {
    * @description push note to List timeline
    * @param note
    */
-  private async pushToList(note: Note) {
+  private async pushToList(note: Note): Promise<Result.Result<Error, void>> {
     const lists = await this.fetchSubscribedListService.handle(
       note.getAuthorID(),
     );

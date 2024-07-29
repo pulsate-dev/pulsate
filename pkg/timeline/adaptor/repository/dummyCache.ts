@@ -32,21 +32,14 @@ export class InMemoryTimelineCacheRepository
     accountID: AccountID,
     notes: Note[],
   ): Promise<Result.Result<Error, void>> {
-    const objectKey = this.generateObjectKey(accountID, 'home');
-    if (!this.data.has(objectKey)) {
-      this.data.set(
-        objectKey,
-        notes.map((note) => note.getID()),
-      );
+    const newNoteIDs = notes.map((note) => note.getID());
+    if (!this.data.has(this.generateObjectKey(accountID, 'home'))) {
+      this.data.set(this.generateObjectKey(accountID, 'home'), newNoteIDs);
       return Result.ok(undefined);
     }
-    // biome-ignore lint/style/noNonNullAssertion: Use assertion to avoid compile errors because type inference has failed.
-    const fetched = this.data.get(objectKey)!;
-    // NOTE: replace by updated object
-    this.data.delete(objectKey);
-
-    fetched.push(...notes.map((note) => note.getID()));
-    this.data.set(objectKey, fetched);
+    this.data
+      .get(this.generateObjectKey(accountID, 'home'))
+      ?.push(...newNoteIDs);
 
     return Result.ok(undefined);
   }
@@ -55,21 +48,12 @@ export class InMemoryTimelineCacheRepository
     listID: ListID,
     notes: readonly Note[],
   ): Promise<Result.Result<Error, void>> {
-    const objectKey = this.generateObjectKey(listID, 'list');
-    if (!this.data.has(objectKey)) {
-      this.data.set(
-        objectKey,
-        notes.map((note) => note.getID()),
-      );
+    const newNoteIDs = notes.map((note) => note.getID());
+    if (!this.data.has(this.generateObjectKey(listID, 'list'))) {
+      this.data.set(this.generateObjectKey(listID, 'list'), newNoteIDs);
       return Result.ok(undefined);
     }
-    // biome-ignore lint/style/noNonNullAssertion: Use assertion to avoid compile errors because type inference has failed.
-    const fetched = this.data.get(objectKey)!;
-    // NOTE: replace by updated object
-    this.data.delete(objectKey);
-
-    fetched.push(...notes.map((note) => note.getID()));
-    this.data.set(objectKey, fetched);
+    this.data.get(this.generateObjectKey(listID, 'list'))?.push(...newNoteIDs);
 
     return Result.ok(undefined);
   }
