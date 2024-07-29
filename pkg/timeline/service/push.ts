@@ -3,6 +3,7 @@ import { Result } from '@mikuroxina/mini-fn';
 import type { AccountModuleFacade } from '../../intermodule/account.js';
 import type { Note } from '../../notes/model/note.js';
 import type { TimelineNotesCacheRepository } from '../model/repository.js';
+import type { FetchSubscribedListService } from './fetchSubscribed.js';
 import type { NoteVisibilityService } from './noteVisibility.js';
 
 export class PushTimelineService {
@@ -10,6 +11,7 @@ export class PushTimelineService {
     private readonly accountModule: AccountModuleFacade,
     private readonly noteVisibility: NoteVisibilityService,
     private readonly timelineNotesCacheRepository: TimelineNotesCacheRepository,
+    private readonly fetchSubscribedListService: FetchSubscribedListService,
   ) {}
 
   /**
@@ -17,6 +19,22 @@ export class PushTimelineService {
    * @param note to be pushed
    * */
   async handle(note: Note): Promise<Result.Result<Error, void>> {
+    const home = await this.pushToHomeTimeline(note);
+    if (Result.isErr(home)) {
+      return home;
+    }
+
+    const list = await this.pushToList(note);
+    if (Result.isErr(list)) {
+      return list;
+    }
+
+    return Result.ok(undefined);
+  }
+
+  private async pushToHomeTimeline(
+    note: Note,
+  ): Promise<Result.Result<Error, void>> {
     const followers = await this.accountModule.fetchFollowers(
       note.getAuthorID(),
     );
@@ -45,7 +63,39 @@ export class PushTimelineService {
         ]);
       }),
     );
+    return res.find(Result.isErr) ?? Result.ok(undefined);
+  }
 
+  /**
+   * @description push note to List timeline
+   * @param note
+   */
+  private async pushToList(note: Note) {
+    const lists = await this.fetchSubscribedListService.handle(
+      note.getAuthorID(),
+    );
+    if (Result.isErr(lists)) {
+      return lists;
+    }
+    const unwrappedLists = Result.unwrap(lists);
+
+    /*
+    PUBLIC, HOME: OK
+    FOLLOWER, DIRECT: reject
+     */
+    const visible = await this.noteVisibility.isVisibleNoteInList({
+      accountID: note.getAuthorID(),
+      note,
+    });
+    if (!visible) {
+      return Result.err(new Error('Note invisible'));
+    }
+
+    const res = await Promise.all(
+      unwrappedLists.map((v) => {
+        return this.timelineNotesCacheRepository.addNotesToList(v, [note]);
+      }),
+    );
     return res.find(Result.isErr) ?? Result.ok(undefined);
   }
 }
