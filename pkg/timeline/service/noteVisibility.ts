@@ -48,6 +48,15 @@ export class NoteVisibilityService {
   ): Promise<boolean> {
     return args.note.getVisibility() !== 'DIRECT';
   }
+
+  public async isVisibleNoteInList(
+    args: NoteVisibilityCheckArgs,
+  ): Promise<boolean> {
+    return (
+      args.note.getVisibility() !== 'DIRECT' &&
+      args.note.getVisibility() !== 'FOLLOWERS'
+    );
+  }
 }
 export const noteVisibilitySymbol =
   Ether.newEtherSymbol<NoteVisibilityService>();
