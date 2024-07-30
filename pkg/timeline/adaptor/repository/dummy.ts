@@ -130,7 +130,7 @@ export class InMemoryListRepository implements ListRepository {
     const lists = [...this.listData.values()].filter((list) =>
       list.getMemberIds().includes(accountID),
     );
-    return Result.ok(lists.map((list) => list));
+    return Result.ok(lists);
   }
 
   async fetchListsByOwnerId(
