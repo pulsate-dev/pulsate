@@ -487,6 +487,31 @@
           "public"
         ]
       },
+      "FetchListResponse": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "List ID",
+            "example": "38477395"
+          },
+          "title": {
+            "type": "string",
+            "description": "List title",
+            "example": "Pulsate developers"
+          },
+          "public": {
+            "type": "boolean",
+            "description": "If true, list is public",
+            "example": false
+          }
+        },
+        "required": [
+          "id",
+          "title",
+          "public"
+        ]
+      },
       "List ID": {
         "type": "string"
       },
@@ -2626,6 +2651,61 @@
         "responses": {
           "204": {
             "description": "OK"
+          },
+          "404": {
+            "description": "LIST_NOTFOUND",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string",
+                      "default": "",
+                      "description": "Error code",
+                      "example": "TEST_ERROR_CODE"
+                    }
+                  },
+                  "required": [
+                    "error"
+                  ]
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/lists/:id": {
+      "get": {
+        "tags": [
+          "timeline"
+        ],
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "schema": {
+              "$ref": "#/components/schemas/List ID"
+            },
+            "required": true,
+            "name": "id",
+            "in": "path"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FetchListResponse"
+                }
+              }
+            }
           },
           "404": {
             "description": "LIST_NOTFOUND",
