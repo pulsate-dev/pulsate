@@ -1,5 +1,5 @@
 {
-  "openapi": "3.1.0",
+  "openapi": "3.0.0",
   "info": {
     "description": "",
     "title": "Pulsate API Document",
@@ -12,12 +12,6 @@
     }
   ],
   "components": {
-    "securitySchemes": {
-      "bearer": {
-        "type": "http",
-        "scheme": "bearer"
-      }
-    },
     "schemas": {
       "CreateAccountResponse": {
         "type": "object",
@@ -341,6 +335,10 @@
           "refresh_token"
         ]
       },
+      "FollowAccountResponse": {
+        "type": "object",
+        "properties": {}
+      },
       "ResendVerificationEmailRequest": {
         "type": "object",
         "properties": {
@@ -489,49 +487,6 @@
       },
       "List ID": {
         "type": "string"
-      },
-      "GetListMemberResponseSchema": {
-        "type": "object",
-        "properties": {
-          "assignees": {
-            "type": "array",
-            "items": {
-              "type": "object",
-              "properties": {
-                "id": {
-                  "type": "string",
-                  "description": "Assignee account ID",
-                  "example": "30984308495"
-                },
-                "name": {
-                  "type": "string",
-                  "description": "Assignee account name",
-                  "example": "@john@example.com"
-                },
-                "nickname": {
-                  "type": "string",
-                  "description": "Assignee nickname",
-                  "example": "John Doe"
-                },
-                "avatar": {
-                  "type": "string",
-                  "format": "uri",
-                  "description": "avatar URL",
-                  "example": "https://example.com/avatar.png"
-                }
-              },
-              "required": [
-                "id",
-                "name",
-                "nickname",
-                "avatar"
-              ]
-            }
-          }
-        },
-        "required": [
-          "assignees"
-        ]
       }
     },
     "parameters": {}
@@ -611,11 +566,6 @@
       "patch": {
         "tags": [
           "accounts"
-        ],
-        "security": [
-          {
-            "bearer": []
-          }
         ],
         "parameters": [
           {
@@ -732,11 +682,6 @@
         "tags": [
           "accounts"
         ],
-        "security": [
-          {
-            "bearer": []
-          }
-        ],
         "parameters": [
           {
             "schema": {
@@ -823,11 +768,6 @@
       "delete": {
         "tags": [
           "accounts"
-        ],
-        "security": [
-          {
-            "bearer": []
-          }
         ],
         "parameters": [
           {
@@ -1166,11 +1106,6 @@
         "tags": [
           "accounts"
         ],
-        "security": [
-          {
-            "bearer": []
-          }
-        ],
         "parameters": [
           {
             "schema": {
@@ -1243,11 +1178,6 @@
       "delete": {
         "tags": [
           "accounts"
-        ],
-        "security": [
-          {
-            "bearer": []
-          }
         ],
         "parameters": [
           {
@@ -1324,11 +1254,6 @@
         "tags": [
           "accounts"
         ],
-        "security": [
-          {
-            "bearer": []
-          }
-        ],
         "parameters": [
           {
             "schema": {
@@ -1351,8 +1276,15 @@
           }
         },
         "responses": {
-          "204": {
-            "description": "Accepted(No Content)"
+          "201": {
+            "description": "Accepted",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FollowAccountResponse"
+                }
+              }
+            }
           },
           "403": {
             "description": "Forbidden",
@@ -1401,11 +1333,6 @@
       "delete": {
         "tags": [
           "accounts"
-        ],
-        "security": [
-          {
-            "bearer": []
-          }
         ],
         "parameters": [
           {
@@ -1687,11 +1614,6 @@
       "post": {
         "tags": [
           "notes"
-        ],
-        "security": [
-          {
-            "bearer": []
-          }
         ],
         "requestBody": {
           "content": {
@@ -2001,11 +1923,6 @@
         "tags": [
           "notes"
         ],
-        "security": [
-          {
-            "bearer": []
-          }
-        ],
         "parameters": [
           {
             "schema": {
@@ -2229,11 +2146,6 @@
         "tags": [
           "bookmark"
         ],
-        "security": [
-          {
-            "bearer": []
-          }
-        ],
         "parameters": [
           {
             "schema": {
@@ -2324,11 +2236,6 @@
         "tags": [
           "bookmark"
         ],
-        "security": [
-          {
-            "bearer": []
-          }
-        ],
         "parameters": [
           {
             "schema": {
@@ -2375,11 +2282,6 @@
           "drive"
         ],
         "summary": "Get uploaded media",
-        "security": [
-          {
-            "bearer": []
-          }
-        ],
         "responses": {
           "200": {
             "description": "OK",
@@ -2551,15 +2453,44 @@
         }
       }
     },
+    "/timeline/": {
+      "post": {
+        "description": "",
+        "tags": [
+          "timeline"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "id": {
+                    "type": "string"
+                  },
+                  "authorId": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "id",
+                  "authorId"
+                ]
+              }
+            }
+          }
+        },
+        "responses": {
+          "204": {
+            "description": "OK"
+          }
+        }
+      }
+    },
     "/lists": {
       "post": {
         "tags": [
           "timeline"
-        ],
-        "security": [
-          {
-            "bearer": []
-          }
         ],
         "requestBody": {
           "content": {
@@ -2608,11 +2539,6 @@
         "tags": [
           "timeline"
         ],
-        "security": [
-          {
-            "bearer": []
-          }
-        ],
         "parameters": [
           {
             "schema": {
@@ -2626,46 +2552,6 @@
         "responses": {
           "204": {
             "description": "OK"
-          },
-          "404": {
-            "description": "LIST_NOTFOUND",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "properties": {
-                    "error": {
-                      "type": "string",
-                      "default": "",
-                      "description": "Error code",
-                      "example": "TEST_ERROR_CODE"
-                    }
-                  },
-                  "required": [
-                    "error"
-                  ]
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/lists/:id/members": {
-      "get": {
-        "tags": [
-          "timeline"
-        ],
-        "responses": {
-          "200": {
-            "description": "OK",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/GetListMemberResponseSchema"
-                }
-              }
-            }
           },
           "404": {
             "description": "LIST_NOTFOUND",
