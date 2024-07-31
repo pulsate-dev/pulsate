@@ -100,7 +100,7 @@ export const CreateListRoute = createRoute({
 export const FetchListRoute = createRoute({
   method: 'get',
   tags: ['timeline'],
-  path: '/lists',
+  path: '/lists/:id',
   security: [
     {
       bearer: [],
