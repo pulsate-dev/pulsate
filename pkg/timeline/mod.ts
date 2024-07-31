@@ -12,12 +12,14 @@ import {
 import {
   CreateListRoute,
   DeleteListRoute,
+  FetchListRoute,
   GetAccountTimelineRoute,
   GetListMemberRoute,
 } from './router.js';
 import { AccountTimelineService } from './service/account.js';
 import { CreateListService } from './service/createList.js';
 import { DeleteListService } from './service/deleteList.js';
+import { FetchListService } from './service/fetchList.js';
 import { FetchListMemberService } from './service/fetchMember.js';
 import { NoteVisibilityService } from './service/noteVisibility.js';
 
@@ -35,6 +37,7 @@ const controller = new TimelineController({
     timelineRepository: timelineRepository,
   }),
   createListService: new CreateListService(idGenerator, listRepository),
+  fetchListService: new FetchListService(listRepository),
   deleteListService: new DeleteListService(listRepository),
   accountModule,
   fetchMemberService: new FetchListMemberService(listRepository, accountModule),
@@ -85,6 +88,16 @@ timeline.openapi(CreateListRoute, async (c) => {
   }
 
   return c.json(res[1], 200);
+});
+
+timeline.openapi(FetchListRoute, async (c) => {
+  const { id } = c.req.valid('param');
+  const res = await controller.fetchList(id);
+  if (Result.isErr(res)) {
+    return c.json({ error: res[1].message }, 404);
+  }
+
+  return c.json(Result.unwrap(res), 200);
 });
 
 // ToDo: add account authorization
