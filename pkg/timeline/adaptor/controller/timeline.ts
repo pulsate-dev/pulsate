@@ -8,9 +8,11 @@ import type { ListID } from '../../model/list.js';
 import type { AccountTimelineService } from '../../service/account.js';
 import type { CreateListService } from '../../service/createList.js';
 import type { DeleteListService } from '../../service/deleteList.js';
+import type { FetchListService } from '../../service/fetchList.js';
 import type { FetchListMemberService } from '../../service/fetchMember.js';
 import type {
   CreateListResponseSchema,
+  FetchListResponseSchema,
   GetAccountTimelineResponseSchema,
   GetListMemberResponseSchema,
 } from '../validator/timeline.js';
@@ -19,6 +21,7 @@ export class TimelineController {
   private readonly accountTimelineService: AccountTimelineService;
   private readonly accountModule: AccountModuleFacade;
   private readonly createListService: CreateListService;
+  private readonly fetchListService: FetchListService;
   private readonly deleteListService: DeleteListService;
   private readonly fetchMemberService: FetchListMemberService;
 
@@ -26,12 +29,14 @@ export class TimelineController {
     accountTimelineService: AccountTimelineService;
     accountModule: AccountModuleFacade;
     createListService: CreateListService;
+    fetchListService: FetchListService;
     deleteListService: DeleteListService;
     fetchMemberService: FetchListMemberService;
   }) {
     this.accountTimelineService = args.accountTimelineService;
     this.accountModule = args.accountModule;
     this.createListService = args.createListService;
+    this.fetchListService = args.fetchListService;
     this.deleteListService = args.deleteListService;
     this.fetchMemberService = args.fetchMemberService;
   }
@@ -117,6 +122,23 @@ export class TimelineController {
     }
 
     const unwrapped = Result.unwrap(res);
+    return Result.ok({
+      id: unwrapped.getId(),
+      title: unwrapped.getTitle(),
+      public: unwrapped.isPublic(),
+    });
+  }
+
+  async fetchList(
+    id: string,
+  ): Promise<Result.Result<Error, z.infer<typeof FetchListResponseSchema>>> {
+    const res = await this.fetchListService.handle(id as ListID);
+    if (Result.isErr(res)) {
+      return res;
+    }
+
+    const unwrapped = Result.unwrap(res);
+
     return Result.ok({
       id: unwrapped.getId(),
       title: unwrapped.getTitle(),
