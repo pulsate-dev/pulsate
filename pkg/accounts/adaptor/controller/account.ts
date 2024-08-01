@@ -219,7 +219,6 @@ export class AccountController {
     name: string,
     passphrase: string,
   ): Promise<Result.Result<Error, z.infer<typeof LoginResponseSchema>>> {
-    // ToDo: Check Captcha token
     const res = await this.authenticateService.handle(
       name as AccountName,
       passphrase,
@@ -258,7 +257,6 @@ export class AccountController {
     fromName: string,
     targetName: string,
   ): Promise<Result.Result<Error, void>> {
-    // ToDo: get following account's name from request
     const res = await this.followService.handle(
       fromName as AccountName,
       targetName as AccountName,
