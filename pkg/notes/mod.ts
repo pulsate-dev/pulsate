@@ -47,7 +47,7 @@ const bookmarkRepository = isProduction
   : new InMemoryBookmarkRepository();
 const attachmentRepository = isProduction
   ? new PrismaNoteAttachmentRepository(prismaClient)
-  : new InMemoryNoteAttachmentRepository([]);
+  : new InMemoryNoteAttachmentRepository([], []);
 const idGenerator = new SnowflakeIDGenerator(0, {
   now: () => BigInt(Date.now()),
 });
@@ -71,7 +71,11 @@ const createService = new CreateService(
   idGenerator,
   attachmentRepository,
 );
-const fetchService = new FetchService(noteRepository, accountModule);
+const fetchService = new FetchService(
+  noteRepository,
+  accountModule,
+  attachmentRepository,
+);
 const renoteService = new RenoteService(
   noteRepository,
   idGenerator,
@@ -95,6 +99,7 @@ const bookmarkController = new BookmarkController(
   createBookmarkService,
   fetchBookmarkService,
   deleteBookmarkService,
+  fetchService,
 );
 
 noteHandlers.openAPIRegistry.registerComponent('securitySchemes', 'Bearer', {

@@ -36,6 +36,7 @@ const attachmentRepository = new InMemoryNoteAttachmentRepository(
       authorId: '1' as AccountID,
     });
   }),
+  [],
 );
 const service = new RenoteService(
   repository,
