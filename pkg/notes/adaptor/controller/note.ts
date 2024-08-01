@@ -42,16 +42,37 @@ export class NoteController {
       return res;
     }
 
+    const unwrapped = Result.unwrap(res);
+    const attachments = await this.fetchService.fetchNoteAttachments(
+      unwrapped.getID(),
+    );
+    if (Result.isErr(attachments)) {
+      return attachments;
+    }
+    const unwrappedAttachments = Result.unwrap(attachments);
+
     return Result.ok({
-      id: res[1].getID(),
-      content: res[1].getContent(),
-      visibility: res[1].getVisibility(),
-      contents_warning_comment: res[1].getCwComment(),
-      send_to: Option.isSome(res[1].getSendTo())
-        ? Option.unwrap(res[1].getSendTo())
+      id: unwrapped.getID(),
+      content: unwrapped.getContent(),
+      visibility: unwrapped.getVisibility(),
+      contents_warning_comment: unwrapped.getCwComment(),
+      send_to: Option.isSome(unwrapped.getSendTo())
+        ? Option.unwrap(unwrapped.getSendTo())
         : undefined,
-      author_id: res[1].getAuthorID(),
-      created_at: res[1].getCreatedAt().toUTCString(),
+      author_id: unwrapped.getAuthorID(),
+      created_at: unwrapped.getCreatedAt().toUTCString(),
+      attachment_files: unwrappedAttachments.map((v) => {
+        return {
+          id: v.getId(),
+          name: v.getName(),
+          mime: v.getMime(),
+          url: v.getUrl(),
+          hash: v.getHash(),
+          author_id: v.getAuthorId(),
+          nsfw: v.isNsfw(),
+          thumbnail: v.getThumbnailUrl(),
+        };
+      }),
     });
   }
 
@@ -62,31 +83,51 @@ export class NoteController {
     if (Option.isNone(res)) {
       return Result.err(new Error('Note not found'));
     }
+    const unwrapped = Option.unwrap(res);
 
     const authorAccount = await this.accountModule.fetchAccount(
-      res[1].getAuthorID(),
+      unwrapped.getAuthorID(),
     );
-
     if (Result.isErr(authorAccount)) {
       return authorAccount;
     }
+    const unwrappedAuthor = Result.unwrap(authorAccount);
+
+    const attachments = await this.fetchService.fetchNoteAttachments(
+      unwrapped.getID(),
+    );
+    if (Result.isErr(attachments)) {
+      return attachments;
+    }
+    const unwrappedAttachments = Result.unwrap(attachments);
 
     return Result.ok({
-      id: res[1].getID(),
-      content: res[1].getContent(),
-      contents_warning_comment: res[1].getCwComment(),
-      send_to: Option.isSome(res[1].getSendTo())
-        ? Option.unwrap(res[1].getSendTo())
+      id: unwrapped.getID(),
+      content: unwrapped.getContent(),
+      contents_warning_comment: unwrapped.getCwComment(),
+      send_to: Option.isSome(unwrapped.getSendTo())
+        ? Option.unwrap(unwrapped.getSendTo())
         : undefined,
-      visibility: res[1].getVisibility(),
-      created_at: res[1].getCreatedAt().toUTCString(),
-      // ToDo: return AttachmentFile meta data
-      attachment_files: [],
+      visibility: unwrapped.getVisibility(),
+      created_at: unwrapped.getCreatedAt().toUTCString(),
+      attachment_files: unwrappedAttachments.map((v) => {
+        return {
+          id: v.getId(),
+          name: v.getName(),
+          mime: v.getMime(),
+          url: v.getUrl(),
+          hash: v.getHash(),
+          author_id: v.getAuthorId(),
+          nsfw: v.isNsfw(),
+          thumbnail: v.getThumbnailUrl(),
+        };
+      }),
       author: {
-        id: authorAccount[1].getID(),
-        name: authorAccount[1].getName(),
-        display_name: authorAccount[1].getNickname(),
-        bio: authorAccount[1].getBio(),
+        id: unwrappedAuthor.getID(),
+        name: unwrappedAuthor.getName(),
+        display_name: unwrappedAuthor.getNickname(),
+        bio: unwrappedAuthor.getBio(),
+        // ToDo: fill avatar, header
         avatar: '',
         header: '',
         followed_count: 0,
@@ -114,17 +155,36 @@ export class NoteController {
     if (Result.isErr(res)) {
       return res;
     }
+    const unwrapped = Result.unwrap(res);
+
+    const attachmets = await this.fetchService.fetchNoteAttachments(
+      unwrapped.getID(),
+    );
+    if (Result.isErr(attachmets)) {
+      return attachmets;
+    }
+    const unwrappedAttachments = Result.unwrap(attachmets);
 
     return Result.ok({
-      id: res[1].getID(),
-      content: res[1].getContent(),
-      visibility: res[1].getVisibility(),
-      contents_warning_comment: res[1].getCwComment(),
-      original_note_id: Option.unwrap(res[1].getOriginalNoteID()),
-      author_id: res[1].getAuthorID(),
-      // ToDo: return AttachmentFile meta data
-      attachment_files: [],
-      created_at: res[1].getCreatedAt().toUTCString(),
+      id: unwrapped.getID(),
+      content: unwrapped.getContent(),
+      visibility: unwrapped.getVisibility(),
+      contents_warning_comment: unwrapped.getCwComment(),
+      original_note_id: Option.unwrap(unwrapped.getOriginalNoteID()),
+      author_id: unwrapped.getAuthorID(),
+      attachment_files: unwrappedAttachments.map((v) => {
+        return {
+          id: v.getId(),
+          name: v.getName(),
+          mime: v.getMime(),
+          url: v.getUrl(),
+          hash: v.getHash(),
+          author_id: v.getAuthorId(),
+          nsfw: v.isNsfw(),
+          thumbnail: v.getThumbnailUrl(),
+        };
+      }),
+      created_at: unwrapped.getCreatedAt().toUTCString(),
     });
   }
 }
