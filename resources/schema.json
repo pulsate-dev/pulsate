@@ -487,7 +487,7 @@
           "public"
         ]
       },
-      "FetchListResponse": {
+      "EditListResponse": {
         "type": "object",
         "properties": {
           "id": {
@@ -514,6 +514,46 @@
       },
       "List ID": {
         "type": "string"
+      },
+      "EditListRequest": {
+        "type": "object",
+        "properties": {
+          "title": {
+            "type": "string",
+            "description": "List title",
+            "example": "Pulsate developers"
+          },
+          "public": {
+            "type": "boolean",
+            "description": "If true, list is public",
+            "example": false
+          }
+        }
+      },
+      "FetchListResponse": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "List ID",
+            "example": "38477395"
+          },
+          "title": {
+            "type": "string",
+            "description": "List title",
+            "example": "Pulsate developers"
+          },
+          "public": {
+            "type": "boolean",
+            "description": "If true, list is public",
+            "example": false
+          }
+        },
+        "required": [
+          "id",
+          "title",
+          "public"
+        ]
       },
       "GetListMemberResponseSchema": {
         "type": "object",
@@ -2677,6 +2717,89 @@
       }
     },
     "/lists/:id": {
+      "patch": {
+        "tags": [
+          "timeline"
+        ],
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "schema": {
+              "$ref": "#/components/schemas/List ID"
+            },
+            "required": true,
+            "name": "id",
+            "in": "path"
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/EditListRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/EditListResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "TITLE_TOO_LONG",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string",
+                      "default": "",
+                      "description": "Error code",
+                      "example": "TEST_ERROR_CODE"
+                    }
+                  },
+                  "required": [
+                    "error"
+                  ]
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "LIST_NOTFOUND",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string",
+                      "default": "",
+                      "description": "Error code",
+                      "example": "TEST_ERROR_CODE"
+                    }
+                  },
+                  "required": [
+                    "error"
+                  ]
+                }
+              }
+            }
+          }
+        }
+      },
       "get": {
         "tags": [
           "timeline"
