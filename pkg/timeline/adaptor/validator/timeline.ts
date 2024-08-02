@@ -68,6 +68,24 @@ export const CreateListResponseSchema = z
   })
   .openapi('CreateListResponse');
 
+export const FetchListResponseSchema = z
+  .object({
+    id: z.string().openapi({
+      example: '38477395',
+      description: 'List ID',
+    }),
+    title: z.string().openapi({
+      example: 'Pulsate developers',
+      description: 'List title',
+    }),
+    public: z.boolean().pipe(z.coerce.boolean().default(false)).openapi({
+      type: 'boolean',
+      example: false,
+      description: 'If true, list is public',
+    }),
+  })
+  .openapi('FetchListResponse');
+
 export const GetListMemberResponseSchema = z
   .object({
     assignees: z.array(

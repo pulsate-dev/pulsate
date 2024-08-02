@@ -159,4 +159,35 @@ describe('NoteVisibilityService', () => {
       }),
     ).toBe(false);
   });
+
+  it("listVisibilityCheck: return true if visibility is not 'PUBLIC' and 'HOME'", async () => {
+    vi.spyOn(dummyAccountModuleFacade, 'fetchFollowers').mockImplementation(
+      async () => Result.ok([partialAccount1]),
+    );
+
+    expect(
+      await visibilityService.isVisibleNoteInList({
+        accountID: '0' as AccountID,
+        note: dummyPublicNote,
+      }),
+    ).toBe(true);
+    expect(
+      await visibilityService.isVisibleNoteInList({
+        accountID: '0' as AccountID,
+        note: dummyHomeNote,
+      }),
+    ).toBe(true);
+    expect(
+      await visibilityService.isVisibleNoteInList({
+        accountID: '0' as AccountID,
+        note: dummyFollowersNote,
+      }),
+    ).toBe(false);
+    expect(
+      await visibilityService.isVisibleNoteInList({
+        accountID: '0' as AccountID,
+        note: dummyDirectNote,
+      }),
+    ).toBe(false);
+  });
 });

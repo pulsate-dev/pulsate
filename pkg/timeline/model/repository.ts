@@ -47,12 +47,20 @@ export interface TimelineRepository {
 }
 export const timelineRepoSymbol = Ether.newEtherSymbol<TimelineRepository>();
 
-export type CacheObjectKey = `timeline:home:${AccountID}`;
+export type CacheObjectKey =
+  `timeline:${'home' | 'list'}:${AccountID | ListID}`;
 export interface TimelineNotesCacheRepository {
   addNotesToHomeTimeline(
     accountID: AccountID,
     notes: readonly Note[],
   ): Promise<Result.Result<Error, void>>;
+
+  addNotesToList(
+    listID: ListID,
+    notes: readonly Note[],
+  ): Promise<Result.Result<Error, void>>;
+
+  getListTimeline(listID: ListID): Promise<Result.Result<Error, NoteID[]>>;
 
   getHomeTimeline(
     accountID: AccountID,
@@ -68,6 +76,13 @@ export interface ListRepository {
     ownerId: AccountID,
   ): Promise<Result.Result<Error, List[]>>;
   fetchListMembers(listId: ListID): Promise<Result.Result<Error, AccountID[]>>;
+  /**
+   * @description Fetch lists by member account ID
+   * @param accountId ID of the account to which the list belongs
+   */
+  fetchListsByMemberAccountID(
+    accountID: AccountID,
+  ): Promise<Result.Result<Error, List[]>>;
   deleteById(listId: ListID): Promise<Result.Result<Error, void>>;
   edit(list: List): Promise<Result.Result<Error, void>>;
 }
