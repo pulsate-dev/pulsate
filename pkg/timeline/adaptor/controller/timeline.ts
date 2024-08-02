@@ -8,10 +8,13 @@ import type { ListID } from '../../model/list.js';
 import type { AccountTimelineService } from '../../service/account.js';
 import type { CreateListService } from '../../service/createList.js';
 import type { DeleteListService } from '../../service/deleteList.js';
+import type { EditListService } from '../../service/editList.js';
 import type { FetchListService } from '../../service/fetchList.js';
 import type { FetchListMemberService } from '../../service/fetchMember.js';
 import type {
   CreateListResponseSchema,
+  EditListRequestSchema,
+  EditListResponseSchema,
   FetchListResponseSchema,
   GetAccountTimelineResponseSchema,
   GetListMemberResponseSchema,
@@ -21,6 +24,7 @@ export class TimelineController {
   private readonly accountTimelineService: AccountTimelineService;
   private readonly accountModule: AccountModuleFacade;
   private readonly createListService: CreateListService;
+  private readonly editListService: EditListService;
   private readonly fetchListService: FetchListService;
   private readonly deleteListService: DeleteListService;
   private readonly fetchMemberService: FetchListMemberService;
@@ -29,6 +33,7 @@ export class TimelineController {
     accountTimelineService: AccountTimelineService;
     accountModule: AccountModuleFacade;
     createListService: CreateListService;
+    editListService: EditListService;
     fetchListService: FetchListService;
     deleteListService: DeleteListService;
     fetchMemberService: FetchListMemberService;
@@ -36,6 +41,7 @@ export class TimelineController {
     this.accountTimelineService = args.accountTimelineService;
     this.accountModule = args.accountModule;
     this.createListService = args.createListService;
+    this.editListService = args.editListService;
     this.fetchListService = args.fetchListService;
     this.deleteListService = args.deleteListService;
     this.fetchMemberService = args.fetchMemberService;
@@ -126,6 +132,47 @@ export class TimelineController {
       id: unwrapped.getId(),
       title: unwrapped.getTitle(),
       public: unwrapped.isPublic(),
+    });
+  }
+
+  async editList(
+    id: string,
+    data: z.infer<typeof EditListRequestSchema>,
+  ): Promise<Result.Result<Error, z.infer<typeof EditListResponseSchema>>> {
+    if (data.title) {
+      const res = await this.editListService.editTitle(
+        id as ListID,
+        data.title,
+      );
+
+      if (Result.isErr(res)) {
+        return res;
+      }
+    }
+
+    if (data.public !== undefined) {
+      const res = await this.editListService.editPublicity(
+        id as ListID,
+        data.public ? 'PUBLIC' : 'PRIVATE',
+      );
+
+      if (Result.isErr(res)) {
+        return res;
+      }
+    }
+
+    const res = await this.fetchListService.handle(id as ListID);
+
+    if (Result.isErr(res)) {
+      return res;
+    }
+
+    const list = Result.unwrap(res);
+
+    return Result.ok({
+      id: list.getId(),
+      title: list.getTitle(),
+      public: list.isPublic(),
     });
   }
 
