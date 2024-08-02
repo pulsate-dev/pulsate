@@ -84,4 +84,5 @@ export interface ListRepository {
     accountID: AccountID,
   ): Promise<Result.Result<Error, List[]>>;
   deleteById(listId: ListID): Promise<Result.Result<Error, void>>;
+  edit(list: List): Promise<Result.Result<Error, void>>;
 }
