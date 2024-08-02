@@ -68,6 +68,43 @@ export const CreateListResponseSchema = z
   })
   .openapi('CreateListResponse');
 
+export const EditListRequestSchema = z
+  .object({
+    title: z
+      .string()
+      .openapi({
+        example: 'Pulsate developers',
+        description: 'List title',
+      })
+      .optional(),
+    public: z
+      .boolean()
+      .openapi({
+        type: 'boolean',
+        example: false,
+        description: 'If true, list is public',
+      })
+      .optional(),
+  })
+  .openapi('EditListRequest');
+export const EditListResponseSchema = z
+  .object({
+    id: z.string().openapi({
+      example: '38477395',
+      description: 'List ID',
+    }),
+    title: z.string().openapi({
+      example: 'Pulsate developers',
+      description: 'List title',
+    }),
+    public: z.boolean().pipe(z.coerce.boolean().default(false)).openapi({
+      type: 'boolean',
+      example: false,
+      description: 'If true, list is public',
+    }),
+  })
+  .openapi('EditListResponse');
+
 export const FetchListResponseSchema = z
   .object({
     id: z.string().openapi({
