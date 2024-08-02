@@ -43,13 +43,6 @@ export class FetchService {
   async fetchNoteAttachments(
     noteID: NoteID,
   ): Promise<Result.Result<Error, Medium[]>> {
-    const attachments =
-      await this.noteAttachmentRepository.findByNoteID(noteID);
-
-    if (Result.isErr(attachments)) {
-      return attachments;
-    }
-
-    return Result.ok(attachments[1]);
+    return await this.noteAttachmentRepository.findByNoteID(noteID);
   }
 }

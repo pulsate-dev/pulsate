@@ -24,30 +24,30 @@ export class BookmarkController {
   ): Promise<
     Result.Result<Error, z.infer<typeof CreateBookmarkResponseSchema>>
   > {
-    const res = await this.createBookmarkService.handle(
+    const bookmarkRes = await this.createBookmarkService.handle(
       noteID as NoteID,
       accountID as AccountID,
     );
-    if (Result.isErr(res)) {
-      return res;
+    if (Result.isErr(bookmarkRes)) {
+      return bookmarkRes;
     }
-    const unwrapped = Result.unwrap(res);
+    const bookmark = Result.unwrap(bookmarkRes);
 
-    const attachmets = await this.fetchNoteService.fetchNoteAttachments(
-      unwrapped.getID(),
+    const attachmetsRes = await this.fetchNoteService.fetchNoteAttachments(
+      bookmark.getID(),
     );
-    if (Result.isErr(attachmets)) {
-      return attachmets;
+    if (Result.isErr(attachmetsRes)) {
+      return attachmetsRes;
     }
-    const unwrappedAttachments = Result.unwrap(attachmets);
+    const attachments = Result.unwrap(attachmetsRes);
 
     return Result.ok({
-      id: unwrapped.getID(),
-      content: unwrapped.getContent(),
-      visibility: unwrapped.getVisibility(),
-      contents_warning_comment: unwrapped.getCwComment(),
-      author_id: unwrapped.getAuthorID(),
-      attachment_files: unwrappedAttachments.map((v) => {
+      id: bookmark.getID(),
+      content: bookmark.getContent(),
+      visibility: bookmark.getVisibility(),
+      contents_warning_comment: bookmark.getCwComment(),
+      author_id: bookmark.getAuthorID(),
+      attachment_files: attachments.map((v) => {
         return {
           id: v.getId(),
           name: v.getName(),
@@ -59,7 +59,7 @@ export class BookmarkController {
           thumbnail: v.getThumbnailUrl(),
         };
       }),
-      created_at: unwrapped.getCreatedAt().toUTCString(),
+      created_at: bookmark.getCreatedAt().toUTCString(),
     });
   }
 

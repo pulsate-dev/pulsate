@@ -30,7 +30,7 @@ export class NoteController {
     attachmentFileID: string[];
     sendTo?: string;
   }): Promise<Result.Result<Error, z.infer<typeof CreateNoteResponseSchema>>> {
-    const res = await this.createService.handle(
+    const noteRes = await this.createService.handle(
       args.content,
       args.contentsWarningComment,
       !args.sendTo ? Option.none() : Option.some(args.sendTo as AccountID),
@@ -38,30 +38,30 @@ export class NoteController {
       args.attachmentFileID as MediumID[],
       args.visibility as NoteVisibility,
     );
-    if (Result.isErr(res)) {
-      return res;
+    if (Result.isErr(noteRes)) {
+      return noteRes;
     }
 
-    const unwrapped = Result.unwrap(res);
-    const attachments = await this.fetchService.fetchNoteAttachments(
-      unwrapped.getID(),
+    const note = Result.unwrap(noteRes);
+    const attachmentsRes = await this.fetchService.fetchNoteAttachments(
+      note.getID(),
     );
-    if (Result.isErr(attachments)) {
-      return attachments;
+    if (Result.isErr(attachmentsRes)) {
+      return attachmentsRes;
     }
-    const unwrappedAttachments = Result.unwrap(attachments);
+    const attachments = Result.unwrap(attachmentsRes);
 
     return Result.ok({
-      id: unwrapped.getID(),
-      content: unwrapped.getContent(),
-      visibility: unwrapped.getVisibility(),
-      contents_warning_comment: unwrapped.getCwComment(),
-      send_to: Option.isSome(unwrapped.getSendTo())
-        ? Option.unwrap(unwrapped.getSendTo())
+      id: note.getID(),
+      content: note.getContent(),
+      visibility: note.getVisibility(),
+      contents_warning_comment: note.getCwComment(),
+      send_to: Option.isSome(note.getSendTo())
+        ? Option.unwrap(note.getSendTo())
         : undefined,
-      author_id: unwrapped.getAuthorID(),
-      created_at: unwrapped.getCreatedAt().toUTCString(),
-      attachment_files: unwrappedAttachments.map((v) => {
+      author_id: note.getAuthorID(),
+      created_at: note.getCreatedAt().toUTCString(),
+      attachment_files: attachments.map((v) => {
         return {
           id: v.getId(),
           name: v.getName(),
@@ -79,38 +79,38 @@ export class NoteController {
   async getNoteByID(
     noteID: string,
   ): Promise<Result.Result<Error, z.infer<typeof GetNoteResponseSchema>>> {
-    const res = await this.fetchService.fetchNoteByID(noteID as NoteID);
-    if (Option.isNone(res)) {
+    const noteRes = await this.fetchService.fetchNoteByID(noteID as NoteID);
+    if (Option.isNone(noteRes)) {
       return Result.err(new Error('Note not found'));
     }
-    const unwrapped = Option.unwrap(res);
+    const note = Option.unwrap(noteRes);
 
-    const authorAccount = await this.accountModule.fetchAccount(
-      unwrapped.getAuthorID(),
+    const authorAccountRes = await this.accountModule.fetchAccount(
+      note.getAuthorID(),
     );
-    if (Result.isErr(authorAccount)) {
-      return authorAccount;
+    if (Result.isErr(authorAccountRes)) {
+      return authorAccountRes;
     }
-    const unwrappedAuthor = Result.unwrap(authorAccount);
+    const author = Result.unwrap(authorAccountRes);
 
-    const attachments = await this.fetchService.fetchNoteAttachments(
-      unwrapped.getID(),
+    const attachmentsRes = await this.fetchService.fetchNoteAttachments(
+      note.getID(),
     );
-    if (Result.isErr(attachments)) {
-      return attachments;
+    if (Result.isErr(attachmentsRes)) {
+      return attachmentsRes;
     }
-    const unwrappedAttachments = Result.unwrap(attachments);
+    const attachments = Result.unwrap(attachmentsRes);
 
     return Result.ok({
-      id: unwrapped.getID(),
-      content: unwrapped.getContent(),
-      contents_warning_comment: unwrapped.getCwComment(),
-      send_to: Option.isSome(unwrapped.getSendTo())
-        ? Option.unwrap(unwrapped.getSendTo())
+      id: note.getID(),
+      content: note.getContent(),
+      contents_warning_comment: note.getCwComment(),
+      send_to: Option.isSome(note.getSendTo())
+        ? Option.unwrap(note.getSendTo())
         : undefined,
-      visibility: unwrapped.getVisibility(),
-      created_at: unwrapped.getCreatedAt().toUTCString(),
-      attachment_files: unwrappedAttachments.map((v) => {
+      visibility: note.getVisibility(),
+      created_at: note.getCreatedAt().toUTCString(),
+      attachment_files: attachments.map((v) => {
         return {
           id: v.getId(),
           name: v.getName(),
@@ -123,10 +123,10 @@ export class NoteController {
         };
       }),
       author: {
-        id: unwrappedAuthor.getID(),
-        name: unwrappedAuthor.getName(),
-        display_name: unwrappedAuthor.getNickname(),
-        bio: unwrappedAuthor.getBio(),
+        id: author.getID(),
+        name: author.getName(),
+        display_name: author.getNickname(),
+        bio: author.getBio(),
         // ToDo: fill avatar, header
         avatar: '',
         header: '',
@@ -144,7 +144,7 @@ export class NoteController {
     contentsWarningComment: string;
     attachmentFileID: string[];
   }): Promise<Result.Result<Error, z.infer<typeof RenoteResponseSchema>>> {
-    const res = await this.renoteService.handle(
+    const renoteRes = await this.renoteService.handle(
       args.originalNoteID as NoteID,
       args.content,
       args.contentsWarningComment,
@@ -152,27 +152,27 @@ export class NoteController {
       args.attachmentFileID as MediumID[],
       args.visibility as NoteVisibility,
     );
-    if (Result.isErr(res)) {
-      return res;
+    if (Result.isErr(renoteRes)) {
+      return renoteRes;
     }
-    const unwrapped = Result.unwrap(res);
+    const renote = Result.unwrap(renoteRes);
 
-    const attachmets = await this.fetchService.fetchNoteAttachments(
-      unwrapped.getID(),
+    const attachmetsRes = await this.fetchService.fetchNoteAttachments(
+      renote.getID(),
     );
-    if (Result.isErr(attachmets)) {
-      return attachmets;
+    if (Result.isErr(attachmetsRes)) {
+      return attachmetsRes;
     }
-    const unwrappedAttachments = Result.unwrap(attachmets);
+    const attachments = Result.unwrap(attachmetsRes);
 
     return Result.ok({
-      id: unwrapped.getID(),
-      content: unwrapped.getContent(),
-      visibility: unwrapped.getVisibility(),
-      contents_warning_comment: unwrapped.getCwComment(),
-      original_note_id: Option.unwrap(unwrapped.getOriginalNoteID()),
-      author_id: unwrapped.getAuthorID(),
-      attachment_files: unwrappedAttachments.map((v) => {
+      id: renote.getID(),
+      content: renote.getContent(),
+      visibility: renote.getVisibility(),
+      contents_warning_comment: renote.getCwComment(),
+      original_note_id: Option.unwrap(renote.getOriginalNoteID()),
+      author_id: renote.getAuthorID(),
+      attachment_files: attachments.map((v) => {
         return {
           id: v.getId(),
           name: v.getName(),
@@ -184,7 +184,7 @@ export class NoteController {
           thumbnail: v.getThumbnailUrl(),
         };
       }),
-      created_at: unwrapped.getCreatedAt().toUTCString(),
+      created_at: renote.getCreatedAt().toUTCString(),
     });
   }
 }
