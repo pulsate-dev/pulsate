@@ -6,6 +6,7 @@ import type { Bookmark } from '../../model/bookmark.js';
 import type { NoteID } from '../../model/note.js';
 import type { CreateBookmarkService } from '../../service/createBookmark.js';
 import type { DeleteBookmarkService } from '../../service/deleteBookmark.js';
+import type { FetchService } from '../../service/fetch.js';
 import type { FetchBookmarkService } from '../../service/fetchBookmark.js';
 import type { CreateBookmarkResponseSchema } from '../validator/schema.js';
 
@@ -14,6 +15,7 @@ export class BookmarkController {
     private readonly createBookmarkService: CreateBookmarkService,
     private readonly fetchBookmarkService: FetchBookmarkService,
     private readonly deleteBookmarkService: DeleteBookmarkService,
+    private readonly fetchNoteService: FetchService,
   ) {}
 
   async createBookmark(
@@ -22,22 +24,42 @@ export class BookmarkController {
   ): Promise<
     Result.Result<Error, z.infer<typeof CreateBookmarkResponseSchema>>
   > {
-    const res = await this.createBookmarkService.handle(
+    const bookmarkRes = await this.createBookmarkService.handle(
       noteID as NoteID,
       accountID as AccountID,
     );
-
-    if (Result.isErr(res)) {
-      return res;
+    if (Result.isErr(bookmarkRes)) {
+      return bookmarkRes;
     }
+    const bookmark = Result.unwrap(bookmarkRes);
+
+    const attachmetsRes = await this.fetchNoteService.fetchNoteAttachments(
+      bookmark.getID(),
+    );
+    if (Result.isErr(attachmetsRes)) {
+      return attachmetsRes;
+    }
+    const attachments = Result.unwrap(attachmetsRes);
 
     return Result.ok({
-      id: res[1].getID(),
-      content: res[1].getContent(),
-      visibility: res[1].getVisibility(),
-      contents_warning_comment: res[1].getCwComment(),
-      author_id: res[1].getAuthorID(),
-      created_at: res[1].getCreatedAt().toUTCString(),
+      id: bookmark.getID(),
+      content: bookmark.getContent(),
+      visibility: bookmark.getVisibility(),
+      contents_warning_comment: bookmark.getCwComment(),
+      author_id: bookmark.getAuthorID(),
+      attachment_files: attachments.map((v) => {
+        return {
+          id: v.getId(),
+          name: v.getName(),
+          mime: v.getMime(),
+          url: v.getUrl(),
+          hash: v.getHash(),
+          author_id: v.getAuthorId(),
+          nsfw: v.isNsfw(),
+          thumbnail: v.getThumbnailUrl(),
+        };
+      }),
+      created_at: bookmark.getCreatedAt().toUTCString(),
     });
   }
 

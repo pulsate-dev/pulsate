@@ -133,8 +133,8 @@ export class InMemoryNoteAttachmentRepository
   private readonly attachments: Map<NoteID, MediumID[]>;
   private readonly medium: Map<MediumID, Medium>;
 
-  constructor(medium: Medium[]) {
-    this.attachments = new Map();
+  constructor(medium: Medium[], attachments: [NoteID, MediumID[]][]) {
+    this.attachments = new Map(attachments);
     this.medium = new Map(medium.map((m) => [m.getId(), m]));
   }
 

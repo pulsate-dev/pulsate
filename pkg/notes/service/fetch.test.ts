@@ -3,8 +3,13 @@ import { afterEach, describe, expect, it, vi } from 'vitest';
 
 import { InMemoryAccountRepository } from '../../accounts/adaptor/repository/dummy.js';
 import { Account, type AccountID } from '../../accounts/model/account.js';
+import type { MediumID } from '../../drive/model/medium.js';
+import { testMedium, testNSFWMedium } from '../../drive/testData/testData.js';
 import { dummyAccountModuleFacade } from '../../intermodule/account.js';
-import { InMemoryNoteRepository } from '../adaptor/repository/dummy.js';
+import {
+  InMemoryNoteAttachmentRepository,
+  InMemoryNoteRepository,
+} from '../adaptor/repository/dummy.js';
 import { Note, type NoteID } from '../model/note.js';
 import { FetchService } from './fetch.js';
 
@@ -16,7 +21,7 @@ const testNote = Note.new({
   createdAt: new Date('2023-09-10T00:00:00Z'),
   sendTo: Option.none(),
   originalNoteID: Option.none(),
-  attachmentFileID: [],
+  attachmentFileID: ['300' as MediumID, '301' as MediumID],
   visibility: 'PUBLIC',
 });
 const deletedNote = Note.reconstruct({
@@ -85,7 +90,16 @@ const accountRepository = new InMemoryAccountRepository([
   testAccount,
   frozenAccount,
 ]);
-const service = new FetchService(repository, dummyAccountModuleFacade);
+const noteAttachmentRepository = new InMemoryNoteAttachmentRepository(
+  [testMedium, testNSFWMedium],
+  [['1' as NoteID, ['300' as MediumID, '301' as MediumID]]],
+);
+
+const service = new FetchService(
+  repository,
+  dummyAccountModuleFacade,
+  noteAttachmentRepository,
+);
 
 describe('FetchService', () => {
   afterEach(() => accountRepository.reset());
@@ -123,5 +137,13 @@ describe('FetchService', () => {
     const res = await service.fetchNoteByID(frozenUserNote.getID());
 
     expect(Option.isNone(res)).toBe(true);
+  });
+
+  it('should fetch note attachments', async () => {
+    const res = await service.fetchNoteAttachments('1' as NoteID);
+    expect(Result.isOk(res)).toBe(true);
+
+    expect(Result.unwrap(res)).toStrictEqual([testMedium, testNSFWMedium]);
+    expect(Result.unwrap(res)).toHaveLength(2);
   });
 });

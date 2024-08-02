@@ -24,6 +24,7 @@ const attachmentRepository = new InMemoryNoteAttachmentRepository(
       authorId: '1' as AccountID,
     });
   }),
+  [],
 );
 const createService = new CreateService(
   noteRepository,

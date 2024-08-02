@@ -1,13 +1,18 @@
 import { Option, Result } from '@mikuroxina/mini-fn';
 
+import type { Medium } from '../../drive/model/medium.js';
 import type { AccountModuleFacade } from '../../intermodule/account.js';
 import type { Note, NoteID } from '../model/note.js';
-import type { NoteRepository } from '../model/repository.js';
+import type {
+  NoteAttachmentRepository,
+  NoteRepository,
+} from '../model/repository.js';
 
 export class FetchService {
   constructor(
     private readonly noteRepository: NoteRepository,
     private readonly accountModule: AccountModuleFacade,
+    private readonly noteAttachmentRepository: NoteAttachmentRepository,
   ) {}
 
   async fetchNoteByID(noteID: NoteID): Promise<Option.Option<Note>> {
@@ -33,5 +38,11 @@ export class FetchService {
     }
 
     return note;
+  }
+
+  async fetchNoteAttachments(
+    noteID: NoteID,
+  ): Promise<Result.Result<Error, Medium[]>> {
+    return await this.noteAttachmentRepository.findByNoteID(noteID);
   }
 }

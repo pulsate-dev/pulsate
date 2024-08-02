@@ -30,7 +30,7 @@ export class NoteController {
     attachmentFileID: string[];
     sendTo?: string;
   }): Promise<Result.Result<Error, z.infer<typeof CreateNoteResponseSchema>>> {
-    const res = await this.createService.handle(
+    const noteRes = await this.createService.handle(
       args.content,
       args.contentsWarningComment,
       !args.sendTo ? Option.none() : Option.some(args.sendTo as AccountID),
@@ -38,55 +38,96 @@ export class NoteController {
       args.attachmentFileID as MediumID[],
       args.visibility as NoteVisibility,
     );
-    if (Result.isErr(res)) {
-      return res;
+    if (Result.isErr(noteRes)) {
+      return noteRes;
     }
 
+    const note = Result.unwrap(noteRes);
+    const attachmentsRes = await this.fetchService.fetchNoteAttachments(
+      note.getID(),
+    );
+    if (Result.isErr(attachmentsRes)) {
+      return attachmentsRes;
+    }
+    const attachments = Result.unwrap(attachmentsRes);
+
     return Result.ok({
-      id: res[1].getID(),
-      content: res[1].getContent(),
-      visibility: res[1].getVisibility(),
-      contents_warning_comment: res[1].getCwComment(),
-      send_to: Option.isSome(res[1].getSendTo())
-        ? Option.unwrap(res[1].getSendTo())
+      id: note.getID(),
+      content: note.getContent(),
+      visibility: note.getVisibility(),
+      contents_warning_comment: note.getCwComment(),
+      send_to: Option.isSome(note.getSendTo())
+        ? Option.unwrap(note.getSendTo())
         : undefined,
-      author_id: res[1].getAuthorID(),
-      created_at: res[1].getCreatedAt().toUTCString(),
+      author_id: note.getAuthorID(),
+      created_at: note.getCreatedAt().toUTCString(),
+      attachment_files: attachments.map((v) => {
+        return {
+          id: v.getId(),
+          name: v.getName(),
+          mime: v.getMime(),
+          url: v.getUrl(),
+          hash: v.getHash(),
+          author_id: v.getAuthorId(),
+          nsfw: v.isNsfw(),
+          thumbnail: v.getThumbnailUrl(),
+        };
+      }),
     });
   }
 
   async getNoteByID(
     noteID: string,
   ): Promise<Result.Result<Error, z.infer<typeof GetNoteResponseSchema>>> {
-    const res = await this.fetchService.fetchNoteByID(noteID as NoteID);
-    if (Option.isNone(res)) {
+    const noteRes = await this.fetchService.fetchNoteByID(noteID as NoteID);
+    if (Option.isNone(noteRes)) {
       return Result.err(new Error('Note not found'));
     }
+    const note = Option.unwrap(noteRes);
 
-    const authorAccount = await this.accountModule.fetchAccount(
-      res[1].getAuthorID(),
+    const authorAccountRes = await this.accountModule.fetchAccount(
+      note.getAuthorID(),
     );
-
-    if (Result.isErr(authorAccount)) {
-      return authorAccount;
+    if (Result.isErr(authorAccountRes)) {
+      return authorAccountRes;
     }
+    const author = Result.unwrap(authorAccountRes);
+
+    const attachmentsRes = await this.fetchService.fetchNoteAttachments(
+      note.getID(),
+    );
+    if (Result.isErr(attachmentsRes)) {
+      return attachmentsRes;
+    }
+    const attachments = Result.unwrap(attachmentsRes);
 
     return Result.ok({
-      id: res[1].getID(),
-      content: res[1].getContent(),
-      contents_warning_comment: res[1].getCwComment(),
-      send_to: Option.isSome(res[1].getSendTo())
-        ? Option.unwrap(res[1].getSendTo())
+      id: note.getID(),
+      content: note.getContent(),
+      contents_warning_comment: note.getCwComment(),
+      send_to: Option.isSome(note.getSendTo())
+        ? Option.unwrap(note.getSendTo())
         : undefined,
-      visibility: res[1].getVisibility(),
-      created_at: res[1].getCreatedAt().toUTCString(),
-      // ToDo: return AttachmentFile meta data
-      attachment_files: [],
+      visibility: note.getVisibility(),
+      created_at: note.getCreatedAt().toUTCString(),
+      attachment_files: attachments.map((v) => {
+        return {
+          id: v.getId(),
+          name: v.getName(),
+          mime: v.getMime(),
+          url: v.getUrl(),
+          hash: v.getHash(),
+          author_id: v.getAuthorId(),
+          nsfw: v.isNsfw(),
+          thumbnail: v.getThumbnailUrl(),
+        };
+      }),
       author: {
-        id: authorAccount[1].getID(),
-        name: authorAccount[1].getName(),
-        display_name: authorAccount[1].getNickname(),
-        bio: authorAccount[1].getBio(),
+        id: author.getID(),
+        name: author.getName(),
+        display_name: author.getNickname(),
+        bio: author.getBio(),
+        // ToDo: fill avatar, header
         avatar: '',
         header: '',
         followed_count: 0,
@@ -103,7 +144,7 @@ export class NoteController {
     contentsWarningComment: string;
     attachmentFileID: string[];
   }): Promise<Result.Result<Error, z.infer<typeof RenoteResponseSchema>>> {
-    const res = await this.renoteService.handle(
+    const renoteRes = await this.renoteService.handle(
       args.originalNoteID as NoteID,
       args.content,
       args.contentsWarningComment,
@@ -111,20 +152,39 @@ export class NoteController {
       args.attachmentFileID as MediumID[],
       args.visibility as NoteVisibility,
     );
-    if (Result.isErr(res)) {
-      return res;
+    if (Result.isErr(renoteRes)) {
+      return renoteRes;
     }
+    const renote = Result.unwrap(renoteRes);
+
+    const attachmetsRes = await this.fetchService.fetchNoteAttachments(
+      renote.getID(),
+    );
+    if (Result.isErr(attachmetsRes)) {
+      return attachmetsRes;
+    }
+    const attachments = Result.unwrap(attachmetsRes);
 
     return Result.ok({
-      id: res[1].getID(),
-      content: res[1].getContent(),
-      visibility: res[1].getVisibility(),
-      contents_warning_comment: res[1].getCwComment(),
-      original_note_id: Option.unwrap(res[1].getOriginalNoteID()),
-      author_id: res[1].getAuthorID(),
-      // ToDo: return AttachmentFile meta data
-      attachment_files: [],
-      created_at: res[1].getCreatedAt().toUTCString(),
+      id: renote.getID(),
+      content: renote.getContent(),
+      visibility: renote.getVisibility(),
+      contents_warning_comment: renote.getCwComment(),
+      original_note_id: Option.unwrap(renote.getOriginalNoteID()),
+      author_id: renote.getAuthorID(),
+      attachment_files: attachments.map((v) => {
+        return {
+          id: v.getId(),
+          name: v.getName(),
+          mime: v.getMime(),
+          url: v.getUrl(),
+          hash: v.getHash(),
+          author_id: v.getAuthorId(),
+          nsfw: v.isNsfw(),
+          thumbnail: v.getThumbnailUrl(),
+        };
+      }),
+      created_at: renote.getCreatedAt().toUTCString(),
     });
   }
 }

@@ -9,6 +9,41 @@ export const CommonErrorSchema = z.object({
   }),
 });
 
+export const noteAttachmentSchema = z.object({
+  id: z.string().openapi({
+    example: '39783475',
+    description: 'attachment Medium id',
+  }),
+  name: z.string().openapi({
+    example: 'image.jpg',
+    description: 'attachment filename',
+  }),
+  author_id: z.string().openapi({
+    example: '309823457',
+    description: 'attachment author account id',
+  }),
+  hash: z.string().openapi({
+    example: 'e9f*5oin{dn',
+    description: 'attachment medium blurhash',
+  }),
+  mime: z.string().openapi({
+    example: 'image/jpeg',
+    description: 'attachment medium mime type',
+  }),
+  nsfw: z.boolean().openapi({
+    default: false,
+    description: 'if true, attachment is nsfw',
+  }),
+  url: z.string().url().openapi({
+    example: 'https://images.example.com/image.webp',
+    description: 'attachment medium url',
+  }),
+  thumbnail: z.string().openapi({
+    example: 'https://images.example.com/image_thumbnail.webp',
+    description: 'attachment thumbnail url',
+  }),
+});
+
 export const CreateNoteRequestSchema = z.object({
   content: z.string().max(3000).openapi({
     example: 'hello world!',
@@ -70,6 +105,9 @@ export const CreateNoteResponseSchema = z.object({
     example: '2021-01-01T00:00:00Z',
     description: 'Note created date',
   }),
+  attachment_files: z.array(noteAttachmentSchema).max(16).openapi({
+    description: 'Note Attachment Media',
+  }),
 });
 
 export const GetNoteResponseSchema = z.object({
@@ -108,14 +146,9 @@ export const GetNoteResponseSchema = z.object({
     following_count: z.number(),
   }),
   // ToDo: add reactions
-  attachment_files: z
-    .array(z.string())
-    .max(16)
-    .openapi({
-      example: ['38477395', '38477396'],
-      description: 'Attachment file IDs (max 16 files)',
-      default: [],
-    }),
+  attachment_files: z.array(noteAttachmentSchema).max(16).openapi({
+    description: 'Note Attachment Media',
+  }),
 });
 
 export const RenoteRequestSchema = z.object({
@@ -176,14 +209,9 @@ export const RenoteResponseSchema = z.object({
     example: '2021-01-01T00:00:00Z',
     description: 'Note created date',
   }),
-  attachment_files: z
-    .array(z.string())
-    .max(16)
-    .openapi({
-      example: ['38477395', '38477396'],
-      description: 'Attachment file IDs (max 16 files)',
-      default: [],
-    }),
+  attachment_files: z.array(noteAttachmentSchema).max(16).openapi({
+    description: 'Note Attachment Media',
+  }),
 });
 
 export const CreateBookmarkResponseSchema = z.object({
@@ -210,5 +238,8 @@ export const CreateBookmarkResponseSchema = z.object({
   created_at: z.string().openapi({
     example: '2021-01-01T00:00:00Z',
     description: 'Note created date',
+  }),
+  attachment_files: z.array(noteAttachmentSchema).max(16).openapi({
+    description: 'Note Attachment Media',
   }),
 });

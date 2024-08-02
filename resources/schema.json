@@ -1856,6 +1856,67 @@
                       "type": "string",
                       "description": "Note created date",
                       "example": "2021-01-01T00:00:00Z"
+                    },
+                    "attachment_files": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "id": {
+                            "type": "string",
+                            "description": "attachment Medium id",
+                            "example": "39783475"
+                          },
+                          "name": {
+                            "type": "string",
+                            "description": "attachment filename",
+                            "example": "image.jpg"
+                          },
+                          "author_id": {
+                            "type": "string",
+                            "description": "attachment author account id",
+                            "example": "309823457"
+                          },
+                          "hash": {
+                            "type": "string",
+                            "description": "attachment medium blurhash",
+                            "example": "e9f*5oin{dn"
+                          },
+                          "mime": {
+                            "type": "string",
+                            "description": "attachment medium mime type",
+                            "example": "image/jpeg"
+                          },
+                          "nsfw": {
+                            "type": "boolean",
+                            "default": false,
+                            "description": "if true, attachment is nsfw"
+                          },
+                          "url": {
+                            "type": "string",
+                            "format": "uri",
+                            "description": "attachment medium url",
+                            "example": "https://images.example.com/image.webp"
+                          },
+                          "thumbnail": {
+                            "type": "string",
+                            "description": "attachment thumbnail url",
+                            "example": "https://images.example.com/image_thumbnail.webp"
+                          }
+                        },
+                        "required": [
+                          "id",
+                          "name",
+                          "author_id",
+                          "hash",
+                          "mime",
+                          "nsfw",
+                          "url",
+                          "thumbnail"
+                        ]
+                      },
+                      "maxItems": 16,
+                      "description": "Note Attachment Media"
                     }
                   },
                   "required": [
@@ -1864,7 +1925,8 @@
                     "visibility",
                     "contents_warning_comment",
                     "author_id",
-                    "created_at"
+                    "created_at",
+                    "attachment_files"
                   ]
                 }
               }
@@ -2013,15 +2075,63 @@
                     "attachment_files": {
                       "type": "array",
                       "items": {
-                        "type": "string"
+                        "type": "object",
+                        "properties": {
+                          "id": {
+                            "type": "string",
+                            "description": "attachment Medium id",
+                            "example": "39783475"
+                          },
+                          "name": {
+                            "type": "string",
+                            "description": "attachment filename",
+                            "example": "image.jpg"
+                          },
+                          "author_id": {
+                            "type": "string",
+                            "description": "attachment author account id",
+                            "example": "309823457"
+                          },
+                          "hash": {
+                            "type": "string",
+                            "description": "attachment medium blurhash",
+                            "example": "e9f*5oin{dn"
+                          },
+                          "mime": {
+                            "type": "string",
+                            "description": "attachment medium mime type",
+                            "example": "image/jpeg"
+                          },
+                          "nsfw": {
+                            "type": "boolean",
+                            "default": false,
+                            "description": "if true, attachment is nsfw"
+                          },
+                          "url": {
+                            "type": "string",
+                            "format": "uri",
+                            "description": "attachment medium url",
+                            "example": "https://images.example.com/image.webp"
+                          },
+                          "thumbnail": {
+                            "type": "string",
+                            "description": "attachment thumbnail url",
+                            "example": "https://images.example.com/image_thumbnail.webp"
+                          }
+                        },
+                        "required": [
+                          "id",
+                          "name",
+                          "author_id",
+                          "hash",
+                          "mime",
+                          "nsfw",
+                          "url",
+                          "thumbnail"
+                        ]
                       },
                       "maxItems": 16,
-                      "default": [],
-                      "description": "Attachment file IDs (max 16 files)",
-                      "example": [
-                        "38477395",
-                        "38477396"
-                      ]
+                      "description": "Note Attachment Media"
                     }
                   },
                   "required": [
@@ -2198,15 +2308,63 @@
                     "attachment_files": {
                       "type": "array",
                       "items": {
-                        "type": "string"
+                        "type": "object",
+                        "properties": {
+                          "id": {
+                            "type": "string",
+                            "description": "attachment Medium id",
+                            "example": "39783475"
+                          },
+                          "name": {
+                            "type": "string",
+                            "description": "attachment filename",
+                            "example": "image.jpg"
+                          },
+                          "author_id": {
+                            "type": "string",
+                            "description": "attachment author account id",
+                            "example": "309823457"
+                          },
+                          "hash": {
+                            "type": "string",
+                            "description": "attachment medium blurhash",
+                            "example": "e9f*5oin{dn"
+                          },
+                          "mime": {
+                            "type": "string",
+                            "description": "attachment medium mime type",
+                            "example": "image/jpeg"
+                          },
+                          "nsfw": {
+                            "type": "boolean",
+                            "default": false,
+                            "description": "if true, attachment is nsfw"
+                          },
+                          "url": {
+                            "type": "string",
+                            "format": "uri",
+                            "description": "attachment medium url",
+                            "example": "https://images.example.com/image.webp"
+                          },
+                          "thumbnail": {
+                            "type": "string",
+                            "description": "attachment thumbnail url",
+                            "example": "https://images.example.com/image_thumbnail.webp"
+                          }
+                        },
+                        "required": [
+                          "id",
+                          "name",
+                          "author_id",
+                          "hash",
+                          "mime",
+                          "nsfw",
+                          "url",
+                          "thumbnail"
+                        ]
                       },
                       "maxItems": 16,
-                      "default": [],
-                      "description": "Attachment file IDs (max 16 files)",
-                      "example": [
-                        "38477395",
-                        "38477396"
-                      ]
+                      "description": "Note Attachment Media"
                     }
                   },
                   "required": [
@@ -2348,6 +2506,67 @@
                       "type": "string",
                       "description": "Note created date",
                       "example": "2021-01-01T00:00:00Z"
+                    },
+                    "attachment_files": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "id": {
+                            "type": "string",
+                            "description": "attachment Medium id",
+                            "example": "39783475"
+                          },
+                          "name": {
+                            "type": "string",
+                            "description": "attachment filename",
+                            "example": "image.jpg"
+                          },
+                          "author_id": {
+                            "type": "string",
+                            "description": "attachment author account id",
+                            "example": "309823457"
+                          },
+                          "hash": {
+                            "type": "string",
+                            "description": "attachment medium blurhash",
+                            "example": "e9f*5oin{dn"
+                          },
+                          "mime": {
+                            "type": "string",
+                            "description": "attachment medium mime type",
+                            "example": "image/jpeg"
+                          },
+                          "nsfw": {
+                            "type": "boolean",
+                            "default": false,
+                            "description": "if true, attachment is nsfw"
+                          },
+                          "url": {
+                            "type": "string",
+                            "format": "uri",
+                            "description": "attachment medium url",
+                            "example": "https://images.example.com/image.webp"
+                          },
+                          "thumbnail": {
+                            "type": "string",
+                            "description": "attachment thumbnail url",
+                            "example": "https://images.example.com/image_thumbnail.webp"
+                          }
+                        },
+                        "required": [
+                          "id",
+                          "name",
+                          "author_id",
+                          "hash",
+                          "mime",
+                          "nsfw",
+                          "url",
+                          "thumbnail"
+                        ]
+                      },
+                      "maxItems": 16,
+                      "description": "Note Attachment Media"
                     }
                   },
                   "required": [
@@ -2356,7 +2575,8 @@
                     "visibility",
                     "contents_warning_comment",
                     "author_id",
-                    "created_at"
+                    "created_at",
+                    "attachment_files"
                   ]
                 }
               }
