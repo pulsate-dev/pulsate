@@ -4,6 +4,8 @@ import { CommonErrorResponseSchema } from '../accounts/adaptor/validator/schema.
 import {
   CreateListRequestSchema,
   CreateListResponseSchema,
+  EditListRequestSchema,
+  EditListResponseSchema,
   FetchListResponseSchema,
   GetAccountTimelineResponseSchema,
   GetListMemberResponseSchema,
@@ -93,6 +95,55 @@ export const CreateListRoute = createRoute({
         },
       },
       description: 'TITLE_TOO_LONG',
+    },
+  },
+});
+
+export const EditListRoute = createRoute({
+  method: 'patch',
+  tags: ['timeline'],
+  path: '/lists/:id',
+  security: [
+    {
+      bearer: [],
+    },
+  ],
+  request: {
+    params: z.object({
+      id: z.string().openapi('List ID'),
+    }),
+    body: {
+      content: {
+        'application/json': {
+          schema: EditListRequestSchema,
+        },
+      },
+    },
+  },
+  responses: {
+    200: {
+      description: 'OK',
+      content: {
+        'application/json': {
+          schema: EditListResponseSchema,
+        },
+      },
+    },
+    404: {
+      description: 'LIST_NOTFOUND',
+      content: {
+        'application/json': {
+          schema: CommonErrorResponseSchema,
+        },
+      },
+    },
+    400: {
+      description: 'TITLE_TOO_LONG',
+      content: {
+        'application/json': {
+          schema: CommonErrorResponseSchema,
+        },
+      },
     },
   },
 });
