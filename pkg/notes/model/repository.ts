@@ -4,6 +4,7 @@ import type { AccountID } from '../../accounts/model/account.js';
 import type { Medium, MediumID } from '../../drive/model/medium.js';
 import type { Bookmark } from './bookmark.js';
 import type { Note, NoteID } from './note.js';
+import type { Reaction } from './reaction.js';
 
 export interface NoteRepository {
   create(note: Note): Promise<Result.Result<Error, void>>;
@@ -37,4 +38,23 @@ export interface NoteAttachmentRepository {
     attachmentFileID: readonly MediumID[],
   ): Promise<Result.Result<Error, void>>;
   findByNoteID(noteID: NoteID): Promise<Result.Result<Error, Medium[]>>;
+}
+
+export interface ReactionRepository {
+  create(
+    id: {
+      noteID: NoteID;
+      accountID: AccountID;
+    },
+    body: string,
+  ): Promise<Result.Result<Error, void>>;
+  findByID(id: {
+    noteID: NoteID;
+    accountID: AccountID;
+  }): Promise<Option.Option<Reaction>>;
+  findByAccountID(id: AccountID): Promise<Option.Option<Reaction[]>>;
+  deleteByID(id: {
+    noteID: NoteID;
+    accountID: AccountID;
+  }): Promise<Result.Result<Error, void>>;
 }
