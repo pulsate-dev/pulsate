@@ -214,6 +214,36 @@ export const RenoteResponseSchema = z.object({
   }),
 });
 
+export const CreateReactionResponseSchema = z.object({
+  id: z.string().openapi({
+    example: '38477395',
+    description: 'Note ID',
+  }),
+  content: z.string().openapi({
+    example: 'hello world!',
+    description: 'Note content',
+  }),
+  visibility: z.string().openapi({
+    example: 'PUBLIC',
+    description: 'Note visibility',
+  }),
+  contents_warning_comment: z.string().openapi({
+    example: 'This note contains sensitive content',
+    description: 'Contents warning comment',
+  }),
+  author_id: z.string().openapi({
+    example: '38477395',
+    description: 'Author account ID',
+  }),
+  created_at: z.string().openapi({
+    example: '2021-01-01T00:00:00Z',
+    description: 'Note created date',
+  }),
+  attachment_files: z.array(noteAttachmentSchema).max(16).openapi({
+    description: 'Note Attachment Media',
+  }),
+});
+
 export const CreateBookmarkResponseSchema = z.object({
   id: z.string().openapi({
     example: '38477395',
