@@ -179,7 +179,6 @@ export class InMemoryReactionRepository implements ReactionRepository {
     );
   }
 
-  // upsert
   async create(
     id: { noteID: NoteID; accountID: AccountID },
     body: string,
@@ -195,7 +194,7 @@ export class InMemoryReactionRepository implements ReactionRepository {
         await this.findByID({ noteID: id.noteID, accountID: id.accountID }),
       )
     ) {
-      await this.deleteByID({ noteID: id.noteID, accountID: id.accountID });
+      return Result.err(new Error('already reacted'));
     }
 
     this.reactions.set([id.noteID, id.accountID], reaction);
