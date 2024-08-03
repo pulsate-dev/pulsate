@@ -56,7 +56,7 @@ describe('CreateReactionService', () => {
     ).toBe(true);
   });
 
-  it('can update reaction', async () => {
+  it('error when already reacted', async () => {
     await service.handle('1' as NoteID, '3' as AccountID, '👍');
     const res = await service.handle('1' as NoteID, '3' as AccountID, '👌');
     const reaction = await reactionRepository.findByID({
@@ -64,9 +64,9 @@ describe('CreateReactionService', () => {
       accountID: '3' as AccountID,
     });
 
-    expect(Result.isOk(res)).toBe(true);
+    expect(Result.isErr(res)).toBe(true);
     expect(Option.isSome(reaction)).toBe(true);
-    expect(Option.unwrap(reaction).getBody()).toBe('👌');
+    expect(Option.unwrap(reaction).getBody()).toBe('👍');
   });
 
   it('error when note not found', async () => {
