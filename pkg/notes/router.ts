@@ -5,6 +5,7 @@ import {
   CreateBookmarkResponseSchema,
   CreateNoteRequestSchema,
   CreateNoteResponseSchema,
+  CreateReactionRequestSchema,
   CreateReactionResponseSchema,
   GetNoteResponseSchema,
   RenoteRequestSchema,
@@ -166,6 +167,13 @@ export const CreateReactionRoute = createRoute({
         example: '1',
       }),
     }),
+    body: {
+      content: {
+        'application/json': {
+          schema: CreateReactionRequestSchema,
+        },
+      },
+    },
   },
   responses: {
     200: {

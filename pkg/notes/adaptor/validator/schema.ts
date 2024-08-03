@@ -214,6 +214,12 @@ export const RenoteResponseSchema = z.object({
   }),
 });
 
+export const CreateReactionRequestSchema = z.object({
+  emoji: z.string().openapi({
+    example: '🎉',
+    description: 'emoji',
+  }),
+});
 export const CreateReactionResponseSchema = z.object({
   id: z.string().openapi({
     example: '38477395',
