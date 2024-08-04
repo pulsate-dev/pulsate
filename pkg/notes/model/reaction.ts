@@ -14,7 +14,7 @@ export class Reaction {
     this.body = arg.body;
   }
 
-  static new(arg: CreateReactionArgs) {
+  static new(arg: CreateReactionArgs): Reaction {
     return new Reaction(arg);
   }
 
