@@ -52,7 +52,7 @@ export interface ReactionRepository {
     noteID: NoteID;
     accountID: AccountID;
   }): Promise<Option.Option<Reaction>>;
-  findByAccountID(id: AccountID): Promise<Option.Option<Reaction[]>>;
+  reactionsByAccount(id: AccountID): Promise<Reaction[]>;
   deleteByID(id: {
     noteID: NoteID;
     accountID: AccountID;

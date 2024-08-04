@@ -211,16 +211,12 @@ export class InMemoryReactionRepository implements ReactionRepository {
       ? Promise.resolve(Option.some(reaction[1]))
       : Promise.resolve(Option.none());
   }
-  async findByAccountID(id: AccountID): Promise<Option.Option<Reaction[]>> {
+  async reactionsByAccount(id: AccountID): Promise<Reaction[]> {
     const reactions = Array.from(this.reactions.entries())
       .filter((v) => v[0][1] === id)
       .map((v) => v[1]);
 
-    if (reactions.length === 0) {
-      return Promise.resolve(Option.none());
-    }
-
-    return Promise.resolve(Option.some(reactions));
+    return reactions;
   }
   async deleteByID(id: { accountID: AccountID; noteID: NoteID }): Promise<
     Result.Result<Error, void>
