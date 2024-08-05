@@ -17,7 +17,10 @@ export class ReactionController {
     accountID: string,
     body: string,
   ): Promise<
-    Result.Result<Error, z.infer<typeof CreateReactionResponseSchema>>
+    Result.Result<
+      { code: 400 | 404; error: Error },
+      z.infer<typeof CreateReactionResponseSchema>
+    >
   > {
     const reactionRes = await this.createReactionService.handle(
       noteID as NoteID,
@@ -26,7 +29,16 @@ export class ReactionController {
     );
 
     if (Result.isErr(reactionRes)) {
-      return reactionRes;
+      const error = Result.unwrapErr(reactionRes);
+      // ToDo: Replace this with custom error class
+      switch (error.message) {
+        case 'Note not found':
+          return Result.err({ code: 404, error });
+        case 'already reacted':
+          return Result.err({ code: 400, error });
+        default:
+          return Result.err({ code: 400, error });
+      }
     }
 
     const note = Result.unwrap(reactionRes);
@@ -36,7 +48,7 @@ export class ReactionController {
     );
 
     if (Result.isErr(attachmentsRes)) {
-      return attachmentsRes;
+      return Result.err({ code: 400, error: Result.unwrapErr(attachmentsRes) });
     }
     const attachments = Result.unwrap(attachmentsRes);
 

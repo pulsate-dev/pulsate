@@ -208,10 +208,11 @@ noteHandlers.openapi(CreateReactionRoute, async (c) => {
 
   const res = await reactionController.create(id, accountID, req.emoji);
   if (Result.isErr(res)) {
-    return c.json({ error: res[1].message }, 400);
+    const { error, code } = Result.unwrapErr(res);
+    return c.json({ error: error.message }, code);
   }
 
-  return c.json(res[1], 200);
+  return c.json(Result.unwrap(res), 200);
 });
 
 noteHandlers[CreateBookmarkRoute.method](
