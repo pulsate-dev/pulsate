@@ -166,17 +166,39 @@ export class InMemoryNoteAttachmentRepository
   }
 }
 
+type NoteID_AccountID = string;
 export class InMemoryReactionRepository implements ReactionRepository {
-  private readonly reactions: Map<[NoteID, AccountID], Reaction>;
-
-  private equalID(a: [NoteID, AccountID], b: [NoteID, AccountID]): boolean {
-    return a[0] === b[0] && a[1] === b[1];
-  }
+  private readonly reactions: Map<NoteID_AccountID, Reaction>;
 
   constructor(reactions: Reaction[] = []) {
     this.reactions = new Map(
-      reactions.map((r) => [[r.getNoteID(), r.getAccountID()], r]),
+      reactions.map((r) => [
+        this.compositeID({
+          noteID: r.getNoteID(),
+          accountID: r.getAccountID(),
+        }),
+        r,
+      ]),
     );
+  }
+
+  private compositeID(id: {
+    noteID: NoteID;
+    accountID: AccountID;
+  }): NoteID_AccountID {
+    return `${id.noteID}_${id.accountID}`;
+  }
+
+  private disassembleID(id: NoteID_AccountID): {
+    noteID: NoteID;
+    accountID: AccountID;
+  } {
+    const [noteID, accountID] = id.split('_');
+    if (!noteID || !accountID) throw new Error('Composite ID type invalid');
+    return {
+      noteID: noteID as NoteID,
+      accountID: accountID as AccountID,
+    };
   }
 
   async create(
@@ -197,14 +219,14 @@ export class InMemoryReactionRepository implements ReactionRepository {
       return Result.err(new Error('already reacted'));
     }
 
-    this.reactions.set([id.noteID, id.accountID], reaction);
+    this.reactions.set(this.compositeID(id), reaction);
     return Result.ok(undefined);
   }
   findByID(id: { accountID: AccountID; noteID: NoteID }): Promise<
     Option.Option<Reaction>
   > {
-    const reaction = Array.from(this.reactions.entries()).find((v) =>
-      this.equalID(v[0], [id.noteID, id.accountID]),
+    const reaction = Array.from(this.reactions.entries()).find(
+      (v) => v[0] === this.compositeID(id),
     );
 
     return reaction
@@ -213,7 +235,7 @@ export class InMemoryReactionRepository implements ReactionRepository {
   }
   async reactionsByAccount(id: AccountID): Promise<Reaction[]> {
     const reactions = Array.from(this.reactions.entries())
-      .filter((v) => v[0][1] === id)
+      .filter((v) => this.disassembleID(v[0]).accountID === id)
       .map((v) => v[1]);
 
     return reactions;
@@ -221,15 +243,7 @@ export class InMemoryReactionRepository implements ReactionRepository {
   async deleteByID(id: { accountID: AccountID; noteID: NoteID }): Promise<
     Result.Result<Error, void>
   > {
-    const key = Array.from(this.reactions.keys()).find((v) =>
-      this.equalID(v, [id.noteID, id.accountID]),
-    );
-
-    if (!key) {
-      return Result.err(new Error('reaction not found'));
-    }
-
-    this.reactions.delete(key);
+    this.reactions.delete(this.compositeID(id));
 
     return Result.ok(undefined);
   }
