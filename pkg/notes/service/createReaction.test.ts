@@ -66,7 +66,7 @@ describe('CreateReactionService', () => {
 
     expect(Result.isErr(res)).toBe(true);
     expect(Option.isSome(reaction)).toBe(true);
-    expect(Option.unwrap(reaction).getBody()).toBe('👍');
+    expect(Option.unwrap(reaction).getEmoji()).toBe('👍');
   });
 
   it('error when note not found', async () => {

@@ -9,12 +9,34 @@ const exampleInput: CreateReactionArgs = {
   body: '👍',
 };
 
+const exampleCustomEmojiInput: CreateReactionArgs = {
+  noteID: '1' as NoteID,
+  accountID: '2' as AccountID,
+  body: '<:alias:12345678>',
+};
+
+const invalidCustomEmojiInput: CreateReactionArgs = {
+  noteID: '1' as NoteID,
+  accountID: '2' as AccountID,
+  body: ':alias:',
+};
+
 describe('Reaction', () => {
   it('add reaction to note', () => {
     const reaction = Reaction.new(exampleInput);
 
     expect(reaction.getAccountID()).toBe(exampleInput.accountID);
     expect(reaction.getNoteID()).toBe(exampleInput.noteID);
-    expect(reaction.getBody()).toBe(exampleInput.body);
+    expect(reaction.getEmoji()).toBe(exampleInput.body);
+  });
+  it('add custom emoji to note', () => {
+    const reaction = Reaction.new(exampleCustomEmojiInput);
+
+    expect(reaction.getEmoji()).toBe(exampleCustomEmojiInput.body);
+  });
+  it('throw error when invalid custom emoji input', () => {
+    expect(() => Reaction.new(invalidCustomEmojiInput)).toThrow(
+      'Emoji type is invalid',
+    );
   });
 });
