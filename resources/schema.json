@@ -2447,6 +2447,205 @@
         }
       }
     },
+    "/notes/:id/reaction": {
+      "post": {
+        "tags": [
+          "reaction"
+        ],
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "schema": {
+              "type": "string",
+              "description": "Note ID",
+              "example": "1"
+            },
+            "required": true,
+            "name": "id",
+            "in": "path"
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "emoji": {
+                    "type": "string",
+                    "description": "emoji",
+                    "example": "🎉"
+                  }
+                },
+                "required": [
+                  "emoji"
+                ]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "id": {
+                      "type": "string",
+                      "description": "Note ID",
+                      "example": "38477395"
+                    },
+                    "content": {
+                      "type": "string",
+                      "description": "Note content",
+                      "example": "hello world!"
+                    },
+                    "visibility": {
+                      "type": "string",
+                      "description": "Note visibility",
+                      "example": "PUBLIC"
+                    },
+                    "contents_warning_comment": {
+                      "type": "string",
+                      "description": "Contents warning comment",
+                      "example": "This note contains sensitive content"
+                    },
+                    "author_id": {
+                      "type": "string",
+                      "description": "Author account ID",
+                      "example": "38477395"
+                    },
+                    "created_at": {
+                      "type": "string",
+                      "description": "Note created date",
+                      "example": "2021-01-01T00:00:00Z"
+                    },
+                    "attachment_files": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "id": {
+                            "type": "string",
+                            "description": "attachment Medium id",
+                            "example": "39783475"
+                          },
+                          "name": {
+                            "type": "string",
+                            "description": "attachment filename",
+                            "example": "image.jpg"
+                          },
+                          "author_id": {
+                            "type": "string",
+                            "description": "attachment author account id",
+                            "example": "309823457"
+                          },
+                          "hash": {
+                            "type": "string",
+                            "description": "attachment medium blurhash",
+                            "example": "e9f*5oin{dn"
+                          },
+                          "mime": {
+                            "type": "string",
+                            "description": "attachment medium mime type",
+                            "example": "image/jpeg"
+                          },
+                          "nsfw": {
+                            "type": "boolean",
+                            "default": false,
+                            "description": "if true, attachment is nsfw"
+                          },
+                          "url": {
+                            "type": "string",
+                            "format": "uri",
+                            "description": "attachment medium url",
+                            "example": "https://images.example.com/image.webp"
+                          },
+                          "thumbnail": {
+                            "type": "string",
+                            "description": "attachment thumbnail url",
+                            "example": "https://images.example.com/image_thumbnail.webp"
+                          }
+                        },
+                        "required": [
+                          "id",
+                          "name",
+                          "author_id",
+                          "hash",
+                          "mime",
+                          "nsfw",
+                          "url",
+                          "thumbnail"
+                        ]
+                      },
+                      "maxItems": 16,
+                      "description": "Note Attachment Media"
+                    }
+                  },
+                  "required": [
+                    "id",
+                    "content",
+                    "visibility",
+                    "contents_warning_comment",
+                    "author_id",
+                    "created_at",
+                    "attachment_files"
+                  ]
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string",
+                      "default": "",
+                      "description": "Error code",
+                      "example": "TEST_ERROR_CODE"
+                    }
+                  },
+                  "required": [
+                    "error"
+                  ]
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string",
+                      "default": "",
+                      "description": "Error code",
+                      "example": "TEST_ERROR_CODE"
+                    }
+                  },
+                  "required": [
+                    "error"
+                  ]
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/notes/:id/bookmark": {
       "post": {
         "tags": [
