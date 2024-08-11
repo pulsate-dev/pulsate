@@ -12,6 +12,7 @@ import { accountModule } from '../intermodule/account.js';
 import { BookmarkController } from './adaptor/controller/bookmark.js';
 import { NoteController } from './adaptor/controller/note.js';
 import { ReactionController } from './adaptor/controller/reaction.js';
+import { ReactionPresenter } from './adaptor/presenter/reacton.js';
 import {
   InMemoryBookmarkRepository,
   InMemoryNoteAttachmentRepository,
@@ -115,6 +116,7 @@ const createReactionService = new CreateReactionService(
 const reactionController = new ReactionController(
   createReactionService,
   fetchService,
+  new ReactionPresenter(),
 );
 
 noteHandlers.openAPIRegistry.registerComponent('securitySchemes', 'Bearer', {
