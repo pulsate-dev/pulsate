@@ -166,9 +166,9 @@ export class InMemoryNoteAttachmentRepository
   }
 }
 
-type NoteID_AccountID = string;
+type CompositeKey = `${NoteID}_${AccountID}`;
 export class InMemoryReactionRepository implements ReactionRepository {
-  private readonly reactions: Map<NoteID_AccountID, Reaction>;
+  private readonly reactions: Map<CompositeKey, Reaction>;
 
   constructor(reactions: Reaction[] = []) {
     this.reactions = new Map(
@@ -185,11 +185,11 @@ export class InMemoryReactionRepository implements ReactionRepository {
   private compositeID(id: {
     noteID: NoteID;
     accountID: AccountID;
-  }): NoteID_AccountID {
+  }): CompositeKey {
     return `${id.noteID}_${id.accountID}`;
   }
 
-  private disassembleID(id: NoteID_AccountID): {
+  private disassembleID(id: CompositeKey): {
     noteID: NoteID;
     accountID: AccountID;
   } {
