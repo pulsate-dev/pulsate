@@ -5,6 +5,8 @@ import {
   CreateBookmarkResponseSchema,
   CreateNoteRequestSchema,
   CreateNoteResponseSchema,
+  CreateReactionRequestSchema,
+  CreateReactionResponseSchema,
   GetNoteResponseSchema,
   RenoteRequestSchema,
   RenoteResponseSchema,
@@ -140,6 +142,58 @@ export const RenoteRoute = createRoute({
     },
     404: {
       description: 'Note not found',
+      content: {
+        'application/json': {
+          schema: CommonErrorResponseSchema,
+        },
+      },
+    },
+  },
+});
+
+export const CreateReactionRoute = createRoute({
+  method: 'post',
+  tags: ['reaction'],
+  path: '/notes/:id/reaction',
+  security: [
+    {
+      bearer: [],
+    },
+  ],
+  request: {
+    params: z.object({
+      id: z.string().openapi({
+        description: 'Note ID',
+        example: '1',
+      }),
+    }),
+    body: {
+      content: {
+        'application/json': {
+          schema: CreateReactionRequestSchema,
+        },
+      },
+    },
+  },
+  responses: {
+    200: {
+      description: 'OK',
+      content: {
+        'application/json': {
+          schema: CreateReactionResponseSchema,
+        },
+      },
+    },
+    400: {
+      description: 'Bad Request',
+      content: {
+        'application/json': {
+          schema: CommonErrorResponseSchema,
+        },
+      },
+    },
+    404: {
+      description: 'Not Found',
       content: {
         'application/json': {
           schema: CommonErrorResponseSchema,

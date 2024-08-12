@@ -4,10 +4,12 @@ import type { AccountID } from '../../../accounts/model/account.js';
 import type { Medium, MediumID } from '../../../drive/model/medium.js';
 import { Bookmark } from '../../model/bookmark.js';
 import type { Note, NoteID } from '../../model/note.js';
+import { Reaction } from '../../model/reaction.js';
 import type {
   BookmarkRepository,
   NoteAttachmentRepository,
   NoteRepository,
+  ReactionRepository,
 } from '../../model/repository.js';
 
 export class InMemoryNoteRepository implements NoteRepository {
@@ -161,5 +163,88 @@ export class InMemoryNoteAttachmentRepository
       .map((id) => this.medium.get(id))
       .filter((v): v is Medium => Boolean(v));
     return Result.ok(res);
+  }
+}
+
+type CompositeKey = `${NoteID}_${AccountID}`;
+export class InMemoryReactionRepository implements ReactionRepository {
+  private readonly reactions: Map<CompositeKey, Reaction>;
+
+  constructor(reactions: Reaction[] = []) {
+    this.reactions = new Map(
+      reactions.map((r) => [
+        this.compositeID({
+          noteID: r.getNoteID(),
+          accountID: r.getAccountID(),
+        }),
+        r,
+      ]),
+    );
+  }
+
+  private compositeID(id: {
+    noteID: NoteID;
+    accountID: AccountID;
+  }): CompositeKey {
+    return `${id.noteID}_${id.accountID}`;
+  }
+
+  private disassembleID(id: CompositeKey): {
+    noteID: NoteID;
+    accountID: AccountID;
+  } {
+    const [noteID, accountID] = id.split('_');
+    if (!noteID || !accountID) throw new Error('Composite ID type invalid');
+    return {
+      noteID: noteID as NoteID,
+      accountID: accountID as AccountID,
+    };
+  }
+
+  async create(
+    id: { noteID: NoteID; accountID: AccountID },
+    body: string,
+  ): Promise<Result.Result<Error, void>> {
+    const reaction = Reaction.new({
+      accountID: id.accountID,
+      noteID: id.noteID,
+      body,
+    });
+
+    if (
+      Option.isSome(
+        await this.findByID({ noteID: id.noteID, accountID: id.accountID }),
+      )
+    ) {
+      return Result.err(new Error('already reacted'));
+    }
+
+    this.reactions.set(this.compositeID(id), reaction);
+    return Result.ok(undefined);
+  }
+  findByID(id: { accountID: AccountID; noteID: NoteID }): Promise<
+    Option.Option<Reaction>
+  > {
+    const reaction = Array.from(this.reactions.entries()).find(
+      (v) => v[0] === this.compositeID(id),
+    );
+
+    return reaction
+      ? Promise.resolve(Option.some(reaction[1]))
+      : Promise.resolve(Option.none());
+  }
+  async reactionsByAccount(id: AccountID): Promise<Reaction[]> {
+    const reactions = Array.from(this.reactions.entries())
+      .filter((v) => this.disassembleID(v[0]).accountID === id)
+      .map((v) => v[1]);
+
+    return reactions;
+  }
+  async deleteByID(id: { accountID: AccountID; noteID: NoteID }): Promise<
+    Result.Result<Error, void>
+  > {
+    this.reactions.delete(this.compositeID(id));
+
+    return Result.ok(undefined);
   }
 }

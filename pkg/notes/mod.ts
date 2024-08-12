@@ -11,10 +11,13 @@ import { SnowflakeIDGenerator } from '../id/mod.js';
 import { accountModule } from '../intermodule/account.js';
 import { BookmarkController } from './adaptor/controller/bookmark.js';
 import { NoteController } from './adaptor/controller/note.js';
+import { ReactionController } from './adaptor/controller/reaction.js';
+import { ReactionPresenter } from './adaptor/presenter/reacton.js';
 import {
   InMemoryBookmarkRepository,
   InMemoryNoteAttachmentRepository,
   InMemoryNoteRepository,
+  InMemoryReactionRepository,
 } from './adaptor/repository/dummy.js';
 import {
   PrismaBookmarkRepository,
@@ -24,12 +27,14 @@ import {
 import {
   CreateBookmarkRoute,
   CreateNoteRoute,
+  CreateReactionRoute,
   DeleteBookmarkRoute,
   GetNoteRoute,
   RenoteRoute,
 } from './router.js';
 import { CreateService } from './service/create.js';
 import { CreateBookmarkService } from './service/createBookmark.js';
+import { CreateReactionService } from './service/createReaction.js';
 import { DeleteBookmarkService } from './service/deleteBookmark.js';
 import { FetchService } from './service/fetch.js';
 import { FetchBookmarkService } from './service/fetchBookmark.js';
@@ -45,6 +50,7 @@ const noteRepository = isProduction
 const bookmarkRepository = isProduction
   ? new PrismaBookmarkRepository(prismaClient)
   : new InMemoryBookmarkRepository();
+const reactionRepository = new InMemoryReactionRepository();
 const attachmentRepository = isProduction
   ? new PrismaNoteAttachmentRepository(prismaClient)
   : new InMemoryNoteAttachmentRepository([], []);
@@ -100,6 +106,17 @@ const bookmarkController = new BookmarkController(
   fetchBookmarkService,
   deleteBookmarkService,
   fetchService,
+);
+
+// Reaction
+const createReactionService = new CreateReactionService(
+  reactionRepository,
+  noteRepository,
+);
+const reactionController = new ReactionController(
+  createReactionService,
+  fetchService,
+  new ReactionPresenter(),
 );
 
 noteHandlers.openAPIRegistry.registerComponent('securitySchemes', 'Bearer', {
@@ -180,6 +197,24 @@ noteHandlers.openapi(RenoteRoute, async (c) => {
   }
 
   return c.json(res[1], 200);
+});
+
+noteHandlers[CreateReactionRoute.method](
+  CreateReactionRoute.path,
+  AuthMiddleware.handle({ forceAuthorized: true }),
+);
+noteHandlers.openapi(CreateReactionRoute, async (c) => {
+  const { id } = c.req.valid('param');
+  const req = c.req.valid('json');
+  const accountID = Option.unwrap(c.get('accountID'));
+
+  const res = await reactionController.create(id, accountID, req.emoji);
+  if (Result.isErr(res)) {
+    const { error, code } = Result.unwrapErr(res);
+    return c.json({ error: error.message }, code);
+  }
+
+  return c.json(Result.unwrap(res), 200);
 });
 
 noteHandlers[CreateBookmarkRoute.method](
