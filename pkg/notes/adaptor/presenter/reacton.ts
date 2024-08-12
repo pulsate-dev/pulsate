@@ -1,7 +1,8 @@
 import { Result } from '@mikuroxina/mini-fn';
 
 export type ReactionError = {
-  code: 400 | 404; // 400: Bad Request / 404: Not Found
+  /** 400: Bad Request / 404: Not Found */
+  code: 400 | 404;
   error: Error;
 };
 
