@@ -35,11 +35,11 @@ export class EditService {
 
   async editNickname(
     etag: string,
-    name: AccountName,
+    target: AccountName,
     nickname: string,
     actorName: AccountName,
   ): Promise<Result.Result<Error, boolean>> {
-    const res = await this.accountRepository.findByName(name);
+    const res = await this.accountRepository.findByName(target);
     if (Option.isNone(res)) {
       return Result.err(new Error('account not found'));
     }
@@ -82,11 +82,11 @@ export class EditService {
 
   async editPassphrase(
     etag: string,
-    name: AccountName,
+    target: AccountName,
     newPassphrase: string,
     actorName: AccountName,
   ): Promise<Result.Result<Error, boolean>> {
-    const res = await this.accountRepository.findByName(name);
+    const res = await this.accountRepository.findByName(target);
     if (Option.isNone(res)) {
       return Result.err(new Error('account not found'));
     }
@@ -131,11 +131,11 @@ export class EditService {
 
   async editEmail(
     etag: string,
-    name: AccountName,
+    target: AccountName,
     newEmail: string,
     actorName: AccountName,
   ): Promise<Result.Result<Error, boolean>> {
-    const res = await this.accountRepository.findByName(name);
+    const res = await this.accountRepository.findByName(target);
     if (Option.isNone(res)) {
       return Result.err(new Error('account not found'));
     }
@@ -180,11 +180,11 @@ export class EditService {
 
   async editBio(
     etag: string,
-    name: AccountName,
+    target: AccountName,
     bio: string,
     actorName: AccountName,
   ): Promise<Result.Result<Error, boolean>> {
-    const res = await this.accountRepository.findByName(name);
+    const res = await this.accountRepository.findByName(target);
     if (Option.isNone(res)) {
       return Result.err(new Error('account not found'));
     }
