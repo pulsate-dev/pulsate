@@ -176,11 +176,6 @@ accounts.doc31('/accounts/doc.json', {
   },
 });
 
-export type AccountModuleHandlerType =
-  | typeof GetAccountHandler
-  | typeof getAccountFollowingRoute
-  | typeof getAccountFollowerRoute;
-
 accounts.post('/accounts', CaptchaMiddleware.handle());
 accounts.openapi(CreateAccountRoute, async (c) => {
   const { name, email, passphrase } = c.req.valid('json');
@@ -198,6 +193,7 @@ accounts[UpdateAccountRoute.method](
   AuthMiddleware.handle({ forceAuthorized: true }),
 );
 accounts.openapi(UpdateAccountRoute, async (c) => {
+  const actorName = Option.unwrap(c.get('accountName'));
   const name = c.req.param('name');
   const { email, passphrase, bio, nickname } = c.req.valid('json');
   const eTag = c.req.header('If-Match');
@@ -215,6 +211,7 @@ accounts.openapi(UpdateAccountRoute, async (c) => {
       nickname: nickname,
     },
     eTag,
+    actorName,
   );
   if (Result.isErr(res)) {
     return c.json({ error: res[1].message }, 400);
@@ -269,7 +266,7 @@ accounts[GetAccountRoute.method](
   GetAccountRoute.path,
   AuthMiddleware.handle({ forceAuthorized: false }),
 );
-const GetAccountHandler = accounts.openapi(GetAccountRoute, async (c) => {
+accounts.openapi(GetAccountRoute, async (c) => {
   const id = c.req.param('id');
 
   const res = await controller.getAccount(id);
@@ -379,57 +376,51 @@ accounts.openapi(ResendVerificationEmailRoute, async (c) => {
   return new Response(null, { status: 204 });
 });
 
-const getAccountFollowingRoute = accounts.openapi(
-  GetAccountFollowingRoute,
-  async (c) => {
-    const id = c.req.param('id');
-    const res = await controller.fetchFollowing(id);
-    if (Result.isErr(res)) {
-      return c.json({ error: res[1].message }, 404);
-    }
-    const unwrap = Result.unwrap(res);
-    return c.json(
-      unwrap.map((v) => {
-        return {
-          id: v.id,
-          name: v.name,
-          nickname: v.nickname,
-          bio: v.bio,
-          avatar: '',
-          header: '',
-          followed_count: v.followed_count,
-          following_count: v.following_count,
-          note_count: v.note_count,
-        };
-      }),
-      200,
-    );
-  },
-);
-const getAccountFollowerRoute = accounts.openapi(
-  GetAccountFollowerRoute,
-  async (c) => {
-    const id = c.req.param('id');
-    const res = await controller.fetchFollower(id);
-    if (Result.isErr(res)) {
-      return c.json({ error: res[1].message }, 404);
-    }
-    const unwrap = Result.unwrap(res);
-    return c.json(
-      unwrap.map((v) => {
-        return {
-          id: v.id,
-          name: v.name,
-          nickname: v.nickname,
-          bio: v.bio,
-          avatar: '',
-          header: '',
-          followed_count: v.followed_count,
-          following_count: v.following_count,
-          note_count: v.note_count,
-        };
-      }),
-      200,
-    );
-  },
-);
+accounts.openapi(GetAccountFollowingRoute, async (c) => {
+  const id = c.req.param('id');
+  const res = await controller.fetchFollowing(id);
+  if (Result.isErr(res)) {
+    return c.json({ error: res[1].message }, 404);
+  }
+  const unwrap = Result.unwrap(res);
+  return c.json(
+    unwrap.map((v) => {
+      return {
+        id: v.id,
+        name: v.name,
+        nickname: v.nickname,
+        bio: v.bio,
+        avatar: '',
+        header: '',
+        followed_count: v.followed_count,
+        following_count: v.following_count,
+        note_count: v.note_count,
+      };
+    }),
+    200,
+  );
+});
+accounts.openapi(GetAccountFollowerRoute, async (c) => {
+  const id = c.req.param('id');
+  const res = await controller.fetchFollower(id);
+  if (Result.isErr(res)) {
+    return c.json({ error: res[1].message }, 404);
+  }
+  const unwrap = Result.unwrap(res);
+  return c.json(
+    unwrap.map((v) => {
+      return {
+        id: v.id,
+        name: v.name,
+        nickname: v.nickname,
+        bio: v.bio,
+        avatar: '',
+        header: '',
+        followed_count: v.followed_count,
+        following_count: v.following_count,
+        note_count: v.note_count,
+      };
+    }),
+    200,
+  );
+});
