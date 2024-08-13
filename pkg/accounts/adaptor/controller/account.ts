@@ -90,7 +90,7 @@ export class AccountController {
   }
 
   async updateAccount(
-    name: string,
+    target: string,
     args: {
       nickname?: string;
       email?: string;
@@ -105,7 +105,7 @@ export class AccountController {
     if (args.nickname) {
       const res = await this.editService.editNickname(
         etag,
-        name as AccountName,
+        target as AccountName,
         args.nickname,
         actorName as AccountName,
       );
@@ -116,7 +116,7 @@ export class AccountController {
     if (args.passphrase) {
       const res = await this.editService.editPassphrase(
         etag,
-        name as AccountName,
+        target as AccountName,
         args.passphrase,
         actorName as AccountName,
       );
@@ -127,7 +127,7 @@ export class AccountController {
     if (args.email) {
       const res = await this.editService.editEmail(
         etag,
-        name as AccountName,
+        target as AccountName,
         args.email,
         actorName as AccountName,
       );
@@ -138,7 +138,7 @@ export class AccountController {
 
     const editedBioResp = await this.editService.editBio(
       etag,
-      name as AccountName,
+      target as AccountName,
       args.bio,
       actorName as AccountName,
     );
@@ -146,7 +146,7 @@ export class AccountController {
       return Result.err(editedBioResp[1]);
     }
 
-    const res = await this.fetchService.fetchAccount(name as AccountName);
+    const res = await this.fetchService.fetchAccount(target as AccountName);
     if (Result.isErr(res)) {
       return res;
     }
