@@ -1,5 +1,4 @@
-import { Result } from '@mikuroxina/mini-fn';
-import { Cat, Ether } from '@mikuroxina/mini-fn';
+import { Cat, Ether, Result } from '@mikuroxina/mini-fn';
 import {
   InMemoryAccountRepository,
   newFollowRepo,
@@ -13,6 +12,7 @@ import type {
   AccountID,
   AccountName,
 } from '../accounts/model/account.js';
+import type { AccountFollow } from '../accounts/model/follow.js';
 import { accountRepoSymbol } from '../accounts/model/repository.js';
 import type { FetchService } from '../accounts/service/fetch.js';
 import { fetch } from '../accounts/service/fetch.js';
@@ -48,29 +48,31 @@ export class AccountModuleFacade {
   async fetchFollowings(
     id: AccountID,
   ): Promise<Result.Result<Error, PartialAccount[]>> {
-    const res = await this.fetchFollowService.fetchFollowingsByID(id);
-    if (Result.isErr(res)) {
-      return res;
+    const followings = Result.map((v: AccountFollow[]) =>
+      v.map((v) => v.getTargetID()),
+    )(await this.fetchFollowService.fetchFollowingsByID(id));
+
+    if (Result.isErr(followings)) {
+      return followings;
     }
 
-    const accounts = await Promise.all(
-      Result.unwrap(res).map((v) =>
-        this.fetchService.fetchAccountByID(v.getTargetID()),
-      ),
+    const accounts = await this.fetchService.fetchManyAccountsByID(
+      Result.unwrap(followings),
     );
 
+    if (Result.isErr(accounts)) {
+      return accounts;
+    }
+
     return Result.ok(
-      accounts
-        .filter((v) => Result.isOk(v))
-        .map((v): PartialAccount => {
-          const unwrapped = Result.unwrap(v);
-          return {
-            id: unwrapped.getID(),
-            name: unwrapped.getName(),
-            nickname: unwrapped.getNickname(),
-            bio: unwrapped.getBio(),
-          };
-        }),
+      Result.unwrap(accounts).map((v): PartialAccount => {
+        return {
+          id: v.getID(),
+          name: v.getName(),
+          nickname: v.getNickname(),
+          bio: v.getBio(),
+        };
+      }),
     );
   }
 
