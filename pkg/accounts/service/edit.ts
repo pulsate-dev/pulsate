@@ -4,7 +4,7 @@ import {
   type PasswordEncoder,
   passwordEncoderSymbol,
 } from '../../password/mod.js';
-import type { AccountName } from '../model/account.js';
+import type { Account, AccountName } from '../model/account.js';
 import {
   type AccountRepository,
   accountRepoSymbol,
@@ -37,12 +37,19 @@ export class EditService {
     etag: string,
     name: AccountName,
     nickname: string,
+    actorName: AccountName,
   ): Promise<Result.Result<Error, boolean>> {
     const res = await this.accountRepository.findByName(name);
     if (Option.isNone(res)) {
       return Result.err(new Error('account not found'));
     }
     const account = Option.unwrap(res);
+    const actorRes = await this.accountRepository.findByName(actorName);
+    const actor = Option.unwrap(actorRes);
+
+    if (!this.isAllowed('edit', actor, account)) {
+      return Result.err(new Error('not allowed'));
+    }
 
     const match = await this.etagService.verify(account, etag);
     if (!match) {
@@ -74,12 +81,19 @@ export class EditService {
     etag: string,
     name: AccountName,
     newPassphrase: string,
+    actorName: AccountName,
   ): Promise<Result.Result<Error, boolean>> {
     const res = await this.accountRepository.findByName(name);
     if (Option.isNone(res)) {
       return Result.err(new Error('account not found'));
     }
     const account = Option.unwrap(res);
+    const actorRes = await this.accountRepository.findByName(actorName);
+    const actor = Option.unwrap(actorRes);
+
+    if (!this.isAllowed('edit', actor, account)) {
+      return Result.err(new Error('not allowed'));
+    }
 
     const match = await this.etagService.verify(account, etag);
     if (!match) {
@@ -113,12 +127,19 @@ export class EditService {
     etag: string,
     name: AccountName,
     newEmail: string,
+    actorName: AccountName,
   ): Promise<Result.Result<Error, boolean>> {
     const res = await this.accountRepository.findByName(name);
     if (Option.isNone(res)) {
       return Result.err(new Error('account not found'));
     }
     const account = Option.unwrap(res);
+    const actorRes = await this.accountRepository.findByName(actorName);
+    const actor = Option.unwrap(actorRes);
+
+    if (!this.isAllowed('edit', actor, account)) {
+      return Result.err(new Error('not allowed'));
+    }
 
     const match = await this.etagService.verify(account, etag);
     if (!match) {
@@ -148,12 +169,23 @@ export class EditService {
     }
   }
 
-  async editBio(etag: string, name: AccountName, bio: string) {
+  async editBio(
+    etag: string,
+    name: AccountName,
+    bio: string,
+    actorName: AccountName,
+  ): Promise<Result.Result<Error, boolean>> {
     const res = await this.accountRepository.findByName(name);
     if (Option.isNone(res)) {
       return Result.err(new Error('account not found'));
     }
     const account = Option.unwrap(res);
+    const actorRes = await this.accountRepository.findByName(actorName);
+    const actor = Option.unwrap(actorRes);
+
+    if (!this.isAllowed('edit', actor, account)) {
+      return Result.err(new Error('not allowed'));
+    }
 
     const match = await this.etagService.verify(account, etag);
     if (!match) {
@@ -173,6 +205,28 @@ export class EditService {
       return Result.ok(true);
     } catch (e) {
       return Result.err(e as unknown as Error);
+    }
+  }
+
+  private isAllowed(
+    action: 'edit',
+    actor: Account,
+    resource: Account,
+  ): boolean {
+    switch (action) {
+      case 'edit':
+        // NOTE: Frozen account or notActivated account can't edit account information
+        if (
+          actor.getFrozen() === 'frozen' ||
+          actor.getStatus() === 'notActivated'
+        ) {
+          return false;
+        }
+
+        // NOTE: Account can't edit other account information
+        return actor.getID() === resource.getID();
+      default:
+        return false;
     }
   }
 }

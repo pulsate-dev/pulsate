@@ -98,6 +98,7 @@ export class AccountController {
       bio: string;
     },
     etag: string,
+    actorName: string,
   ): Promise<
     Result.Result<Error, z.infer<typeof UpdateAccountResponseSchema>>
   > {
@@ -106,6 +107,7 @@ export class AccountController {
         etag,
         name as AccountName,
         args.nickname,
+        actorName as AccountName,
       );
       if (Result.isErr(res)) {
         return res;
@@ -116,6 +118,7 @@ export class AccountController {
         etag,
         name as AccountName,
         args.passphrase,
+        actorName as AccountName,
       );
       if (Result.isErr(res)) {
         return res;
@@ -126,6 +129,7 @@ export class AccountController {
         etag,
         name as AccountName,
         args.email,
+        actorName as AccountName,
       );
       if (Result.isErr(res)) {
         return res;
@@ -136,6 +140,7 @@ export class AccountController {
       etag,
       name as AccountName,
       args.bio,
+      actorName as AccountName,
     );
     if (Result.isErr(editedBioResp)) {
       return Result.err(editedBioResp[1]);

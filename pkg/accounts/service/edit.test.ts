@@ -18,7 +18,7 @@ describe('EditService', () => {
 
   beforeEach(async () => {
     await repository.create(
-      Account.new({
+      Account.reconstruct({
         id: '1' as AccountID,
         name: '@john@example.com',
         mail: 'johndoe@example.com',
@@ -28,7 +28,7 @@ describe('EditService', () => {
         role: 'normal',
         frozen: 'normal',
         silenced: 'normal',
-        status: 'notActivated',
+        status: 'active',
         createdAt: new Date(),
       }),
     );
@@ -61,6 +61,7 @@ describe('EditService', () => {
           etag,
           '@john@example.com',
           nickname,
+          '@john@example.com',
         );
         expect(Result.isOk(updateRes)).toBe(true);
 
@@ -97,6 +98,7 @@ describe('EditService', () => {
           invalid ?? etag,
           name ?? '@john@example.com',
           nickname,
+          name ?? '@john@example.com',
         );
         expect(Result.isErr(updateRes)).toBe(true);
       },
@@ -124,6 +126,7 @@ describe('EditService', () => {
           etag,
           '@john@example.com',
           passphrase,
+          '@john@example.com',
         );
         expect(Result.isOk(updateRes)).toBe(true);
 
@@ -165,6 +168,7 @@ describe('EditService', () => {
           invalid ?? etag,
           name ?? '@john@example.com',
           passphrase,
+          name ?? '@john@example.com',
         );
 
         expect(Result.isErr(updateRes)).toBe(true);
@@ -197,6 +201,7 @@ describe('EditService', () => {
           etag,
           '@john@example.com',
           email,
+          '@john@example.com',
         );
         expect(Result.isOk(updateRes)).toBe(true);
 
@@ -229,6 +234,7 @@ describe('EditService', () => {
           invalid ?? etag,
           name ?? '@john@example.com',
           email,
+          name ?? '@john@example.com',
         );
         expect(Result.isErr(updateRes)).toBe(true);
       },
@@ -247,6 +253,7 @@ describe('EditService', () => {
           etag,
           '@john@example.com',
           bio,
+          '@john@example.com',
         );
 
         expect(Result.isOk(updateRes)).toBe(true);
@@ -276,6 +283,7 @@ describe('EditService', () => {
           invalid ?? etag,
           name ?? '@john@example.com',
           bio,
+          name ?? '@john@example.com',
         );
 
         expect(Result.isErr(updateRes)).toBe(true);
