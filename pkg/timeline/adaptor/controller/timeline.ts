@@ -70,17 +70,16 @@ export class TimelineController {
     }
     const accountNotes = Result.unwrap(res);
 
-    const accountIDSet = new Set<AccountID>(
+    const accountData = await this.accountModule.fetchAccounts(
       accountNotes.map((v) => v.getAuthorID()),
     );
-    const accountData = await Promise.all(
-      [...accountIDSet].map((v) => this.accountModule.fetchAccount(v)),
-    );
 
-    // ToDo: N+1
-    const accounts = accountData
-      .filter((v) => Result.isOk(v))
-      .map((v) => Result.unwrap(v));
+    if (Result.isErr(accountData)) {
+      return accountData;
+    }
+
+    const accounts = Result.unwrap(accountData);
+
     const accountsMap = new Map<AccountID, Account>(
       accounts.map((v) => [v.getID(), v]),
     );

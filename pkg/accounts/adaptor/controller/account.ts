@@ -2,6 +2,7 @@ import type { z } from '@hono/zod-openapi';
 import { Option, Result } from '@mikuroxina/mini-fn';
 
 import type { AccountID, AccountName } from '../../model/account.js';
+import type { AccountFollow } from '../../model/follow.js';
 import type { AuthenticateService } from '../../service/authenticate.js';
 import type { EditService } from '../../service/edit.js';
 import type { FetchService } from '../../service/fetch.js';
@@ -298,83 +299,87 @@ export class AccountController {
   async fetchFollowing(
     id: string,
   ): Promise<Result.Result<Error, z.infer<typeof GetAccountFollowingSchema>>> {
-    const res = await this.fetchFollowService.fetchFollowingsByID(
-      id as AccountID,
-    );
-    if (Result.isErr(res)) {
-      return res;
+    const followings = Result.map((v: AccountFollow[]) =>
+      v.map((v) => v.getTargetID()),
+    )(await this.fetchFollowService.fetchFollowingsByID(id as AccountID));
+
+    if (Result.isErr(followings)) {
+      return followings;
     }
-    // ToDo: use fetchManyAccountsByID
-    const accounts = await Promise.all(
-      res[1].map((v) => this.fetchService.fetchAccountByID(v.getTargetID())),
+
+    const accounts = await this.fetchService.fetchManyAccountsByID(
+      Result.unwrap(followings),
     );
+
+    if (Result.isErr(accounts)) {
+      return accounts;
+    }
+
     return Result.ok(
-      accounts
-        .filter((v) => Result.isOk(v))
-        .map((v) => {
-          const unwrapped = Result.unwrap(v);
-          // ToDo: make optional some fields
-          return {
-            id: unwrapped.getID(),
-            email: unwrapped.getMail(),
-            name: unwrapped.getName(),
-            nickname: unwrapped.getNickname(),
-            bio: unwrapped.getBio(),
-            // ToDo: fill the following fields
-            avatar: '',
-            header: '',
-            followed_count: 0,
-            following_count: 0,
-            note_count: 0,
-            created_at: unwrapped.getCreatedAt(),
-            role: unwrapped.getRole(),
-            frozen: unwrapped.getFrozen(),
-            status: unwrapped.getStatus(),
-            silenced: unwrapped.getSilenced(),
-          };
-        }),
+      Result.unwrap(accounts).map((v) => {
+        return {
+          id: v.getID(),
+          email: v.getMail(),
+          name: v.getName(),
+          nickname: v.getNickname(),
+          bio: v.getBio(),
+          // ToDo: fill the following fields
+          avatar: '',
+          header: '',
+          followed_count: 0,
+          following_count: 0,
+          note_count: 0,
+          created_at: v.getCreatedAt(),
+          role: v.getRole(),
+          frozen: v.getFrozen(),
+          status: v.getStatus(),
+          silenced: v.getSilenced(),
+        };
+      }),
     );
   }
 
   async fetchFollower(
     id: string,
   ): Promise<Result.Result<Error, z.infer<typeof GetAccountFollowerSchema>>> {
-    const res = await this.fetchFollowService.fetchFollowersByID(
-      id as AccountID,
-    );
-    if (Result.isErr(res)) {
-      return Result.err(res[1]);
+    const followers = Result.map((v: AccountFollow[]) =>
+      v.map((v) => v.getFromID()),
+    )(await this.fetchFollowService.fetchFollowersByID(id as AccountID));
+
+    if (Result.isErr(followers)) {
+      return followers;
     }
-    const accounts = await Promise.all(
-      res[1].map(
-        async (v) => await this.fetchService.fetchAccountByID(v.getFromID()),
-      ),
+
+    const accounts = await this.fetchService.fetchManyAccountsByID(
+      Result.unwrap(followers),
     );
+
+    if (Result.isErr(accounts)) {
+      return accounts;
+    }
+
     return Result.ok(
-      accounts
-        .filter((v) => Result.isOk(v))
-        .map((v) => {
-          const unwrapped = Result.unwrap(v);
-          // ToDo: make optional some fields
-          return {
-            id: unwrapped.getID(),
-            email: unwrapped.getMail(),
-            name: unwrapped.getName(),
-            nickname: unwrapped.getNickname(),
-            bio: unwrapped.getBio(),
-            // ToDo: fill the following fields
-            avatar: '',
-            header: '',
-            followed_count: 0,
-            following_count: 0,
-            note_count: 0,
-            created_at: unwrapped.getCreatedAt(),
-            role: unwrapped.getRole(),
-            frozen: unwrapped.getFrozen(),
-            status: unwrapped.getStatus(),
-            silenced: unwrapped.getSilenced(),
-          };
-        }),
+      Result.unwrap(accounts).map((v) => {
+        // ToDo: make optional some fields
+        return {
+          id: v.getID(),
+          email: v.getMail(),
+          name: v.getName(),
+          nickname: v.getNickname(),
+          bio: v.getBio(),
+          // ToDo: fill the following fields
+          avatar: '',
+          header: '',
+          followed_count: 0,
+          following_count: 0,
+          note_count: 0,
+          created_at: v.getCreatedAt(),
+          role: v.getRole(),
+          frozen: v.getFrozen(),
+          status: v.getStatus(),
+          silenced: v.getSilenced(),
+        };
+      }),
     );
   }
 }
