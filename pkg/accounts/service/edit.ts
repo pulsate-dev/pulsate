@@ -45,6 +45,9 @@ export class EditService {
     }
     const account = Option.unwrap(res);
     const actorRes = await this.accountRepository.findByName(actorName);
+    if (Option.isNone(actorRes)) {
+      return Result.err(new Error('actor not found'));
+    }
     const actor = Option.unwrap(actorRes);
 
     if (!this.isAllowed('edit', actor, account)) {
@@ -89,6 +92,9 @@ export class EditService {
     }
     const account = Option.unwrap(res);
     const actorRes = await this.accountRepository.findByName(actorName);
+    if (Option.isNone(actorRes)) {
+      return Result.err(new Error('actor not found'));
+    }
     const actor = Option.unwrap(actorRes);
 
     if (!this.isAllowed('edit', actor, account)) {
@@ -135,6 +141,9 @@ export class EditService {
     }
     const account = Option.unwrap(res);
     const actorRes = await this.accountRepository.findByName(actorName);
+    if (Option.isNone(actorRes)) {
+      return Result.err(new Error('actor not found'));
+    }
     const actor = Option.unwrap(actorRes);
 
     if (!this.isAllowed('edit', actor, account)) {
@@ -181,6 +190,9 @@ export class EditService {
     }
     const account = Option.unwrap(res);
     const actorRes = await this.accountRepository.findByName(actorName);
+    if (Option.isNone(actorRes)) {
+      return Result.err(new Error('actor not found'));
+    }
     const actor = Option.unwrap(actorRes);
 
     if (!this.isAllowed('edit', actor, account)) {
