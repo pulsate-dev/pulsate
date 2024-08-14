@@ -225,9 +225,10 @@ accounts[FreezeAccountRoute.method](
   AuthMiddleware.handle({ forceAuthorized: true }),
 );
 accounts.openapi(FreezeAccountRoute, async (c) => {
-  const name = c.req.param('name');
+  const targetName = c.req.param('name');
+  const actor = Option.unwrap(c.get('accountName'));
 
-  const res = await controller.freezeAccount(name);
+  const res = await controller.freezeAccount(targetName, actor);
   if (Result.isErr(res)) {
     return c.json({ error: res[1].message }, 400);
   }
@@ -240,9 +241,10 @@ accounts[UnFreezeAccountRoute.method](
   AuthMiddleware.handle({ forceAuthorized: true }),
 );
 accounts.openapi(UnFreezeAccountRoute, async (c) => {
-  const name = c.req.param('name');
+  const targetName = c.req.param('name');
+  const actor = Option.unwrap(c.get('accountName'));
 
-  const res = await controller.unFreezeAccount(name);
+  const res = await controller.unFreezeAccount(targetName, actor);
   if (Result.isErr(res)) {
     return c.json({ error: res[1].message }, 400);
   }
@@ -310,8 +312,9 @@ accounts[SilenceAccountRoute.method](
   AuthMiddleware.handle({ forceAuthorized: true }),
 );
 accounts.openapi(SilenceAccountRoute, async (c) => {
+  const actor = Option.unwrap(c.get('accountName'));
   const name = c.req.param('name');
-  const res = await controller.silenceAccount(name);
+  const res = await controller.silenceAccount(name, actor);
   if (Result.isErr(res)) {
     return c.json({ error: res[1].message }, { status: 400 });
   }
@@ -324,8 +327,9 @@ accounts[UnSilenceAccountRoute.method](
   AuthMiddleware.handle({ forceAuthorized: true }),
 );
 accounts.openapi(UnSilenceAccountRoute, async (c) => {
+  const actor = Option.unwrap(c.get('accountName'));
   const name = c.req.param('name');
-  const res = await controller.unSilenceAccount(name);
+  const res = await controller.unSilenceAccount(name, actor);
   if (Result.isErr(res)) {
     return c.json({ error: res[1].message }, 400);
   }

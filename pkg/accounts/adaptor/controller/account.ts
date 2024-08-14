@@ -160,8 +160,14 @@ export class AccountController {
     });
   }
 
-  async freezeAccount(name: string): Promise<Result.Result<Error, void>> {
-    const res = await this.freezeService.setFreeze(name as AccountName);
+  async freezeAccount(
+    target: string,
+    actor: string,
+  ): Promise<Result.Result<Error, void>> {
+    const res = await this.freezeService.setFreeze(
+      target as AccountName,
+      actor as AccountName,
+    );
     if (Result.isErr(res)) {
       return res;
     }
@@ -169,8 +175,14 @@ export class AccountController {
     return Result.ok(undefined);
   }
 
-  async unFreezeAccount(name: string): Promise<Result.Result<Error, void>> {
-    const res = await this.freezeService.undoFreeze(name as AccountName);
+  async unFreezeAccount(
+    name: string,
+    actor: string,
+  ): Promise<Result.Result<Error, void>> {
+    const res = await this.freezeService.undoFreeze(
+      name as AccountName,
+      actor as AccountName,
+    );
     if (Result.isErr(res)) {
       return res;
     }
@@ -239,9 +251,14 @@ export class AccountController {
     });
   }
 
-  async silenceAccount(name: string): Promise<Result.Result<Error, void>> {
-    // ToDo: check user's permission
-    const res = await this.silenceService.setSilence(name as AccountName);
+  async silenceAccount(
+    targetName: string,
+    actorName: string,
+  ): Promise<Result.Result<Error, void>> {
+    const res = await this.silenceService.setSilence(
+      targetName as AccountName,
+      actorName as AccountName,
+    );
     if (Result.isErr(res)) {
       return res;
     }
@@ -249,9 +266,15 @@ export class AccountController {
     return Result.ok(undefined);
   }
 
-  async unSilenceAccount(name: string): Promise<Result.Result<Error, void>> {
+  async unSilenceAccount(
+    targetName: string,
+    actorName: string,
+  ): Promise<Result.Result<Error, void>> {
     // ToDo: check user's permission
-    const res = await this.silenceService.undoSilence(name as AccountName);
+    const res = await this.silenceService.undoSilence(
+      targetName as AccountName,
+      actorName as AccountName,
+    );
     if (Result.isErr(res)) {
       return res;
     }
