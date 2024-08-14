@@ -18,7 +18,7 @@ describe('EditService', () => {
 
   beforeEach(async () => {
     await repository.create(
-      Account.new({
+      Account.reconstruct({
         id: '1' as AccountID,
         name: '@john@example.com',
         mail: 'johndoe@example.com',
@@ -28,7 +28,7 @@ describe('EditService', () => {
         role: 'normal',
         frozen: 'normal',
         silenced: 'normal',
-        status: 'notActivated',
+        status: 'active',
         createdAt: new Date(),
       }),
     );
@@ -61,6 +61,7 @@ describe('EditService', () => {
           etag,
           '@john@example.com',
           nickname,
+          '@john@example.com',
         );
         expect(Result.isOk(updateRes)).toBe(true);
 
@@ -97,6 +98,7 @@ describe('EditService', () => {
           invalid ?? etag,
           name ?? '@john@example.com',
           nickname,
+          name ?? '@john@example.com',
         );
         expect(Result.isErr(updateRes)).toBe(true);
       },
@@ -124,6 +126,7 @@ describe('EditService', () => {
           etag,
           '@john@example.com',
           passphrase,
+          '@john@example.com',
         );
         expect(Result.isOk(updateRes)).toBe(true);
 
@@ -165,6 +168,7 @@ describe('EditService', () => {
           invalid ?? etag,
           name ?? '@john@example.com',
           passphrase,
+          name ?? '@john@example.com',
         );
 
         expect(Result.isErr(updateRes)).toBe(true);
@@ -197,6 +201,7 @@ describe('EditService', () => {
           etag,
           '@john@example.com',
           email,
+          '@john@example.com',
         );
         expect(Result.isOk(updateRes)).toBe(true);
 
@@ -229,6 +234,7 @@ describe('EditService', () => {
           invalid ?? etag,
           name ?? '@john@example.com',
           email,
+          name ?? '@john@example.com',
         );
         expect(Result.isErr(updateRes)).toBe(true);
       },
@@ -247,6 +253,7 @@ describe('EditService', () => {
           etag,
           '@john@example.com',
           bio,
+          '@john@example.com',
         );
 
         expect(Result.isOk(updateRes)).toBe(true);
@@ -276,10 +283,166 @@ describe('EditService', () => {
           invalid ?? etag,
           name ?? '@john@example.com',
           bio,
+          name ?? '@john@example.com',
         );
 
         expect(Result.isErr(updateRes)).toBe(true);
       },
     );
+  });
+
+  describe('access controll', async () => {
+    const testNormalAccount = Account.reconstruct({
+      id: '2' as AccountID,
+      name: '@alice@example.com',
+      mail: 'alice@example.com',
+      nickname: 'Alice',
+      passphraseHash: 'hash',
+      bio: '',
+      role: 'normal',
+      frozen: 'normal',
+      silenced: 'normal',
+      status: 'active',
+      createdAt: new Date(),
+    });
+    const testFrozenAccount = Account.reconstruct({
+      id: '3' as AccountID,
+      name: '@bob@example.com',
+      mail: 'bob@example.com',
+      nickname: 'Bob',
+      passphraseHash: 'hash',
+      bio: '',
+      role: 'normal',
+      frozen: 'frozen',
+      silenced: 'normal',
+      status: 'active',
+      createdAt: new Date(),
+    });
+    const testNotAcvivatedAccount = Account.reconstruct({
+      id: '4' as AccountID,
+      name: '@carol@example.com',
+      mail: 'carol@example.com',
+      nickname: 'Carol',
+      passphraseHash: 'hash',
+      bio: '',
+      role: 'normal',
+      frozen: 'normal',
+      silenced: 'normal',
+      status: 'notActivated',
+      createdAt: new Date(),
+    });
+    beforeEach(async () => {
+      repository.create(testNormalAccount);
+      repository.create(testFrozenAccount);
+      repository.create(testNotAcvivatedAccount);
+    });
+
+    it("can't edit other account data", async () => {
+      const nickname = await editService.editNickname(
+        etag,
+        account.getName(),
+        'new nickname',
+        testNormalAccount.getName(),
+      );
+      const passphrase = await editService.editPassphrase(
+        etag,
+        account.getName(),
+        'new password',
+        testNormalAccount.getName(),
+      );
+      const email = await editService.editEmail(
+        etag,
+        account.getName(),
+        'test@example.com',
+        testNormalAccount.getName(),
+      );
+      const bio = await editService.editBio(
+        etag,
+        account.getName(),
+        'new bio',
+        testNormalAccount.getName(),
+      );
+
+      expect(Result.isOk(nickname)).toBe(false);
+      expect(passphrase[1]).toStrictEqual(new Error('not allowed'));
+
+      expect(Result.isOk(email)).toBe(false);
+      expect(email[1]).toStrictEqual(new Error('not allowed'));
+
+      expect(Result.isOk(bio)).toBe(false);
+      expect(bio[1]).toStrictEqual(new Error('not allowed'));
+    });
+
+    it("can't edit account data if actor frozen", async () => {
+      const nickname = await editService.editNickname(
+        etag,
+        testFrozenAccount.getName(),
+        'new nickname',
+        testFrozenAccount.getName(),
+      );
+      const passphrase = await editService.editPassphrase(
+        etag,
+        testFrozenAccount.getName(),
+        'new password',
+        testFrozenAccount.getName(),
+      );
+      const email = await editService.editEmail(
+        etag,
+        testFrozenAccount.getName(),
+        'test@example.com',
+        testFrozenAccount.getName(),
+      );
+      const bio = await editService.editBio(
+        etag,
+        testFrozenAccount.getName(),
+        'new bio',
+        testFrozenAccount.getName(),
+      );
+
+      expect(Result.isOk(nickname)).toBe(false);
+      expect(passphrase[1]).toStrictEqual(new Error('not allowed'));
+
+      expect(Result.isOk(email)).toBe(false);
+      expect(email[1]).toStrictEqual(new Error('not allowed'));
+
+      expect(Result.isOk(bio)).toBe(false);
+      expect(bio[1]).toStrictEqual(new Error('not allowed'));
+    });
+
+    it("can't edit account data if actor not activated", async () => {
+      const nickname = await editService.editNickname(
+        etag,
+        testNotAcvivatedAccount.getName(),
+        'new nickname',
+        testNotAcvivatedAccount.getName(),
+      );
+      const passphrase = await editService.editPassphrase(
+        etag,
+        testNotAcvivatedAccount.getName(),
+        'new password',
+        testNotAcvivatedAccount.getName(),
+      );
+      const email = await editService.editEmail(
+        etag,
+        testNotAcvivatedAccount.getName(),
+        'test@example.com',
+        testNotAcvivatedAccount.getName(),
+      );
+      const bio = await editService.editBio(
+        etag,
+        testNotAcvivatedAccount.getName(),
+        'new bio',
+        testNotAcvivatedAccount.getName(),
+      );
+
+      expect(Result.isOk(nickname)).toBe(false);
+      expect(passphrase[1]).toStrictEqual(new Error('not allowed'));
+
+      expect(Result.isOk(email)).toBe(false);
+      expect(email[1]).toStrictEqual(new Error('not allowed'));
+
+      expect(Result.isOk(bio)).toBe(false);
+      expect(bio[1]).toStrictEqual(new Error('not allowed'));
+    });
   });
 });

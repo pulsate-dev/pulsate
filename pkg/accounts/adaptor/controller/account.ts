@@ -90,7 +90,7 @@ export class AccountController {
   }
 
   async updateAccount(
-    name: string,
+    target: string,
     args: {
       nickname?: string;
       email?: string;
@@ -98,14 +98,16 @@ export class AccountController {
       bio: string;
     },
     etag: string,
+    actorName: string,
   ): Promise<
     Result.Result<Error, z.infer<typeof UpdateAccountResponseSchema>>
   > {
     if (args.nickname) {
       const res = await this.editService.editNickname(
         etag,
-        name as AccountName,
+        target as AccountName,
         args.nickname,
+        actorName as AccountName,
       );
       if (Result.isErr(res)) {
         return res;
@@ -114,8 +116,9 @@ export class AccountController {
     if (args.passphrase) {
       const res = await this.editService.editPassphrase(
         etag,
-        name as AccountName,
+        target as AccountName,
         args.passphrase,
+        actorName as AccountName,
       );
       if (Result.isErr(res)) {
         return res;
@@ -124,8 +127,9 @@ export class AccountController {
     if (args.email) {
       const res = await this.editService.editEmail(
         etag,
-        name as AccountName,
+        target as AccountName,
         args.email,
+        actorName as AccountName,
       );
       if (Result.isErr(res)) {
         return res;
@@ -134,14 +138,15 @@ export class AccountController {
 
     const editedBioResp = await this.editService.editBio(
       etag,
-      name as AccountName,
+      target as AccountName,
       args.bio,
+      actorName as AccountName,
     );
     if (Result.isErr(editedBioResp)) {
       return Result.err(editedBioResp[1]);
     }
 
-    const res = await this.fetchService.fetchAccount(name as AccountName);
+    const res = await this.fetchService.fetchAccount(target as AccountName);
     if (Result.isErr(res)) {
       return res;
     }
@@ -155,8 +160,14 @@ export class AccountController {
     });
   }
 
-  async freezeAccount(name: string): Promise<Result.Result<Error, void>> {
-    const res = await this.freezeService.setFreeze(name as AccountName);
+  async freezeAccount(
+    target: string,
+    actor: string,
+  ): Promise<Result.Result<Error, void>> {
+    const res = await this.freezeService.setFreeze(
+      target as AccountName,
+      actor as AccountName,
+    );
     if (Result.isErr(res)) {
       return res;
     }
@@ -164,8 +175,14 @@ export class AccountController {
     return Result.ok(undefined);
   }
 
-  async unFreezeAccount(name: string): Promise<Result.Result<Error, void>> {
-    const res = await this.freezeService.undoFreeze(name as AccountName);
+  async unFreezeAccount(
+    name: string,
+    actor: string,
+  ): Promise<Result.Result<Error, void>> {
+    const res = await this.freezeService.undoFreeze(
+      name as AccountName,
+      actor as AccountName,
+    );
     if (Result.isErr(res)) {
       return res;
     }
@@ -234,9 +251,14 @@ export class AccountController {
     });
   }
 
-  async silenceAccount(name: string): Promise<Result.Result<Error, void>> {
-    // ToDo: check user's permission
-    const res = await this.silenceService.setSilence(name as AccountName);
+  async silenceAccount(
+    targetName: string,
+    actorName: string,
+  ): Promise<Result.Result<Error, void>> {
+    const res = await this.silenceService.setSilence(
+      targetName as AccountName,
+      actorName as AccountName,
+    );
     if (Result.isErr(res)) {
       return res;
     }
@@ -244,9 +266,15 @@ export class AccountController {
     return Result.ok(undefined);
   }
 
-  async unSilenceAccount(name: string): Promise<Result.Result<Error, void>> {
+  async unSilenceAccount(
+    targetName: string,
+    actorName: string,
+  ): Promise<Result.Result<Error, void>> {
     // ToDo: check user's permission
-    const res = await this.silenceService.undoSilence(name as AccountName);
+    const res = await this.silenceService.undoSilence(
+      targetName as AccountName,
+      actorName as AccountName,
+    );
     if (Result.isErr(res)) {
       return res;
     }
