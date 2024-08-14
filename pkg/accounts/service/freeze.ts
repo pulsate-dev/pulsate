@@ -106,7 +106,7 @@ export class FreezeService {
         }
 
         // NOTE: unFreeze action is allowed for only admin / moderator
-        if (actor.getRole() !== 'admin' || actor.getRole() !== 'moderator') {
+        if (actor.getRole() !== 'admin' && actor.getRole() !== 'moderator') {
           return false;
         }
 

@@ -1,7 +1,6 @@
 import { Option, Result } from '@mikuroxina/mini-fn';
-import { describe, expect, it } from 'vitest';
+import { beforeEach, describe, expect, it } from 'vitest';
 
-import { beforeEach } from 'node:test';
 import { InMemoryAccountRepository } from '../adaptor/repository/dummy.js';
 import { Account, type AccountID } from '../model/account.js';
 import { FreezeService } from './freeze.js';
@@ -85,41 +84,44 @@ describe('FreezeService', () => {
   beforeEach(() => repository.reset(testAccounts));
 
   it('set account freeze', async () => {
-    const account = await repository.findByName('@john@example.com');
-    if (Option.isNone(account)) return;
+    const account = Option.unwrap(
+      await repository.findByName('@john@example.com'),
+    );
 
     await freezeService.setFreeze('@john@example.com', '@alice@example.com');
 
-    expect(account[1].getFrozen()).toBe('frozen');
-    expect(account[1].getFrozen()).not.toBe('normal');
+    expect(account.getFrozen()).toBe('frozen');
+    expect(account.getFrozen()).not.toBe('normal');
   });
 
   it('unset account freeze', async () => {
-    const account = await repository.findByName('@john@example.com');
-    if (Option.isNone(account)) return;
-
     await freezeService.setFreeze('@john@example.com', '@alice@example.com');
 
     await freezeService.undoFreeze('@john@example.com', '@alice@example.com');
 
-    expect(account[1].getFrozen()).toBe('normal');
-    expect(account[1].getFrozen()).not.toBe('frozen');
+    const account = Option.unwrap(
+      await repository.findByName('@john@example.com'),
+    );
+
+    expect(account.getFrozen()).toBe('normal');
+    expect(account.getFrozen()).not.toBe('frozen');
   });
 
   describe('permission check', () => {
     beforeEach(() => repository.reset(testAccounts));
 
     it('cannot freeze self', async () => {
-      const account = await repository.findByName('@alice@example.com');
-      if (Option.isNone(account)) return;
-
       const result = await freezeService.setFreeze(
         '@alice@example.com',
         '@alice@example.com',
       );
+      const account = Option.unwrap(
+        await repository.findByName('@alice@example.com'),
+      );
 
       expect(Result.isErr(result)).toBe(true);
       expect(result[1]).toStrictEqual(new Error('not allowed'));
+      expect(account.getFrozen()).toBe('normal');
     });
 
     it('cannot freeze/unFreeze if actor is not admin or moderator', async () => {
