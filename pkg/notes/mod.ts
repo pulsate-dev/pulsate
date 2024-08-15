@@ -9,6 +9,10 @@ import {
 import { prismaClient } from '../adaptors/prisma.js';
 import { SnowflakeIDGenerator } from '../id/mod.js';
 import { accountModule } from '../intermodule/account.js';
+import {
+  dummyTimelineModuleFacade,
+  timelineModuleFacade,
+} from '../intermodule/timeline.js';
 import { BookmarkController } from './adaptor/controller/bookmark.js';
 import { NoteController } from './adaptor/controller/note.js';
 import { ReactionController } from './adaptor/controller/reaction.js';
@@ -76,6 +80,7 @@ const createService = new CreateService(
   noteRepository,
   idGenerator,
   attachmentRepository,
+  isProduction ? timelineModuleFacade : dummyTimelineModuleFacade(),
 );
 const fetchService = new FetchService(
   noteRepository,

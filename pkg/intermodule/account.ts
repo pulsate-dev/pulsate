@@ -18,6 +18,7 @@ import type { FetchService } from '../accounts/service/fetch.js';
 import { fetch } from '../accounts/service/fetch.js';
 import type { FetchFollowService } from '../accounts/service/fetchFollow.js';
 import { fetchFollow } from '../accounts/service/fetchFollow.js';
+import { dummyAccounts, dummyfollows } from '../accounts/testData/testData.js';
 import { prismaClient } from '../adaptors/prisma.js';
 
 export type { Account } from '../accounts/model/account.js';
@@ -130,9 +131,9 @@ export const accountModule = new AccountModuleFacade(
 
 const inMemoryAccountRepository = Ether.newEther(
   accountRepoSymbol,
-  () => new InMemoryAccountRepository([]),
+  () => new InMemoryAccountRepository(dummyAccounts),
 );
-const inMemoryFollowRepository = newFollowRepo();
+const inMemoryFollowRepository = newFollowRepo(dummyfollows);
 export const dummyAccountModuleFacade = new AccountModuleFacade(
   Ether.runEther(
     Cat.cat(fetch).feed(Ether.compose(inMemoryAccountRepository)).value,
