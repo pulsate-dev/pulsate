@@ -54,6 +54,7 @@ export class CreateService {
       }
 
       // ToDo: Even if the note cannot be pushed to the timeline, the note is created successfully, so there is no error here.
+      // ToDo: use job que to push note to timeline
       await this.timelineModule.pushNoteToTimeline(note);
 
       return Result.ok(note);
