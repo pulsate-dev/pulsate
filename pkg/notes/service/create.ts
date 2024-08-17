@@ -3,6 +3,7 @@ import { Option, Result } from '@mikuroxina/mini-fn';
 import type { AccountID } from '../../accounts/model/account.js';
 import type { MediumID } from '../../drive/model/medium.js';
 import type { SnowflakeIDGenerator } from '../../id/mod.js';
+import type { TimelineModuleFacade } from '../../intermodule/timeline.js';
 import { Note, type NoteID, type NoteVisibility } from '../model/note.js';
 import type {
   NoteAttachmentRepository,
@@ -52,6 +53,10 @@ export class CreateService {
         }
       }
 
+      // ToDo: Even if the note cannot be pushed to the timeline, the note is created successfully, so there is no error here.
+      // ToDo: use job que to push note to timeline
+      await this.timelineModule.pushNoteToTimeline(note);
+
       return Result.ok(note);
     } catch (e) {
       return Result.err(e as unknown as Error);
@@ -62,5 +67,6 @@ export class CreateService {
     private readonly noteRepository: NoteRepository,
     private readonly idGenerator: SnowflakeIDGenerator,
     private readonly noteAttachmentRepository: NoteAttachmentRepository,
+    private readonly timelineModule: TimelineModuleFacade,
   ) {}
 }

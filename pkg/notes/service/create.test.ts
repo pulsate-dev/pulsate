@@ -4,6 +4,8 @@ import { describe, expect, it } from 'vitest';
 import type { AccountID } from '../../accounts/model/account.js';
 import { Medium, type MediumID } from '../../drive/model/medium.js';
 import { SnowflakeIDGenerator } from '../../id/mod.js';
+import { dummyTimelineModuleFacade } from '../../intermodule/timeline.js';
+import { InMemoryTimelineCacheRepository } from '../../timeline/adaptor/repository/dummyCache.js';
 import {
   InMemoryNoteAttachmentRepository,
   InMemoryNoteRepository,
@@ -26,12 +28,15 @@ const attachmentRepository = new InMemoryNoteAttachmentRepository(
   }),
   [],
 );
+
+const timelineCacheRepository = new InMemoryTimelineCacheRepository();
 const createService = new CreateService(
   noteRepository,
   new SnowflakeIDGenerator(0, {
     now: () => BigInt(Date.UTC(2023, 9, 10, 0, 0)),
   }),
   attachmentRepository,
+  dummyTimelineModuleFacade(timelineCacheRepository),
 );
 
 describe('CreateService', () => {
@@ -98,5 +103,27 @@ describe('CreateService', () => {
     );
 
     expect(Result.isErr(res)).toBe(true);
+  });
+
+  it('should push note to timeline', async () => {
+    await createService.handle(
+      'Hello world',
+      '',
+      Option.none(),
+      '101' as AccountID,
+      [],
+      'PUBLIC',
+    );
+
+    const res1 = await timelineCacheRepository.getHomeTimeline(
+      '103' as AccountID,
+    );
+    const res2 = await timelineCacheRepository.getHomeTimeline(
+      '103' as AccountID,
+    );
+    expect(Result.isOk(res1)).toBe(true);
+    expect(Result.isOk(res2)).toBe(true);
+    expect(Result.unwrap(res1)).toHaveLength(1);
+    expect(Result.unwrap(res2)).toHaveLength(1);
   });
 });

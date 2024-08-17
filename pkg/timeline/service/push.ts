@@ -1,8 +1,11 @@
-import { Result } from '@mikuroxina/mini-fn';
+import { Ether, Result } from '@mikuroxina/mini-fn';
 
 import type { AccountModuleFacade } from '../../intermodule/account.js';
 import type { Note } from '../../notes/model/note.js';
-import type { TimelineNotesCacheRepository } from '../model/repository.js';
+import {
+  type TimelineNotesCacheRepository,
+  timelineNotesCacheRepoSymbol,
+} from '../model/repository.js';
 import type { FetchSubscribedListService } from './fetchSubscribed.js';
 import type { NoteVisibilityService } from './noteVisibility.js';
 
@@ -94,3 +97,27 @@ export class PushTimelineService {
     return res.find(Result.isErr) ?? Result.ok(undefined);
   }
 }
+
+export const pushTimelineSymbol = Ether.newEtherSymbol<PushTimelineService>();
+export const pushTimeline = Ether.newEther(
+  pushTimelineSymbol,
+  ({
+    accountModule,
+    noteVisibility,
+    timelineNotesCacheRepository,
+    fetchSubscribedListService,
+  }) =>
+    new PushTimelineService(
+      accountModule,
+      noteVisibility,
+      timelineNotesCacheRepository,
+      fetchSubscribedListService,
+    ),
+  {
+    accountModule: Ether.newEtherSymbol<AccountModuleFacade>(),
+    noteVisibility: Ether.newEtherSymbol<NoteVisibilityService>(),
+    timelineNotesCacheRepository: timelineNotesCacheRepoSymbol,
+    fetchSubscribedListService:
+      Ether.newEtherSymbol<FetchSubscribedListService>(),
+  },
+);

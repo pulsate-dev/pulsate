@@ -1,5 +1,6 @@
 import type { PartialAccount } from '../../intermodule/account.js';
 import { Account, type AccountID } from '../model/account.js';
+import { AccountFollow } from '../model/follow.js';
 
 export const dummyAccount1 = Account.new({
   id: '101' as AccountID,
@@ -27,7 +28,20 @@ export const dummyAccount2 = Account.new({
   frozen: 'normal',
   createdAt: new Date('2023-09-11T00:00:00Z'),
 });
-export const dummyAccounts = [dummyAccount1, dummyAccount2];
+export const dummyAccount3 = Account.new({
+  id: '103' as AccountID,
+  bio: 'テストのアカウントです',
+  mail: 'alice@example.com',
+  name: '@alice@example.com',
+  nickname: 'Alice',
+  passphraseHash: '',
+  role: 'normal',
+  silenced: 'normal',
+  status: 'active',
+  frozen: 'normal',
+  createdAt: new Date('2023-09-12T00:00:00Z'),
+});
+export const dummyAccounts = [dummyAccount1, dummyAccount2, dummyAccount3];
 
 export const partialAccount1: PartialAccount = {
   id: dummyAccount1.getID(),
@@ -42,3 +56,21 @@ export const partialAccount2: PartialAccount = {
   bio: dummyAccount2.getBio(),
 };
 export const partialAccounts = [partialAccount1, partialAccount2];
+
+export const dummyfollows: AccountFollow[] = [
+  AccountFollow.new({
+    fromID: '101' as AccountID,
+    targetID: '102' as AccountID,
+    createdAt: new Date('2023-09-12T00:00:00Z'),
+  }),
+  AccountFollow.new({
+    fromID: '102' as AccountID,
+    targetID: '101' as AccountID,
+    createdAt: new Date('2023-09-13T00:00:00Z'),
+  }),
+  AccountFollow.new({
+    fromID: '103' as AccountID,
+    targetID: '101' as AccountID,
+    createdAt: new Date('2023-09-14T00:00:00Z'),
+  }),
+];
