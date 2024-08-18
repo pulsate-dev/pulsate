@@ -6,10 +6,12 @@ import type { prismaClient } from '../../../adaptors/prisma.js';
 import { Medium, type MediumID } from '../../../drive/model/medium.js';
 import { Bookmark } from '../../model/bookmark.js';
 import { Note, type NoteID, type NoteVisibility } from '../../model/note.js';
+import { Reaction } from '../../model/reaction.js';
 import type {
   BookmarkRepository,
   NoteAttachmentRepository,
   NoteRepository,
+  ReactionRepository,
 } from '../../model/repository.js';
 
 type DeserializeNoteArgs = Prisma.PromiseReturnType<
@@ -133,6 +135,7 @@ export class PrismaNoteRepository implements NoteRepository {
       });
       return Option.some(res.map((v) => this.deserialize(v)));
     } catch {
+      // ToDo: logging here
       return Option.none();
     }
   }
@@ -302,6 +305,103 @@ export class PrismaNoteAttachmentRepository
         },
       });
       return Result.ok(this.deserialize(res));
+    } catch (e) {
+      return Result.err(e as Error);
+    }
+  }
+}
+
+type DeserializeReactionArgs = Prisma.PromiseReturnType<
+  typeof prismaClient.reaction.findUnique
+>;
+export class PrismaReactionRepository implements ReactionRepository {
+  constructor(private readonly client: PrismaClient) {}
+
+  private deserialize(data: DeserializeReactionArgs): Reaction {
+    if (!data) {
+      throw new Error('Invalid Reaction data');
+    }
+
+    return Reaction.new({
+      noteID: data.reactedToId as NoteID,
+      accountID: data.reactedById as AccountID,
+      body: data.body,
+    });
+  }
+
+  async create(
+    id: { noteID: NoteID; accountID: AccountID },
+    body: string,
+  ): Promise<Result.Result<Error, void>> {
+    try {
+      await this.client.reaction.create({
+        data: {
+          reactedToId: id.noteID,
+          reactedById: id.accountID,
+          body,
+        },
+      });
+
+      return Result.ok(undefined);
+    } catch (e) {
+      return Result.err(e as Error);
+    }
+  }
+
+  async findByID(id: { noteID: NoteID; accountID: AccountID }): Promise<
+    Option.Option<Reaction>
+  > {
+    try {
+      const res = await this.client.reaction.findUnique({
+        where: {
+          reactedById_reactedToId: {
+            reactedById: id.accountID,
+            reactedToId: id.noteID,
+          },
+          deletedAt: undefined,
+        },
+      });
+
+      return Option.some(this.deserialize(res));
+    } catch (e) {
+      console.log(e);
+      return Option.none();
+    }
+  }
+
+  async reactionsByAccount(
+    id: AccountID,
+  ): Promise<Result.Result<Error, Reaction[]>> {
+    try {
+      const res = await this.client.reaction.findMany({
+        where: {
+          reactedById: id,
+          deletedAt: undefined,
+        },
+      });
+
+      return Result.ok(res.map((v) => this.deserialize(v)));
+    } catch (e) {
+      return Result.err(e as Error);
+    }
+  }
+
+  async deleteByID(id: { noteID: NoteID; accountID: AccountID }): Promise<
+    Result.Result<Error, void>
+  > {
+    try {
+      await this.client.reaction.update({
+        where: {
+          reactedById_reactedToId: {
+            reactedById: id.accountID,
+            reactedToId: id.noteID,
+          },
+        },
+        data: {
+          deletedAt: new Date(),
+        },
+      });
+      return Result.ok(undefined);
     } catch (e) {
       return Result.err(e as Error);
     }
