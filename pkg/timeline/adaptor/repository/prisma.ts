@@ -141,14 +141,18 @@ export class PrismaListRepository implements ListRepository {
     });
   }
 
+  private serializeVisibility(isPublic: boolean): number {
+    // NOTE: private: 0, public: 1
+    return isPublic ? 1 : 0;
+  }
+
   async create(list: List): Promise<Result.Result<Error, void>> {
     try {
       await this.prisma.list.create({
         data: {
           id: list.getId(),
           title: list.getTitle(),
-          // NOTE: private: 0, public: 1
-          visibility: list.isPublic() ? 1 : 0,
+          visibility: this.serializeVisibility(list.isPublic()),
           account: {
             connect: {
               id: list.getOwnerId(),
@@ -275,7 +279,7 @@ export class PrismaListRepository implements ListRepository {
         },
         data: {
           title: list.getTitle(),
-          visibility: list.isPublic() ? 1 : 0,
+          visibility: this.serializeVisibility(list.isPublic()),
         },
       });
 
