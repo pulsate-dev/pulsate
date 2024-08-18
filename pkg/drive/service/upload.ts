@@ -109,8 +109,7 @@ export class UploadMediaService {
   > {
     // ToDo: separate cases when images are animated
 
-    const webp = await sharp(file).webp().toBuffer();
-    const resized = await sharp(webp).toBuffer();
+    const resized = await sharp(file).webp().toBuffer();
     const thumbnail = await sharp(resized).resize(200, 200).toBuffer();
 
     const { data, info } = await sharp(thumbnail)
