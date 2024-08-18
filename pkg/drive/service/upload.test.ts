@@ -29,7 +29,7 @@ describe('upload', () => {
     });
     const unwrapped = Result.unwrap(res);
     expect(unwrapped.getHash()).toStrictEqual(
-      'U6IX{S^znNM}01xv?bM{IU%MWBxu~WRiRk%L',
+      'U6IX{S^gnNNH0Kxv?bM{IU%MWBxu~WRiRk%L',
     );
     expect(unwrapped.getAuthorId()).toStrictEqual('1');
     expect(unwrapped.getName()).toStrictEqual('flower.jpg');
