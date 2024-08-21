@@ -25,7 +25,7 @@ importers:
         version: 5.18.0(prisma@5.18.0)
       '@scalar/hono-api-reference':
         specifier: ^0.5.0
-        version: 0.5.140(hono@4.5.5)
+        version: 0.5.141(hono@4.5.5)
       argon2:
         specifier: ^0.40.0
         version: 0.40.3
@@ -739,8 +739,8 @@ packages:
     cpu: [x64]
     os: [win32]
 
-  '@scalar/hono-api-reference@0.5.140':
-    resolution: {integrity: sha512-CFELgYAtFQpAFzuTywWqgbmCjnPygSKf8DlE7slTXpEI8ehSp/h3IICUYLA2+xa9CubM4C+RIINnoRuUP4k00w==}
+  '@scalar/hono-api-reference@0.5.141':
+    resolution: {integrity: sha512-EFGgjf91RRRlyOJgZfCH/aiD8UXhgIeFdNEdHQZF20UoJr5NvugKUsK3YYm8StkJ3Q7ApXm9ASnkeU2oiGgbnA==}
     engines: {node: '>=18'}
     peerDependencies:
       hono: ^4.0.0
@@ -749,12 +749,12 @@ packages:
     resolution: {integrity: sha512-qMcUrhe+JRXlI9VGWcY/xGHkGplHdZ5UdGFXJ0q9e20gFVk2HMApE98Mo2iUp42Gff0xHIcNHaEQKAhdfW3R2Q==}
     engines: {node: '>=18'}
 
-  '@scalar/themes@0.9.25':
-    resolution: {integrity: sha512-95LjyXF3jImbzp8WbYD5mNXulcJ196EeA0A1e6k8OmLkVXlXEomOKXkSlVOCR6dNR2NpbF6gKkorrUHgIe7cgQ==}
+  '@scalar/themes@0.9.26':
+    resolution: {integrity: sha512-94bEZgnTYZLaZiaiM/e7dY8EiK3UZxfd7Tp88f+8MWz314Jtg1klb2QOu7aJLgPIxoenSmF15IKkdKHB2bNKyQ==}
     engines: {node: '>=18'}
 
-  '@scalar/types@0.0.2':
-    resolution: {integrity: sha512-+rzKOSoq4qsVVCURceIXfhuGDOMeoRRrMBKTe2Imri4+wsEmfIcFUnEJ9vbGCfIgMHtZ6dQEh2hAnbNRcfKUAw==}
+  '@scalar/types@0.0.3':
+    resolution: {integrity: sha512-urSd+/ydgAQPNEpc6vvCMRjPi9rxx3whEne6JimVyPUefmzkIvamMce0DpJFKTbbwy/eYceLNCPbyq4NzWo/4A==}
     engines: {node: '>=18'}
 
   '@sec-ant/readable-stream@0.4.1':
@@ -769,8 +769,8 @@ packages:
   '@types/node@20.14.15':
     resolution: {integrity: sha512-Fz1xDMCF/B00/tYSVMlmK7hVeLh7jE5f3B7X1/hmV0MJBwE27KlS7EvD/Yp+z1lm8mVhwV5w+n8jOZG8AfTlKw==}
 
-  '@unhead/schema@1.9.16':
-    resolution: {integrity: sha512-V2BshX+I6D2wN4ys5so8RQDUgsggsxW9FVBiuQi4h8oPWtHclogxzDiHa5BH2TgvNIoUxLnLYNAShMGipmVuUw==}
+  '@unhead/schema@1.10.0':
+    resolution: {integrity: sha512-hmgkFdLzm/VPLAXBF89Iry4Wz/6FpHMfMKCnAdihAt1Ublsi04RrA0hQuAiuGG2CZiKL4VCxtmV++UXj/kyakA==}
 
   '@vitest/coverage-v8@2.0.5':
     resolution: {integrity: sha512-qeFcySCg5FLO2bHHSa0tAZAOnAUbp4L6/A5JDuj9+bt53JREl8hpLjLHEWF0e/gWc8INVpJaqA7+Ene2rclpZg==}
@@ -1820,20 +1820,20 @@ snapshots:
   '@rollup/rollup-win32-x64-msvc@4.20.0':
     optional: true
 
-  '@scalar/hono-api-reference@0.5.140(hono@4.5.5)':
+  '@scalar/hono-api-reference@0.5.141(hono@4.5.5)':
     dependencies:
-      '@scalar/types': 0.0.2
+      '@scalar/types': 0.0.3
       hono: 4.5.5
 
   '@scalar/openapi-types@0.0.1': {}
 
-  '@scalar/themes@0.9.25': {}
+  '@scalar/themes@0.9.26': {}
 
-  '@scalar/types@0.0.2':
+  '@scalar/types@0.0.3':
     dependencies:
       '@scalar/openapi-types': 0.0.1
-      '@scalar/themes': 0.9.25
-      '@unhead/schema': 1.9.16
+      '@scalar/themes': 0.9.26
+      '@unhead/schema': 1.10.0
 
   '@sec-ant/readable-stream@0.4.1': {}
 
@@ -1845,7 +1845,7 @@ snapshots:
     dependencies:
       undici-types: 5.26.5
 
-  '@unhead/schema@1.9.16':
+  '@unhead/schema@1.10.0':
     dependencies:
       hookable: 5.5.3
       zhead: 2.2.4
