@@ -13,10 +13,10 @@ importers:
         version: 1.12.1
       '@hono/swagger-ui':
         specifier: ^0.4.0
-        version: 0.4.0(hono@4.5.6)
+        version: 0.4.0(hono@4.5.7)
       '@hono/zod-openapi':
         specifier: ^0.15.0
-        version: 0.15.3(hono@4.5.6)(zod@3.23.8)
+        version: 0.15.3(hono@4.5.7)(zod@3.23.8)
       '@mikuroxina/mini-fn':
         specifier: ^6.3.1
         version: 6.6.0
@@ -25,7 +25,7 @@ importers:
         version: 5.18.0(prisma@5.18.0)
       '@scalar/hono-api-reference':
         specifier: ^0.5.0
-        version: 0.5.141(hono@4.5.6)
+        version: 0.5.141(hono@4.5.7)
       argon2:
         specifier: ^0.40.0
         version: 0.40.3
@@ -37,7 +37,7 @@ importers:
         version: 19.4.1
       hono:
         specifier: ^4.0.0
-        version: 4.5.6
+        version: 4.5.7
       ioredis:
         specifier: ^5.4.1
         version: 5.4.1
@@ -947,8 +947,8 @@ packages:
     resolution: {integrity: sha512-EykJT/Q1KjTWctppgIAgfSO0tKVuZUjhgMr17kqTumMl6Afv3EISleU7qZUzoXDFTAHTDC4NOoG/ZxU3EvlMPQ==}
     engines: {node: '>=8'}
 
-  hono@4.5.6:
-    resolution: {integrity: sha512-9SuUC/zLQv8YAcnIxJko0KCeLI0Q6menPsDWuJ9jaH+r8ZkVXeLqeLs1QJXCPKKbURAWj9x0SJBSFh803EnAUw==}
+  hono@4.5.7:
+    resolution: {integrity: sha512-7GeBa+zuZ6rXQEcsYvoAafLNgDr3IMxoMlU1JUc23Buy99FaUpjB0viKIFOsfnzMdEp7RhPL6uLYsVuddjdMvw==}
     engines: {node: '>=16.0.0'}
 
   hookable@5.5.3:
@@ -1609,20 +1609,20 @@ snapshots:
 
   '@hono/node-server@1.12.1': {}
 
-  '@hono/swagger-ui@0.4.0(hono@4.5.6)':
+  '@hono/swagger-ui@0.4.0(hono@4.5.7)':
     dependencies:
-      hono: 4.5.6
+      hono: 4.5.7
 
-  '@hono/zod-openapi@0.15.3(hono@4.5.6)(zod@3.23.8)':
+  '@hono/zod-openapi@0.15.3(hono@4.5.7)(zod@3.23.8)':
     dependencies:
       '@asteasolutions/zod-to-openapi': 7.1.1(zod@3.23.8)
-      '@hono/zod-validator': 0.2.2(hono@4.5.6)(zod@3.23.8)
-      hono: 4.5.6
+      '@hono/zod-validator': 0.2.2(hono@4.5.7)(zod@3.23.8)
+      hono: 4.5.7
       zod: 3.23.8
 
-  '@hono/zod-validator@0.2.2(hono@4.5.6)(zod@3.23.8)':
+  '@hono/zod-validator@0.2.2(hono@4.5.7)(zod@3.23.8)':
     dependencies:
-      hono: 4.5.6
+      hono: 4.5.7
       zod: 3.23.8
 
   '@img/sharp-darwin-arm64@0.33.5':
@@ -1812,10 +1812,10 @@ snapshots:
   '@rollup/rollup-win32-x64-msvc@4.20.0':
     optional: true
 
-  '@scalar/hono-api-reference@0.5.141(hono@4.5.6)':
+  '@scalar/hono-api-reference@0.5.141(hono@4.5.7)':
     dependencies:
       '@scalar/types': 0.0.3
-      hono: 4.5.6
+      hono: 4.5.7
 
   '@scalar/openapi-types@0.0.1': {}
 
@@ -2088,7 +2088,7 @@ snapshots:
 
   has-flag@4.0.0: {}
 
-  hono@4.5.6: {}
+  hono@4.5.7: {}
 
   hookable@5.5.3: {}
 
