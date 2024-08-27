@@ -61,11 +61,6 @@ export class RenoteService {
     const originalNote = Option.unwrap(originalNoteRes);
 
     switch (originalNote.getVisibility()) {
-      case 'PUBLIC':
-        break;
-      case 'HOME':
-        break;
-
       case 'FOLLOWERS':
         // NOTE: FOLLOWERS note can renote only author
         if (originalNote.getAuthorID() !== authorID) {
@@ -115,16 +110,14 @@ export class RenoteService {
 
   private isAllowed(actor: Account, visibility: NoteVisibility): boolean {
     // NOTE: actor must be active, not frozen
-    if (!(actor.getStatus() === 'active' || actor.getFrozen() === 'normal')) {
+    if (actor.getStatus() !== 'active') {
       return false;
     }
 
-    if (actor.getStatus() === 'notActivated') {
+    if (actor.getFrozen() !== 'normal') {
       return false;
     }
-    if (actor.getFrozen() === 'frozen') {
-      return false;
-    }
+
     if (actor.getSilenced() === 'silenced') {
       // NOTE: silenced account can not set note visibility to PUBLIC
       if (visibility === 'PUBLIC') {
