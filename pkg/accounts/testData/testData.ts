@@ -1,59 +1,109 @@
 import type { PartialAccount } from '../../intermodule/account.js';
-import { Account, type AccountID } from '../model/account.js';
+import {
+  Account,
+  type AccountFrozen,
+  type AccountID,
+  type AccountName,
+  type AccountRole,
+  type AccountSilenced,
+  type AccountStatus,
+} from '../model/account.js';
 import { AccountFollow } from '../model/follow.js';
 
-export const dummyAccount1 = Account.new({
+/**
+ * @description generate dummy account (factory function)
+ * @param args dummy accont's data
+ * @returns {@link Account}
+ */
+export const generateDummyAccount = (args: {
+  id: AccountID;
+  name: AccountName;
+  role: AccountRole;
+  silenced: AccountSilenced;
+  status: AccountStatus;
+  frozen: AccountFrozen;
+  createdAt: Date;
+}): Account => {
+  return Account.reconstruct({
+    id: args.id,
+    bio: 'this is test user',
+    mail: 'testuser@example.com',
+    name: args.name,
+    nickname: `test user ${args.id}`,
+    passphraseHash: '029833kjnert945@@sfne',
+    role: args.role,
+    silenced: args.silenced,
+    status: args.status,
+    frozen: args.frozen,
+    createdAt: args.createdAt,
+  });
+};
+
+export const dummyNormalAccount1 = generateDummyAccount({
   id: '101' as AccountID,
-  bio: 'this is test user',
-  mail: 'john@example.com',
   name: '@john@example.com',
-  nickname: 'John Doe',
-  passphraseHash: '',
   role: 'normal',
   silenced: 'normal',
   status: 'active',
   frozen: 'normal',
   createdAt: new Date('2023-09-10T00:00:00Z'),
 });
-export const dummyAccount2 = Account.new({
+export const dummyNormalAccount2 = generateDummyAccount({
   id: '102' as AccountID,
-  bio: 'Hello world ✨',
-  mail: 'john@example.com',
   name: '@johndoe@example.com',
-  nickname: '🌤 John',
-  passphraseHash: '',
   role: 'normal',
   silenced: 'normal',
   status: 'active',
   frozen: 'normal',
   createdAt: new Date('2023-09-11T00:00:00Z'),
 });
-export const dummyAccount3 = Account.new({
+export const dummyNormalAccount3 = generateDummyAccount({
   id: '103' as AccountID,
-  bio: 'テストのアカウントです',
-  mail: 'alice@example.com',
   name: '@alice@example.com',
-  nickname: 'Alice',
-  passphraseHash: '',
   role: 'normal',
   silenced: 'normal',
   status: 'active',
   frozen: 'normal',
   createdAt: new Date('2023-09-12T00:00:00Z'),
 });
-export const dummyAccounts = [dummyAccount1, dummyAccount2, dummyAccount3];
+export const dummyFrozenAccount = generateDummyAccount({
+  id: '104' as AccountID,
+  name: '@frozen@example.com',
+  role: 'normal',
+  silenced: 'normal',
+  status: 'active',
+  frozen: 'frozen',
+  createdAt: new Date('2023-09-13T00:00:00Z'),
+});
+export const dummySilencedAccount = generateDummyAccount({
+  id: '105' as AccountID,
+  name: '@silenced@example.com',
+  role: 'normal',
+  silenced: 'silenced',
+  status: 'active',
+  frozen: 'normal',
+  createdAt: new Date('2023-09-14T00:00:00Z'),
+});
+
+export const dummyAccounts = [
+  dummyNormalAccount1,
+  dummyNormalAccount2,
+  dummyNormalAccount3,
+  dummyFrozenAccount,
+  dummySilencedAccount,
+];
 
 export const partialAccount1: PartialAccount = {
-  id: dummyAccount1.getID(),
-  name: dummyAccount1.getName(),
-  nickname: dummyAccount1.getNickname(),
-  bio: dummyAccount1.getBio(),
+  id: dummyNormalAccount1.getID(),
+  name: dummyNormalAccount1.getName(),
+  nickname: dummyNormalAccount1.getNickname(),
+  bio: dummyNormalAccount1.getBio(),
 };
 export const partialAccount2: PartialAccount = {
-  id: dummyAccount2.getID(),
-  name: dummyAccount2.getName(),
-  nickname: dummyAccount2.getNickname(),
-  bio: dummyAccount2.getBio(),
+  id: dummyNormalAccount2.getID(),
+  name: dummyNormalAccount2.getName(),
+  nickname: dummyNormalAccount2.getNickname(),
+  bio: dummyNormalAccount2.getBio(),
 };
 export const partialAccounts = [partialAccount1, partialAccount2];
 

@@ -8,7 +8,10 @@ import {
 } from '../adaptors/authenticateMiddleware.js';
 import { prismaClient } from '../adaptors/prisma.js';
 import { SnowflakeIDGenerator } from '../id/mod.js';
-import { accountModule } from '../intermodule/account.js';
+import {
+  accountModule,
+  dummyAccountModuleFacade,
+} from '../intermodule/account.js';
 import {
   dummyTimelineModuleFacade,
   timelineModuleFacade,
@@ -91,6 +94,7 @@ const renoteService = new RenoteService(
   noteRepository,
   idGenerator,
   attachmentRepository,
+  isProduction ? accountModule : dummyAccountModuleFacade,
 );
 const controller = new NoteController(
   createService,
