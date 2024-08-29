@@ -43,7 +43,6 @@ export class RenoteService {
     // NOTE: PUBLIC, HOME note can be renote
     switch (visibility) {
       case 'PUBLIC':
-        break;
       case 'HOME':
         break;
       default:
@@ -61,6 +60,9 @@ export class RenoteService {
     const originalNote = Option.unwrap(originalNoteRes);
 
     switch (originalNote.getVisibility()) {
+      case 'PUBLIC':
+      case 'HOME':
+        break;
       case 'FOLLOWERS':
         // NOTE: FOLLOWERS note can renote only author
         if (originalNote.getAuthorID() !== authorID) {
