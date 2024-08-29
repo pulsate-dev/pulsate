@@ -37,7 +37,7 @@
     "@mikuroxina/mini-fn": "^6.3.1",
     "@prisma/client": "5.18.0",
     "@scalar/hono-api-reference": "^0.5.0",
-    "argon2": "^0.40.0",
+    "argon2": "^0.41.0",
     "blurhash": "^2.0.5",
     "file-type": "^19.0.0",
     "hono": "^4.0.0",
