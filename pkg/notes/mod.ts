@@ -30,6 +30,7 @@ import {
   PrismaBookmarkRepository,
   PrismaNoteAttachmentRepository,
   PrismaNoteRepository,
+  PrismaReactionRepository,
 } from './adaptor/repository/prisma.js';
 import {
   CreateBookmarkRoute,
@@ -57,7 +58,9 @@ const noteRepository = isProduction
 const bookmarkRepository = isProduction
   ? new PrismaBookmarkRepository(prismaClient)
   : new InMemoryBookmarkRepository();
-const reactionRepository = new InMemoryReactionRepository();
+const reactionRepository = isProduction
+  ? new PrismaReactionRepository(prismaClient)
+  : new InMemoryReactionRepository();
 const attachmentRepository = isProduction
   ? new PrismaNoteAttachmentRepository(prismaClient)
   : new InMemoryNoteAttachmentRepository([], []);
@@ -89,6 +92,7 @@ const fetchService = new FetchService(
   noteRepository,
   accountModule,
   attachmentRepository,
+  reactionRepository,
 );
 const renoteService = new RenoteService(
   noteRepository,

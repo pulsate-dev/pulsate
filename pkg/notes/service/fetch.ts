@@ -3,9 +3,11 @@ import { Option, Result } from '@mikuroxina/mini-fn';
 import type { Medium } from '../../drive/model/medium.js';
 import type { AccountModuleFacade } from '../../intermodule/account.js';
 import type { Note, NoteID } from '../model/note.js';
+import type { Reaction } from '../model/reaction.js';
 import type {
   NoteAttachmentRepository,
   NoteRepository,
+  ReactionRepository,
 } from '../model/repository.js';
 
 export class FetchService {
@@ -13,6 +15,7 @@ export class FetchService {
     private readonly noteRepository: NoteRepository,
     private readonly accountModule: AccountModuleFacade,
     private readonly noteAttachmentRepository: NoteAttachmentRepository,
+    private readonly reactionRepository: ReactionRepository,
   ) {}
 
   async fetchNoteByID(noteID: NoteID): Promise<Option.Option<Note>> {
@@ -44,5 +47,11 @@ export class FetchService {
     noteID: NoteID,
   ): Promise<Result.Result<Error, Medium[]>> {
     return await this.noteAttachmentRepository.findByNoteID(noteID);
+  }
+
+  async fetchNoteReactions(
+    noteID: NoteID,
+  ): Promise<Result.Result<Error, Reaction[]>> {
+    return await this.reactionRepository.findByNoteID(noteID);
   }
 }

@@ -9,6 +9,7 @@ import { dummyAccountModuleFacade } from '../../intermodule/account.js';
 import {
   InMemoryNoteAttachmentRepository,
   InMemoryNoteRepository,
+  InMemoryReactionRepository,
 } from '../adaptor/repository/dummy.js';
 import { Note, type NoteID } from '../model/note.js';
 import { FetchService } from './fetch.js';
@@ -94,11 +95,13 @@ const noteAttachmentRepository = new InMemoryNoteAttachmentRepository(
   [testMedium, testNSFWMedium],
   [['1' as NoteID, ['300' as MediumID, '301' as MediumID]]],
 );
+const reactionRepository = new InMemoryReactionRepository();
 
 const service = new FetchService(
   repository,
   dummyAccountModuleFacade,
   noteAttachmentRepository,
+  reactionRepository,
 );
 
 describe('FetchService', () => {
