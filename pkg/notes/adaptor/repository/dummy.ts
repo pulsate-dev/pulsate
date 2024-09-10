@@ -242,6 +242,12 @@ export class InMemoryReactionRepository implements ReactionRepository {
 
     return Result.ok(reactions);
   }
+  async findByNoteID(id: NoteID): Promise<Result.Result<Error, Reaction[]>> {
+    const reactions = [...this.reactions.entries()]
+      .filter((v) => this.disassembleID(v[0]).noteID === id)
+      .map((v) => v[1]);
+    return Result.ok(reactions);
+  }
   async deleteByID(id: { accountID: AccountID; noteID: NoteID }): Promise<
     Result.Result<Error, void>
   > {

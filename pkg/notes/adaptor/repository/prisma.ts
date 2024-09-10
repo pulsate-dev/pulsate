@@ -255,7 +255,7 @@ export class PrismaNoteAttachmentRepository
   constructor(private readonly client: PrismaClient) {}
 
   private deserialize(data: DeserializeNoteAttachmentArgs): Medium[] {
-    data.map((v) => {
+    return data.map((v) => {
       const medium = v.medium;
       return Medium.reconstruct({
         authorId: medium.authorId as AccountID,
@@ -268,8 +268,6 @@ export class PrismaNoteAttachmentRepository
         url: medium.url,
       });
     });
-
-    return [];
   }
 
   async create(
@@ -376,6 +374,21 @@ export class PrismaReactionRepository implements ReactionRepository {
       const res = await this.client.reaction.findMany({
         where: {
           reactedById: id,
+          deletedAt: undefined,
+        },
+      });
+
+      return Result.ok(res.map((v) => this.deserialize(v)));
+    } catch (e) {
+      return Result.err(e as Error);
+    }
+  }
+
+  async findByNoteID(id: NoteID): Promise<Result.Result<Error, Reaction[]>> {
+    try {
+      const res = await this.client.reaction.findMany({
+        where: {
+          reactedToId: id,
           deletedAt: undefined,
         },
       });

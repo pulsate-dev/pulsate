@@ -101,6 +101,14 @@ export class NoteController {
     }
     const attachments = Result.unwrap(attachmentsRes);
 
+    const reactionsRes = await this.fetchService.fetchNoteReactions(
+      note.getID(),
+    );
+    if (Result.isErr(reactionsRes)) {
+      return reactionsRes;
+    }
+    const reactions = Result.unwrap(reactionsRes);
+
     return Result.ok({
       id: note.getID(),
       content: note.getContent(),
@@ -120,6 +128,12 @@ export class NoteController {
           author_id: v.getAuthorId(),
           nsfw: v.isNsfw(),
           thumbnail: v.getThumbnailUrl(),
+        };
+      }),
+      reactions: reactions.map((v) => {
+        return {
+          emoji: v.getEmoji(),
+          reacted_by: v.getAccountID(),
         };
       }),
       author: {
@@ -157,13 +171,13 @@ export class NoteController {
     }
     const renote = Result.unwrap(renoteRes);
 
-    const attachmetsRes = await this.fetchService.fetchNoteAttachments(
+    const attachmentsRes = await this.fetchService.fetchNoteAttachments(
       renote.getID(),
     );
-    if (Result.isErr(attachmetsRes)) {
-      return attachmetsRes;
+    if (Result.isErr(attachmentsRes)) {
+      return attachmentsRes;
     }
-    const attachments = Result.unwrap(attachmetsRes);
+    const attachments = Result.unwrap(attachmentsRes);
 
     return Result.ok({
       id: renote.getID(),

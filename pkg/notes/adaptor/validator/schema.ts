@@ -1,4 +1,5 @@
 import { z } from '@hono/zod-openapi';
+import { EmojiSchema } from '../../model/reaction.js';
 
 export const CommonErrorSchema = z.object({
   // ToDo: define error code list (oneOf)
@@ -41,6 +42,17 @@ export const noteAttachmentSchema = z.object({
   thumbnail: z.string().openapi({
     example: 'https://images.example.com/image_thumbnail.webp',
     description: 'attachment thumbnail url',
+  }),
+});
+
+export const reactionSchema = z.object({
+  emoji: EmojiSchema.openapi({
+    description: 'Reaction Emoji (Unicode or Custom Emoji)',
+    examples: ['🎉', '<:custom_emoji:123456789>'],
+  }),
+  reacted_by: z.string().openapi({
+    example: '38477395',
+    description: 'Reacted account ID',
   }),
 });
 
@@ -145,7 +157,9 @@ export const GetNoteResponseSchema = z.object({
     followed_count: z.number(),
     following_count: z.number(),
   }),
-  // ToDo: add reactions
+  reactions: z.array(reactionSchema).openapi({
+    description: 'Reactions',
+  }),
   attachment_files: z.array(noteAttachmentSchema).max(16).openapi({
     description: 'Note Attachment Media',
   }),

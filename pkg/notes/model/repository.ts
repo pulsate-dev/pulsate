@@ -53,6 +53,7 @@ export interface ReactionRepository {
     accountID: AccountID;
   }): Promise<Option.Option<Reaction>>;
   reactionsByAccount(id: AccountID): Promise<Result.Result<Error, Reaction[]>>;
+  findByNoteID(id: NoteID): Promise<Result.Result<Error, Reaction[]>>;
   deleteByID(id: {
     noteID: NoteID;
     accountID: AccountID;

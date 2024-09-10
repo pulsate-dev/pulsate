@@ -2,15 +2,15 @@ import { z } from '@hono/zod-openapi';
 import type { AccountID } from '../../accounts/model/account.js';
 import type { NoteID } from './note.js';
 
-const UnicodeEmojiSchema = z
+export const UnicodeEmojiSchema = z
   .string()
   .regex(
     /[\u2700-\u27BF]|[\uE000-\uF8FF]|\uD83C[\uDC00-\uDFFF]|\uD83D[\uDC00-\uDFFF]|[\u2011-\u26FF]|\uD83E[\uDD10-\uDDFF]/,
   );
 
-const CustomEmojiSchema = z.string().regex(/<:(\w+):(\d+)>/);
+export const CustomEmojiSchema = z.string().regex(/<:(\w+):(\d+)>/);
 
-const EmojiSchema = z.union([UnicodeEmojiSchema, CustomEmojiSchema]);
+export const EmojiSchema = z.union([UnicodeEmojiSchema, CustomEmojiSchema]);
 
 type Emoji = z.infer<typeof EmojiSchema>;
 
