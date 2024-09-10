@@ -2072,6 +2072,41 @@
                         "following_count"
                       ]
                     },
+                    "reactions": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "emoji": {
+                            "anyOf": [
+                              {
+                                "type": "string",
+                                "pattern": "[\\u2700-\\u27BF]|[\\uE000-\\uF8FF]|\\uD83C[\\uDC00-\\uDFFF]|\\uD83D[\\uDC00-\\uDFFF]|[\\u2011-\\u26FF]|\\uD83E[\\uDD10-\\uDDFF]"
+                              },
+                              {
+                                "type": "string",
+                                "pattern": "<:(\\w+):(\\d+)>"
+                              }
+                            ],
+                            "description": "Reaction Emoji (Unicode or Custom Emoji)",
+                            "examples": [
+                              "🎉",
+                              "<:custom_emoji:123456789>"
+                            ]
+                          },
+                          "reacted_by": {
+                            "type": "string",
+                            "description": "Reacted account ID",
+                            "example": "38477395"
+                          }
+                        },
+                        "required": [
+                          "emoji",
+                          "reacted_by"
+                        ]
+                      },
+                      "description": "Reactions"
+                    },
                     "attachment_files": {
                       "type": "array",
                       "items": {
@@ -2141,6 +2176,7 @@
                     "visibility",
                     "created_at",
                     "author",
+                    "reactions",
                     "attachment_files"
                   ]
                 }
