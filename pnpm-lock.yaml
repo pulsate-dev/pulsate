@@ -25,7 +25,7 @@ importers:
         version: 5.19.1(prisma@5.19.1)
       '@scalar/hono-api-reference':
         specifier: ^0.5.0
-        version: 0.5.144(hono@4.5.11)
+        version: 0.5.145(hono@4.5.11)
       argon2:
         specifier: ^0.41.0
         version: 0.41.1
@@ -733,8 +733,8 @@ packages:
     cpu: [x64]
     os: [win32]
 
-  '@scalar/hono-api-reference@0.5.144':
-    resolution: {integrity: sha512-ZeboJSlH8ZvdUjVGOZ1XEXKCvyls/s2MS+3Qif8EuTPGi6BG7hjYlcIk74perMc+zZfJl0b61aeaHlqqQ+El+A==}
+  '@scalar/hono-api-reference@0.5.145':
+    resolution: {integrity: sha512-ySfQ+fz1hyX/aWIZ+7Ict/LX3Y4uNVXhBZJqORI0yDUNfw/eqYUH47PHLqg3a+j7Und54RqQY8TKQkH9xQkzog==}
     engines: {node: '>=18'}
     peerDependencies:
       hono: ^4.0.0
@@ -747,8 +747,8 @@ packages:
     resolution: {integrity: sha512-2pFGnjSBL2daPA5roRNRDy8xAHpeTI5QYpfyTj88iIaYT68EVnDUheUA2i3vRB705FCGEbDR0xKD7poTSfAYng==}
     engines: {node: '>=18'}
 
-  '@scalar/types@0.0.6':
-    resolution: {integrity: sha512-MeL08EQO+lA8rJwS8Efch7KYs15G3Bm4XtNmJPRS1Ae85exWXkVS73TDlIyNBfk4eV+COs3tbBBLaUHpxUlRbQ==}
+  '@scalar/types@0.0.7':
+    resolution: {integrity: sha512-ylMAM8Kx+mSVu1yBipz7h2pQrEXyMTHkYWc/UigGdn3dpuBArTnkBdJte85yH/7+R630HGm3FSbAHSioOCT+vA==}
     engines: {node: '>=18'}
 
   '@sec-ant/readable-stream@0.4.1':
@@ -763,8 +763,8 @@ packages:
   '@types/node@20.16.5':
     resolution: {integrity: sha512-VwYCweNo3ERajwy0IUlqqcyZ8/A7Zwa9ZP3MnENWcB11AejO+tLy3pu850goUW2FC/IJMdZUfKpX/yxL1gymCA==}
 
-  '@unhead/schema@1.10.4':
-    resolution: {integrity: sha512-nX9sJgKPy2t4GHB9ky/vkMLbYqXl9Num5NZToTr0rKrIGkshzHhUrbn/EiHreIjcGI1eIpu+edniCDIwGTJgmw==}
+  '@unhead/schema@1.11.2':
+    resolution: {integrity: sha512-ALyIIA0084JjGQJD6tJetQdqVNw/V6d2LaCC06jSm+JUqxsRWRZcSbNZUg5xr0T4xQPrefZYrGp76PbOdotPbQ==}
 
   '@vitest/coverage-v8@2.0.5':
     resolution: {integrity: sha512-qeFcySCg5FLO2bHHSa0tAZAOnAUbp4L6/A5JDuj9+bt53JREl8hpLjLHEWF0e/gWc8INVpJaqA7+Ene2rclpZg==}
@@ -1816,20 +1816,20 @@ snapshots:
   '@rollup/rollup-win32-x64-msvc@4.20.0':
     optional: true
 
-  '@scalar/hono-api-reference@0.5.144(hono@4.5.11)':
+  '@scalar/hono-api-reference@0.5.145(hono@4.5.11)':
     dependencies:
-      '@scalar/types': 0.0.6
+      '@scalar/types': 0.0.7
       hono: 4.5.11
 
   '@scalar/openapi-types@0.1.0': {}
 
   '@scalar/themes@0.9.28': {}
 
-  '@scalar/types@0.0.6':
+  '@scalar/types@0.0.7':
     dependencies:
       '@scalar/openapi-types': 0.1.0
       '@scalar/themes': 0.9.28
-      '@unhead/schema': 1.10.4
+      '@unhead/schema': 1.11.2
 
   '@sec-ant/readable-stream@0.4.1': {}
 
@@ -1841,7 +1841,7 @@ snapshots:
     dependencies:
       undici-types: 6.19.8
 
-  '@unhead/schema@1.10.4':
+  '@unhead/schema@1.11.2':
     dependencies:
       hookable: 5.5.3
       zhead: 2.2.4
