@@ -34,7 +34,7 @@ importers:
         version: 2.0.5
       file-type:
         specifier: ^19.0.0
-        version: 19.4.1
+        version: 19.5.0
       hono:
         specifier: ^4.0.0
         version: 4.5.11
@@ -912,8 +912,8 @@ packages:
     resolution: {integrity: sha512-VyhnebXciFV2DESc+p6B+y0LjSm0krU4OgJN44qFAhBY0TJ+1V61tYD2+wHusZ6F9n5K+vl8k0sTy7PEfV4qpg==}
     engines: {node: '>=16.17'}
 
-  file-type@19.4.1:
-    resolution: {integrity: sha512-RuWzwF2L9tCHS76KR/Mdh+DwJZcFCzrhrPXpOw6MlEfl/o31fjpTikzcKlYuyeV7e7ftdCGVJTNOCzkYD/aLbw==}
+  file-type@19.5.0:
+    resolution: {integrity: sha512-dMuq6WWnP6BpQY0zYJNpTtQWgeCImSMG0BTIzUBXvxbwc1HWP/E7AE4UWU9XSCOPGJuOHda0HpDnwM2FW+d90A==}
     engines: {node: '>=18'}
 
   foreground-child@3.2.1:
@@ -1174,8 +1174,8 @@ packages:
     resolution: {integrity: sha512-vE7JKRyES09KiunauX7nd2Q9/L7lhok4smP9RZTDeD4MVs72Dp2qNFVz39Nz5a0FVEW0BJR6C0DYrq6unoziZA==}
     engines: {node: '>= 14.16'}
 
-  peek-readable@5.1.4:
-    resolution: {integrity: sha512-E7mY2VmKqw9jYuXrSWGHFuPCW2SLQenzXLF3amGaY6lXXg4/b3gj5HVM7h8ZjCO/nZS9ICs0Cz285+32FvNd/A==}
+  peek-readable@5.2.0:
+    resolution: {integrity: sha512-U94a+eXHzct7vAd19GH3UQ2dH4Satbng0MyYTMaQatL0pvYYL5CTPR25HBhKtecl+4bfu1/i3vC6k0hydO5Vcw==}
     engines: {node: '>=14.16'}
 
   picocolors@1.0.1:
@@ -2048,7 +2048,7 @@ snapshots:
       signal-exit: 4.1.0
       strip-final-newline: 3.0.0
 
-  file-type@19.4.1:
+  file-type@19.5.0:
     dependencies:
       get-stream: 9.0.1
       strtok3: 8.1.0
@@ -2288,7 +2288,7 @@ snapshots:
 
   pathval@2.0.0: {}
 
-  peek-readable@5.1.4: {}
+  peek-readable@5.2.0: {}
 
   picocolors@1.0.1: {}
 
@@ -2407,7 +2407,7 @@ snapshots:
   strtok3@8.1.0:
     dependencies:
       '@tokenizer/token': 0.3.0
-      peek-readable: 5.1.4
+      peek-readable: 5.2.0
 
   supports-color@7.2.0:
     dependencies:
