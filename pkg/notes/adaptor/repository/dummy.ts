@@ -60,6 +60,19 @@ export class InMemoryNoteRepository implements NoteRepository {
     }
     return Promise.resolve(Option.some(res));
   }
+
+  async findManyByIDs(ids: NoteID[]): Promise<Result.Result<Error, Note[]>> {
+    const notes = ids
+      .map((id) => this.notes.get(id))
+      .filter((v) => v !== undefined);
+    if (notes.length === 0) {
+      return Result.err(new Error('note not found'));
+    }
+
+    return Result.ok(
+      notes.sort((a, b) => (a.getCreatedAt() < b.getCreatedAt() ? 1 : -1)),
+    );
+  }
 }
 
 export class InMemoryBookmarkRepository implements BookmarkRepository {
