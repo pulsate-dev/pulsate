@@ -146,9 +146,7 @@ describe('FetchService', () => {
       }),
     );
     testNotes.map(async (v) => await repository.create(v));
-    console.log(testNotes.length);
     const res = await service.fetchNotesByID(testNotes.map((v) => v.getID()));
-    console.log(res);
     expect(Result.isOk(res)).toBe(true);
     expect(res).toStrictEqual;
   });
