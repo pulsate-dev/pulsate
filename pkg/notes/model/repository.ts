@@ -13,6 +13,15 @@ export interface NoteRepository {
     limit: number,
   ): Promise<Option.Option<Note[]>>;
   findByID(id: NoteID): Promise<Option.Option<Note>>;
+  /**
+   * Find notes by id\
+   * NOTE: Don't use this method to fetch timeline/list notes.
+   *       use {@link TimelineRepository}.\
+   * NOTE: Duplicate note IDs are ignored.
+   * @param ids ID of the NOTE to be obtained
+   * @returns {@link Note} sorted by CreatedAt, descending
+   */
+  findManyByIDs(ids: NoteID[]): Promise<Result.Result<Error, Note[]>>;
   deleteByID(id: NoteID): Promise<Result.Result<Error, void>>;
 }
 

@@ -43,6 +43,12 @@ export class FetchService {
     return note;
   }
 
+  async fetchNotesByID(
+    noteIDs: NoteID[],
+  ): Promise<Result.Result<Error, Note[]>> {
+    return await this.noteRepository.findManyByIDs(noteIDs);
+  }
+
   async fetchNoteAttachments(
     noteID: NoteID,
   ): Promise<Result.Result<Error, Medium[]>> {

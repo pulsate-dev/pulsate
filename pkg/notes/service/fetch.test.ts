@@ -131,6 +131,26 @@ describe('FetchService', () => {
     expect(Option.isNone(res)).toBe(true);
   });
 
+  it('fetchMany: should fetch notes', async () => {
+    const testNotes = [...new Array<Note>(5)].map((_, i) =>
+      Note.new({
+        id: i.toString() as NoteID,
+        authorID: '3' as AccountID,
+        content: `Hello world ${i}`,
+        contentsWarningComment: '',
+        createdAt: new Date('2023-09-10T00:00:00Z'),
+        sendTo: Option.none(),
+        originalNoteID: Option.none(),
+        attachmentFileID: ['300' as MediumID, '301' as MediumID],
+        visibility: 'PUBLIC',
+      }),
+    );
+    testNotes.map(async (v) => await repository.create(v));
+    const res = await service.fetchNotesByID(testNotes.map((v) => v.getID()));
+    expect(Result.isOk(res)).toBe(true);
+    expect(res).toStrictEqual;
+  });
+
   it('account frozen', async () => {
     vi.spyOn(dummyAccountModuleFacade, 'fetchAccount').mockImplementation(
       async () => {

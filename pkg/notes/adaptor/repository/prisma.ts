@@ -140,6 +140,25 @@ export class PrismaNoteRepository implements NoteRepository {
     }
   }
 
+  async findManyByIDs(ids: NoteID[]): Promise<Result.Result<Error, Note[]>> {
+    try {
+      const res = await this.client.note.findMany({
+        where: {
+          id: {
+            in: [...new Set(ids)],
+          },
+          deletedAt: undefined,
+        },
+        orderBy: {
+          createdAt: 'desc',
+        },
+      });
+      return Result.ok(res.map((v) => this.deserialize(v)));
+    } catch (e) {
+      return Result.err(e as Error);
+    }
+  }
+
   async findByID(id: NoteID): Promise<Option.Option<Note>> {
     try {
       const res = await this.client.note.findUniqueOrThrow({
