@@ -62,7 +62,7 @@ export class InMemoryNoteRepository implements NoteRepository {
   }
 
   async findManyByIDs(ids: NoteID[]): Promise<Result.Result<Error, Note[]>> {
-    const notes = ids
+    const notes = [...new Set(ids)]
       .map((id) => this.notes.get(id))
       .filter((v) => v !== undefined);
     if (notes.length === 0) {

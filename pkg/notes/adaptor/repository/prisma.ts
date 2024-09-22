@@ -145,7 +145,7 @@ export class PrismaNoteRepository implements NoteRepository {
       const res = await this.client.note.findMany({
         where: {
           id: {
-            in: ids,
+            in: [...new Set(ids)],
           },
           deletedAt: undefined,
         },

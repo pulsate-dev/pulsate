@@ -16,7 +16,8 @@ export interface NoteRepository {
   /**
    * Find notes by id\
    * NOTE: Don't use this method to fetch timeline/list notes.
-   *       use {@link TimelineRepository}.
+   *       use {@link TimelineRepository}.\
+   * NOTE: Duplicate note IDs are ignored.
    * @param ids ID of the NOTE to be obtained
    * @returns {@link Note} sorted by CreatedAt, descending
    */
