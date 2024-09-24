@@ -1,4 +1,4 @@
-import type { Option, Result } from '@mikuroxina/mini-fn';
+import { Ether, type Option, type Result } from '@mikuroxina/mini-fn';
 
 import type { AccountID } from '../../accounts/model/account.js';
 import type { Medium, MediumID } from '../../drive/model/medium.js';
@@ -24,6 +24,7 @@ export interface NoteRepository {
   findManyByIDs(ids: NoteID[]): Promise<Result.Result<Error, Note[]>>;
   deleteByID(id: NoteID): Promise<Result.Result<Error, void>>;
 }
+export const noteRepoSymbol = Ether.newEtherSymbol<NoteRepository>();
 
 export interface BookmarkRepository {
   create(id: {
@@ -40,6 +41,7 @@ export interface BookmarkRepository {
     accountID: AccountID;
   }): Promise<Result.Result<Error, void>>;
 }
+export const bookmarkRepoSymbol = Ether.newEtherSymbol<BookmarkRepository>();
 
 export interface NoteAttachmentRepository {
   create(
@@ -48,6 +50,8 @@ export interface NoteAttachmentRepository {
   ): Promise<Result.Result<Error, void>>;
   findByNoteID(noteID: NoteID): Promise<Result.Result<Error, Medium[]>>;
 }
+export const noteAttachmentRepoSymbol =
+  Ether.newEtherSymbol<NoteAttachmentRepository>();
 
 export interface ReactionRepository {
   create(
@@ -68,3 +72,4 @@ export interface ReactionRepository {
     accountID: AccountID;
   }): Promise<Result.Result<Error, void>>;
 }
+export const reactionRepoSymbol = Ether.newEtherSymbol<ReactionRepository>();
