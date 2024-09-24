@@ -11,6 +11,7 @@ import type { DeleteListService } from '../../service/deleteList.js';
 import type { EditListService } from '../../service/editList.js';
 import type { FetchListService } from '../../service/fetchList.js';
 import type { FetchListMemberService } from '../../service/fetchMember.js';
+import type { ListTimelineService } from '../../service/list.js';
 import type {
   CreateListResponseSchema,
   EditListRequestSchema,
@@ -18,6 +19,7 @@ import type {
   FetchListResponseSchema,
   GetAccountTimelineResponseSchema,
   GetListMemberResponseSchema,
+  GetListTimelineResponseSchema,
 } from '../validator/timeline.js';
 
 export class TimelineController {
@@ -28,6 +30,7 @@ export class TimelineController {
   private readonly fetchListService: FetchListService;
   private readonly deleteListService: DeleteListService;
   private readonly fetchMemberService: FetchListMemberService;
+  private readonly listTimelineService: ListTimelineService;
 
   constructor(args: {
     accountTimelineService: AccountTimelineService;
@@ -37,6 +40,7 @@ export class TimelineController {
     fetchListService: FetchListService;
     deleteListService: DeleteListService;
     fetchMemberService: FetchListMemberService;
+    listTimelineService: ListTimelineService;
   }) {
     this.accountTimelineService = args.accountTimelineService;
     this.accountModule = args.accountModule;
@@ -45,6 +49,7 @@ export class TimelineController {
     this.fetchListService = args.fetchListService;
     this.deleteListService = args.deleteListService;
     this.fetchMemberService = args.fetchMemberService;
+    this.listTimelineService = args.listTimelineService;
   }
 
   async getAccountTimeline(
@@ -110,6 +115,44 @@ export class TimelineController {
       });
 
     return Result.ok(result);
+  }
+
+  // ToDo: add filter,pagination
+  async getListTimeline(
+    listID: string,
+  ): Promise<
+    Result.Result<Error, z.infer<typeof GetListTimelineResponseSchema>>
+  > {
+    const res = await this.listTimelineService.handle(listID as ListID);
+    if (Result.isErr(res)) {
+      return res;
+    }
+    const notes = Result.unwrap(res);
+
+    return Result.ok(
+      notes.map((v) => {
+        return {
+          id: v.getID(),
+          content: v.getContent(),
+          contents_warning_comment: v.getCwComment(),
+          visibility: v.getVisibility(),
+          created_at: v.getCreatedAt().toUTCString(),
+          // ToDo: fill attachment_files, reactions, author
+          attachment_files: [],
+          reactions: [],
+          author: {
+            id: '',
+            name: '',
+            display_name: '',
+            bio: '',
+            avatar: '',
+            header: '',
+            followed_count: 0,
+            following_count: 0,
+          },
+        };
+      }),
+    );
   }
 
   async createList(

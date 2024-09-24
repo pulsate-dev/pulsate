@@ -83,7 +83,11 @@ export class InMemoryTimelineRepository implements TimelineRepository {
     // ToDo: Consider whether to filter out when Visibility is ‘FOLLOWERS’.
     const filtered = notes.filter((note) => note.getVisibility() !== 'DIRECT');
 
-    return Result.ok(filtered);
+    return Result.ok(
+      filtered.sort(
+        (a, b) => b.getCreatedAt().getTime() - a.getCreatedAt().getTime(),
+      ),
+    );
   }
 
   reset(data: readonly Note[] = []) {

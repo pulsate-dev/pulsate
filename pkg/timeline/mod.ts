@@ -9,6 +9,7 @@ import {
   InMemoryListRepository,
   InMemoryTimelineRepository,
 } from './adaptor/repository/dummy.js';
+import { GetListTimelineResponseSchema } from './adaptor/validator/timeline.js';
 import {
   CreateListRoute,
   DeleteListRoute,
@@ -78,6 +79,8 @@ timeline.openapi(GetAccountTimelineRoute, async (c) => {
 
   return c.json(res[1], 200);
 });
+
+timeline.openapi(GetListTimelineResponseSchema, async (c) => {});
 
 // ToDo: add account authorization
 timeline.openapi(CreateListRoute, async (c) => {
