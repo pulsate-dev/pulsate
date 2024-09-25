@@ -1,7 +1,10 @@
 import { Ether, Option, Result } from '@mikuroxina/mini-fn';
 
 import type { Medium } from '../../drive/model/medium.js';
-import type { AccountModuleFacade } from '../../intermodule/account.js';
+import {
+  type AccountModuleFacade,
+  accountModuleFacadeSymbol,
+} from '../../intermodule/account.js';
 import type { Note, NoteID } from '../model/note.js';
 import type { Reaction } from '../model/reaction.js';
 import {
@@ -82,7 +85,7 @@ export const fetch = Ether.newEther(
     ),
   {
     noteRepository: noteRepoSymbol,
-    accountModule: Ether.newEtherSymbol<AccountModuleFacade>(),
+    accountModule: accountModuleFacadeSymbol,
     noteAttachmentRepository: noteAttachmentRepoSymbol,
     reactionRepository: reactionRepoSymbol,
   },
