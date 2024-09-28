@@ -1,13 +1,19 @@
-import { Option, Result } from '@mikuroxina/mini-fn';
+import { Ether, Option, Result } from '@mikuroxina/mini-fn';
 
 import type { Medium } from '../../drive/model/medium.js';
-import type { AccountModuleFacade } from '../../intermodule/account.js';
+import {
+  type AccountModuleFacade,
+  accountModuleFacadeSymbol,
+} from '../../intermodule/account.js';
 import type { Note, NoteID } from '../model/note.js';
 import type { Reaction } from '../model/reaction.js';
-import type {
-  NoteAttachmentRepository,
-  NoteRepository,
-  ReactionRepository,
+import {
+  type NoteAttachmentRepository,
+  type NoteRepository,
+  type ReactionRepository,
+  noteAttachmentRepoSymbol,
+  noteRepoSymbol,
+  reactionRepoSymbol,
 } from '../model/repository.js';
 
 export class FetchService {
@@ -61,3 +67,26 @@ export class FetchService {
     return await this.reactionRepository.findByNoteID(noteID);
   }
 }
+
+export const fetchSymbol = Ether.newEtherSymbol<FetchService>();
+export const fetch = Ether.newEther(
+  fetchSymbol,
+  ({
+    noteRepository,
+    accountModule,
+    noteAttachmentRepository,
+    reactionRepository,
+  }) =>
+    new FetchService(
+      noteRepository,
+      accountModule,
+      noteAttachmentRepository,
+      reactionRepository,
+    ),
+  {
+    noteRepository: noteRepoSymbol,
+    accountModule: accountModuleFacadeSymbol,
+    noteAttachmentRepository: noteAttachmentRepoSymbol,
+    reactionRepository: reactionRepoSymbol,
+  },
+);

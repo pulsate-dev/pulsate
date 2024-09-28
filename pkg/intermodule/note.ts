@@ -1,0 +1,88 @@
+import { Cat, Ether, type Result } from '@mikuroxina/mini-fn';
+import { prismaClient } from '../adaptors/prisma.js';
+import type { Medium } from '../drive/model/medium.js';
+import {
+  InMemoryNoteAttachmentRepository,
+  InMemoryNoteRepository,
+  InMemoryReactionRepository,
+} from '../notes/adaptor/repository/dummy.js';
+import {
+  PrismaNoteAttachmentRepository,
+  PrismaNoteRepository,
+  PrismaReactionRepository,
+} from '../notes/adaptor/repository/prisma.js';
+import type { NoteID } from '../notes/model/note.js';
+import type { Reaction } from '../notes/model/reaction.js';
+import {
+  type NoteRepository,
+  noteAttachmentRepoSymbol,
+  reactionRepoSymbol,
+} from '../notes/model/repository.js';
+import { type FetchService, fetch } from '../notes/service/fetch.js';
+import {
+  accountModule,
+  accountModuleFacadeSymbol,
+  dummyAccountModuleFacade,
+} from './account.js';
+
+export class NoteModuleFacade {
+  constructor(private readonly fetchService: FetchService) {}
+
+  /**
+   * @description Fetch note reactions
+   * @param noteID note ID
+   * @returns {@link Reaction} note reactions
+   */
+  async fetchReactions(
+    noteID: NoteID,
+  ): Promise<Result.Result<Error, Reaction[]>> {
+    return await this.fetchService.fetchNoteReactions(noteID);
+  }
+
+  /**
+   * @description Fetch note attachments
+   * @param noteID note ID
+   * @returns {@link Medium} note attachments
+   */
+  async fetchAttachments(
+    noteID: NoteID,
+  ): Promise<Result.Result<Error, Medium[]>> {
+    return await this.fetchService.fetchNoteAttachments(noteID);
+  }
+}
+
+const isProduction = process.env.NODE_ENV === 'production';
+const attachmentRepoObject = isProduction
+  ? new PrismaNoteAttachmentRepository(prismaClient)
+  : new InMemoryNoteAttachmentRepository([], []);
+const reactionRepoObject = isProduction
+  ? new PrismaReactionRepository(prismaClient)
+  : new InMemoryReactionRepository();
+const noteRepoObject = isProduction
+  ? new PrismaNoteRepository(prismaClient)
+  : new InMemoryNoteRepository();
+const accountModuleFacade = Ether.newEther(accountModuleFacadeSymbol, () =>
+  isProduction ? accountModule : dummyAccountModuleFacade,
+);
+const noteAttachmentRepository = Ether.newEther(
+  noteAttachmentRepoSymbol,
+  () => attachmentRepoObject,
+);
+const reactionRepository = Ether.newEther(
+  reactionRepoSymbol,
+  () => reactionRepoObject,
+);
+const noteRepository = Ether.newEther(
+  Ether.newEtherSymbol<NoteRepository>(),
+  () => noteRepoObject,
+);
+
+export const noteModule = new NoteModuleFacade(
+  Ether.runEther(
+    Cat.cat(fetch)
+      .feed(Ether.compose(noteRepository))
+      .feed(Ether.compose(accountModuleFacade))
+      .feed(Ether.compose(noteAttachmentRepository))
+      .feed(Ether.compose(reactionRepository)).value,
+  ),
+);
