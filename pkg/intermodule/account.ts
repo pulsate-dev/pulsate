@@ -107,6 +107,9 @@ export class AccountModuleFacade {
   }
 }
 
+export const accountModuleFacadeSymbol =
+  Ether.newEtherSymbol<AccountModuleFacade>();
+
 const isProduction = process.env.NODE_ENV === 'production';
 const accountRepoObject = isProduction
   ? new PrismaAccountRepository(prismaClient)
