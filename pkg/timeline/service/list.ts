@@ -26,12 +26,6 @@ export class ListTimelineService {
     }
     const cachedNotes = Result.unwrap(cachedNotesRes);
 
-    const notesRes =
-      await this.timelineRepository.fetchListTimeline(cachedNotes);
-    if (Result.isErr(notesRes)) {
-      return notesRes;
-    }
-
-    return Result.ok(Result.unwrap(notesRes));
+    return await this.timelineRepository.fetchListTimeline(cachedNotes);
   }
 }

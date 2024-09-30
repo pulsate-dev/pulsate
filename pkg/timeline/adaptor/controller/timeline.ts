@@ -145,9 +145,11 @@ export class TimelineController {
     if (Result.isErr(noteAuthorRes)) {
       return noteAuthorRes;
     }
-    Result.unwrap(noteAuthorRes).map((v) => noteAuthorMap.set(v.getID(), v));
+    for (const author of Result.unwrap(noteAuthorRes)) {
+      noteAuthorMap.set(author.getID(), author);
+    }
 
-    for await (const v of notes) {
+    for (const v of notes) {
       const attachmentsRes = await this.noteModule.fetchAttachments(v.getID());
       if (Result.isErr(attachmentsRes)) {
         return attachmentsRes;
