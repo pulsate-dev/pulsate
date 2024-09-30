@@ -25,7 +25,7 @@ importers:
         version: 5.19.1(prisma@5.19.1)
       '@scalar/hono-api-reference':
         specifier: ^0.5.0
-        version: 0.5.148(hono@4.6.3)
+        version: 0.5.149(hono@4.6.3)
       argon2:
         specifier: ^0.41.0
         version: 0.41.1
@@ -733,8 +733,8 @@ packages:
     cpu: [x64]
     os: [win32]
 
-  '@scalar/hono-api-reference@0.5.148':
-    resolution: {integrity: sha512-ysr9N1+kVXRLfS6UNA+AXZSjutfMNGhNFlBZ1A+5Y4WkOg9atv4ClLkRsUsYddok8HabylKjFXqYBvsY4njDbw==}
+  '@scalar/hono-api-reference@0.5.149':
+    resolution: {integrity: sha512-n3LHUOHvskgWcodVykLJvoC2813weZmxKjaGKzOZyOdbSK4y1gGqwbE1bIvwdDL6+r53f8HeaPtsuAEH7UrvfQ==}
     engines: {node: '>=18'}
     peerDependencies:
       hono: ^4.0.0
@@ -743,12 +743,8 @@ packages:
     resolution: {integrity: sha512-NMy3QNk6ytcCoPUGJH0t4NNr36OWXgZhA3ormr3TvhX1NDgoF95wFyodGVH8xiHeUyn2/FxtETm8UBLbB5xEmg==}
     engines: {node: '>=18'}
 
-  '@scalar/themes@0.9.31':
-    resolution: {integrity: sha512-tt5ny7PHnsE01XHicAOlDrbmPLo7F44PbyLNlfKen3VGus9hpUBa2G9OXrPaSomB3kFcirX6tkM5Pxo3fDwXLg==}
-    engines: {node: '>=18'}
-
-  '@scalar/types@0.0.10':
-    resolution: {integrity: sha512-b/n/y/tIa8cKlg+s2zODlI5TJa+jUIFDHDKkBcp3DsSCSzPPgE4jTc/IJ7h+EvHNe+YBlpZCrlTGlZ1n+ABoHQ==}
+  '@scalar/types@0.0.11':
+    resolution: {integrity: sha512-cB2vhKWrxKmfq7eZ6WTvv9dvwEmBJrzsJrNLeRVZp+qAkLlohKktOcMIT9WLUwMRgH3xhv/44/G1HAOyrhhQpw==}
     engines: {node: '>=18'}
 
   '@sec-ant/readable-stream@0.4.1':
@@ -763,8 +759,8 @@ packages:
   '@types/node@20.16.9':
     resolution: {integrity: sha512-rkvIVJxsOfBejxK7I0FO5sa2WxFmJCzoDwcd88+fq/CUfynNywTo/1/T6hyFz22CyztsnLS9nVlHOnTI36RH5w==}
 
-  '@unhead/schema@1.11.6':
-    resolution: {integrity: sha512-Ava5+kQERaZ2fi66phgR9KZQr9SsheN1YhhKM8fCP2A4Jb5lHUssVQ19P0+89V6RX9iUg/Q27WdEbznm75LzhQ==}
+  '@unhead/schema@1.11.7':
+    resolution: {integrity: sha512-j9uN7T63aUXrZ6yx2CfjVT7xZHjn0PZO7TPMaWqMFjneIH/NONKvDVCMEqDlXeqdSIERIYtk/xTHgCUMer5eyw==}
 
   '@vitest/coverage-v8@2.1.1':
     resolution: {integrity: sha512-md/A7A3c42oTT8JUHSqjP5uKTWJejzUW4jalpvs+rZ27gsURsMU8DEb+8Jf8C6Kj2gwfSHJqobDNBuoqlm0cFw==}
@@ -1806,20 +1802,17 @@ snapshots:
   '@rollup/rollup-win32-x64-msvc@4.21.3':
     optional: true
 
-  '@scalar/hono-api-reference@0.5.148(hono@4.6.3)':
+  '@scalar/hono-api-reference@0.5.149(hono@4.6.3)':
     dependencies:
-      '@scalar/types': 0.0.10
+      '@scalar/types': 0.0.11
       hono: 4.6.3
 
   '@scalar/openapi-types@0.1.1': {}
 
-  '@scalar/themes@0.9.31': {}
-
-  '@scalar/types@0.0.10':
+  '@scalar/types@0.0.11':
     dependencies:
       '@scalar/openapi-types': 0.1.1
-      '@scalar/themes': 0.9.31
-      '@unhead/schema': 1.11.6
+      '@unhead/schema': 1.11.7
 
   '@sec-ant/readable-stream@0.4.1': {}
 
@@ -1831,7 +1824,7 @@ snapshots:
     dependencies:
       undici-types: 6.19.8
 
-  '@unhead/schema@1.11.6':
+  '@unhead/schema@1.11.7':
     dependencies:
       hookable: 5.5.3
       zhead: 2.2.4
