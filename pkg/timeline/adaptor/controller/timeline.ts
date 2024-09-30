@@ -2,8 +2,11 @@ import type { z } from '@hono/zod-openapi';
 import { Result } from '@mikuroxina/mini-fn';
 
 import type { Account, AccountID } from '../../../accounts/model/account.js';
+import type { Medium } from '../../../drive/model/medium.js';
 import type { AccountModuleFacade } from '../../../intermodule/account.js';
+import type { NoteModuleFacade } from '../../../intermodule/note.js';
 import type { NoteID } from '../../../notes/model/note.js';
+import type { Reaction } from '../../../notes/model/reaction.js';
 import type { ListID } from '../../model/list.js';
 import type { AccountTimelineService } from '../../service/account.js';
 import type { CreateListService } from '../../service/createList.js';
@@ -31,6 +34,7 @@ export class TimelineController {
   private readonly deleteListService: DeleteListService;
   private readonly fetchMemberService: FetchListMemberService;
   private readonly listTimelineService: ListTimelineService;
+  private readonly noteModule: NoteModuleFacade;
 
   constructor(args: {
     accountTimelineService: AccountTimelineService;
@@ -41,6 +45,7 @@ export class TimelineController {
     deleteListService: DeleteListService;
     fetchMemberService: FetchListMemberService;
     listTimelineService: ListTimelineService;
+    noteModule: NoteModuleFacade;
   }) {
     this.accountTimelineService = args.accountTimelineService;
     this.accountModule = args.accountModule;
@@ -50,6 +55,7 @@ export class TimelineController {
     this.deleteListService = args.deleteListService;
     this.fetchMemberService = args.fetchMemberService;
     this.listTimelineService = args.listTimelineService;
+    this.noteModule = args.noteModule;
   }
 
   async getAccountTimeline(
@@ -123,28 +129,76 @@ export class TimelineController {
   ): Promise<
     Result.Result<Error, z.infer<typeof GetListTimelineResponseSchema>>
   > {
-    const res = await this.listTimelineService.handle(listID as ListID);
-    if (Result.isErr(res)) {
-      return res;
+    const notesRes = await this.listTimelineService.handle(listID as ListID);
+    if (Result.isErr(notesRes)) {
+      return notesRes;
     }
-    const notes = Result.unwrap(res);
+    const notes = Result.unwrap(notesRes);
+    const attachmentsMap = new Map<NoteID, Medium[]>();
+    const reactionsMap = new Map<NoteID, Reaction[]>();
+    const noteAuthorMap = new Map<AccountID, Account>();
+
+    const noteAuthor = new Set<AccountID>(notes.map((v) => v.getAuthorID()));
+    const noteAuthorRes = await this.accountModule.fetchAccounts([
+      ...noteAuthor,
+    ]);
+    if (Result.isErr(noteAuthorRes)) {
+      return noteAuthorRes;
+    }
+    Result.unwrap(noteAuthorRes).map((v) => noteAuthorMap.set(v.getID(), v));
+
+    for await (const v of notes) {
+      const attachmentsRes = await this.noteModule.fetchAttachments(v.getID());
+      if (Result.isErr(attachmentsRes)) {
+        return attachmentsRes;
+      }
+      const attachments = Result.unwrap(attachmentsRes);
+      attachmentsMap.set(v.getID(), attachments);
+
+      const reactionsRes = await this.noteModule.fetchReactions(v.getID());
+      if (Result.isErr(reactionsRes)) {
+        return reactionsRes;
+      }
+      const reactions = Result.unwrap(reactionsRes);
+      reactionsMap.set(v.getID(), reactions);
+    }
 
     return Result.ok(
       notes.map((v) => {
+        const author = noteAuthorMap.get(v.getAuthorID()) as Account;
+
         return {
           id: v.getID(),
           content: v.getContent(),
           contents_warning_comment: v.getCwComment(),
           visibility: v.getVisibility(),
           created_at: v.getCreatedAt().toUTCString(),
-          // ToDo: fill attachment_files, reactions, author
-          attachment_files: [],
-          reactions: [],
+          attachment_files:
+            attachmentsMap.get(v.getID())?.map((file) => {
+              return {
+                id: file.getId(),
+                name: file.getName(),
+                author_id: file.getAuthorId(),
+                hash: file.getHash(),
+                mime: file.getMime(),
+                nsfw: file.isNsfw(),
+                url: file.getUrl(),
+                thumbnail: file.getThumbnailUrl(),
+              };
+            }) ?? [],
+          reactions:
+            reactionsMap.get(v.getID())?.map((reaction) => {
+              return {
+                emoji: reaction.getEmoji(),
+                reacted_by: reaction.getAccountID(),
+              };
+            }) ?? [],
           author: {
-            id: '',
-            name: '',
-            display_name: '',
-            bio: '',
+            id: author.getID(),
+            name: author.getName(),
+            display_name: author.getNickname(),
+            bio: author.getBio(),
+            // ToDo: fill avatar, header, followed/following counts
             avatar: '',
             header: '',
             followed_count: 0,
