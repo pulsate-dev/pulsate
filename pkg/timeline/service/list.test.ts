@@ -44,8 +44,12 @@ describe('ListTimelineService', () => {
   it('should fetch list timeline notes', async () => {
     const res = await service.handle('1' as ListID);
     expect(Result.isOk(res)).toBe(true);
-    expect(Result.unwrap(res)).toHaveLength(2);
-    expect(Result.unwrap(res)).toStrictEqual([dummyHomeNote, dummyPublicNote]);
+    expect(Result.unwrap(res)).toHaveLength(3);
+    expect(Result.unwrap(res)).toStrictEqual([
+      dummyHomeNote,
+      dummyPublicNote,
+      sameTimePublicNote,
+    ]);
   });
 
   it('should notes sorted by createdAt, descending', async () => {
