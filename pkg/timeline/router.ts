@@ -9,6 +9,7 @@ import {
   FetchListResponseSchema,
   GetAccountTimelineResponseSchema,
   GetListMemberResponseSchema,
+  GetListTimelineResponseSchema,
 } from './adaptor/validator/timeline.js';
 
 export const GetAccountTimelineRoute = createRoute({
@@ -56,6 +57,57 @@ export const GetAccountTimelineRoute = createRoute({
     },
     404: {
       description: 'Account not found',
+      content: {
+        'application/json': {
+          schema: CommonErrorResponseSchema,
+        },
+      },
+    },
+  },
+});
+
+export const GetListTimelineRoute = createRoute({
+  method: 'get',
+  tags: ['timeline'],
+  path: '/lists/:id/notes',
+  request: {
+    params: z.object({
+      id: z.string().openapi('List ID'),
+    }),
+    query: z.object({
+      has_attachment: z
+        .string()
+        .optional()
+        .pipe(z.coerce.boolean().default(false))
+        .openapi({
+          type: 'boolean',
+          description: 'If true, only return notes with attachment',
+        }),
+      no_nsfw: z
+        .string()
+        .optional()
+        .pipe(z.coerce.boolean().default(false))
+        .openapi({
+          type: 'boolean',
+          description: 'If true, only return notes without sensitive content',
+        }),
+      before_id: z.string().optional().openapi({
+        description:
+          'Return notes before this note ID. specified note ID is not included',
+      }),
+    }),
+  },
+  responses: {
+    200: {
+      description: 'OK',
+      content: {
+        'application/json': {
+          schema: GetListTimelineResponseSchema,
+        },
+      },
+    },
+    404: {
+      description: 'List not found',
       content: {
         'application/json': {
           schema: CommonErrorResponseSchema,

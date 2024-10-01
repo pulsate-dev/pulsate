@@ -40,6 +40,7 @@ export interface TimelineRepository {
   /**
    * @description Fetch list timeline
    * @param noteId IDs of the notes to be fetched
+   * @return {@link Note}[] list of Notes, sorted by CreatedAt descending
    * */
   fetchListTimeline(
     noteId: readonly NoteID[],
@@ -78,7 +79,7 @@ export interface ListRepository {
   fetchListMembers(listId: ListID): Promise<Result.Result<Error, AccountID[]>>;
   /**
    * @description Fetch lists by member account ID
-   * @param accountId ID of the account to which the list belongs
+   * @param accountID ID of the account to which the list belongs
    */
   fetchListsByMemberAccountID(
     accountID: AccountID,

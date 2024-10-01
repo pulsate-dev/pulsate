@@ -2,13 +2,23 @@ import { OpenAPIHono } from '@hono/zod-openapi';
 import { Option, Result } from '@mikuroxina/mini-fn';
 
 import type { AuthMiddlewareVariable } from '../adaptors/authenticateMiddleware.js';
+import { prismaClient } from '../adaptors/prisma.js';
 import { SnowflakeIDGenerator } from '../id/mod.js';
-import { accountModule } from '../intermodule/account.js';
+import {
+  accountModule,
+  dummyAccountModuleFacade,
+} from '../intermodule/account.js';
+import { noteModule } from '../intermodule/note.js';
 import { TimelineController } from './adaptor/controller/timeline.js';
 import {
   InMemoryListRepository,
   InMemoryTimelineRepository,
 } from './adaptor/repository/dummy.js';
+import { InMemoryTimelineCacheRepository } from './adaptor/repository/dummyCache.js';
+import {
+  PrismaListRepository,
+  PrismaTimelineRepository,
+} from './adaptor/repository/prisma.js';
 import {
   CreateListRoute,
   DeleteListRoute,
@@ -16,6 +26,7 @@ import {
   FetchListRoute,
   GetAccountTimelineRoute,
   GetListMemberRoute,
+  GetListTimelineRoute,
 } from './router.js';
 import { AccountTimelineService } from './service/account.js';
 import { CreateListService } from './service/createList.js';
@@ -23,15 +34,25 @@ import { DeleteListService } from './service/deleteList.js';
 import { EditListService } from './service/editList.js';
 import { FetchListService } from './service/fetchList.js';
 import { FetchListMemberService } from './service/fetchMember.js';
+import { ListTimelineService } from './service/list.js';
 import { NoteVisibilityService } from './service/noteVisibility.js';
 
+const isProduction = process.env.NODE_ENV === 'production';
 const idGenerator = new SnowflakeIDGenerator(0, {
   now: () => BigInt(Date.now()),
 });
 
-const timelineRepository = new InMemoryTimelineRepository();
-const listRepository = new InMemoryListRepository();
-const noteVisibilityService = new NoteVisibilityService(accountModule);
+const timelineRepository = isProduction
+  ? new PrismaTimelineRepository(prismaClient)
+  : new InMemoryTimelineRepository();
+const listRepository = isProduction
+  ? new PrismaListRepository(prismaClient)
+  : new InMemoryListRepository();
+const noteVisibilityService = new NoteVisibilityService(
+  isProduction ? accountModule : dummyAccountModuleFacade,
+);
+// ToDo: export redis client instances at adaptors package
+const timelineCacheRepository = new InMemoryTimelineCacheRepository();
 
 const controller = new TimelineController({
   accountTimelineService: new AccountTimelineService({
@@ -44,6 +65,11 @@ const controller = new TimelineController({
   deleteListService: new DeleteListService(listRepository),
   accountModule,
   fetchMemberService: new FetchListMemberService(listRepository, accountModule),
+  listTimelineService: new ListTimelineService(
+    timelineCacheRepository,
+    timelineRepository,
+  ),
+  noteModule: noteModule,
 });
 
 export const timeline = new OpenAPIHono<{
@@ -76,6 +102,16 @@ timeline.openapi(GetAccountTimelineRoute, async (c) => {
     return c.json({ error: res[1].message }, 404);
   }
 
+  return c.json(res[1], 200);
+});
+
+timeline.openapi(GetListTimelineRoute, async (c) => {
+  const { id } = c.req.param();
+
+  const res = await controller.getListTimeline(id);
+  if (Result.isErr(res)) {
+    return c.json({ error: res[1].message }, 404);
+  }
   return c.json(res[1], 200);
 });
 
