@@ -1,6 +1,10 @@
 import { Option, Result } from '@mikuroxina/mini-fn';
 
 import type { AccountID } from '../../accounts/model/account.js';
+import {
+  NoteBookmarkAlreadyCreatedError,
+  NoteNotFoundError,
+} from '../model/errors.js';
 import type { Note, NoteID } from '../model/note.js';
 import type {
   BookmarkRepository,
@@ -19,7 +23,9 @@ export class CreateBookmarkService {
   ): Promise<Result.Result<Error, Note>> {
     const note = await this.noteRepository.findByID(noteID);
     if (Option.isNone(note)) {
-      return Result.err(new Error('Note not found'));
+      return Result.err(
+        new NoteNotFoundError('Note not found', { cause: null }),
+      );
     }
 
     const existBookmark = await this.bookmarkRepository.findByID({
@@ -28,7 +34,11 @@ export class CreateBookmarkService {
     });
 
     if (Option.isSome(existBookmark)) {
-      return Result.err(new Error('bookmark has already created'));
+      return Result.err(
+        new NoteBookmarkAlreadyCreatedError('bookmark has already created', {
+          cause: null,
+        }),
+      );
     }
 
     const creation = await this.bookmarkRepository.create({

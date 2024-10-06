@@ -9,6 +9,10 @@ import {
   InMemoryNoteAttachmentRepository,
   InMemoryNoteRepository,
 } from '../adaptor/repository/dummy.js';
+import {
+  NoteInsufficientPermissionError,
+  NoteVisibilityInvalidError,
+} from '../model/errors.js';
 import { Note, type NoteID } from '../model/note.js';
 import { RenoteService } from './renote.js';
 
@@ -151,7 +155,9 @@ describe('RenoteService', () => {
 
     expect(Result.isErr(res)).toBe(true);
     expect(Result.unwrapErr(res)).toStrictEqual(
-      new Error('Can not renote direct note'),
+      new NoteVisibilityInvalidError('Can not renote direct note', {
+        cause: null,
+      }),
     );
   });
 
@@ -182,7 +188,9 @@ describe('RenoteService', () => {
 
     expect(Result.isErr(res)).toBe(true);
     expect(Result.unwrapErr(res)).toStrictEqual(
-      new Error('Can not renote others FOLLOWERS note'),
+      new NoteVisibilityInvalidError('Can not renote others FOLLOWERS note', {
+        cause: null,
+      }),
     );
   });
 
@@ -197,7 +205,9 @@ describe('RenoteService', () => {
     );
 
     expect(Result.isErr(res)).toBe(true);
-    expect(Result.unwrapErr(res)).toStrictEqual(new Error('Not allowed'));
+    expect(Result.unwrapErr(res)).toStrictEqual(
+      new NoteInsufficientPermissionError('Not allowed', { cause: null }),
+    );
   });
 
   it('if actor silenced, renote must not set PUBLIC', async () => {
@@ -210,7 +220,9 @@ describe('RenoteService', () => {
       'PUBLIC',
     );
     expect(Result.isErr(publicRes)).toBe(true);
-    expect(Result.unwrapErr(publicRes)).toStrictEqual(new Error('Not allowed'));
+    expect(Result.unwrapErr(publicRes)).toStrictEqual(
+      new NoteInsufficientPermissionError('Not allowed', { cause: null }),
+    );
 
     const homeRes = await service.handle(
       originalNote.getID(),

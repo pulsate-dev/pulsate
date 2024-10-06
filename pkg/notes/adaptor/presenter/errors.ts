@@ -1,5 +1,8 @@
 import { z } from '@hono/zod-openapi';
 
+export const NoteInternal = z.literal('INTERNAL_ERROR').openapi({
+  description: 'Internal Error',
+});
 export const TooManyAttachments = z.literal('TOO_MANY_ATTACHMENTS').openapi({
   description: 'This note has too many attachments',
 });

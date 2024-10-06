@@ -94,10 +94,18 @@ export class NoteNotReactedYetError extends Error {
   }
 }
 
-export class AttachmentNotFoundError extends Error {
+export class NoteAttachmentNotFoundError extends Error {
   constructor(message: string, options: { cause: unknown }) {
     super(message);
-    this.name = 'AttachmentsNotFoundError';
+    this.name = 'NoteAttachmentsNotFoundError';
+    this.cause = options.cause;
+  }
+}
+
+export class NoteBookmarkAlreadyCreatedError extends Error {
+  constructor(message: string, options: { cause: unknown }) {
+    super(message);
+    this.name = 'NoteBookmarkAlreadyCreatedError';
     this.cause = options.cause;
   }
 }
