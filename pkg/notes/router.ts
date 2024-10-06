@@ -1,6 +1,18 @@
 import { createRoute, z } from '@hono/zod-openapi';
 
-import { CommonErrorResponseSchema } from '../accounts/adaptor/validator/schema.js';
+import { AccountNotFound } from '../accounts/adaptor/presenter/errors.js';
+import {
+  AlreadyReacted,
+  AttachmentNotFound,
+  EmojiNotFound,
+  InvalidVisibility,
+  NoDestination,
+  NoteInternal,
+  NoteNotFound,
+  TooManyAttachments,
+  TooManyContent,
+  YouAreSilenced,
+} from './adaptor/presenter/errors.js';
 import {
   CreateBookmarkResponseSchema,
   CreateNoteRequestSchema,
@@ -43,7 +55,19 @@ export const CreateNoteRoute = createRoute({
       description: 'Bad Request',
       content: {
         'application/json': {
-          schema: CommonErrorResponseSchema,
+          schema: z.object({
+            error: z
+              .union([
+                TooManyAttachments,
+                TooManyContent,
+                NoDestination,
+                InvalidVisibility,
+              ])
+              .openapi({
+                description: 'Error codes',
+                example: 'TOO_MANY_ATTACHMENTS',
+              }),
+          }),
         },
       },
     },
@@ -51,11 +75,43 @@ export const CreateNoteRoute = createRoute({
       description: 'You are silenced',
       content: {
         'application/json': {
-          schema: CommonErrorResponseSchema,
+          schema: z
+            .object({
+              error: YouAreSilenced,
+            })
+            .openapi({
+              description: "You can't set note visibility to PUBLIC",
+            }),
         },
       },
     },
-    // ToDo: Define 404 (Attachment not found/Send to Account not found)
+    404: {
+      description: 'Not Found',
+      content: {
+        'application/json': {
+          schema: z.object({
+            error: z.union([AttachmentNotFound, AccountNotFound]).openapi({
+              description: 'Error codes',
+              example: 'ATTACHMENT_NOT_FOUND',
+            }),
+          }),
+        },
+      },
+    },
+    500: {
+      description: 'Internal Server Error',
+      content: {
+        'application/json': {
+          schema: z
+            .object({
+              error: NoteInternal,
+            })
+            .openapi({
+              description: 'Internal Error',
+            }),
+        },
+      },
+    },
   },
 });
 
@@ -84,7 +140,27 @@ export const GetNoteRoute = createRoute({
       description: 'Note not found',
       content: {
         'application/json': {
-          schema: CommonErrorResponseSchema,
+          schema: z
+            .object({
+              error: NoteNotFound,
+            })
+            .openapi({
+              description: 'Note not found',
+            }),
+        },
+      },
+    },
+    500: {
+      description: 'Internal Server Error',
+      content: {
+        'application/json': {
+          schema: z
+            .object({
+              error: NoteInternal,
+            })
+            .openapi({
+              description: 'Internal Error',
+            }),
         },
       },
     },
@@ -128,7 +204,19 @@ export const RenoteRoute = createRoute({
       description: 'Bad Request',
       content: {
         'application/json': {
-          schema: CommonErrorResponseSchema,
+          schema: z.object({
+            error: z
+              .union([
+                TooManyContent,
+                TooManyAttachments,
+                InvalidVisibility,
+                NoDestination,
+              ])
+              .openapi({
+                description: 'Error codes',
+                example: 'TOO_MANY_CONTENT',
+              }),
+          }),
         },
       },
     },
@@ -136,7 +224,13 @@ export const RenoteRoute = createRoute({
       description: 'You are silenced',
       content: {
         'application/json': {
-          schema: CommonErrorResponseSchema,
+          schema: z
+            .object({
+              error: YouAreSilenced,
+            })
+            .openapi({
+              description: "You can't set note visibility to PUBLIC",
+            }),
         },
       },
     },
@@ -144,7 +238,26 @@ export const RenoteRoute = createRoute({
       description: 'Note not found',
       content: {
         'application/json': {
-          schema: CommonErrorResponseSchema,
+          schema: z.object({
+            error: z.union([NoteNotFound, AttachmentNotFound]).openapi({
+              description: 'Error codes',
+              example: 'NOTE_NOT_FOUND',
+            }),
+          }),
+        },
+      },
+    },
+    500: {
+      description: 'Internal Server Error',
+      content: {
+        'application/json': {
+          schema: z
+            .object({
+              error: NoteInternal,
+            })
+            .openapi({
+              description: 'Internal Error',
+            }),
         },
       },
     },
@@ -188,7 +301,12 @@ export const CreateReactionRoute = createRoute({
       description: 'Bad Request',
       content: {
         'application/json': {
-          schema: CommonErrorResponseSchema,
+          schema: z.object({
+            error: z.union([AlreadyReacted, EmojiNotFound]).openapi({
+              description: 'Error codes',
+              example: 'ALREADY_REACTED',
+            }),
+          }),
         },
       },
     },
@@ -196,7 +314,23 @@ export const CreateReactionRoute = createRoute({
       description: 'Not Found',
       content: {
         'application/json': {
-          schema: CommonErrorResponseSchema,
+          schema: z.object({
+            error: NoteNotFound,
+          }),
+        },
+      },
+    },
+    500: {
+      description: 'Internal Server Error',
+      content: {
+        'application/json': {
+          schema: z
+            .object({
+              error: NoteInternal,
+            })
+            .openapi({
+              description: 'Internal Error',
+            }),
         },
       },
     },
@@ -233,7 +367,27 @@ export const CreateBookmarkRoute = createRoute({
       description: 'Note not found',
       content: {
         'application/json': {
-          schema: CommonErrorResponseSchema,
+          schema: z
+            .object({
+              error: NoteNotFound,
+            })
+            .openapi({
+              description: 'Note not found',
+            }),
+        },
+      },
+    },
+    500: {
+      description: 'Internal Server Error',
+      content: {
+        'application/json': {
+          schema: z
+            .object({
+              error: NoteInternal,
+            })
+            .openapi({
+              description: 'Internal Error',
+            }),
         },
       },
     },
@@ -265,7 +419,23 @@ export const DeleteBookmarkRoute = createRoute({
       description: 'Bookmark not found',
       content: {
         'application/json': {
-          schema: CommonErrorResponseSchema,
+          schema: z.object({
+            error: NoteNotFound,
+          }),
+        },
+      },
+    },
+    500: {
+      description: 'Internal Server Error',
+      content: {
+        'application/json': {
+          schema: z
+            .object({
+              error: NoteInternal,
+            })
+            .openapi({
+              description: 'Internal Error',
+            }),
         },
       },
     },

@@ -1,5 +1,6 @@
 import { Option, Result } from '@mikuroxina/mini-fn';
 import type { AccountID } from '../../accounts/model/account.js';
+import { NoteNotFoundError } from '../model/errors.js';
 import type { Note, NoteID } from '../model/note.js';
 import type {
   NoteRepository,
@@ -19,7 +20,9 @@ export class CreateReactionService {
   ): Promise<Result.Result<Error, Note>> {
     const note = await this.noteRepository.findByID(noteID);
     if (Option.isNone(note)) {
-      return Result.err(new Error('Note not found'));
+      return Result.err(
+        new NoteNotFoundError('Note not found', { cause: null }),
+      );
     }
 
     const reaction = await this.reactionRepository.create(

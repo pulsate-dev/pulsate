@@ -3,6 +3,7 @@ import { Option } from '@mikuroxina/mini-fn';
 import type { AccountID } from '../../accounts/model/account.js';
 import type { MediumID } from '../../drive/model/medium.js';
 import type { ID } from '../../id/type.js';
+import { NoteNoDestinationError, NoteTooLongContentsError } from './errors.js';
 
 export type NoteID = ID<Note>;
 export type NoteVisibility = 'PUBLIC' | 'HOME' | 'FOLLOWERS' | 'DIRECT';
@@ -38,10 +39,10 @@ export class Note {
 
   static new(arg: Omit<CreateNoteArgs, 'updatedAt' | 'deletedAt'>) {
     if ([...arg.content].length > 3000) {
-      throw new Error('Too long contents');
+      throw new NoteTooLongContentsError('Too long contents', { cause: null });
     }
     if (arg.visibility === 'DIRECT' && Option.isNone(arg.sendTo)) {
-      throw new Error('No destination');
+      throw new NoteNoDestinationError('No destination', { cause: null });
     }
 
     return new Note({

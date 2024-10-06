@@ -1,6 +1,7 @@
 import { OpenAPIHono } from '@hono/zod-openapi';
 import { Cat, Ether, Option, Promise, Result } from '@mikuroxina/mini-fn';
 
+import { AccountNotFoundError } from '../accounts/model/errors.js';
 import { authenticateToken } from '../accounts/service/authenticationTokenService.js';
 import {
   type AuthMiddlewareVariable,
@@ -19,7 +20,6 @@ import {
 import { BookmarkController } from './adaptor/controller/bookmark.js';
 import { NoteController } from './adaptor/controller/note.js';
 import { ReactionController } from './adaptor/controller/reaction.js';
-import { ReactionPresenter } from './adaptor/presenter/reacton.js';
 import {
   InMemoryBookmarkRepository,
   InMemoryNoteAttachmentRepository,
@@ -32,6 +32,17 @@ import {
   PrismaNoteRepository,
   PrismaReactionRepository,
 } from './adaptor/repository/prisma.js';
+import {
+  NoteAccountSilencedError,
+  NoteAlreadyReactedError,
+  NoteAttachmentNotFoundError,
+  NoteEmojiNotFoundError,
+  NoteNoDestinationError,
+  NoteNotFoundError,
+  NoteTooLongContentsError,
+  NoteTooManyAttachmentsError,
+  NoteVisibilityInvalidError,
+} from './model/errors.js';
 import {
   CreateBookmarkRoute,
   CreateNoteRoute,
@@ -129,7 +140,6 @@ const createReactionService = new CreateReactionService(
 const reactionController = new ReactionController(
   createReactionService,
   fetchService,
-  new ReactionPresenter(),
 );
 
 noteHandlers.openAPIRegistry.registerComponent('securitySchemes', 'Bearer', {
@@ -167,7 +177,30 @@ noteHandlers.openapi(CreateNoteRoute, async (c) => {
     sendTo: send_to,
   });
   if (Result.isErr(res)) {
-    return c.json({ error: res[1].message }, 400);
+    const error = Result.unwrapErr(res);
+
+    if (error instanceof NoteTooManyAttachmentsError) {
+      return c.json({ error: 'TOO_MANY_ATTACHMENTS' as const }, 400);
+    }
+    if (error instanceof NoteTooLongContentsError) {
+      return c.json({ error: 'TOO_MANY_CONTENT' as const }, 400);
+    }
+    if (error instanceof NoteNoDestinationError) {
+      return c.json({ error: 'NO_DESTINATION' as const }, 400);
+    }
+    if (error instanceof NoteVisibilityInvalidError) {
+      return c.json({ error: 'INVALID_VISIBILITY' as const }, 400);
+    }
+    if (error instanceof NoteAccountSilencedError) {
+      return c.json({ error: 'YOU_ARE_SILENCED' as const }, 403);
+    }
+    if (error instanceof AccountNotFoundError) {
+      return c.json({ error: 'ACCOUNT_NOT_FOUND' as const }, 404);
+    }
+    if (error instanceof NoteAttachmentNotFoundError) {
+      return c.json({ error: 'ATTACHMENT_NOT_FOUND' as const }, 404);
+    }
+    return c.json({ error: 'INTERNAL_ERROR' as const }, 500);
   }
 
   return c.json(res[1], 200);
@@ -181,7 +214,11 @@ noteHandlers.openapi(GetNoteRoute, async (c) => {
   const { id } = c.req.param();
   const res = await controller.getNoteByID(id);
   if (Result.isErr(res)) {
-    return c.json({ error: res[1].message }, 404);
+    const error = Result.unwrapErr(res);
+    if (error instanceof NoteNotFoundError) {
+      return c.json({ error: 'NOTE_NOT_FOUND' as const }, 404);
+    }
+    return c.json({ error: 'INTERNAL_ERROR' as const }, 500);
   }
 
   return c.json(res[1], 200);
@@ -206,7 +243,27 @@ noteHandlers.openapi(RenoteRoute, async (c) => {
   });
 
   if (Result.isErr(res)) {
-    return c.json({ error: res[1].message }, 400);
+    const error = Result.unwrapErr(res);
+
+    if (error instanceof NoteTooManyAttachmentsError) {
+      return c.json({ error: 'TOO_MANY_ATTACHMENTS' as const }, 400);
+    }
+    if (error instanceof NoteTooLongContentsError) {
+      return c.json({ error: 'TOO_MANY_CONTENT' as const }, 400);
+    }
+    if (error instanceof NoteNoDestinationError) {
+      return c.json({ error: 'NO_DESTINATION' as const }, 400);
+    }
+    if (error instanceof NoteVisibilityInvalidError) {
+      return c.json({ error: 'INVALID_VISIBILITY' as const }, 400);
+    }
+    if (error instanceof NoteAccountSilencedError) {
+      return c.json({ error: 'YOU_ARE_SILENCED' as const }, 403);
+    }
+    if (error instanceof NoteNotFoundError) {
+      return c.json({ error: 'NOTE_NOT_FOUND' as const }, 404);
+    }
+    return c.json({ error: 'INTERNAL_ERROR' as const }, 500);
   }
 
   return c.json(res[1], 200);
@@ -223,8 +280,17 @@ noteHandlers.openapi(CreateReactionRoute, async (c) => {
 
   const res = await reactionController.create(id, accountID, req.emoji);
   if (Result.isErr(res)) {
-    const { error, code } = Result.unwrapErr(res);
-    return c.json({ error: error.message }, code);
+    const error = Result.unwrapErr(res);
+    if (error instanceof NoteAlreadyReactedError) {
+      return c.json({ error: 'ALREADY_REACTED' as const }, 400);
+    }
+    if (error instanceof NoteEmojiNotFoundError) {
+      return c.json({ error: 'EMOJI_NOT_FOUND' as const }, 400);
+    }
+    if (error instanceof NoteNotFoundError) {
+      return c.json({ error: 'NOTE_NOT_FOUND' as const }, 404);
+    }
+    return c.json({ error: 'INTERNAL_ERROR' as const }, 500);
   }
 
   return c.json(Result.unwrap(res), 200);
@@ -241,7 +307,12 @@ noteHandlers.openapi(CreateBookmarkRoute, async (c) => {
   const res = await bookmarkController.createBookmark(noteID, accountID);
 
   if (Result.isErr(res)) {
-    return c.json({ error: res[1].message }, 404);
+    const error = Result.unwrapErr(res);
+
+    if (error instanceof NoteNotFoundError) {
+      return c.json({ error: 'NOTE_NOT_FOUND' as const }, 404);
+    }
+    return c.json({ error: 'INTERNAL_ERROR' as const }, 500);
   }
 
   return c.json(res[1], 200);
@@ -258,7 +329,12 @@ noteHandlers.openapi(DeleteBookmarkRoute, async (c) => {
   const res = await bookmarkController.deleteBookmark(noteID, accountID);
 
   if (Result.isErr(res)) {
-    return c.json({ error: res[1].message }, 400);
+    const error = Result.unwrapErr(res);
+
+    if (error instanceof NoteNotFoundError) {
+      return c.json({ error: 'NOTE_NOT_FOUND' as const }, 404);
+    }
+    return c.json({ error: 'INTERNAL_ERROR' as const }, 500);
   }
 
   return new Response(null, { status: 204 });

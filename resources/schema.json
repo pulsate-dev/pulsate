@@ -2386,10 +2386,38 @@
                   "type": "object",
                   "properties": {
                     "error": {
-                      "type": "string",
-                      "default": "",
-                      "description": "Error code",
-                      "example": "TEST_ERROR_CODE"
+                      "anyOf": [
+                        {
+                          "type": "string",
+                          "enum": [
+                            "TOO_MANY_ATTACHMENTS"
+                          ],
+                          "description": "This note has too many attachments"
+                        },
+                        {
+                          "type": "string",
+                          "enum": [
+                            "TOO_MANY_CONTENT"
+                          ],
+                          "description": "This note has too many (CW Comments or Note content)"
+                        },
+                        {
+                          "type": "string",
+                          "enum": [
+                            "NO_DESTINATION"
+                          ],
+                          "description": "This note has no destination"
+                        },
+                        {
+                          "type": "string",
+                          "enum": [
+                            "INVALID_VISIBILITY"
+                          ],
+                          "description": "This note has an invalid visibility"
+                        }
+                      ],
+                      "description": "Error codes",
+                      "example": "TOO_MANY_ATTACHMENTS"
                     }
                   },
                   "required": [
@@ -2408,14 +2436,74 @@
                   "properties": {
                     "error": {
                       "type": "string",
-                      "default": "",
-                      "description": "Error code",
-                      "example": "TEST_ERROR_CODE"
+                      "enum": [
+                        "YOU_ARE_SILENCED"
+                      ],
+                      "description": "You are silenced (You cannot set visibility to public"
+                    }
+                  },
+                  "required": [
+                    "error"
+                  ],
+                  "description": "You can't set note visibility to PUBLIC"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "anyOf": [
+                        {
+                          "type": "string",
+                          "enum": [
+                            "ATTACHMENT_NOT_FOUND"
+                          ],
+                          "description": "Attachment not found"
+                        },
+                        {
+                          "type": "string",
+                          "enum": [
+                            "ACCOUNT_NOT_FOUND"
+                          ],
+                          "description": "Account not found."
+                        }
+                      ],
+                      "description": "Error codes",
+                      "example": "ATTACHMENT_NOT_FOUND"
                     }
                   },
                   "required": [
                     "error"
                   ]
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string",
+                      "enum": [
+                        "INTERNAL_ERROR"
+                      ],
+                      "description": "Internal Error"
+                    }
+                  },
+                  "required": [
+                    "error"
+                  ],
+                  "description": "Internal Error"
                 }
               }
             }
@@ -2638,14 +2726,39 @@
                   "properties": {
                     "error": {
                       "type": "string",
-                      "default": "",
-                      "description": "Error code",
-                      "example": "TEST_ERROR_CODE"
+                      "enum": [
+                        "NOTE_NOT_FOUND"
+                      ],
+                      "description": "Note not found"
                     }
                   },
                   "required": [
                     "error"
-                  ]
+                  ],
+                  "description": "Note not found"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string",
+                      "enum": [
+                        "INTERNAL_ERROR"
+                      ],
+                      "description": "Internal Error"
+                    }
+                  },
+                  "required": [
+                    "error"
+                  ],
+                  "description": "Internal Error"
                 }
               }
             }
@@ -2871,10 +2984,38 @@
                   "type": "object",
                   "properties": {
                     "error": {
-                      "type": "string",
-                      "default": "",
-                      "description": "Error code",
-                      "example": "TEST_ERROR_CODE"
+                      "anyOf": [
+                        {
+                          "type": "string",
+                          "enum": [
+                            "TOO_MANY_CONTENT"
+                          ],
+                          "description": "This note has too many (CW Comments or Note content)"
+                        },
+                        {
+                          "type": "string",
+                          "enum": [
+                            "TOO_MANY_ATTACHMENTS"
+                          ],
+                          "description": "This note has too many attachments"
+                        },
+                        {
+                          "type": "string",
+                          "enum": [
+                            "INVALID_VISIBILITY"
+                          ],
+                          "description": "This note has an invalid visibility"
+                        },
+                        {
+                          "type": "string",
+                          "enum": [
+                            "NO_DESTINATION"
+                          ],
+                          "description": "This note has no destination"
+                        }
+                      ],
+                      "description": "Error codes",
+                      "example": "TOO_MANY_CONTENT"
                     }
                   },
                   "required": [
@@ -2893,14 +3034,16 @@
                   "properties": {
                     "error": {
                       "type": "string",
-                      "default": "",
-                      "description": "Error code",
-                      "example": "TEST_ERROR_CODE"
+                      "enum": [
+                        "YOU_ARE_SILENCED"
+                      ],
+                      "description": "You are silenced (You cannot set visibility to public"
                     }
                   },
                   "required": [
                     "error"
-                  ]
+                  ],
+                  "description": "You can't set note visibility to PUBLIC"
                 }
               }
             }
@@ -2913,15 +3056,52 @@
                   "type": "object",
                   "properties": {
                     "error": {
-                      "type": "string",
-                      "default": "",
-                      "description": "Error code",
-                      "example": "TEST_ERROR_CODE"
+                      "anyOf": [
+                        {
+                          "type": "string",
+                          "enum": [
+                            "NOTE_NOT_FOUND"
+                          ],
+                          "description": "Note not found"
+                        },
+                        {
+                          "type": "string",
+                          "enum": [
+                            "ATTACHMENT_NOT_FOUND"
+                          ],
+                          "description": "Attachment not found"
+                        }
+                      ],
+                      "description": "Error codes",
+                      "example": "NOTE_NOT_FOUND"
                     }
                   },
                   "required": [
                     "error"
                   ]
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string",
+                      "enum": [
+                        "INTERNAL_ERROR"
+                      ],
+                      "description": "Internal Error"
+                    }
+                  },
+                  "required": [
+                    "error"
+                  ],
+                  "description": "Internal Error"
                 }
               }
             }
@@ -3091,10 +3271,24 @@
                   "type": "object",
                   "properties": {
                     "error": {
-                      "type": "string",
-                      "default": "",
-                      "description": "Error code",
-                      "example": "TEST_ERROR_CODE"
+                      "anyOf": [
+                        {
+                          "type": "string",
+                          "enum": [
+                            "ALREADY_REACTED"
+                          ],
+                          "description": "You already reacted to this note"
+                        },
+                        {
+                          "type": "string",
+                          "enum": [
+                            "EMOJI_NOT_FOUND"
+                          ],
+                          "description": "Emoji not found (Custom Emoji) / Specified many emojis (Unicode Emoji)"
+                        }
+                      ],
+                      "description": "Error codes",
+                      "example": "ALREADY_REACTED"
                     }
                   },
                   "required": [
@@ -3113,14 +3307,38 @@
                   "properties": {
                     "error": {
                       "type": "string",
-                      "default": "",
-                      "description": "Error code",
-                      "example": "TEST_ERROR_CODE"
+                      "enum": [
+                        "NOTE_NOT_FOUND"
+                      ],
+                      "description": "Note not found"
                     }
                   },
                   "required": [
                     "error"
                   ]
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string",
+                      "enum": [
+                        "INTERNAL_ERROR"
+                      ],
+                      "description": "Internal Error"
+                    }
+                  },
+                  "required": [
+                    "error"
+                  ],
+                  "description": "Internal Error"
                 }
               }
             }
@@ -3272,14 +3490,39 @@
                   "properties": {
                     "error": {
                       "type": "string",
-                      "default": "",
-                      "description": "Error code",
-                      "example": "TEST_ERROR_CODE"
+                      "enum": [
+                        "NOTE_NOT_FOUND"
+                      ],
+                      "description": "Note not found"
                     }
                   },
                   "required": [
                     "error"
-                  ]
+                  ],
+                  "description": "Note not found"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string",
+                      "enum": [
+                        "INTERNAL_ERROR"
+                      ],
+                      "description": "Internal Error"
+                    }
+                  },
+                  "required": [
+                    "error"
+                  ],
+                  "description": "Internal Error"
                 }
               }
             }
@@ -3320,14 +3563,38 @@
                   "properties": {
                     "error": {
                       "type": "string",
-                      "default": "",
-                      "description": "Error code",
-                      "example": "TEST_ERROR_CODE"
+                      "enum": [
+                        "NOTE_NOT_FOUND"
+                      ],
+                      "description": "Note not found"
                     }
                   },
                   "required": [
                     "error"
                   ]
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string",
+                      "enum": [
+                        "INTERNAL_ERROR"
+                      ],
+                      "description": "Internal Error"
+                    }
+                  },
+                  "required": [
+                    "error"
+                  ],
+                  "description": "Internal Error"
                 }
               }
             }

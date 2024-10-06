@@ -1,9 +1,16 @@
 import { Option, Result } from '@mikuroxina/mini-fn';
 
 import type { Account, AccountID } from '../../accounts/model/account.js';
+import { AccountNotFoundError } from '../../accounts/model/errors.js';
 import type { MediumID } from '../../drive/model/medium.js';
 import type { SnowflakeIDGenerator } from '../../id/mod.js';
 import type { AccountModuleFacade } from '../../intermodule/account.js';
+import {
+  NoteInsufficientPermissionError,
+  NoteNotFoundError,
+  NoteTooManyAttachmentsError,
+  NoteVisibilityInvalidError,
+} from '../model/errors.js';
 import type { NoteID, NoteVisibility } from '../model/note.js';
 import { Note } from '../model/note.js';
 import type {
@@ -33,11 +40,15 @@ export class RenoteService {
   ): Promise<Result.Result<Error, Note>> {
     const actorRes = await this.accountModule.fetchAccount(authorID);
     if (Result.isErr(actorRes)) {
-      return Result.err(new Error('Account not found'));
+      return Result.err(
+        new AccountNotFoundError('Account not found', { cause: null }),
+      );
     }
     const actor = Result.unwrap(actorRes);
     if (!this.isAllowed(actor, visibility)) {
-      return Result.err(new Error('Not allowed'));
+      return Result.err(
+        new NoteInsufficientPermissionError('Not allowed', { cause: null }),
+      );
     }
 
     // NOTE: PUBLIC, HOME note can be renote
@@ -46,16 +57,24 @@ export class RenoteService {
       case 'HOME':
         break;
       default:
-        return Result.err(new Error('Invalid visibility'));
+        return Result.err(
+          new NoteVisibilityInvalidError('Invalid visibility', { cause: null }),
+        );
     }
 
     if (attachmentFileID.length > 16) {
-      return Result.err(new Error('Too many attachments'));
+      return Result.err(
+        new NoteTooManyAttachmentsError('Too many attachments', {
+          cause: null,
+        }),
+      );
     }
 
     const originalNoteRes = await this.noteRepository.findByID(originalNoteID);
     if (Option.isNone(originalNoteRes)) {
-      return Result.err(new Error('Original note not found'));
+      return Result.err(
+        new NoteNotFoundError('Original note not found', { cause: null }),
+      );
     }
     const originalNote = Option.unwrap(originalNoteRes);
 
@@ -66,12 +85,21 @@ export class RenoteService {
       case 'FOLLOWERS':
         // NOTE: FOLLOWERS note can renote only author
         if (originalNote.getAuthorID() !== authorID) {
-          return Result.err(new Error('Can not renote others FOLLOWERS note'));
+          return Result.err(
+            new NoteVisibilityInvalidError(
+              'Can not renote others FOLLOWERS note',
+              { cause: null },
+            ),
+          );
         }
         break;
       case 'DIRECT':
         // NOTE: can not renote direct note
-        return Result.err(new Error('Can not renote direct note'));
+        return Result.err(
+          new NoteVisibilityInvalidError('Can not renote direct note', {
+            cause: null,
+          }),
+        );
     }
 
     const id = this.idGenerator.generate<Note>();

@@ -4,6 +4,12 @@ import type { AccountID } from '../../accounts/model/account.js';
 import type { MediumID } from '../../drive/model/medium.js';
 import type { SnowflakeIDGenerator } from '../../id/mod.js';
 import type { TimelineModuleFacade } from '../../intermodule/timeline.js';
+import {
+  NoteInternalError,
+  NoteNoDestinationError,
+  NoteTooLongContentsError,
+  NoteTooManyAttachmentsError,
+} from '../model/errors.js';
 import { Note, type NoteID, type NoteVisibility } from '../model/note.js';
 import type {
   NoteAttachmentRepository,
@@ -20,11 +26,19 @@ export class CreateService {
     visibility: NoteVisibility,
   ): Promise<Result.Result<Error, Note>> {
     if (attachmentFileID.length > 16) {
-      return Result.err(new Error('Too many attachments'));
+      return Result.err(
+        new NoteTooManyAttachmentsError('Too many attachments', {
+          cause: null,
+        }),
+      );
     }
     const id = this.idGenerator.generate<Note>();
     if (Result.isErr(id)) {
-      return id;
+      return Result.err(
+        new NoteInternalError('id generation failed', {
+          cause: Result.unwrapErr(id),
+        }),
+      );
     }
     try {
       const note = Note.new({
@@ -54,12 +68,18 @@ export class CreateService {
       }
 
       // ToDo: Even if the note cannot be pushed to the timeline, the note is created successfully, so there is no error here.
-      // ToDo: use job que to push note to timeline
+      // ToDo: use job queue to push note to timeline
       await this.timelineModule.pushNoteToTimeline(note);
 
       return Result.ok(note);
     } catch (e) {
-      return Result.err(e as unknown as Error);
+      if (e instanceof NoteNoDestinationError) {
+        return Result.err(e);
+      }
+      if (e instanceof NoteTooLongContentsError) {
+        return Result.err(e);
+      }
+      return Result.err(new NoteInternalError('unknown error', { cause: e }));
     }
   }
 
