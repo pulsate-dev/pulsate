@@ -23,9 +23,10 @@ export class TurnstileCaptchaValidator implements Captcha {
     );
     const response = await res.json();
     if (!response.success) {
+      const errorResponse = (({ success, ...rest }) => rest)(response);
       return Option.some(
         new AccountCaptchaTokenInvalidError('failed to verify captcha token', {
-          cause: new Error(response['error-codes'][0]),
+          cause: errorResponse,
         }),
       );
     }
