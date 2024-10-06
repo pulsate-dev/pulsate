@@ -383,6 +383,9 @@ accounts.openapi(LoginRoute, async (c) => {
     if (error instanceof AccountAuthenticationFailedError) {
       return c.json({ error: 'FAILED_TO_LOGIN' as const }, 400);
     }
+    if (error instanceof AccountNotFoundError) {
+      return c.json({ error: 'FAILED_TO_LOGIN' as const }, 400);
+    }
     if (error instanceof AccountLoginRejectedError) {
       return c.json({ error: 'YOU_ARE_FROZEN' as const }, 403);
     }
