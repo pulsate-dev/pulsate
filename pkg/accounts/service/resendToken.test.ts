@@ -7,6 +7,7 @@ import {
   InMemoryAccountVerifyTokenRepository,
 } from '../adaptor/repository/dummy.js';
 import { Account, type AccountID } from '../model/account.js';
+import { AccountNotFoundError } from '../model/errors.js';
 import { ResendVerifyTokenService } from './resendToken.js';
 import { DummySendNotificationService } from './sendNotification.js';
 import { VerifyAccountTokenService } from './verifyToken.js';
@@ -78,6 +79,8 @@ describe('ResendVerifyTokenService', () => {
 
     expect(Option.isSome(actual)).toBe(true);
     if (Option.isNone(actual)) return;
-    expect(actual[1]).toStrictEqual(new Error('AccountNotFoundError'));
+    expect(actual[1]).toStrictEqual(
+      new AccountNotFoundError('account not found', { cause: null }),
+    );
   });
 });
