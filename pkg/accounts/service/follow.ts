@@ -1,6 +1,7 @@
 import { Ether, Option, Result } from '@mikuroxina/mini-fn';
 
 import type { AccountName } from '../model/account.js';
+import { AccountNotFoundError } from '../model/errors.js';
 import { AccountFollow } from '../model/follow.js';
 import {
   type AccountFollowRepository,
@@ -21,11 +22,15 @@ export class FollowService {
   ): Promise<Result.Result<Error, AccountFollow>> {
     const fromAccount = await this.accountRepository.findByName(from);
     if (Option.isNone(fromAccount)) {
-      return Result.err(new Error('from account not found'));
+      return Result.err(
+        new AccountNotFoundError('account not found', { cause: null }),
+      );
     }
     const targetAccount = await this.accountRepository.findByName(target);
     if (Option.isNone(targetAccount)) {
-      return Result.err(new Error('target account not found'));
+      return Result.err(
+        new AccountNotFoundError('account not found', { cause: null }),
+      );
     }
 
     const follow = AccountFollow.new({

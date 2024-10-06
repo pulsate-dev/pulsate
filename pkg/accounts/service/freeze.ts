@@ -1,6 +1,7 @@
 import { Ether, Option, Result } from '@mikuroxina/mini-fn';
 
 import type { Account, AccountName } from '../model/account.js';
+import { AccountNotFoundError } from '../model/errors.js';
 import {
   type AccountRepository,
   accountRepoSymbol,
@@ -15,12 +16,16 @@ export class FreezeService {
   ): Promise<Result.Result<Error, boolean>> {
     const accountRes = await this.accountRepository.findByName(targetName);
     if (Option.isNone(accountRes)) {
-      return Result.err(new Error('account not found'));
+      return Result.err(
+        new AccountNotFoundError('account not found', { cause: null }),
+      );
     }
     const account = Option.unwrap(accountRes);
     const actorRes = await this.accountRepository.findByName(actorName);
     if (Option.isNone(actorRes)) {
-      return Result.err(new Error('actor not found'));
+      return Result.err(
+        new AccountNotFoundError('actor not found', { cause: null }),
+      );
     }
     const actor = Option.unwrap(actorRes);
 
@@ -42,12 +47,16 @@ export class FreezeService {
   ): Promise<Result.Result<Error, boolean>> {
     const accountRes = await this.accountRepository.findByName(targetName);
     if (Option.isNone(accountRes)) {
-      return Result.err(new Error('account not found'));
+      return Result.err(
+        new AccountNotFoundError('account not found', { cause: null }),
+      );
     }
     const account = Option.unwrap(accountRes);
     const actorRes = await this.accountRepository.findByName(actorName);
     if (Option.isNone(actorRes)) {
-      return Result.err(new Error('actor not found'));
+      return Result.err(
+        new AccountNotFoundError('actor not found', { cause: null }),
+      );
     }
     const actor = Option.unwrap(actorRes);
 

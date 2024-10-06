@@ -1,6 +1,7 @@
 import { Ether, Option, Result } from '@mikuroxina/mini-fn';
 
 import type { Account, AccountID } from '../model/account.js';
+import { AccountNotFoundError } from '../model/errors.js';
 import {
   type AccountRepository,
   accountRepoSymbol,
@@ -16,7 +17,9 @@ export class FetchService {
   async fetchAccount(name: string): Promise<Result.Result<Error, Account>> {
     const res = await this.accountRepository.findByName(name);
     if (Option.isNone(res)) {
-      return Result.err(new Error('AccountNotFoundError'));
+      return Result.err(
+        new AccountNotFoundError('account not found', { cause: null }),
+      );
     }
 
     try {
@@ -31,7 +34,9 @@ export class FetchService {
     id: AccountID,
   ): Promise<Result.Result<Error, Account>> {
     const res = await this.accountRepository.findByID(id);
-    return Option.okOr(new Error('AccountNotFoundError'))(res);
+    return Option.okOr(
+      new AccountNotFoundError('account not found', { cause: null }),
+    )(res);
   }
 
   async fetchManyAccountsByID(

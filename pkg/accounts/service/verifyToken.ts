@@ -3,6 +3,10 @@ import { Ether, Option, Result } from '@mikuroxina/mini-fn';
 import { type Clock, clockSymbol } from '../../id/mod.js';
 import type { AccountName } from '../model/account.js';
 import {
+  AccountMailAddressVerificationTokenInvalidError,
+  AccountNotFoundError,
+} from '../model/errors.js';
+import {
   type AccountRepository,
   type AccountVerifyTokenRepository,
   accountRepoSymbol,
@@ -35,7 +39,9 @@ export class VerifyAccountTokenService {
 
     const account = await this.accountRepository.findByName(accountName);
     if (Option.isNone(account)) {
-      return Result.err(new Error('Account not found'));
+      return Result.err(
+        new AccountNotFoundError('account not found', { cause: null }),
+      );
     }
 
     const res = await this.repository.create(
@@ -62,21 +68,33 @@ export class VerifyAccountTokenService {
   ): Promise<Result.Result<Error, void>> {
     const account = await this.accountRepository.findByName(accountName);
     if (Option.isNone(account)) {
-      return Result.err(new Error('Account not found'));
+      return Result.err(
+        new AccountNotFoundError('account not found', { cause: null }),
+      );
     }
 
     const res = await this.repository.findByID(account[1].getID());
     if (Option.isNone(res)) {
       // ToDo(laminne): Consider whether to create an error type (e.g. AccountNotFoundError)
-      return Result.err(new Error('Account not found'));
+      return Result.err(
+        new AccountNotFoundError('account not found', { cause: null }),
+      );
     }
 
     if (res[1].expire < new Date()) {
-      return Result.err(new Error('Token expired'));
+      return Result.err(
+        new AccountMailAddressVerificationTokenInvalidError('Token expired', {
+          cause: null,
+        }),
+      );
     }
 
     if (res[1].token !== token) {
-      return Result.err(new Error('Token not match'));
+      return Result.err(
+        new AccountMailAddressVerificationTokenInvalidError('Token not match', {
+          cause: null,
+        }),
+      );
     }
 
     return Result.ok(undefined);

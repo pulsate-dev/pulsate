@@ -1,6 +1,7 @@
 import { Cat, Ether, Option, Result } from '@mikuroxina/mini-fn';
 
 import type { AccountID, AccountName } from '../model/account.js';
+import { AccountNotFoundError } from '../model/errors.js';
 import type { AccountFollow } from '../model/follow.js';
 import {
   type AccountFollowRepository,
@@ -25,7 +26,11 @@ export class FetchFollowService {
     name: AccountName,
   ): Promise<Result.Result<Error, AccountFollow[]>> {
     const resId = Cat.cat(await this.accountRepository.findByName(name))
-      .feed(Option.okOr(new Error('ACCOUNT_NOT_FOUND')))
+      .feed(
+        Option.okOr(
+          new AccountNotFoundError('account not found', { cause: null }),
+        ),
+      )
       .feed(Result.map((a) => a.getID())).value;
 
     if (Result.isErr(resId)) {
@@ -45,7 +50,11 @@ export class FetchFollowService {
     name: AccountName,
   ): Promise<Result.Result<Error, AccountFollow[]>> {
     const resId = Cat.cat(await this.accountRepository.findByName(name))
-      .feed(Option.okOr(new Error('ACCOUNT_NOT_FOUND')))
+      .feed(
+        Option.okOr(
+          new AccountNotFoundError('account not found', { cause: null }),
+        ),
+      )
       .feed(Result.map((a) => a.getID())).value;
 
     if (Result.isErr(resId)) {

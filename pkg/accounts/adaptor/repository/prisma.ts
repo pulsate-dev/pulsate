@@ -1,5 +1,5 @@
 import { Ether, Option, Result } from '@mikuroxina/mini-fn';
-import type { Prisma, PrismaClient } from '@prisma/client';
+import { Prisma, type PrismaClient } from '@prisma/client';
 
 import type { prismaClient } from '../../../adaptors/prisma.js';
 import {
@@ -11,6 +11,10 @@ import {
   type AccountSilenced,
   type AccountStatus,
 } from '../../model/account.js';
+import {
+  AccountInternalError,
+  AccountNotFoundError,
+} from '../../model/errors.js';
 import { AccountFollow } from '../../model/follow.js';
 import {
   type AccountFollowRepository,
@@ -36,7 +40,7 @@ export class PrismaAccountRepository implements AccountRepository {
         },
       });
     } catch (e) {
-      return Result.err(e as Error);
+      return Result.err(parsePrismaError(e));
     }
 
     return Result.ok(undefined);
@@ -100,7 +104,7 @@ export class PrismaAccountRepository implements AccountRepository {
         data: this.toPrismaArgs(account),
       });
     } catch (e) {
-      return Result.err(e as Error);
+      return Result.err(parsePrismaError(e));
     }
 
     return Result.ok(undefined);
@@ -230,7 +234,7 @@ export class PrismaAccountVerifyTokenRepository
         },
       });
     } catch (e) {
-      return Result.err(e as Error);
+      return Result.err(parsePrismaError(e));
     }
     return Result.ok(undefined);
   }
@@ -279,7 +283,7 @@ export class PrismaAccountFollowRepository implements AccountFollowRepository {
       });
       return Result.ok(undefined);
     } catch (e) {
-      return Result.err(e as Error);
+      return Result.err(parsePrismaError(e));
     }
   }
 
@@ -302,7 +306,7 @@ export class PrismaAccountFollowRepository implements AccountFollowRepository {
       });
       return Result.ok(undefined);
     } catch (e) {
-      return Result.err(e as Error);
+      return Result.err(parsePrismaError(e));
     }
   }
 
@@ -373,3 +377,22 @@ export const prismaFollowRepo = (client: PrismaClient) =>
     followRepoSymbol,
     () => new PrismaAccountFollowRepository(client),
   );
+
+export const parsePrismaError = (e: unknown): Error => {
+  // NOTE: cf. prisma error reference: https://www.prisma.io/docs/orm/reference/error-reference
+  if (e instanceof Prisma.PrismaClientKnownRequestError) {
+    switch (e.code) {
+      case 'P2001':
+        return new AccountNotFoundError(e.message, { cause: e });
+      case 'P2015':
+        return new AccountNotFoundError(e.message, { cause: e });
+      case 'P2018':
+        return new AccountNotFoundError(e.message, { cause: e });
+      case 'P2025':
+        return new AccountNotFoundError(e.message, { cause: e });
+      default:
+        return new AccountInternalError(e.message, { cause: e });
+    }
+  }
+  return new AccountInternalError('unknown error', { cause: e });
+};

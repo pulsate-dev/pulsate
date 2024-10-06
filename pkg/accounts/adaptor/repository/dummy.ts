@@ -1,6 +1,7 @@
 import { Ether, Option, Result } from '@mikuroxina/mini-fn';
 
 import type { Account, AccountID } from '../../model/account.js';
+import { AccountNotFoundError } from '../../model/errors.js';
 import type { AccountFollow } from '../../model/follow.js';
 import type { InactiveAccount } from '../../model/inactiveAccount.js';
 import {
@@ -153,7 +154,7 @@ export class InMemoryAccountFollowRepository
       (f) => f.getFromID() === accountID && f.getTargetID() === targetID,
     );
     if (!follow) {
-      return Result.err(new Error('Not found'));
+      return Result.err(new AccountNotFoundError('not found', { cause: null }));
     }
 
     this.data.delete(follow);

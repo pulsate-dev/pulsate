@@ -45,6 +45,21 @@
           "email"
         ]
       },
+      "InternalErrorResponse": {
+        "type": "object",
+        "properties": {
+          "error": {
+            "type": "string",
+            "enum": [
+              "INTERNAL_ERROR"
+            ],
+            "description": "Internal server error."
+          }
+        },
+        "required": [
+          "error"
+        ]
+      },
       "CreateAccountRequest": {
         "type": "object",
         "properties": {
@@ -443,6 +458,188 @@
       "Account ID": {
         "type": "string"
       },
+      "GetListTimelineResponse": {
+        "type": "array",
+        "items": {
+          "type": "object",
+          "properties": {
+            "id": {
+              "type": "string",
+              "description": "Note ID",
+              "example": "38477395"
+            },
+            "content": {
+              "type": "string",
+              "description": "Note content",
+              "example": "hello world!"
+            },
+            "contents_warning_comment": {
+              "type": "string",
+              "description": "Contents warning comment",
+              "example": "(if length not 0) This note contains sensitive content"
+            },
+            "visibility": {
+              "type": "string",
+              "description": "Note visibility (PUBLIC/HOME/FOLLOWERS/DIRECT)",
+              "example": "PUBLIC"
+            },
+            "created_at": {
+              "type": "string",
+              "format": "date-time",
+              "description": "Note created date",
+              "example": "2021-01-01T00:00:00Z"
+            },
+            "author": {
+              "type": "object",
+              "properties": {
+                "id": {
+                  "type": "string"
+                },
+                "name": {
+                  "type": "string"
+                },
+                "display_name": {
+                  "type": "string"
+                },
+                "bio": {
+                  "type": "string"
+                },
+                "avatar": {
+                  "type": "string"
+                },
+                "header": {
+                  "type": "string"
+                },
+                "followed_count": {
+                  "type": "number"
+                },
+                "following_count": {
+                  "type": "number"
+                }
+              },
+              "required": [
+                "id",
+                "name",
+                "display_name",
+                "bio",
+                "avatar",
+                "header",
+                "followed_count",
+                "following_count"
+              ]
+            },
+            "reactions": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "emoji": {
+                    "anyOf": [
+                      {
+                        "type": "string",
+                        "pattern": "[\\u2700-\\u27BF]|[\\uE000-\\uF8FF]|\\uD83C[\\uDC00-\\uDFFF]|\\uD83D[\\uDC00-\\uDFFF]|[\\u2011-\\u26FF]|\\uD83E[\\uDD10-\\uDDFF]"
+                      },
+                      {
+                        "type": "string",
+                        "pattern": "<:(\\w+):(\\d+)>"
+                      }
+                    ],
+                    "description": "Reaction Emoji (Unicode or Custom Emoji)",
+                    "examples": [
+                      "🎉",
+                      "<:custom_emoji:123456789>"
+                    ]
+                  },
+                  "reacted_by": {
+                    "type": "string",
+                    "description": "Reacted account ID",
+                    "example": "38477395"
+                  }
+                },
+                "required": [
+                  "emoji",
+                  "reacted_by"
+                ]
+              },
+              "description": "Reactions"
+            },
+            "attachment_files": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "id": {
+                    "type": "string",
+                    "description": "attachment Medium id",
+                    "example": "39783475"
+                  },
+                  "name": {
+                    "type": "string",
+                    "description": "attachment filename",
+                    "example": "image.jpg"
+                  },
+                  "author_id": {
+                    "type": "string",
+                    "description": "attachment author account id",
+                    "example": "309823457"
+                  },
+                  "hash": {
+                    "type": "string",
+                    "description": "attachment medium blurhash",
+                    "example": "e9f*5oin{dn"
+                  },
+                  "mime": {
+                    "type": "string",
+                    "description": "attachment medium mime type",
+                    "example": "image/jpeg"
+                  },
+                  "nsfw": {
+                    "type": "boolean",
+                    "default": false,
+                    "description": "if true, attachment is nsfw"
+                  },
+                  "url": {
+                    "type": "string",
+                    "format": "uri",
+                    "description": "attachment medium url",
+                    "example": "https://images.example.com/image.webp"
+                  },
+                  "thumbnail": {
+                    "type": "string",
+                    "description": "attachment thumbnail url",
+                    "example": "https://images.example.com/image_thumbnail.webp"
+                  }
+                },
+                "required": [
+                  "id",
+                  "name",
+                  "author_id",
+                  "hash",
+                  "mime",
+                  "nsfw",
+                  "url",
+                  "thumbnail"
+                ]
+              },
+              "maxItems": 16,
+              "description": "Note Attachment Media"
+            }
+          },
+          "required": [
+            "id",
+            "content",
+            "contents_warning_comment",
+            "visibility",
+            "created_at",
+            "author",
+            "reactions",
+            "attachment_files"
+          ]
+        }
+      },
+      "List ID": {
+        "type": "string"
+      },
       "CreateListResponse": {
         "type": "object",
         "properties": {
@@ -511,9 +708,6 @@
           "title",
           "public"
         ]
-      },
-      "List ID": {
-        "type": "string"
       },
       "EditListRequest": {
         "type": "object",
@@ -635,10 +829,31 @@
                   "type": "object",
                   "properties": {
                     "error": {
-                      "type": "string",
-                      "default": "",
-                      "description": "Error code",
-                      "example": "TEST_ERROR_CODE"
+                      "anyOf": [
+                        {
+                          "type": "string",
+                          "enum": [
+                            "INVALID_ACCOUNT_NAME"
+                          ],
+                          "description": "Account name is invalid."
+                        },
+                        {
+                          "type": "string",
+                          "enum": [
+                            "TOO_LONG_ACCOUNT_NAME"
+                          ],
+                          "description": "Account name is too long."
+                        },
+                        {
+                          "type": "string",
+                          "enum": [
+                            "YOU_ARE_BOT"
+                          ],
+                          "description": "CAPTCHA verification failed."
+                        }
+                      ],
+                      "description": "Error codes",
+                      "example": "INVALID_ACCOUNT_NAME"
                     }
                   },
                   "required": [
@@ -656,15 +871,39 @@
                   "type": "object",
                   "properties": {
                     "error": {
-                      "type": "string",
-                      "default": "",
-                      "description": "Error code",
-                      "example": "TEST_ERROR_CODE"
+                      "anyOf": [
+                        {
+                          "type": "string",
+                          "enum": [
+                            "EMAIL_IN_USE"
+                          ],
+                          "description": "Account email is already in use."
+                        },
+                        {
+                          "type": "string",
+                          "enum": [
+                            "ACCOUNT_NAME_IN_USE"
+                          ],
+                          "description": "Account name is already in use."
+                        }
+                      ],
+                      "description": "Error codes",
+                      "example": "ACCOUNT_NAME_IN_USE"
                     }
                   },
                   "required": [
                     "error"
                   ]
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/InternalErrorResponse"
                 }
               }
             }
@@ -734,10 +973,23 @@
                   "type": "object",
                   "properties": {
                     "error": {
-                      "type": "string",
-                      "default": "",
-                      "description": "Error code",
-                      "example": "TEST_ERROR_CODE"
+                      "anyOf": [
+                        {
+                          "type": "string",
+                          "enum": [
+                            "INVALID_SEQUENCE"
+                          ],
+                          "description": "Contains unusable character types in parameters."
+                        },
+                        {
+                          "type": "string",
+                          "enum": [
+                            "VULNERABLE_PASSPHRASE"
+                          ],
+                          "description": "Passphrase is too weak."
+                        }
+                      ],
+                      "description": "error codes"
                     }
                   },
                   "required": [
@@ -756,14 +1008,16 @@
                   "properties": {
                     "error": {
                       "type": "string",
-                      "default": "",
-                      "description": "Error code",
-                      "example": "TEST_ERROR_CODE"
+                      "enum": [
+                        "ACCOUNT_NOT_FOUND"
+                      ],
+                      "description": "Account not found."
                     }
                   },
                   "required": [
                     "error"
-                  ]
+                  ],
+                  "description": "account not found"
                 }
               }
             }
@@ -777,14 +1031,26 @@
                   "properties": {
                     "error": {
                       "type": "string",
-                      "default": "",
-                      "description": "Error code",
-                      "example": "TEST_ERROR_CODE"
+                      "enum": [
+                        "INVALID_ETAG"
+                      ],
+                      "description": "ETag is invalid."
                     }
                   },
                   "required": [
                     "error"
-                  ]
+                  ],
+                  "description": "etag is invalid"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/InternalErrorResponse"
                 }
               }
             }
@@ -829,14 +1095,16 @@
                   "properties": {
                     "error": {
                       "type": "string",
-                      "default": "",
-                      "description": "Error code",
-                      "example": "TEST_ERROR_CODE"
+                      "enum": [
+                        "ALREADY_FROZEN"
+                      ],
+                      "description": "Account is already frozen."
                     }
                   },
                   "required": [
                     "error"
-                  ]
+                  ],
+                  "description": "account already frozen"
                 }
               }
             }
@@ -850,14 +1118,16 @@
                   "properties": {
                     "error": {
                       "type": "string",
-                      "default": "",
-                      "description": "Error code",
-                      "example": "TEST_ERROR_CODE"
+                      "enum": [
+                        "NO_PERMISSION"
+                      ],
+                      "description": "You can't do this action."
                     }
                   },
                   "required": [
                     "error"
-                  ]
+                  ],
+                  "description": "You can not do this action."
                 }
               }
             }
@@ -871,14 +1141,26 @@
                   "properties": {
                     "error": {
                       "type": "string",
-                      "default": "",
-                      "description": "Error code",
-                      "example": "TEST_ERROR_CODE"
+                      "enum": [
+                        "ACCOUNT_NOT_FOUND"
+                      ],
+                      "description": "Account not found."
                     }
                   },
                   "required": [
                     "error"
-                  ]
+                  ],
+                  "description": "account not found"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/InternalErrorResponse"
                 }
               }
             }
@@ -912,27 +1194,6 @@
           "204": {
             "description": "No Content"
           },
-          "400": {
-            "description": "Bad Request",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "properties": {
-                    "error": {
-                      "type": "string",
-                      "default": "",
-                      "description": "Error code",
-                      "example": "TEST_ERROR_CODE"
-                    }
-                  },
-                  "required": [
-                    "error"
-                  ]
-                }
-              }
-            }
-          },
           "403": {
             "description": "Forbidden",
             "content": {
@@ -942,14 +1203,16 @@
                   "properties": {
                     "error": {
                       "type": "string",
-                      "default": "",
-                      "description": "Error code",
-                      "example": "TEST_ERROR_CODE"
+                      "enum": [
+                        "NO_PERMISSION"
+                      ],
+                      "description": "You can't do this action."
                     }
                   },
                   "required": [
                     "error"
-                  ]
+                  ],
+                  "description": "You can not do this action."
                 }
               }
             }
@@ -963,14 +1226,26 @@
                   "properties": {
                     "error": {
                       "type": "string",
-                      "default": "",
-                      "description": "Error code",
-                      "example": "TEST_ERROR_CODE"
+                      "enum": [
+                        "ACCOUNT_NOT_FOUND"
+                      ],
+                      "description": "Account not found."
                     }
                   },
                   "required": [
                     "error"
-                  ]
+                  ],
+                  "description": "account not found"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/InternalErrorResponse"
                 }
               }
             }
@@ -1019,14 +1294,16 @@
                   "properties": {
                     "error": {
                       "type": "string",
-                      "default": "",
-                      "description": "Error code",
-                      "example": "TEST_ERROR_CODE"
+                      "enum": [
+                        "INVALID_TOKEN"
+                      ],
+                      "description": "EMail verification token is invalid."
                     }
                   },
                   "required": [
                     "error"
-                  ]
+                  ],
+                  "description": "email address token is invalid"
                 }
               }
             }
@@ -1040,14 +1317,26 @@
                   "properties": {
                     "error": {
                       "type": "string",
-                      "default": "",
-                      "description": "Error code",
-                      "example": "TEST_ERROR_CODE"
+                      "enum": [
+                        "ACCOUNT_NOT_FOUND"
+                      ],
+                      "description": "Account not found."
                     }
                   },
                   "required": [
                     "error"
-                  ]
+                  ],
+                  "description": "account not found"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/InternalErrorResponse"
                 }
               }
             }
@@ -1092,14 +1381,26 @@
                   "properties": {
                     "error": {
                       "type": "string",
-                      "default": "",
-                      "description": "Error code",
-                      "example": "TEST_ERROR_CODE"
+                      "enum": [
+                        "ACCOUNT_NOT_FOUND"
+                      ],
+                      "description": "Account not found."
                     }
                   },
                   "required": [
                     "error"
-                  ]
+                  ],
+                  "description": "account not found"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/InternalErrorResponse"
                 }
               }
             }
@@ -1141,14 +1442,16 @@
                   "properties": {
                     "error": {
                       "type": "string",
-                      "default": "",
-                      "description": "Error code",
-                      "example": "TEST_ERROR_CODE"
+                      "enum": [
+                        "FAILED_TO_LOGIN"
+                      ],
+                      "description": "Failed to login. Passphrase or Account Name is invalid."
                     }
                   },
                   "required": [
                     "error"
-                  ]
+                  ],
+                  "description": "failed to login."
                 }
               }
             }
@@ -1162,14 +1465,26 @@
                   "properties": {
                     "error": {
                       "type": "string",
-                      "default": "",
-                      "description": "Error code",
-                      "example": "TEST_ERROR_CODE"
+                      "enum": [
+                        "YOU_ARE_FROZEN"
+                      ],
+                      "description": "Your account is frozen, you can't login."
                     }
                   },
                   "required": [
                     "error"
-                  ]
+                  ],
+                  "description": "You can not login."
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/InternalErrorResponse"
                 }
               }
             }
@@ -1210,15 +1525,39 @@
                   "type": "object",
                   "properties": {
                     "error": {
-                      "type": "string",
-                      "default": "",
-                      "description": "Error code",
-                      "example": "TEST_ERROR_CODE"
+                      "anyOf": [
+                        {
+                          "type": "string",
+                          "enum": [
+                            "INVALID_TOKEN"
+                          ],
+                          "description": "Refresh token is invalid."
+                        },
+                        {
+                          "type": "string",
+                          "enum": [
+                            "EXPIRED_TOKEN"
+                          ],
+                          "description": "Refresh or Access token is expired. Please re-login."
+                        }
+                      ],
+                      "description": "error codes",
+                      "example": "INVALID_TOKEN"
                     }
                   },
                   "required": [
                     "error"
                   ]
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/InternalErrorResponse"
                 }
               }
             }
@@ -1270,14 +1609,16 @@
                   "properties": {
                     "error": {
                       "type": "string",
-                      "default": "",
-                      "description": "Error code",
-                      "example": "TEST_ERROR_CODE"
+                      "enum": [
+                        "NO_PERMISSION"
+                      ],
+                      "description": "You can't do this action."
                     }
                   },
                   "required": [
                     "error"
-                  ]
+                  ],
+                  "description": "You can not do this action."
                 }
               }
             }
@@ -1291,14 +1632,26 @@
                   "properties": {
                     "error": {
                       "type": "string",
-                      "default": "",
-                      "description": "Error code",
-                      "example": "TEST_ERROR_CODE"
+                      "enum": [
+                        "ACCOUNT_NOT_FOUND"
+                      ],
+                      "description": "Account not found."
                     }
                   },
                   "required": [
                     "error"
-                  ]
+                  ],
+                  "description": "account not found"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/InternalErrorResponse"
                 }
               }
             }
@@ -1348,14 +1701,16 @@
                   "properties": {
                     "error": {
                       "type": "string",
-                      "default": "",
-                      "description": "Error code",
-                      "example": "TEST_ERROR_CODE"
+                      "enum": [
+                        "NO_PERMISSION"
+                      ],
+                      "description": "You can't do this action."
                     }
                   },
                   "required": [
                     "error"
-                  ]
+                  ],
+                  "description": "You can not do this action."
                 }
               }
             }
@@ -1369,14 +1724,26 @@
                   "properties": {
                     "error": {
                       "type": "string",
-                      "default": "",
-                      "description": "Error code",
-                      "example": "TEST_ERROR_CODE"
+                      "enum": [
+                        "ACCOUNT_NOT_FOUND"
+                      ],
+                      "description": "Account not found."
                     }
                   },
                   "required": [
                     "error"
-                  ]
+                  ],
+                  "description": "account not found"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/InternalErrorResponse"
                 }
               }
             }
@@ -1427,15 +1794,28 @@
                   "type": "object",
                   "properties": {
                     "error": {
-                      "type": "string",
-                      "default": "",
-                      "description": "Error code",
-                      "example": "TEST_ERROR_CODE"
+                      "anyOf": [
+                        {
+                          "type": "string",
+                          "enum": [
+                            "ALREADY_FOLLOWING"
+                          ],
+                          "description": "You are already following this account."
+                        },
+                        {
+                          "type": "string",
+                          "enum": [
+                            "YOU_ARE_BLOCKED"
+                          ],
+                          "description": "You are blocked by this account."
+                        }
+                      ]
                     }
                   },
                   "required": [
                     "error"
-                  ]
+                  ],
+                  "description": "You can not do this action."
                 }
               }
             }
@@ -1449,14 +1829,26 @@
                   "properties": {
                     "error": {
                       "type": "string",
-                      "default": "",
-                      "description": "Error code",
-                      "example": "TEST_ERROR_CODE"
+                      "enum": [
+                        "ACCOUNT_NOT_FOUND"
+                      ],
+                      "description": "Account not found."
                     }
                   },
                   "required": [
                     "error"
-                  ]
+                  ],
+                  "description": "account not found"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/InternalErrorResponse"
                 }
               }
             }
@@ -1498,7 +1890,7 @@
             "description": "No Content"
           },
           "400": {
-            "description": "Forbidden",
+            "description": "Bad request",
             "content": {
               "application/json": {
                 "schema": {
@@ -1506,14 +1898,16 @@
                   "properties": {
                     "error": {
                       "type": "string",
-                      "default": "",
-                      "description": "Error code",
-                      "example": "TEST_ERROR_CODE"
+                      "enum": [
+                        "YOU_ARE_NOT_FOLLOWING"
+                      ],
+                      "description": "You are not following this account."
                     }
                   },
                   "required": [
                     "error"
-                  ]
+                  ],
+                  "description": "You are not following specified account."
                 }
               }
             }
@@ -1527,14 +1921,26 @@
                   "properties": {
                     "error": {
                       "type": "string",
-                      "default": "",
-                      "description": "Error code",
-                      "example": "TEST_ERROR_CODE"
+                      "enum": [
+                        "ACCOUNT_NOT_FOUND"
+                      ],
+                      "description": "Account not found."
                     }
                   },
                   "required": [
                     "error"
-                  ]
+                  ],
+                  "description": "account not found"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/InternalErrorResponse"
                 }
               }
             }
@@ -1583,14 +1989,16 @@
                   "properties": {
                     "error": {
                       "type": "string",
-                      "default": "",
-                      "description": "Error code",
-                      "example": "TEST_ERROR_CODE"
+                      "enum": [
+                        "ACCOUNT_ALREADY_VERIFIED"
+                      ],
+                      "description": "Account email address is already verified."
                     }
                   },
                   "required": [
                     "error"
-                  ]
+                  ],
+                  "description": "account email is already verified."
                 }
               }
             }
@@ -1604,14 +2012,16 @@
                   "properties": {
                     "error": {
                       "type": "string",
-                      "default": "",
-                      "description": "Error code",
-                      "example": "TEST_ERROR_CODE"
+                      "enum": [
+                        "NO_PERMISSION"
+                      ],
+                      "description": "You can't do this action."
                     }
                   },
                   "required": [
                     "error"
-                  ]
+                  ],
+                  "description": "You can not do this action."
                 }
               }
             }
@@ -1625,14 +2035,26 @@
                   "properties": {
                     "error": {
                       "type": "string",
-                      "default": "",
-                      "description": "Error code",
-                      "example": "TEST_ERROR_CODE"
+                      "enum": [
+                        "ACCOUNT_NOT_FOUND"
+                      ],
+                      "description": "Account not found."
                     }
                   },
                   "required": [
                     "error"
-                  ]
+                  ],
+                  "description": "account not found"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/InternalErrorResponse"
                 }
               }
             }
@@ -1679,14 +2101,26 @@
                   "properties": {
                     "error": {
                       "type": "string",
-                      "default": "",
-                      "description": "Error code",
-                      "example": "TEST_ERROR_CODE"
+                      "enum": [
+                        "ACCOUNT_NOT_FOUND"
+                      ],
+                      "description": "Account not found."
                     }
                   },
                   "required": [
                     "error"
-                  ]
+                  ],
+                  "description": "account not found"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/InternalErrorResponse"
                 }
               }
             }
@@ -1733,14 +2167,26 @@
                   "properties": {
                     "error": {
                       "type": "string",
-                      "default": "",
-                      "description": "Error code",
-                      "example": "TEST_ERROR_CODE"
+                      "enum": [
+                        "ACCOUNT_NOT_FOUND"
+                      ],
+                      "description": "Account not found."
                     }
                   },
                   "required": [
                     "error"
-                  ]
+                  ],
+                  "description": "account not found"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/InternalErrorResponse"
                 }
               }
             }
@@ -3049,6 +3495,83 @@
           },
           "404": {
             "description": "Account not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string",
+                      "default": "",
+                      "description": "Error code",
+                      "example": "TEST_ERROR_CODE"
+                    }
+                  },
+                  "required": [
+                    "error"
+                  ]
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/lists/:id/notes": {
+      "get": {
+        "tags": [
+          "timeline"
+        ],
+        "parameters": [
+          {
+            "schema": {
+              "$ref": "#/components/schemas/List ID"
+            },
+            "required": true,
+            "name": "id",
+            "in": "path"
+          },
+          {
+            "schema": {
+              "type": "boolean",
+              "description": "If true, only return notes with attachment"
+            },
+            "required": false,
+            "name": "has_attachment",
+            "in": "query"
+          },
+          {
+            "schema": {
+              "type": "boolean",
+              "description": "If true, only return notes without sensitive content"
+            },
+            "required": false,
+            "name": "no_nsfw",
+            "in": "query"
+          },
+          {
+            "schema": {
+              "type": "string",
+              "description": "Return notes before this note ID. specified note ID is not included"
+            },
+            "required": false,
+            "name": "before_id",
+            "in": "query"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GetListTimelineResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "List not found",
             "content": {
               "application/json": {
                 "schema": {

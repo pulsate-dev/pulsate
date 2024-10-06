@@ -1,7 +1,29 @@
 import { createRoute, z } from '@hono/zod-openapi';
 
 import {
-  CommonErrorResponseSchema,
+  AccountAlreadyVerified,
+  AccountNameInUse,
+  AccountNotFound,
+  AlreadyFollowing,
+  AlreadyFrozen,
+  EMailInUse,
+  ExpiredToken,
+  FailedToLogin,
+  InternalError,
+  InvalidAccountName,
+  InvalidEMailVerifyToken,
+  InvalidETag,
+  InvalidRefreshToken,
+  InvalidSequence,
+  NoPermission,
+  TooLongAccountName,
+  VulnerablePassphrase,
+  YouAreBlocked,
+  YouAreBot,
+  YouAreFrozen,
+  YouAreNotFollowing,
+} from './adaptor/presenter/errors.js';
+import {
   CreateAccountRequestSchema,
   CreateAccountResponseSchema,
   GetAccountFollowingSchema,
@@ -14,6 +36,12 @@ import {
   UpdateAccountResponseSchema,
   VerifyEmailRequestSchema,
 } from './adaptor/validator/schema.js';
+
+const InternalErrorResponseSchema = z
+  .object({
+    error: InternalError,
+  })
+  .openapi('InternalErrorResponse');
 
 export const CreateAccountRoute = createRoute({
   method: 'post',
@@ -41,7 +69,14 @@ export const CreateAccountRoute = createRoute({
       description: 'Bad Request',
       content: {
         'application/json': {
-          schema: CommonErrorResponseSchema,
+          schema: z.object({
+            error: z
+              .union([InvalidAccountName, TooLongAccountName, YouAreBot])
+              .openapi({
+                example: 'INVALID_ACCOUNT_NAME',
+                description: 'Error codes',
+              }),
+          }),
         },
       },
     },
@@ -49,7 +84,20 @@ export const CreateAccountRoute = createRoute({
       description: 'Conflict',
       content: {
         'application/json': {
-          schema: CommonErrorResponseSchema,
+          schema: z.object({
+            error: z.union([EMailInUse, AccountNameInUse]).openapi({
+              example: 'ACCOUNT_NAME_IN_USE',
+              description: 'Error codes',
+            }),
+          }),
+        },
+      },
+    },
+    500: {
+      description: 'Internal Server Error',
+      content: {
+        'application/json': {
+          schema: InternalErrorResponseSchema,
         },
       },
     },
@@ -103,7 +151,11 @@ export const UpdateAccountRoute = createRoute({
       description: 'Bad Request',
       content: {
         'application/json': {
-          schema: CommonErrorResponseSchema,
+          schema: z.object({
+            error: z
+              .union([InvalidSequence, VulnerablePassphrase])
+              .openapi({ description: 'error codes' }),
+          }),
         },
       },
     },
@@ -111,7 +163,13 @@ export const UpdateAccountRoute = createRoute({
       description: 'Not Found',
       content: {
         'application/json': {
-          schema: CommonErrorResponseSchema,
+          schema: z
+            .object({
+              error: AccountNotFound,
+            })
+            .openapi({
+              description: 'account not found',
+            }),
         },
       },
     },
@@ -119,7 +177,21 @@ export const UpdateAccountRoute = createRoute({
       description: 'Precondition Failed',
       content: {
         'application/json': {
-          schema: CommonErrorResponseSchema,
+          schema: z
+            .object({
+              error: InvalidETag,
+            })
+            .openapi({
+              description: 'etag is invalid',
+            }),
+        },
+      },
+    },
+    500: {
+      description: 'Internal Server Error',
+      content: {
+        'application/json': {
+          schema: InternalErrorResponseSchema,
         },
       },
     },
@@ -152,7 +224,13 @@ export const FreezeAccountRoute = createRoute({
       description: 'Bad Request',
       content: {
         'application/json': {
-          schema: CommonErrorResponseSchema,
+          schema: z
+            .object({
+              error: AlreadyFrozen,
+            })
+            .openapi({
+              description: 'account already frozen',
+            }),
         },
       },
     },
@@ -160,7 +238,13 @@ export const FreezeAccountRoute = createRoute({
       description: 'Forbidden',
       content: {
         'application/json': {
-          schema: CommonErrorResponseSchema,
+          schema: z
+            .object({
+              error: NoPermission,
+            })
+            .openapi({
+              description: 'You can not do this action.',
+            }),
         },
       },
     },
@@ -168,7 +252,21 @@ export const FreezeAccountRoute = createRoute({
       description: 'Not Found',
       content: {
         'application/json': {
-          schema: CommonErrorResponseSchema,
+          schema: z
+            .object({
+              error: AccountNotFound,
+            })
+            .openapi({
+              description: 'account not found',
+            }),
+        },
+      },
+    },
+    500: {
+      description: 'Internal Server Error',
+      content: {
+        'application/json': {
+          schema: InternalErrorResponseSchema,
         },
       },
     },
@@ -197,19 +295,17 @@ export const UnFreezeAccountRoute = createRoute({
     204: {
       description: 'No Content',
     },
-    400: {
-      description: 'Bad Request',
-      content: {
-        'application/json': {
-          schema: CommonErrorResponseSchema,
-        },
-      },
-    },
     403: {
       description: 'Forbidden',
       content: {
         'application/json': {
-          schema: CommonErrorResponseSchema,
+          schema: z
+            .object({
+              error: NoPermission,
+            })
+            .openapi({
+              description: 'You can not do this action.',
+            }),
         },
       },
     },
@@ -217,7 +313,21 @@ export const UnFreezeAccountRoute = createRoute({
       description: 'Not Found',
       content: {
         'application/json': {
-          schema: CommonErrorResponseSchema,
+          schema: z
+            .object({
+              error: AccountNotFound,
+            })
+            .openapi({
+              description: 'account not found',
+            }),
+        },
+      },
+    },
+    500: {
+      description: 'Internal Server Error',
+      content: {
+        'application/json': {
+          schema: InternalErrorResponseSchema,
         },
       },
     },
@@ -252,7 +362,9 @@ export const ResendVerificationEmailRoute = createRoute({
       description: 'Bad Request',
       content: {
         'application/json': {
-          schema: CommonErrorResponseSchema,
+          schema: z
+            .object({ error: AccountAlreadyVerified })
+            .openapi({ description: 'account email is already verified.' }),
         },
       },
     },
@@ -260,7 +372,13 @@ export const ResendVerificationEmailRoute = createRoute({
       description: 'Forbidden',
       content: {
         'application/json': {
-          schema: CommonErrorResponseSchema,
+          schema: z
+            .object({
+              error: NoPermission,
+            })
+            .openapi({
+              description: 'You can not do this action.',
+            }),
         },
       },
     },
@@ -268,7 +386,21 @@ export const ResendVerificationEmailRoute = createRoute({
       description: 'Not Found',
       content: {
         'application/json': {
-          schema: CommonErrorResponseSchema,
+          schema: z
+            .object({
+              error: AccountNotFound,
+            })
+            .openapi({
+              description: 'account not found',
+            }),
+        },
+      },
+    },
+    500: {
+      description: 'Internal Server Error',
+      content: {
+        'application/json': {
+          schema: InternalErrorResponseSchema,
         },
       },
     },
@@ -303,7 +435,11 @@ export const VerifyEmailRoute = createRoute({
       description: 'Bad Request',
       content: {
         'application/json': {
-          schema: CommonErrorResponseSchema,
+          schema: z
+            .object({
+              error: InvalidEMailVerifyToken,
+            })
+            .openapi({ description: 'email address token is invalid' }),
         },
       },
     },
@@ -311,7 +447,21 @@ export const VerifyEmailRoute = createRoute({
       description: 'Not Found',
       content: {
         'application/json': {
-          schema: CommonErrorResponseSchema,
+          schema: z
+            .object({
+              error: AccountNotFound,
+            })
+            .openapi({
+              description: 'account not found',
+            }),
+        },
+      },
+    },
+    500: {
+      description: 'Internal Server Error',
+      content: {
+        'application/json': {
+          schema: InternalErrorResponseSchema,
         },
       },
     },
@@ -344,7 +494,13 @@ export const LoginRoute = createRoute({
       description: 'Bad Request',
       content: {
         'application/json': {
-          schema: CommonErrorResponseSchema,
+          schema: z
+            .object({
+              error: FailedToLogin,
+            })
+            .openapi({
+              description: 'failed to login.',
+            }),
         },
       },
     },
@@ -352,7 +508,21 @@ export const LoginRoute = createRoute({
       description: 'Forbidden',
       content: {
         'application/json': {
-          schema: CommonErrorResponseSchema,
+          schema: z
+            .object({
+              error: YouAreFrozen,
+            })
+            .openapi({
+              description: 'You can not login.',
+            }),
+        },
+      },
+    },
+    500: {
+      description: 'Internal Server Error',
+      content: {
+        'application/json': {
+          schema: InternalErrorResponseSchema,
         },
       },
     },
@@ -385,7 +555,20 @@ export const RefreshRoute = createRoute({
       description: 'Bad Request',
       content: {
         'application/json': {
-          schema: CommonErrorResponseSchema,
+          schema: z.object({
+            error: z.union([InvalidRefreshToken, ExpiredToken]).openapi({
+              description: 'error codes',
+              example: 'INVALID_TOKEN',
+            }),
+          }),
+        },
+      },
+    },
+    500: {
+      description: 'Internal Server Error',
+      content: {
+        'application/json': {
+          schema: InternalErrorResponseSchema,
         },
       },
     },
@@ -417,7 +600,21 @@ export const GetAccountRoute = createRoute({
       description: 'Not Found',
       content: {
         'application/json': {
-          schema: CommonErrorResponseSchema,
+          schema: z
+            .object({
+              error: AccountNotFound,
+            })
+            .openapi({
+              description: 'account not found',
+            }),
+        },
+      },
+    },
+    500: {
+      description: 'Internal Server Error',
+      content: {
+        'application/json': {
+          schema: InternalErrorResponseSchema,
         },
       },
     },
@@ -458,7 +655,13 @@ export const SilenceAccountRoute = createRoute({
       description: 'Forbidden',
       content: {
         'application/json': {
-          schema: CommonErrorResponseSchema,
+          schema: z
+            .object({
+              error: NoPermission,
+            })
+            .openapi({
+              description: 'You can not do this action.',
+            }),
         },
       },
     },
@@ -466,7 +669,21 @@ export const SilenceAccountRoute = createRoute({
       description: 'Not Found',
       content: {
         'application/json': {
-          schema: CommonErrorResponseSchema,
+          schema: z
+            .object({
+              error: AccountNotFound,
+            })
+            .openapi({
+              description: 'account not found',
+            }),
+        },
+      },
+    },
+    500: {
+      description: 'Internal Server Error',
+      content: {
+        'application/json': {
+          schema: InternalErrorResponseSchema,
         },
       },
     },
@@ -507,7 +724,13 @@ export const UnSilenceAccountRoute = createRoute({
       description: 'Forbidden',
       content: {
         'application/json': {
-          schema: CommonErrorResponseSchema,
+          schema: z
+            .object({
+              error: NoPermission,
+            })
+            .openapi({
+              description: 'You can not do this action.',
+            }),
         },
       },
     },
@@ -515,7 +738,21 @@ export const UnSilenceAccountRoute = createRoute({
       description: 'Not Found',
       content: {
         'application/json': {
-          schema: CommonErrorResponseSchema,
+          schema: z
+            .object({
+              error: AccountNotFound,
+            })
+            .openapi({
+              description: 'account not found',
+            }),
+        },
+      },
+    },
+    500: {
+      description: 'Internal Server Error',
+      content: {
+        'application/json': {
+          schema: InternalErrorResponseSchema,
         },
       },
     },
@@ -556,7 +793,13 @@ export const FollowAccountRoute = createRoute({
       description: 'Forbidden',
       content: {
         'application/json': {
-          schema: CommonErrorResponseSchema,
+          schema: z
+            .object({
+              error: z.union([AlreadyFollowing, YouAreBlocked]),
+            })
+            .openapi({
+              description: 'You can not do this action.',
+            }),
         },
       },
     },
@@ -564,7 +807,21 @@ export const FollowAccountRoute = createRoute({
       description: 'Not Found',
       content: {
         'application/json': {
-          schema: CommonErrorResponseSchema,
+          schema: z
+            .object({
+              error: AccountNotFound,
+            })
+            .openapi({
+              description: 'account not found',
+            }),
+        },
+      },
+    },
+    500: {
+      description: 'Internal Server Error',
+      content: {
+        'application/json': {
+          schema: InternalErrorResponseSchema,
         },
       },
     },
@@ -602,10 +859,16 @@ export const UnFollowAccountRoute = createRoute({
       description: 'No Content',
     },
     400: {
-      description: 'Forbidden',
+      description: 'Bad request',
       content: {
         'application/json': {
-          schema: CommonErrorResponseSchema,
+          schema: z
+            .object({
+              error: YouAreNotFollowing,
+            })
+            .openapi({
+              description: 'You are not following specified account.',
+            }),
         },
       },
     },
@@ -613,7 +876,21 @@ export const UnFollowAccountRoute = createRoute({
       description: 'Not Found',
       content: {
         'application/json': {
-          schema: CommonErrorResponseSchema,
+          schema: z
+            .object({
+              error: AccountNotFound,
+            })
+            .openapi({
+              description: 'account not found',
+            }),
+        },
+      },
+    },
+    500: {
+      description: 'Internal Server Error',
+      content: {
+        'application/json': {
+          schema: InternalErrorResponseSchema,
         },
       },
     },
@@ -646,7 +923,21 @@ export const GetAccountFollowingRoute = createRoute({
       description: 'Not Found',
       content: {
         'application/json': {
-          schema: CommonErrorResponseSchema,
+          schema: z
+            .object({
+              error: AccountNotFound,
+            })
+            .openapi({
+              description: 'account not found',
+            }),
+        },
+      },
+    },
+    500: {
+      description: 'Internal Server Error',
+      content: {
+        'application/json': {
+          schema: InternalErrorResponseSchema,
         },
       },
     },
@@ -678,7 +969,21 @@ export const GetAccountFollowerRoute = createRoute({
       description: 'Not Found',
       content: {
         'application/json': {
-          schema: CommonErrorResponseSchema,
+          schema: z
+            .object({
+              error: AccountNotFound,
+            })
+            .openapi({
+              description: 'account not found',
+            }),
+        },
+      },
+    },
+    500: {
+      description: 'Internal Server Error',
+      content: {
+        'application/json': {
+          schema: InternalErrorResponseSchema,
         },
       },
     },

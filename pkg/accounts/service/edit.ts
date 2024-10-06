@@ -6,6 +6,15 @@ import {
 } from '../../password/mod.js';
 import type { Account, AccountName } from '../model/account.js';
 import {
+  AccountInternalError,
+  AccountMailAddressLengthError,
+  AccountNicknameTooLongError,
+  AccountNicknameTooShortError,
+  AccountNotFoundError,
+  AccountPassphraseRequirementsNotMetError,
+  AccountUpdateETagInvalidError,
+} from '../model/errors.js';
+import {
   type AccountRepository,
   accountRepoSymbol,
 } from '../model/repository.js';
@@ -41,12 +50,16 @@ export class EditService {
   ): Promise<Result.Result<Error, boolean>> {
     const res = await this.accountRepository.findByName(target);
     if (Option.isNone(res)) {
-      return Result.err(new Error('account not found'));
+      return Result.err(
+        new AccountNotFoundError('account not found', { cause: null }),
+      );
     }
     const account = Option.unwrap(res);
     const actorRes = await this.accountRepository.findByName(actorName);
     if (Option.isNone(actorRes)) {
-      return Result.err(new Error('actor not found'));
+      return Result.err(
+        new AccountNotFoundError('actor not found', { cause: null }),
+      );
     }
     const actor = Option.unwrap(actorRes);
 
@@ -57,14 +70,20 @@ export class EditService {
     const match = await this.etagService.verify(account, etag);
     if (!match) {
       // TODO: add a new error type for etag not match
-      return Result.err(new Error('etag not match'));
+      return Result.err(
+        new AccountUpdateETagInvalidError('etag not match', { cause: null }),
+      );
     }
 
     if (nickname.length < this.nicknameShortest) {
-      return Result.err(new Error('nickname too short'));
+      return Result.err(
+        new AccountNicknameTooShortError('nickname too short', { cause: null }),
+      );
     }
     if (nickname.length > this.nicknameLongest) {
-      return Result.err(new Error('nickname too long'));
+      return Result.err(
+        new AccountNicknameTooLongError('nickname too long', { cause: null }),
+      );
     }
 
     try {
@@ -76,7 +95,9 @@ export class EditService {
 
       return Result.ok(true);
     } catch (e) {
-      return Result.err(e as unknown as Error);
+      return Result.err(
+        new AccountInternalError('failed to update account', { cause: e }),
+      );
     }
   }
 
@@ -88,12 +109,16 @@ export class EditService {
   ): Promise<Result.Result<Error, boolean>> {
     const res = await this.accountRepository.findByName(target);
     if (Option.isNone(res)) {
-      return Result.err(new Error('account not found'));
+      return Result.err(
+        new AccountNotFoundError('account not found', { cause: null }),
+      );
     }
     const account = Option.unwrap(res);
     const actorRes = await this.accountRepository.findByName(actorName);
     if (Option.isNone(actorRes)) {
-      return Result.err(new Error('actor not found'));
+      return Result.err(
+        new AccountNotFoundError('actor not found', { cause: null }),
+      );
     }
     const actor = Option.unwrap(actorRes);
 
@@ -103,14 +128,24 @@ export class EditService {
 
     const match = await this.etagService.verify(account, etag);
     if (!match) {
-      return Result.err(new Error('etag not match'));
+      return Result.err(
+        new AccountUpdateETagInvalidError('etag not match', { cause: null }),
+      );
     }
 
     if (newPassphrase.length < this.passphraseShortest) {
-      return Result.err(new Error('passphrase too short'));
+      return Result.err(
+        new AccountPassphraseRequirementsNotMetError('passphrase too short', {
+          cause: null,
+        }),
+      );
     }
     if (newPassphrase.length > this.passphraseLongest) {
-      return Result.err(new Error('passphrase too long'));
+      return Result.err(
+        new AccountPassphraseRequirementsNotMetError('passphrase too long', {
+          cause: null,
+        }),
+      );
     }
 
     try {
@@ -125,7 +160,9 @@ export class EditService {
 
       return Result.ok(true);
     } catch (e) {
-      return Result.err(e as unknown as Error);
+      return Result.err(
+        new AccountInternalError('failed to update account', { cause: e }),
+      );
     }
   }
 
@@ -137,12 +174,16 @@ export class EditService {
   ): Promise<Result.Result<Error, boolean>> {
     const res = await this.accountRepository.findByName(target);
     if (Option.isNone(res)) {
-      return Result.err(new Error('account not found'));
+      return Result.err(
+        new AccountNotFoundError('account not found', { cause: null }),
+      );
     }
     const account = Option.unwrap(res);
     const actorRes = await this.accountRepository.findByName(actorName);
     if (Option.isNone(actorRes)) {
-      return Result.err(new Error('actor not found'));
+      return Result.err(
+        new AccountNotFoundError('actor not found', { cause: null }),
+      );
     }
     const actor = Option.unwrap(actorRes);
 
@@ -152,14 +193,20 @@ export class EditService {
 
     const match = await this.etagService.verify(account, etag);
     if (!match) {
-      return Result.err(new Error('etag not match'));
+      return Result.err(
+        new AccountUpdateETagInvalidError('etag not match', { cause: null }),
+      );
     }
 
     if (newEmail.length < this.emailShortest) {
-      return Result.err(new Error('email too short'));
+      return Result.err(
+        new AccountMailAddressLengthError('email too short', { cause: null }),
+      );
     }
     if (newEmail.length > this.emailLongest) {
-      return Result.err(new Error('email too long'));
+      return Result.err(
+        new AccountMailAddressLengthError('email too long', { cause: null }),
+      );
     }
 
     // TODO: add a process to check the email is active
@@ -174,7 +221,9 @@ export class EditService {
 
       return Result.ok(true);
     } catch (e) {
-      return Result.err(e as unknown as Error);
+      return Result.err(
+        new AccountInternalError('failed to update account', { cause: e }),
+      );
     }
   }
 
@@ -186,12 +235,16 @@ export class EditService {
   ): Promise<Result.Result<Error, boolean>> {
     const res = await this.accountRepository.findByName(target);
     if (Option.isNone(res)) {
-      return Result.err(new Error('account not found'));
+      return Result.err(
+        new AccountNotFoundError('account not found', { cause: null }),
+      );
     }
     const account = Option.unwrap(res);
     const actorRes = await this.accountRepository.findByName(actorName);
     if (Option.isNone(actorRes)) {
-      return Result.err(new Error('actor not found'));
+      return Result.err(
+        new AccountNotFoundError('actor not found', { cause: null }),
+      );
     }
     const actor = Option.unwrap(actorRes);
 
@@ -201,7 +254,9 @@ export class EditService {
 
     const match = await this.etagService.verify(account, etag);
     if (!match) {
-      return Result.err(new Error('etag not match'));
+      return Result.err(
+        new AccountUpdateETagInvalidError('etag not match', { cause: null }),
+      );
     }
 
     // ToDo(laminne): bio length check
@@ -216,7 +271,9 @@ export class EditService {
 
       return Result.ok(true);
     } catch (e) {
-      return Result.err(e as unknown as Error);
+      return Result.err(
+        new AccountInternalError('failed to update account', { cause: e }),
+      );
     }
   }
 

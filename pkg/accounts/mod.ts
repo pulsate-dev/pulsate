@@ -22,6 +22,25 @@ import {
   prismaVerifyTokenRepo,
 } from './adaptor/repository/prisma.js';
 import type { AccountName } from './model/account.js';
+import {
+  AccountAlreadyFollowingError,
+  AccountAlreadyFrozenError,
+  AccountAuthenticationFailedError,
+  AccountCaptchaTokenInvalidError,
+  AccountFollowingBlockedError,
+  AccountInsufficientPermissionError,
+  AccountLoginRejectedError,
+  AccountMailAddressAlreadyInUseError,
+  AccountMailAddressAlreadyVerifiedError,
+  AccountMailAddressLengthError,
+  AccountMailAddressVerificationTokenInvalidError,
+  AccountNameAlreadyInUseError,
+  AccountNameInvalidUsageError,
+  AccountNameTooLongError,
+  AccountNotFollowingError,
+  AccountNotFoundError,
+  AccountPassphraseRequirementsNotMetError,
+} from './model/errors.js';
 import { accountRepoSymbol } from './model/repository.js';
 import {
   CreateAccountRoute,
@@ -182,7 +201,23 @@ accounts.openapi(CreateAccountRoute, async (c) => {
 
   const res = await controller.createAccount(name, email, passphrase);
   if (Result.isErr(res)) {
-    return c.json({ error: res[1].message }, 400);
+    const error = Result.unwrapErr(res);
+    if (error instanceof AccountNameInvalidUsageError) {
+      return c.json({ error: 'INVALID_ACCOUNT_NAME' as const }, 400);
+    }
+    if (error instanceof AccountNameTooLongError) {
+      return c.json({ error: 'TOO_LONG_ACCOUNT_NAME' as const }, 400);
+    }
+    if (error instanceof AccountCaptchaTokenInvalidError) {
+      return c.json({ error: 'YOU_ARE_BOT' as const }, 400);
+    }
+    if (error instanceof AccountMailAddressAlreadyInUseError) {
+      return c.json({ error: 'EMAIL_IN_USE' as const }, 409);
+    }
+    if (error instanceof AccountNameAlreadyInUseError) {
+      return c.json({ error: 'ACCOUNT_NAME_IN_USE' as const }, 409);
+    }
+    return c.json({ error: 'INTERNAL_ERROR' as const }, 500);
   }
 
   return c.json(res[1], 200);
@@ -199,7 +234,7 @@ accounts.openapi(UpdateAccountRoute, async (c) => {
   const eTag = c.req.header('If-Match');
 
   if (!eTag) {
-    return c.json({ error: 'INVALID_ETAG' }, 412);
+    return c.json({ error: 'INVALID_ETAG' as const }, 412);
   }
 
   const res = await controller.updateAccount(
@@ -214,7 +249,18 @@ accounts.openapi(UpdateAccountRoute, async (c) => {
     actorName,
   );
   if (Result.isErr(res)) {
-    return c.json({ error: res[1].message }, 400);
+    const error = Result.unwrapErr(res);
+
+    if (error instanceof AccountMailAddressLengthError) {
+      return c.json({ error: 'INVALID_SEQUENCE' as const }, 400);
+    }
+    if (error instanceof AccountPassphraseRequirementsNotMetError) {
+      return c.json({ error: 'VULNERABLE_PASSPHRASE' as const }, 400);
+    }
+    if (error instanceof AccountNotFoundError) {
+      return c.json({ error: 'ACCOUNT_NOT_FOUND' as const }, 404);
+    }
+    return c.json({ error: 'INTERNAL_ERROR' as const }, 500);
   }
 
   return c.json(res[1], 200);
@@ -230,7 +276,19 @@ accounts.openapi(FreezeAccountRoute, async (c) => {
 
   const res = await controller.freezeAccount(targetName, actor);
   if (Result.isErr(res)) {
-    return c.json({ error: res[1].message }, 400);
+    const error = Result.unwrapErr(res);
+
+    if (error instanceof AccountNotFoundError) {
+      return c.json({ error: 'ACCOUNT_NOT_FOUND' as const }, 404);
+    }
+    if (error instanceof AccountAlreadyFrozenError) {
+      return c.json({ error: 'ALREADY_FROZEN' as const }, 400);
+    }
+    if (error instanceof AccountInsufficientPermissionError) {
+      return c.json({ error: 'NO_PERMISSION' as const }, 403);
+    }
+
+    return c.json({ error: 'INTERNAL_ERROR' as const }, 500);
   }
 
   return new Response(null, { status: 204 });
@@ -246,7 +304,16 @@ accounts.openapi(UnFreezeAccountRoute, async (c) => {
 
   const res = await controller.unFreezeAccount(targetName, actor);
   if (Result.isErr(res)) {
-    return c.json({ error: res[1].message }, 400);
+    const error = Result.unwrapErr(res);
+
+    if (error instanceof AccountNotFoundError) {
+      return c.json({ error: 'ACCOUNT_NOT_FOUND' as const }, 404);
+    }
+    if (error instanceof AccountInsufficientPermissionError) {
+      return c.json({ error: 'NO_PERMISSION' as const }, 403);
+    }
+
+    return c.json({ error: 'INTERNAL_ERROR' as const }, 500);
   }
 
   return new Response(null, { status: 204 });
@@ -258,7 +325,16 @@ accounts.openapi(VerifyEmailRoute, async (c) => {
 
   const res = await controller.verifyEmail(name, token);
   if (Result.isErr(res)) {
-    return c.json({ error: res[1].message }, 400);
+    const error = Result.unwrapErr(res);
+
+    if (error instanceof AccountNotFoundError) {
+      return c.json({ error: 'ACCOUNT_NOT_FOUND' as const }, 404);
+    }
+    if (error instanceof AccountMailAddressVerificationTokenInvalidError) {
+      return c.json({ error: 'INVALID_TOKEN' as const }, 400);
+    }
+
+    return c.json({ error: 'INTERNAL_ERROR' as const }, 500);
   }
 
   return new Response(null, { status: 204 });
@@ -273,7 +349,12 @@ accounts.openapi(GetAccountRoute, async (c) => {
 
   const res = await controller.getAccount(id);
   if (Result.isErr(res)) {
-    return c.json({ error: res[1].message }, 404);
+    const error = Result.unwrapErr(res);
+
+    if (error instanceof AccountNotFoundError) {
+      return c.json({ error: 'ACCOUNT_NOT_FOUND' as const }, 404);
+    }
+    return c.json({ error: 'INTERNAL_ERROR' as const }, 500);
   }
 
   return c.json(
@@ -297,7 +378,19 @@ accounts.openapi(LoginRoute, async (c) => {
 
   const res = await controller.login(name as AccountName, passphrase);
   if (Result.isErr(res)) {
-    return c.json({ error: res[1].message }, 400);
+    const error = Result.unwrapErr(res);
+
+    if (error instanceof AccountAuthenticationFailedError) {
+      return c.json({ error: 'FAILED_TO_LOGIN' as const }, 400);
+    }
+    if (error instanceof AccountNotFoundError) {
+      return c.json({ error: 'FAILED_TO_LOGIN' as const }, 400);
+    }
+    if (error instanceof AccountLoginRejectedError) {
+      return c.json({ error: 'YOU_ARE_FROZEN' as const }, 403);
+    }
+
+    return c.json({ error: 'INTERNAL_ERROR' as const }, 500);
   }
 
   return c.json(res[1], 200);
@@ -316,7 +409,17 @@ accounts.openapi(SilenceAccountRoute, async (c) => {
   const name = c.req.param('name');
   const res = await controller.silenceAccount(name, actor);
   if (Result.isErr(res)) {
-    return c.json({ error: res[1].message }, { status: 400 });
+    const error = Result.unwrapErr(res);
+
+    if (error instanceof AccountInsufficientPermissionError) {
+      return c.json({ error: 'NO_PERMISSION' as const }, 403);
+    }
+
+    if (error instanceof AccountNotFoundError) {
+      return c.json({ error: 'ACCOUNT_NOT_FOUND' as const }, 404);
+    }
+
+    return c.json({ error: 'INTERNAL_ERROR' }, 500);
   }
 
   return new Response(null, { status: 204 });
@@ -331,7 +434,16 @@ accounts.openapi(UnSilenceAccountRoute, async (c) => {
   const name = c.req.param('name');
   const res = await controller.unSilenceAccount(name, actor);
   if (Result.isErr(res)) {
-    return c.json({ error: res[1].message }, 400);
+    const error = Result.unwrapErr(res);
+
+    if (error instanceof AccountInsufficientPermissionError) {
+      return c.json({ error: 'NO_PERMISSION' as const }, 403);
+    }
+    if (error instanceof AccountNotFoundError) {
+      return c.json({ error: 'ACCOUNT_NOT_FOUND' as const }, 404);
+    }
+
+    return c.json({ error: 'INTERNAL_ERROR' }, 500);
   }
 
   return new Response(null, { status: 204 });
@@ -347,7 +459,20 @@ accounts.openapi(FollowAccountRoute, async (c) => {
 
   const res = await controller.followAccount(fromName, targetName);
   if (Result.isErr(res)) {
-    return c.json({ error: res[1].message }, 403);
+    const error = Result.unwrapErr(res);
+
+    if (error instanceof AccountAlreadyFollowingError) {
+      return c.json({ error: 'ALREADY_FOLLOWING' as const }, 403);
+    }
+    if (error instanceof AccountFollowingBlockedError) {
+      return c.json({ error: 'YOU_ARE_BLOCKED' as const }, 403);
+    }
+
+    if (error instanceof AccountNotFoundError) {
+      return c.json({ error: 'ACCOUNT_NOT_FOUND' as const }, 404);
+    }
+
+    return c.json({ error: 'INTERNAL_ERROR' }, 500);
   }
 
   return c.json({}, 201);
@@ -363,7 +488,16 @@ accounts.openapi(UnFollowAccountRoute, async (c) => {
 
   const res = await controller.unFollowAccount(fromName, targetName);
   if (Result.isErr(res)) {
-    return c.json({ error: res[1].message }, 400);
+    const error = Result.unwrapErr(res);
+
+    if (error instanceof AccountNotFoundError) {
+      return c.json({ error: 'ACCOUNT_NOT_FOUND' as const }, 404);
+    }
+    if (error instanceof AccountNotFollowingError) {
+      return c.json({ error: 'YOU_ARE_NOT_FOLLOW_ACCOUNT' as const }, 403);
+    }
+
+    return c.json({ error: 'INTERNAL_ERROR' }, 500);
   }
 
   return new Response(null, { status: 204 });
@@ -374,7 +508,16 @@ accounts.openapi(ResendVerificationEmailRoute, async (c) => {
 
   const res = await controller.resendVerificationEmail(name);
   if (Result.isErr(res)) {
-    return c.json({ error: res[1].message }, 400);
+    const error = Result.unwrapErr(res);
+
+    if (error instanceof AccountNotFoundError) {
+      return c.json({ error: 'ACCOUNT_NOT_FOUND' as const }, 404);
+    }
+    if (error instanceof AccountMailAddressAlreadyVerifiedError) {
+      return c.json({ error: 'ACCOUNT_ALREADY_VERIFIED' as const }, 400);
+    }
+
+    return c.json({ error: 'INTERNAL_ERROR' as const }, 500);
   }
 
   return new Response(null, { status: 204 });
@@ -384,7 +527,13 @@ accounts.openapi(GetAccountFollowingRoute, async (c) => {
   const id = c.req.param('id');
   const res = await controller.fetchFollowing(id);
   if (Result.isErr(res)) {
-    return c.json({ error: res[1].message }, 404);
+    const error = Result.unwrapErr(res);
+
+    if (error instanceof AccountNotFoundError) {
+      return c.json({ error: 'ACCOUNT_NOT_FOUND' as const }, 404);
+    }
+
+    return c.json({ error: 'INTERNAL_ERROR' as const }, 500);
   }
   const unwrap = Result.unwrap(res);
   return c.json(
@@ -408,7 +557,13 @@ accounts.openapi(GetAccountFollowerRoute, async (c) => {
   const id = c.req.param('id');
   const res = await controller.fetchFollower(id);
   if (Result.isErr(res)) {
-    return c.json({ error: res[1].message }, 404);
+    const error = Result.unwrapErr(res);
+
+    if (error instanceof AccountNotFoundError) {
+      return c.json({ error: 'ACCOUNT_NOT_FOUND' as const }, 404);
+    }
+
+    return c.json({ error: 'INTERNAL_ERROR' as const }, 500);
   }
   const unwrap = Result.unwrap(res);
   return c.json(
