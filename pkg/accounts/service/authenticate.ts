@@ -7,6 +7,11 @@ import {
 import { addSecondsToDate, convertTo } from '../../time/mod.js';
 import type { AccountName } from '../model/account.js';
 import {
+  AccountAuthenticationFailedError,
+  AccountInternalError,
+  AccountNotFoundError,
+} from '../model/errors.js';
+import {
   type AccountRepository,
   accountRepoSymbol,
 } from '../model/repository.js';
@@ -41,7 +46,9 @@ export class AuthenticateService {
   ): Promise<Result.Result<Error, TokenPair>> {
     const account = await this.accountRepository.findByName(name);
     if (Option.isNone(account)) {
-      return Result.err(new Error('Account not found'));
+      return Result.err(
+        new AccountNotFoundError('account not found', { cause: null }),
+      );
     }
 
     const isMatch = await this.passwordEncoder.isMatchPassword(
@@ -49,7 +56,11 @@ export class AuthenticateService {
       Option.unwrap(account).getPassphraseHash() ?? '',
     );
     if (!isMatch) {
-      return Result.err(new Error('Password is incorrect'));
+      return Result.err(
+        new AccountAuthenticationFailedError('Password is incorrect', {
+          cause: null,
+        }),
+      );
     }
 
     const authorizationToken = await this.authenticationTokenService.generate(
@@ -60,7 +71,11 @@ export class AuthenticateService {
     );
 
     if (Option.isNone(authorizationToken)) {
-      return Result.err(new Error('Failed to generate authorization token'));
+      return Result.err(
+        new AccountInternalError('Failed to generate authorization token', {
+          cause: null,
+        }),
+      );
     }
 
     const refreshToken = await this.authenticationTokenService.generate(
@@ -71,7 +86,11 @@ export class AuthenticateService {
     );
 
     if (Option.isNone(refreshToken)) {
-      return Result.err(new Error('Failed to generate refresh token'));
+      return Result.err(
+        new AccountInternalError('Failed to generate refresh token', {
+          cause: null,
+        }),
+      );
     }
 
     return Result.ok({

@@ -1,6 +1,7 @@
 import { Ether, Option } from '@mikuroxina/mini-fn';
 
 import { type Captcha, captchaSymbol } from '../../model/captcha.js';
+import { AccountCaptchaTokenInvalidError } from '../../model/errors.js';
 
 export class TurnstileCaptchaValidator implements Captcha {
   constructor(private readonly secret: string) {}
@@ -22,7 +23,11 @@ export class TurnstileCaptchaValidator implements Captcha {
     );
     const response = await res.json();
     if (!response.success) {
-      return Option.some(new Error('failed to verify captcha token'));
+      return Option.some(
+        new AccountCaptchaTokenInvalidError('failed to verify captcha token', {
+          cause: null,
+        }),
+      );
     }
 
     return Option.none();

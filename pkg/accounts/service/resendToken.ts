@@ -2,6 +2,10 @@ import { Ether, Option, Result } from '@mikuroxina/mini-fn';
 
 import type { AccountName } from '../model/account.js';
 import {
+  AccountMailAddressAlreadyVerifiedError,
+  AccountNotFoundError,
+} from '../model/errors.js';
+import {
   type AccountRepository,
   accountRepoSymbol,
 } from '../model/repository.js';
@@ -32,11 +36,17 @@ export class ResendVerifyTokenService {
   async handle(name: AccountName): Promise<Option.Option<Error>> {
     const account = await this.accountRepository.findByName(name);
     if (Option.isNone(account)) {
-      return Option.some(new Error('AccountNotFoundError'));
+      return Option.some(
+        new AccountNotFoundError('account not found', { cause: null }),
+      );
     }
 
     if (account[1].getStatus() !== 'notActivated') {
-      return Option.some(new Error('AccountAlreadyVerifiedError'));
+      return Option.some(
+        new AccountMailAddressAlreadyVerifiedError('account already verified', {
+          cause: null,
+        }),
+      );
     }
 
     const token = await this.verifyAccountTokenService.generate(
