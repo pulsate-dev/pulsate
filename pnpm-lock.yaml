@@ -25,7 +25,7 @@ importers:
         version: 5.20.0(prisma@5.20.0)
       '@scalar/hono-api-reference':
         specifier: ^0.5.0
-        version: 0.5.149(hono@4.6.3)
+        version: 0.5.150(hono@4.6.3)
       argon2:
         specifier: ^0.41.0
         version: 0.41.1
@@ -733,8 +733,8 @@ packages:
     cpu: [x64]
     os: [win32]
 
-  '@scalar/hono-api-reference@0.5.149':
-    resolution: {integrity: sha512-n3LHUOHvskgWcodVykLJvoC2813weZmxKjaGKzOZyOdbSK4y1gGqwbE1bIvwdDL6+r53f8HeaPtsuAEH7UrvfQ==}
+  '@scalar/hono-api-reference@0.5.150':
+    resolution: {integrity: sha512-KGXaE8iEuYL2EhCDc9vBPw3a6+cj552b85EbflEUijOgLhKhcoDb2A/QIgyuk/89Us3mrWJubEZ8NiH8dMLd8Q==}
     engines: {node: '>=18'}
     peerDependencies:
       hono: ^4.0.0
@@ -743,8 +743,8 @@ packages:
     resolution: {integrity: sha512-NMy3QNk6ytcCoPUGJH0t4NNr36OWXgZhA3ormr3TvhX1NDgoF95wFyodGVH8xiHeUyn2/FxtETm8UBLbB5xEmg==}
     engines: {node: '>=18'}
 
-  '@scalar/types@0.0.11':
-    resolution: {integrity: sha512-cB2vhKWrxKmfq7eZ6WTvv9dvwEmBJrzsJrNLeRVZp+qAkLlohKktOcMIT9WLUwMRgH3xhv/44/G1HAOyrhhQpw==}
+  '@scalar/types@0.0.12':
+    resolution: {integrity: sha512-XYZ36lSEx87i4gDqopQlGCOkdIITHHEvgkuJFrXFATQs9zHARop0PN0g4RZYWj+ZpCUclOcaOjbCt8JGe22mnQ==}
     engines: {node: '>=18'}
 
   '@sec-ant/readable-stream@0.4.1':
@@ -1805,14 +1805,14 @@ snapshots:
   '@rollup/rollup-win32-x64-msvc@4.24.0':
     optional: true
 
-  '@scalar/hono-api-reference@0.5.149(hono@4.6.3)':
+  '@scalar/hono-api-reference@0.5.150(hono@4.6.3)':
     dependencies:
-      '@scalar/types': 0.0.11
+      '@scalar/types': 0.0.12
       hono: 4.6.3
 
   '@scalar/openapi-types@0.1.1': {}
 
-  '@scalar/types@0.0.11':
+  '@scalar/types@0.0.12':
     dependencies:
       '@scalar/openapi-types': 0.1.1
       '@unhead/schema': 1.11.7
