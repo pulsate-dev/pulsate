@@ -1,6 +1,7 @@
 import { OpenAPIHono } from '@hono/zod-openapi';
 import { Option, Result } from '@mikuroxina/mini-fn';
 
+import { AccountNotFoundError } from '../accounts/model/errors.js';
 import type { AuthMiddlewareVariable } from '../adaptors/authenticateMiddleware.js';
 import { prismaClient } from '../adaptors/prisma.js';
 import { SnowflakeIDGenerator } from '../id/mod.js';
@@ -19,6 +20,12 @@ import {
   PrismaListRepository,
   PrismaTimelineRepository,
 } from './adaptor/repository/prisma.js';
+import {
+  ListNotFoundError,
+  ListTitleTooLongError,
+  TimelineBlockedByAccountError,
+  TimelineNoMoreNotesError,
+} from './model/errors.js';
 import {
   CreateListRoute,
   DeleteListRoute,
@@ -99,7 +106,21 @@ timeline.openapi(GetAccountTimelineRoute, async (c) => {
     before_id,
   );
   if (Result.isErr(res)) {
-    return c.json({ error: res[1].message }, 404);
+    const error = Result.unwrapErr(res);
+
+    if (error instanceof TimelineBlockedByAccountError) {
+      return c.json({ error: 'YOU_ARE_BLOCKED' as const }, 403);
+    }
+
+    if (error instanceof AccountNotFoundError) {
+      return c.json({ error: 'ACCOUNT_NOT_FOUND' as const }, 404);
+    }
+
+    if (error instanceof TimelineNoMoreNotesError) {
+      return c.json({ error: 'NOTHING_LEFT' as const }, 404);
+    }
+
+    return c.json({ error: 'INTERNAL_ERROR' as const }, 500);
   }
 
   return c.json(res[1], 200);
@@ -110,8 +131,19 @@ timeline.openapi(GetListTimelineRoute, async (c) => {
 
   const res = await controller.getListTimeline(id);
   if (Result.isErr(res)) {
-    return c.json({ error: res[1].message }, 404);
+    const error = Result.unwrapErr(res);
+
+    if (error instanceof ListNotFoundError) {
+      return c.json({ error: 'LIST_NOT_FOUND' as const }, 404);
+    }
+
+    if (error instanceof TimelineNoMoreNotesError) {
+      return c.json({ error: 'NOTHING_LEFT' as const }, 404);
+    }
+
+    return c.json({ error: 'INTERNAL_ERROR' as const }, 500);
   }
+
   return c.json(res[1], 200);
 });
 
@@ -123,7 +155,13 @@ timeline.openapi(CreateListRoute, async (c) => {
 
   const res = await controller.createList(req.title, req.public, ownerID);
   if (Result.isErr(res)) {
-    return c.json({ error: res[1].message }, 400);
+    const error = Result.unwrapErr(res);
+
+    if (error instanceof ListTitleTooLongError) {
+      return c.json({ error: 'TITLE_TOO_LONG' as const }, 400);
+    }
+
+    return c.json({ error: 'INTERNAL_ERROR' as const }, 500);
   }
 
   return c.json(res[1], 200);
@@ -136,7 +174,17 @@ timeline.openapi(EditListRoute, async (c) => {
   const res = await controller.editList(id, req);
 
   if (Result.isErr(res)) {
-    return c.json({ error: res[1].message }, 400);
+    const error = Result.unwrapErr(res);
+
+    if (error instanceof ListNotFoundError) {
+      return c.json({ error: 'LIST_NOT_FOUND' as const }, 404);
+    }
+
+    if (error instanceof ListTitleTooLongError) {
+      return c.json({ error: 'TITLE_TOO_LONG' as const }, 400);
+    }
+
+    return c.json({ error: 'INTERNAL_ERROR' as const }, 500);
   }
 
   const list = Result.unwrap(res);
@@ -149,7 +197,12 @@ timeline.openapi(FetchListRoute, async (c) => {
   const { id } = c.req.valid('param');
   const res = await controller.fetchList(id);
   if (Result.isErr(res)) {
-    return c.json({ error: res[1].message }, 404);
+    const error = Result.unwrapErr(res);
+    if (error instanceof ListNotFoundError) {
+      return c.json({ error: 'LIST_NOT_FOUND' as const }, 404);
+    }
+
+    return c.json({ error: 'INTERNAL_ERROR' as const }, 500);
   }
 
   return c.json(Result.unwrap(res), 200);
@@ -161,7 +214,12 @@ timeline.openapi(DeleteListRoute, async (c) => {
 
   const res = await controller.deleteList(id);
   if (Result.isErr(res)) {
-    return c.json({ error: res[1].message }, 404);
+    const error = Result.unwrapErr(res);
+    if (error instanceof ListNotFoundError) {
+      return c.json({ error: 'LIST_NOT_FOUND' as const }, 404);
+    }
+
+    return c.json({ error: 'INTERNAL_ERROR' as const }, 500);
   }
 
   return new Response(undefined, { status: 204 });
@@ -173,7 +231,12 @@ timeline.openapi(GetListMemberRoute, async (c) => {
 
   const res = await controller.getListMembers(id);
   if (Result.isErr(res)) {
-    return c.json({ error: res[1].message }, 404);
+    const error = Result.unwrapErr(res);
+    if (error instanceof ListNotFoundError) {
+      return c.json({ error: 'LIST_NOT_FOUND' as const }, 404);
+    }
+
+    return c.json({ error: 'INTERNAL_ERROR' as const }, 500);
   }
 
   const unwrapped = Result.unwrap(res);

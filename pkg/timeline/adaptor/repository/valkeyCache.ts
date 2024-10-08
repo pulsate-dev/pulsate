@@ -3,6 +3,7 @@ import type { Redis } from 'ioredis';
 
 import type { AccountID } from '../../../accounts/model/account.js';
 import type { Note, NoteID } from '../../../notes/model/note.js';
+import { TimelineInternalError } from '../../model/errors.js';
 import type { ListID } from '../../model/list.js';
 import type {
   CacheObjectKey,
@@ -38,7 +39,9 @@ export class ValkeyTimelineCacheRepository
       );
       return Result.ok(undefined);
     } catch (e) {
-      return Result.err(e as Error);
+      return Result.err(
+        new TimelineInternalError('unknown valkey error', { cause: e }),
+      );
     }
   }
 
@@ -58,7 +61,9 @@ export class ValkeyTimelineCacheRepository
       );
       return Result.ok(undefined);
     } catch (e) {
-      return Result.err(e as Error);
+      return Result.err(
+        new TimelineInternalError('unknown valkey error', { cause: e }),
+      );
     }
   }
 
@@ -73,7 +78,9 @@ export class ValkeyTimelineCacheRepository
       );
       return Result.ok(fetched as NoteID[]);
     } catch (e) {
-      return Result.err(e as Error);
+      return Result.err(
+        new TimelineInternalError('unknown valkey error', { cause: e }),
+      );
     }
   }
 
@@ -88,7 +95,9 @@ export class ValkeyTimelineCacheRepository
       );
       return Result.ok(fetched as NoteID[]);
     } catch (e) {
-      return Result.err(e as Error);
+      return Result.err(
+        new TimelineInternalError('unknown valkey error', { cause: e }),
+      );
     }
   }
 }
