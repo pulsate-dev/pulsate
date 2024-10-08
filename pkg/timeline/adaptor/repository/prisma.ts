@@ -133,18 +133,11 @@ export class PrismaListRepository implements ListRepository {
   private parsePrismaError(e: unknown): Error {
     // NOTE: cf. prisma error reference: https://www.prisma.io/docs/orm/reference/error-reference
     if (e instanceof Prisma.PrismaClientKnownRequestError) {
-      switch (e.code) {
-        case 'P2001':
-          return new ListNotFoundError(e.message, { cause: e });
-        case 'P2015':
-          return new ListNotFoundError(e.message, { cause: e });
-        case 'P2018':
-          return new ListNotFoundError(e.message, { cause: e });
-        case 'P2025':
-          return new ListNotFoundError(e.message, { cause: e });
-        default:
-          return new TimelineInternalError(e.message, { cause: e });
+      const NOT_FOUND_ERROR_CODE = ['P2001', 'P2015', 'P2018', 'P2025'];
+      if (NOT_FOUND_ERROR_CODE.includes(e.code)) {
+        return new ListNotFoundError(e.message, { cause: e });
       }
+      return new TimelineInternalError(e.message, { cause: e });
     }
     return new TimelineInternalError('unknown error', { cause: e });
   }
