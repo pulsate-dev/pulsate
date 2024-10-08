@@ -1,7 +1,13 @@
 import { createRoute, z } from '@hono/zod-openapi';
 
-import { CommonErrorResponseSchema } from '../accounts/adaptor/validator/schema.js';
-import { TimelineInternalError } from './adaptor/presenter/errors.js';
+import { AccountNotFound } from '../accounts/adaptor/presenter/errors.js';
+import {
+  ListNotFound,
+  NothingLeft,
+  TimelineInternalError,
+  TitleTooLong,
+  YouAreBlocked,
+} from './adaptor/presenter/errors.js';
 import {
   CreateListRequestSchema,
   CreateListResponseSchema,
@@ -56,11 +62,30 @@ export const GetAccountTimelineRoute = createRoute({
         },
       },
     },
+    403: {
+      description: 'You are blocked by specified account',
+      content: {
+        'application/json': {
+          schema: z.object({
+            error: YouAreBlocked,
+          }),
+        },
+      },
+    },
     404: {
       description: 'Account not found',
       content: {
         'application/json': {
-          schema: CommonErrorResponseSchema,
+          schema: z
+            .object({
+              error: z.union([AccountNotFound, NothingLeft]).openapi({
+                description: 'Error codes',
+                example: 'ACCOUNT_NOT_FOUND',
+              }),
+            })
+            .openapi({
+              description: 'Account not found',
+            }),
         },
       },
     },
@@ -125,7 +150,12 @@ export const GetListTimelineRoute = createRoute({
       description: 'List not found',
       content: {
         'application/json': {
-          schema: CommonErrorResponseSchema,
+          schema: z.object({
+            error: z.union([NothingLeft, ListNotFound]).openapi({
+              description: 'Error codes',
+              example: 'LIST_NOT_FOUND',
+            }),
+          }),
         },
       },
     },
@@ -172,10 +202,16 @@ export const CreateListRoute = createRoute({
     400: {
       content: {
         'application/json': {
-          schema: CommonErrorResponseSchema,
+          schema: z
+            .object({
+              error: TitleTooLong,
+            })
+            .openapi({
+              description: 'List title too long',
+            }),
         },
       },
-      description: 'TITLE_TOO_LONG',
+      description: 'Bad request',
     },
     500: {
       description: 'Internal error',
@@ -225,18 +261,22 @@ export const EditListRoute = createRoute({
       },
     },
     404: {
-      description: 'LIST_NOTFOUND',
+      description: 'List not found',
       content: {
         'application/json': {
-          schema: CommonErrorResponseSchema,
+          schema: z.object({
+            error: ListNotFound,
+          }),
         },
       },
     },
     400: {
-      description: 'TITLE_TOO_LONG',
+      description: 'List title too long',
       content: {
         'application/json': {
-          schema: CommonErrorResponseSchema,
+          schema: z.object({ error: TitleTooLong }).openapi({
+            description: 'List title too long',
+          }),
         },
       },
     },
@@ -283,10 +323,16 @@ export const FetchListRoute = createRoute({
     404: {
       content: {
         'application/json': {
-          schema: CommonErrorResponseSchema,
+          schema: z
+            .object({
+              error: ListNotFound,
+            })
+            .openapi({
+              description: 'List not found',
+            }),
         },
       },
-      description: 'LIST_NOTFOUND',
+      description: 'List not found',
     },
     500: {
       description: 'Internal error',
@@ -326,10 +372,16 @@ export const DeleteListRoute = createRoute({
     404: {
       content: {
         'application/json': {
-          schema: CommonErrorResponseSchema,
+          schema: z
+            .object({
+              error: ListNotFound,
+            })
+            .openapi({
+              description: 'List not found',
+            }),
         },
       },
-      description: 'LIST_NOTFOUND',
+      description: 'List not found',
     },
     500: {
       description: 'Internal error',
@@ -364,10 +416,16 @@ export const GetListMemberRoute = createRoute({
     404: {
       content: {
         'application/json': {
-          schema: CommonErrorResponseSchema,
+          schema: z
+            .object({
+              error: ListNotFound,
+            })
+            .openapi({
+              description: 'List not found',
+            }),
         },
       },
-      description: 'LIST_NOTFOUND',
+      description: 'List not found',
     },
     500: {
       description: 'Internal error',

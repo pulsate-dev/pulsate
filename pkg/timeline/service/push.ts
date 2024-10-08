@@ -1,6 +1,7 @@
 import { Ether, Result } from '@mikuroxina/mini-fn';
 
 import type { AccountModuleFacade } from '../../intermodule/account.js';
+import { NoteVisibilityInvalidError } from '../../notes/model/errors.js';
 import type { Note } from '../../notes/model/note.js';
 import {
   type TimelineNotesCacheRepository,
@@ -50,7 +51,9 @@ export class PushTimelineService {
       note,
     });
     if (!visible) {
-      return Result.err(new Error('Note invisible'));
+      return Result.err(
+        new NoteVisibilityInvalidError('Note invisible', { cause: null }),
+      );
     }
 
     // ToDo: bulk insert
@@ -86,7 +89,9 @@ export class PushTimelineService {
       note,
     });
     if (!visible) {
-      return Result.err(new Error('Note invisible'));
+      return Result.err(
+        new NoteVisibilityInvalidError('Note invisible', { cause: null }),
+      );
     }
 
     const res = await Promise.all(
