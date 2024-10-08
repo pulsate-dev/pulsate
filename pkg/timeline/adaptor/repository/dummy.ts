@@ -2,6 +2,7 @@ import { Result } from '@mikuroxina/mini-fn';
 
 import type { AccountID } from '../../../accounts/model/account.js';
 import type { Note, NoteID } from '../../../notes/model/note.js';
+import { ListInternalError, ListNotFoundError } from '../../model/errors.js';
 import type { List, ListID } from '../../model/list.js';
 import type {
   FetchAccountTimelineFilter,
@@ -49,6 +50,7 @@ export class InMemoryTimelineRepository implements TimelineRepository {
     for (const noteID of noteIDs) {
       const n = this.data.get(noteID);
       if (!n) {
+        // ToDo: return NoteNotFoundError
         return Result.err(new Error('Not found'));
       }
       notes.push(n);
@@ -74,6 +76,7 @@ export class InMemoryTimelineRepository implements TimelineRepository {
     for (const noteID of noteId) {
       const n = this.data.get(noteID);
       if (!n) {
+        // ToDo: return NoteNotFoundError
         return Result.err(new Error('Not found'));
       }
       notes.push(n);
@@ -107,7 +110,9 @@ export class InMemoryListRepository implements ListRepository {
 
   async create(list: List): Promise<Result.Result<Error, void>> {
     if (this.listData.has(list.getId())) {
-      return Result.err(new Error('List already exists'));
+      return Result.err(
+        new ListInternalError('List already exists', { cause: null }),
+      );
     }
     this.listData.set(list.getId(), list);
     return Result.ok(undefined);
@@ -120,7 +125,9 @@ export class InMemoryListRepository implements ListRepository {
 
   async deleteById(listId: ListID): Promise<Result.Result<Error, void>> {
     if (!this.listData.delete(listId)) {
-      return Result.err(new Error('List not found'));
+      return Result.err(
+        new ListNotFoundError('List not found', { cause: null }),
+      );
     }
     return Result.ok(undefined);
   }
@@ -128,7 +135,7 @@ export class InMemoryListRepository implements ListRepository {
   async fetchList(listId: ListID): Promise<Result.Result<Error, List>> {
     const list = this.listData.get(listId);
     if (!list) {
-      return Result.err(new Error('Not found'));
+      return Result.err(new ListNotFoundError('Not found', { cause: null }));
     }
     return Result.ok(list);
   }
@@ -156,7 +163,7 @@ export class InMemoryListRepository implements ListRepository {
   ): Promise<Result.Result<Error, AccountID[]>> {
     const list = this.listData.get(listId);
     if (!list) {
-      return Result.err(new Error('Not found'));
+      return Result.err(new ListNotFoundError('Not found', { cause: null }));
     }
     return Result.ok(list.getMemberIds() as AccountID[]);
   }

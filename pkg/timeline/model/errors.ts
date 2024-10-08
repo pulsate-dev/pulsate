@@ -74,3 +74,14 @@ export class ListTooManyTargetsError extends Error {
     this.cause = options.cause;
   }
 }
+
+/**
+ * Internal Error
+ */
+export class ListInternalError extends Error {
+  constructor(message: string, options: { cause: unknown }) {
+    super(message);
+    this.name = 'ListInternalError';
+    this.cause = options.cause;
+  }
+}

@@ -1,5 +1,5 @@
 import { Option, Result } from '@mikuroxina/mini-fn';
-import type { Prisma, PrismaClient } from '@prisma/client';
+import { Prisma, type PrismaClient } from '@prisma/client';
 
 import type { AccountID } from '../../../accounts/model/account.js';
 import type { prismaClient } from '../../../adaptors/prisma.js';
@@ -8,6 +8,10 @@ import {
   type NoteID,
   type NoteVisibility,
 } from '../../../notes/model/note.js';
+import {
+  ListNotFoundError,
+  TimelineInternalError,
+} from '../../model/errors.js';
 import { List, type ListID } from '../../model/list.js';
 import type {
   FetchAccountTimelineFilter,
@@ -126,6 +130,25 @@ type DeserializeListArgs =
 export class PrismaListRepository implements ListRepository {
   constructor(private readonly prisma: PrismaClient) {}
 
+  private parsePrismaError(e: unknown): Error {
+    // NOTE: cf. prisma error reference: https://www.prisma.io/docs/orm/reference/error-reference
+    if (e instanceof Prisma.PrismaClientKnownRequestError) {
+      switch (e.code) {
+        case 'P2001':
+          return new ListNotFoundError(e.message, { cause: e });
+        case 'P2015':
+          return new ListNotFoundError(e.message, { cause: e });
+        case 'P2018':
+          return new ListNotFoundError(e.message, { cause: e });
+        case 'P2025':
+          return new ListNotFoundError(e.message, { cause: e });
+        default:
+          return new TimelineInternalError(e.message, { cause: e });
+      }
+    }
+    return new TimelineInternalError('unknown error', { cause: e });
+  }
+
   private deserialize(data: DeserializeListArgs): List {
     if (!data) {
       throw new Error('Invalid List Data');
@@ -162,7 +185,7 @@ export class PrismaListRepository implements ListRepository {
         },
       });
     } catch (e) {
-      return Result.err(e as Error);
+      return Result.err(this.parsePrismaError(e));
     }
     return Result.ok(undefined);
   }
@@ -192,7 +215,7 @@ export class PrismaListRepository implements ListRepository {
       });
       return Result.ok(res.map((v) => this.deserialize(v)));
     } catch (e) {
-      return Result.err(e as Error);
+      return Result.err(this.parsePrismaError(e));
     }
   }
 
@@ -216,7 +239,7 @@ export class PrismaListRepository implements ListRepository {
       });
       return Result.ok(this.deserialize(res));
     } catch (e) {
-      return Result.err(e as Error);
+      return Result.err(this.parsePrismaError(e));
     }
   }
 
@@ -236,7 +259,7 @@ export class PrismaListRepository implements ListRepository {
       }
       return Result.ok(res.map((v) => v.memberId as AccountID));
     } catch (e) {
-      return Result.err(e as Error);
+      return Result.err(this.parsePrismaError(e));
     }
   }
 
@@ -267,7 +290,7 @@ export class PrismaListRepository implements ListRepository {
 
       return Result.ok(res.map((v) => this.deserialize(v)));
     } catch (e) {
-      return Result.err(e as Error);
+      return Result.err(this.parsePrismaError(e));
     }
   }
 
@@ -285,7 +308,7 @@ export class PrismaListRepository implements ListRepository {
 
       return Result.ok(undefined);
     } catch (e) {
-      return Result.err(e as Error);
+      return Result.err(this.parsePrismaError(e));
     }
   }
 
@@ -312,7 +335,7 @@ export class PrismaListRepository implements ListRepository {
 
       return Result.ok(undefined);
     } catch (e) {
-      return Result.err(e as Error);
+      return Result.err(this.parsePrismaError(e));
     }
   }
 }

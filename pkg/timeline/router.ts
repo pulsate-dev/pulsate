@@ -1,6 +1,7 @@
 import { createRoute, z } from '@hono/zod-openapi';
 
 import { CommonErrorResponseSchema } from '../accounts/adaptor/validator/schema.js';
+import { TimelineInternalError } from './adaptor/presenter/errors.js';
 import {
   CreateListRequestSchema,
   CreateListResponseSchema,
@@ -63,6 +64,20 @@ export const GetAccountTimelineRoute = createRoute({
         },
       },
     },
+    500: {
+      description: 'Internal error',
+      content: {
+        'application/json': {
+          schema: z
+            .object({
+              error: TimelineInternalError,
+            })
+            .openapi({
+              description: 'Internal server error',
+            }),
+        },
+      },
+    },
   },
 });
 
@@ -114,6 +129,20 @@ export const GetListTimelineRoute = createRoute({
         },
       },
     },
+    500: {
+      description: 'Internal error',
+      content: {
+        'application/json': {
+          schema: z
+            .object({
+              error: TimelineInternalError,
+            })
+            .openapi({
+              description: 'Internal server error',
+            }),
+        },
+      },
+    },
   },
 });
 
@@ -147,6 +176,20 @@ export const CreateListRoute = createRoute({
         },
       },
       description: 'TITLE_TOO_LONG',
+    },
+    500: {
+      description: 'Internal error',
+      content: {
+        'application/json': {
+          schema: z
+            .object({
+              error: TimelineInternalError,
+            })
+            .openapi({
+              description: 'Internal server error',
+            }),
+        },
+      },
     },
   },
 });
@@ -197,6 +240,20 @@ export const EditListRoute = createRoute({
         },
       },
     },
+    500: {
+      description: 'Internal error',
+      content: {
+        'application/json': {
+          schema: z
+            .object({
+              error: TimelineInternalError,
+            })
+            .openapi({
+              description: 'Internal server error',
+            }),
+        },
+      },
+    },
   },
 });
 
@@ -231,6 +288,20 @@ export const FetchListRoute = createRoute({
       },
       description: 'LIST_NOTFOUND',
     },
+    500: {
+      description: 'Internal error',
+      content: {
+        'application/json': {
+          schema: z
+            .object({
+              error: TimelineInternalError,
+            })
+            .openapi({
+              description: 'Internal server error',
+            }),
+        },
+      },
+    },
   },
 });
 
@@ -260,6 +331,20 @@ export const DeleteListRoute = createRoute({
       },
       description: 'LIST_NOTFOUND',
     },
+    500: {
+      description: 'Internal error',
+      content: {
+        'application/json': {
+          schema: z
+            .object({
+              error: TimelineInternalError,
+            })
+            .openapi({
+              description: 'Internal server error',
+            }),
+        },
+      },
+    },
   },
 });
 
@@ -283,6 +368,20 @@ export const GetListMemberRoute = createRoute({
         },
       },
       description: 'LIST_NOTFOUND',
+    },
+    500: {
+      description: 'Internal error',
+      content: {
+        'application/json': {
+          schema: z
+            .object({
+              error: TimelineInternalError,
+            })
+            .openapi({
+              description: 'Internal server error',
+            }),
+        },
+      },
     },
   },
 });
