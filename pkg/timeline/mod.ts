@@ -92,12 +92,7 @@ const controller = new TimelineController({
     timelineRepository,
   ),
 });
-const liftOverPromise = <const D extends Record<string, symbol>, T>(
-  ether: Ether.Ether<D, T>,
-): Ether.EtherT<D, Promise.PromiseHkt, T> => ({
-  ...ether,
-  handler: (resolved) => Promise.pure(ether.handler(resolved)),
-});
+const liftOverPromise = Ether.liftEther(Promise.monad);
 const composer = Ether.composeT(Promise.monad);
 const AuthMiddleware = await Ether.runEtherT(
   Cat.cat(liftOverPromise(authenticateMiddleware)).feed(
