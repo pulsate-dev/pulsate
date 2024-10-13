@@ -19,15 +19,18 @@ export class HomeTimelineService {
     filter: FetchHomeTimelineFilter,
   ): Promise<Result.Result<Error, Note[]>> {
     // ToDo: get note IDs from cache repository
-    const noteIDs =
+    const noteIDsRes =
       await this.timelineCacheRepository.getHomeTimeline(accountID);
-    if (Result.isErr(noteIDs)) {
-      return noteIDs;
+    if (Result.isErr(noteIDsRes)) {
+      return noteIDsRes;
     }
+    const noteIDs = Result.unwrap(noteIDsRes);
+    const beforeIndex = filter.beforeId
+      ? noteIDs.findIndex((note) => note === filter.beforeId)
+      : noteIDs.length;
 
-    return await this.timelineRepository.getHomeTimeline(noteIDs[1], {
-      id: accountID,
-      ...filter,
-    });
+    return await this.timelineRepository.getHomeTimeline(
+      noteIDs.slice(0, beforeIndex),
+    );
   }
 }
