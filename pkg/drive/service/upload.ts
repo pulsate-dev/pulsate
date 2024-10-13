@@ -5,6 +5,11 @@ import sharp from 'sharp';
 
 import type { AccountID } from '../../accounts/model/account.js';
 import type { SnowflakeIDGenerator } from '../../id/mod.js';
+import {
+  DriveInternalError,
+  MediaSizeTooLargeError,
+  MediaTypeInvalidError,
+} from '../model/errors.js';
 import { Medium } from '../model/medium.js';
 import type { MediaRepository } from '../model/repository.js';
 import type { Storage } from '../model/storage.js';
@@ -32,15 +37,21 @@ export class UploadMediaService {
   }): Promise<Result.Result<Error, Medium>> {
     const mime = await this.detectFileType(args.file);
     if (Option.isNone(mime)) {
-      return Result.err(new Error('Invalid file type'));
+      return Result.err(
+        new MediaTypeInvalidError('Invalid file type', { cause: null }),
+      );
     }
     if (args.file.length > this.MAX_MEDIA_SIZE) {
-      return Result.err(new Error('File size is too large'));
+      return Result.err(
+        new MediaSizeTooLargeError('File size is too large', { cause: null }),
+      );
     }
 
     const processed = await this.imageProcessing(args.file);
     if (Option.isNone(processed)) {
-      return Result.err(new Error('Failed to process image'));
+      return Result.err(
+        new DriveInternalError('Failed to process image', { cause: null }),
+      );
     }
 
     const id = this.idGenerator.generate<Medium>();
@@ -65,7 +76,6 @@ export class UploadMediaService {
       url: '',
       thumbnailUrl: '',
     });
-    console.log(medium);
 
     const res = await this.repository.create(medium);
     if (Result.isErr(res)) {
