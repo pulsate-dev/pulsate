@@ -1,8 +1,9 @@
 import { Option, Result } from '@mikuroxina/mini-fn';
-import type { Prisma, PrismaClient } from '@prisma/client';
+import { Prisma, type PrismaClient } from '@prisma/client';
 
 import type { AccountID } from '../../../accounts/model/account.js';
 import type { prismaClient } from '../../../adaptors/prisma.js';
+import { DriveInternalError, MediaNotFoundError } from '../../model/errors.js';
 import { Medium, type MediumID } from '../../model/medium.js';
 import type { MediaRepository } from '../../model/repository.js';
 
@@ -20,7 +21,7 @@ export class PrismaMediaRepository implements MediaRepository {
         },
       });
     } catch (e) {
-      return Result.err(e as Error);
+      return Result.err(this.parsePrismaError(e));
     }
 
     return Result.ok(undefined);
@@ -75,7 +76,7 @@ export class PrismaMediaRepository implements MediaRepository {
 
   private fromPrismaArgs(args: MediumPrismaArgs): Medium {
     if (args === null) {
-      throw new Error('failed to serialize');
+      throw new DriveInternalError('failed to serialize', { cause: null });
     }
 
     return Medium.reconstruct({
@@ -88,5 +89,17 @@ export class PrismaMediaRepository implements MediaRepository {
       url: args.url,
       thumbnailUrl: args.thumbnailUrl,
     });
+  }
+
+  private parsePrismaError(e: unknown): Error {
+    // NOTE: cf. prisma error reference: https://www.prisma.io/docs/orm/reference/error-reference
+    if (e instanceof Prisma.PrismaClientKnownRequestError) {
+      const NOT_FOUND_ERROR_CODE = ['P2001', 'P2015', 'P2018', 'P2025'];
+      if (NOT_FOUND_ERROR_CODE.includes(e.code)) {
+        return new MediaNotFoundError(e.message, { cause: e });
+      }
+      return new DriveInternalError(e.message, { cause: e });
+    }
+    return new DriveInternalError('unknown error', { cause: e });
   }
 }
