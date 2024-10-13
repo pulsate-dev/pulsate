@@ -14,6 +14,7 @@ import type { DeleteListService } from '../../service/deleteList.js';
 import type { EditListService } from '../../service/editList.js';
 import type { FetchListService } from '../../service/fetchList.js';
 import type { FetchListMemberService } from '../../service/fetchMember.js';
+import type { HomeTimelineService } from '../../service/home.js';
 import type { ListTimelineService } from '../../service/list.js';
 import type {
   CreateListResponseSchema,
@@ -21,6 +22,7 @@ import type {
   EditListResponseSchema,
   FetchListResponseSchema,
   GetAccountTimelineResponseSchema,
+  GetHomeTimelineResponseSchema,
   GetListMemberResponseSchema,
   GetListTimelineResponseSchema,
 } from '../validator/timeline.js';
@@ -35,6 +37,7 @@ export class TimelineController {
   private readonly fetchMemberService: FetchListMemberService;
   private readonly listTimelineService: ListTimelineService;
   private readonly noteModule: NoteModuleFacade;
+  private readonly homeTimeline: HomeTimelineService;
 
   constructor(args: {
     accountTimelineService: AccountTimelineService;
@@ -46,6 +49,7 @@ export class TimelineController {
     fetchMemberService: FetchListMemberService;
     listTimelineService: ListTimelineService;
     noteModule: NoteModuleFacade;
+    homeTimeline: HomeTimelineService;
   }) {
     this.accountTimelineService = args.accountTimelineService;
     this.accountModule = args.accountModule;
@@ -56,6 +60,70 @@ export class TimelineController {
     this.fetchMemberService = args.fetchMemberService;
     this.listTimelineService = args.listTimelineService;
     this.noteModule = args.noteModule;
+    this.homeTimeline = args.homeTimeline;
+  }
+
+  async getHomeTimeline(
+    actorID: string,
+    hasAttachment: boolean,
+    noNsfw: boolean,
+    beforeId?: string,
+  ): Promise<
+    Result.Result<Error, z.infer<typeof GetHomeTimelineResponseSchema>>
+  > {
+    const res = await this.homeTimeline.fetchHomeTimeline(
+      actorID as AccountID,
+      {
+        hasAttachment,
+        noNsfw,
+        beforeId: beforeId as NoteID | undefined,
+      },
+    );
+    if (Result.isErr(res)) {
+      return res;
+    }
+    const accountNotes = Result.unwrap(res);
+
+    const accountData = await this.accountModule.fetchAccounts(
+      accountNotes.map((v) => v.getAuthorID()),
+    );
+
+    if (Result.isErr(accountData)) {
+      return accountData;
+    }
+
+    const accounts = Result.unwrap(accountData);
+
+    const accountsMap = new Map<AccountID, Account>(
+      accounts.map((v) => [v.getID(), v]),
+    );
+
+    const result = accountNotes
+      .filter((v) => accountsMap.has(v.getAuthorID()))
+      .map((v) => {
+        // biome-ignore lint/style/noNonNullAssertion: This variable is safe because it is filtered by the above filter.
+        const account = accountsMap.get(v.getAuthorID())!;
+
+        return {
+          id: v.getID(),
+          content: v.getContent(),
+          contents_warning_comment: v.getCwComment(),
+          visibility: v.getVisibility(),
+          created_at: v.getCreatedAt().toUTCString(),
+          author: {
+            id: account.getID(),
+            name: account.getName(),
+            display_name: account.getNickname(),
+            bio: account.getBio(),
+            avatar: '',
+            header: '',
+            followed_count: 0,
+            following_count: 0,
+          },
+        };
+      });
+
+    return Result.ok(result);
   }
 
   async getAccountTimeline(

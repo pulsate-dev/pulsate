@@ -30,11 +30,10 @@ export interface TimelineRepository {
   /**
    * @description Fetch home timeline
    * @param noteIDs IDs of the notes to be fetched
-   * @param filter Filter for fetching notes
+   * ToDo: Add filter (noNSFW/hasAttachment)
    * */
   getHomeTimeline(
     noteIDs: readonly NoteID[],
-    filter: FetchAccountTimelineFilter,
   ): Promise<Result.Result<Error, Note[]>>;
 
   /**

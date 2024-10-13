@@ -6,7 +6,6 @@ import { ListInternalError, ListNotFoundError } from '../../model/errors.js';
 import type { List, ListID } from '../../model/list.js';
 import type {
   FetchAccountTimelineFilter,
-  FetchHomeTimelineFilter,
   ListRepository,
   TimelineRepository,
 } from '../../model/repository.js';
@@ -44,7 +43,6 @@ export class InMemoryTimelineRepository implements TimelineRepository {
 
   async getHomeTimeline(
     noteIDs: NoteID[],
-    filter: FetchHomeTimelineFilter,
   ): Promise<Result.Result<Error, Note[]>> {
     const notes: Note[] = [];
     for (const noteID of noteIDs) {
@@ -62,11 +60,8 @@ export class InMemoryTimelineRepository implements TimelineRepository {
     filtered.sort(
       (a, b) => b.getCreatedAt().getTime() - a.getCreatedAt().getTime(),
     );
-    const beforeIndex = filter.beforeId
-      ? filtered.findIndex((note) => note.getID() === filter.beforeId)
-      : filtered.length;
 
-    return Result.ok(filtered.slice(0, beforeIndex));
+    return Result.ok(filtered);
   }
 
   async fetchListTimeline(

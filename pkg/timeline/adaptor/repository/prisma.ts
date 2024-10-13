@@ -81,7 +81,6 @@ export class PrismaTimelineRepository implements TimelineRepository {
 
   async getHomeTimeline(
     noteIDs: NoteID[],
-    filter: FetchAccountTimelineFilter,
   ): Promise<Result.Result<Error, Note[]>> {
     const homeNotes = await this.prisma.note.findMany({
       where: {
@@ -91,9 +90,6 @@ export class PrismaTimelineRepository implements TimelineRepository {
       },
       orderBy: {
         createdAt: 'desc',
-      },
-      cursor: {
-        id: filter.beforeId ?? '',
       },
       take: this.TIMELINE_NOTE_LIMIT,
     });
