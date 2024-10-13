@@ -1,6 +1,6 @@
-import { createRoute } from '@hono/zod-openapi';
-
-import { CommonErrorResponseSchema } from '../accounts/adaptor/validator/schema.js';
+import { createRoute, z } from '@hono/zod-openapi';
+import { InternalError } from '../accounts/adaptor/presenter/errors.js';
+import { FileNotFound } from './adaptor/presenter/errors.js';
 import { GetDriveMediaResponseSchema } from './adaptor/validator/schema.js';
 
 export const GetMediaRoute = createRoute({
@@ -27,7 +27,19 @@ export const GetMediaRoute = createRoute({
       description: 'Not found',
       content: {
         'application/json': {
-          schema: CommonErrorResponseSchema,
+          schema: z.object({
+            error: FileNotFound,
+          }),
+        },
+      },
+    },
+    500: {
+      description: 'Internal server error',
+      content: {
+        'application/json': {
+          schema: z.object({
+            error: InternalError,
+          }),
         },
       },
     },
