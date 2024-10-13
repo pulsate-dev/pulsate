@@ -6,6 +6,10 @@ import type { AccountID } from '../../accounts/model/account.js';
 import { MockClock, SnowflakeIDGenerator } from '../../id/mod.js';
 import { InMemoryMediaRepository } from '../adaptor/repository/dummy.js';
 import { LocalStorage } from '../adaptor/storage/dummy.js';
+import {
+  MediaSizeTooLargeError,
+  MediaTypeInvalidError,
+} from '../model/errors.js';
 import { UploadMediaService } from './upload.js';
 
 describe('upload', () => {
@@ -51,7 +55,9 @@ describe('upload', () => {
       file: a,
     });
     expect(Result.isErr(res)).toStrictEqual(true);
-    expect(res[1]).toStrictEqual(new Error('File size is too large'));
+    expect(res[1]).toStrictEqual(
+      new MediaSizeTooLargeError('File size is too large', { cause: null }),
+    );
   });
 
   it('if unsupported file type', async () => {
@@ -63,6 +69,8 @@ describe('upload', () => {
       file: a,
     });
     expect(Result.isErr(res)).toStrictEqual(true);
-    expect(res[1]).toStrictEqual(new Error('Invalid file type'));
+    expect(res[1]).toStrictEqual(
+      new MediaTypeInvalidError('Invalid file type', { cause: null }),
+    );
   });
 });
