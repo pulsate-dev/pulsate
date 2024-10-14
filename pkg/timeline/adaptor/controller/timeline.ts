@@ -63,7 +63,7 @@ export class TimelineController {
     this.homeTimeline = args.homeTimeline;
   }
 
-  private async getNoteAdditionalData(notes: Note[]): Promise<
+  private async getNoteAdditionalData(notes: readonly Note[]): Promise<
     Result.Result<
       Error,
       {
