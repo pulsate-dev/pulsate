@@ -1,9 +1,14 @@
 import { OpenAPIHono } from '@hono/zod-openapi';
-import { Option, Result } from '@mikuroxina/mini-fn';
+import { Cat, Ether, Option, Promise, Result } from '@mikuroxina/mini-fn';
 
 import { AccountNotFoundError } from '../accounts/model/errors.js';
-import type { AuthMiddlewareVariable } from '../adaptors/authenticateMiddleware.js';
+import { authenticateToken } from '../accounts/service/authenticationTokenService.js';
+import {
+  type AuthMiddlewareVariable,
+  authenticateMiddleware,
+} from '../adaptors/authenticateMiddleware.js';
 import { prismaClient } from '../adaptors/prisma.js';
+import { valkeyClient } from '../adaptors/valkey.js';
 import { SnowflakeIDGenerator } from '../id/mod.js';
 import {
   accountModule,
@@ -20,6 +25,7 @@ import {
   PrismaListRepository,
   PrismaTimelineRepository,
 } from './adaptor/repository/prisma.js';
+import { ValkeyTimelineCacheRepository } from './adaptor/repository/valkeyCache.js';
 import {
   ListNotFoundError,
   ListTitleTooLongError,
@@ -32,6 +38,7 @@ import {
   EditListRoute,
   FetchListRoute,
   GetAccountTimelineRoute,
+  GetHomeTimelineRoute,
   GetListMemberRoute,
   GetListTimelineRoute,
 } from './router.js';
@@ -41,6 +48,7 @@ import { DeleteListService } from './service/deleteList.js';
 import { EditListService } from './service/editList.js';
 import { FetchListService } from './service/fetchList.js';
 import { FetchListMemberService } from './service/fetchMember.js';
+import { HomeTimelineService } from './service/home.js';
 import { ListTimelineService } from './service/list.js';
 import { NoteVisibilityService } from './service/noteVisibility.js';
 
@@ -59,7 +67,9 @@ const noteVisibilityService = new NoteVisibilityService(
   isProduction ? accountModule : dummyAccountModuleFacade,
 );
 // ToDo: export redis client instances at adaptors package
-const timelineCacheRepository = new InMemoryTimelineCacheRepository();
+const timelineCacheRepository = isProduction
+  ? new ValkeyTimelineCacheRepository(valkeyClient)
+  : new InMemoryTimelineCacheRepository();
 
 const controller = new TimelineController({
   accountTimelineService: new AccountTimelineService({
@@ -77,7 +87,18 @@ const controller = new TimelineController({
     timelineRepository,
   ),
   noteModule: noteModule,
+  homeTimeline: new HomeTimelineService(
+    timelineCacheRepository,
+    timelineRepository,
+  ),
 });
+const liftOverPromise = Ether.liftEther(Promise.monad);
+const composer = Ether.composeT(Promise.monad);
+const AuthMiddleware = await Ether.runEtherT(
+  Cat.cat(liftOverPromise(authenticateMiddleware)).feed(
+    composer(authenticateToken),
+  ).value,
+);
 
 export const timeline = new OpenAPIHono<{
   Variables: AuthMiddlewareVariable;
@@ -93,14 +114,44 @@ timeline.openAPIRegistry.registerComponent('securitySchemes', 'Bearer', {
   scheme: 'bearer',
 });
 
+timeline[GetHomeTimelineRoute.method](
+  GetHomeTimelineRoute.path,
+  AuthMiddleware.handle({ forceAuthorized: true }),
+);
+timeline.openapi(GetHomeTimelineRoute, async (c) => {
+  const actorID = Option.unwrap(c.get('accountID'));
+  const { has_attachment, no_nsfw, before_id } = c.req.valid('query');
+  const res = await controller.getHomeTimeline(
+    actorID,
+    has_attachment,
+    no_nsfw,
+    before_id,
+  );
+  if (Result.isErr(res)) {
+    const error = Result.unwrapErr(res);
+
+    if (error instanceof TimelineNoMoreNotesError) {
+      return c.json({ error: 'NOTHING_LEFT' as const }, 404);
+    }
+
+    return c.json({ error: 'INTERNAL_ERROR' as const }, 500);
+  }
+
+  return c.json(Result.unwrap(res), 200);
+});
+
+timeline[GetAccountTimelineRoute.method](
+  GetAccountTimelineRoute.path,
+  AuthMiddleware.handle({ forceAuthorized: false }),
+);
 timeline.openapi(GetAccountTimelineRoute, async (c) => {
-  // ToDo: get account id who is trying to see the timeline
+  const actorID = Option.unwrap(c.get('accountID'));
   const { id } = c.req.param();
   const { has_attachment, no_nsfw, before_id } = c.req.valid('query');
 
   const res = await controller.getAccountTimeline(
     id,
-    '',
+    actorID,
     has_attachment,
     no_nsfw,
     before_id,
@@ -126,6 +177,10 @@ timeline.openapi(GetAccountTimelineRoute, async (c) => {
   return c.json(res[1], 200);
 });
 
+timeline[GetListTimelineRoute.method](
+  GetListTimelineRoute.path,
+  AuthMiddleware.handle({ forceAuthorized: true }),
+);
 timeline.openapi(GetListTimelineRoute, async (c) => {
   const { id } = c.req.param();
 
@@ -147,7 +202,10 @@ timeline.openapi(GetListTimelineRoute, async (c) => {
   return c.json(res[1], 200);
 });
 
-// ToDo: add account authorization
+timeline[CreateListRoute.method](
+  CreateListRoute.path,
+  AuthMiddleware.handle({ forceAuthorized: true }),
+);
 timeline.openapi(CreateListRoute, async (c) => {
   // NOTE: `public` is a reserved keyword
   const req = c.req.valid('json');
@@ -167,6 +225,10 @@ timeline.openapi(CreateListRoute, async (c) => {
   return c.json(res[1], 200);
 });
 
+timeline[EditListRoute.method](
+  EditListRoute.path,
+  AuthMiddleware.handle({ forceAuthorized: true }),
+);
 timeline.openapi(EditListRoute, async (c) => {
   const { id } = c.req.valid('param');
   const req = c.req.valid('json');
@@ -192,7 +254,10 @@ timeline.openapi(EditListRoute, async (c) => {
   return c.json(list, 200);
 });
 
-// ToDo: add account authorization
+timeline[FetchListRoute.method](
+  FetchListRoute.path,
+  AuthMiddleware.handle({ forceAuthorized: true }),
+);
 timeline.openapi(FetchListRoute, async (c) => {
   const { id } = c.req.valid('param');
   const res = await controller.fetchList(id);
@@ -208,7 +273,10 @@ timeline.openapi(FetchListRoute, async (c) => {
   return c.json(Result.unwrap(res), 200);
 });
 
-// ToDo: add account authorization
+timeline[DeleteListRoute.method](
+  DeleteListRoute.path,
+  AuthMiddleware.handle({ forceAuthorized: true }),
+);
 timeline.openapi(DeleteListRoute, async (c) => {
   const { id } = c.req.valid('param');
 
@@ -225,7 +293,10 @@ timeline.openapi(DeleteListRoute, async (c) => {
   return new Response(undefined, { status: 204 });
 });
 
-// ToDo: add account authorization
+timeline[GetListMemberRoute.method](
+  GetListMemberRoute.path,
+  AuthMiddleware.handle({ forceAuthorized: true }),
+);
 timeline.openapi(GetListMemberRoute, async (c) => {
   const { id } = c.req.param();
 

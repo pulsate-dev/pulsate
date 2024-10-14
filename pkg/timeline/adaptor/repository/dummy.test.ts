@@ -82,13 +82,12 @@ describe('InMemoryTimelineRepository', () => {
     ).toBe(false);
   });
   it('Home Timeline only returns PUBLIC/HOME/FOLLOWERS notes', async () => {
-    const actual = await repository.getHomeTimeline(
-      ['1' as NoteID, '2' as NoteID, '3' as NoteID, '4' as NoteID],
-      {
-        hasAttachment: true,
-        noNsfw: false,
-      },
-    );
+    const actual = await repository.getHomeTimeline([
+      '1' as NoteID,
+      '2' as NoteID,
+      '3' as NoteID,
+      '4' as NoteID,
+    ]);
     expect(Result.isOk(actual)).toBe(true);
     expect(Result.unwrap(actual).length).toBe(3);
     expect(

@@ -15,9 +15,78 @@ import {
   EditListResponseSchema,
   FetchListResponseSchema,
   GetAccountTimelineResponseSchema,
+  GetHomeTimelineResponseSchema,
   GetListMemberResponseSchema,
   GetListTimelineResponseSchema,
 } from './adaptor/validator/timeline.js';
+
+/* NOTE: query params must use z.string() \
+ cf. https://zenn.dev/loglass/articles/c237d89e238d42 (Japanese)\
+ cf. https://github.com/honojs/middleware/issues/200#issuecomment-1773428171 (GitHub Issue)
+*/
+const timelineFilterQuerySchema = z
+  .object({
+    has_attachment: z
+      .string()
+      .optional()
+      .pipe(z.coerce.boolean().default(false))
+      .openapi({
+        type: 'boolean',
+        description: 'If true, only return notes with attachment',
+      }),
+    no_nsfw: z
+      .string()
+      .optional()
+      .pipe(z.coerce.boolean().default(false))
+      .openapi({
+        type: 'boolean',
+        description: 'If true, only return notes without sensitive content',
+      }),
+    before_id: z.string().optional().openapi({
+      description:
+        'Return notes before this note ID. specified note ID is not included',
+    }),
+  })
+  .openapi('TimelineFilterQuerySchema');
+
+export const GetHomeTimelineRoute = createRoute({
+  method: 'get',
+  tags: ['timeline'],
+  path: '/timeline/home',
+  request: {
+    query: timelineFilterQuerySchema,
+  },
+  responses: {
+    200: {
+      description: 'OK',
+      content: {
+        'application/json': {
+          schema: GetHomeTimelineResponseSchema,
+        },
+      },
+    },
+    404: {
+      description: 'Nothing left',
+      content: {
+        'application/json': {
+          schema: z.object({
+            error: NothingLeft,
+          }),
+        },
+      },
+    },
+    500: {
+      description: 'Internal error',
+      content: {
+        'application/json': {
+          schema: z.object({
+            error: TimelineInternalError,
+          }),
+        },
+      },
+    },
+  },
+});
 
 export const GetAccountTimelineRoute = createRoute({
   method: 'get',
@@ -27,31 +96,7 @@ export const GetAccountTimelineRoute = createRoute({
     params: z.object({
       id: z.string().openapi('Account ID'),
     }),
-    // NOTE: query params must use z.string()
-    // cf. https://zenn.dev/loglass/articles/c237d89e238d42 (Japanese)
-    // cf. https://github.com/honojs/middleware/issues/200#issuecomment-1773428171 (GitHub Issue)
-    query: z.object({
-      has_attachment: z
-        .string()
-        .optional()
-        .pipe(z.coerce.boolean().default(false))
-        .openapi({
-          type: 'boolean',
-          description: 'If true, only return notes with attachment',
-        }),
-      no_nsfw: z
-        .string()
-        .optional()
-        .pipe(z.coerce.boolean().default(false))
-        .openapi({
-          type: 'boolean',
-          description: 'If true, only return notes without sensitive content',
-        }),
-      before_id: z.string().optional().openapi({
-        description:
-          'Return notes before this note ID. specified note ID is not included',
-      }),
-    }),
+    query: timelineFilterQuerySchema,
   },
   responses: {
     200: {
@@ -114,28 +159,7 @@ export const GetListTimelineRoute = createRoute({
     params: z.object({
       id: z.string().openapi('List ID'),
     }),
-    query: z.object({
-      has_attachment: z
-        .string()
-        .optional()
-        .pipe(z.coerce.boolean().default(false))
-        .openapi({
-          type: 'boolean',
-          description: 'If true, only return notes with attachment',
-        }),
-      no_nsfw: z
-        .string()
-        .optional()
-        .pipe(z.coerce.boolean().default(false))
-        .openapi({
-          type: 'boolean',
-          description: 'If true, only return notes without sensitive content',
-        }),
-      before_id: z.string().optional().openapi({
-        description:
-          'Return notes before this note ID. specified note ID is not included',
-      }),
-    }),
+    query: timelineFilterQuerySchema,
   },
   responses: {
     200: {
