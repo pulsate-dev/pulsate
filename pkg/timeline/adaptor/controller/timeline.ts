@@ -5,7 +5,7 @@ import type { Account, AccountID } from '../../../accounts/model/account.js';
 import type { Medium } from '../../../drive/model/medium.js';
 import type { AccountModuleFacade } from '../../../intermodule/account.js';
 import type { NoteModuleFacade } from '../../../intermodule/note.js';
-import type { NoteID } from '../../../notes/model/note.js';
+import type { Note, NoteID } from '../../../notes/model/note.js';
 import type { Reaction } from '../../../notes/model/reaction.js';
 import type { ListID } from '../../model/list.js';
 import type { AccountTimelineService } from '../../service/account.js';
@@ -63,6 +63,56 @@ export class TimelineController {
     this.homeTimeline = args.homeTimeline;
   }
 
+  private async getNoteAdditionalData(notes: Note[]): Promise<
+    Result.Result<
+      Error,
+      {
+        note: Note;
+        author: Account;
+        reactions: Reaction[];
+        attachments: Medium[];
+      }[]
+    >
+  > {
+    const accountData = await this.accountModule.fetchAccounts(
+      notes.map((v) => v.getAuthorID()),
+    );
+    if (Result.isErr(accountData)) {
+      return accountData;
+    }
+    const accounts = Result.unwrap(accountData);
+    const accountsMap = new Map<AccountID, Account>(
+      accounts.map((v) => [v.getID(), v]),
+    );
+
+    const attachmentsMap = new Map<NoteID, Medium[]>();
+    const reactionsMap = new Map<NoteID, Reaction[]>();
+    for (const v of notes) {
+      const attachmentsRes = await this.noteModule.fetchAttachments(v.getID());
+      attachmentsMap.set(v.getID(), Result.unwrap(attachmentsRes));
+      const reactionsRes = await this.noteModule.fetchReactions(v.getID());
+      reactionsMap.set(v.getID(), Result.unwrap(reactionsRes));
+    }
+
+    return Result.ok(
+      notes
+        .filter((v) => accountsMap.has(v.getAuthorID()))
+        .map((note) => {
+          // biome-ignore lint/style/noNonNullAssertion: This variable is safe because it is filtered by the above filter.
+          const author = accountsMap.get(note.getAuthorID())!;
+          const attachments = attachmentsMap.get(note.getID()) ?? [];
+          const reactions = reactionsMap.get(note.getID()) ?? [];
+
+          return {
+            note,
+            author,
+            reactions,
+            attachments,
+          };
+        }),
+    );
+  }
+
   async getHomeTimeline(
     actorID: string,
     hasAttachment: boolean,
@@ -84,68 +134,46 @@ export class TimelineController {
     }
     const accountNotes = Result.unwrap(res);
 
-    const accountData = await this.accountModule.fetchAccounts(
-      accountNotes.map((v) => v.getAuthorID()),
-    );
-
-    if (Result.isErr(accountData)) {
-      return accountData;
+    const noteAdditionalDataRes =
+      await this.getNoteAdditionalData(accountNotes);
+    if (Result.isErr(res)) {
+      return res;
     }
+    const noteAdditionalData = Result.unwrap(noteAdditionalDataRes);
 
-    const accounts = Result.unwrap(accountData);
-
-    const accountsMap = new Map<AccountID, Account>(
-      accounts.map((v) => [v.getID(), v]),
-    );
-    const attachmentsMap = new Map<NoteID, Medium[]>();
-    const reactionsMap = new Map<NoteID, Reaction[]>();
-    for (const v of accountNotes) {
-      const attachmentsRes = await this.noteModule.fetchAttachments(v.getID());
-      attachmentsMap.set(v.getID(), Result.unwrap(attachmentsRes));
-      const reactionsRes = await this.noteModule.fetchReactions(v.getID());
-      reactionsMap.set(v.getID(), Result.unwrap(reactionsRes));
-    }
-
-    const result = accountNotes
-      .filter((v) => accountsMap.has(v.getAuthorID()))
-      .map((v) => {
-        // biome-ignore lint/style/noNonNullAssertion: This variable is safe because it is filtered by the above filter.
-        const account = accountsMap.get(v.getAuthorID())!;
-        const attachments = attachmentsMap.get(v.getID()) ?? [];
-        const reactions = reactionsMap.get(v.getID()) ?? [];
-
-        return {
-          id: v.getID(),
-          content: v.getContent(),
-          contents_warning_comment: v.getCwComment(),
-          visibility: v.getVisibility(),
-          created_at: v.getCreatedAt().toUTCString(),
-          reactions: reactions.map((reaction) => ({
-            emoji: reaction.getEmoji(),
-            reacted_by: reaction.getAccountID(),
-          })),
-          attachment_files: attachments.map((file) => ({
-            id: file.getId(),
-            name: file.getName(),
-            author_id: file.getAuthorId(),
-            hash: file.getHash(),
-            mime: file.getMime(),
-            nsfw: file.isNsfw(),
-            url: file.getUrl(),
-            thumbnail: file.getThumbnailUrl(),
-          })),
-          author: {
-            id: account.getID(),
-            name: account.getName(),
-            display_name: account.getNickname(),
-            bio: account.getBio(),
-            avatar: '',
-            header: '',
-            followed_count: 0,
-            following_count: 0,
-          },
-        };
-      });
+    const result = noteAdditionalData.map((v) => {
+      return {
+        id: v.note.getID(),
+        content: v.note.getContent(),
+        contents_warning_comment: v.note.getCwComment(),
+        visibility: v.note.getVisibility(),
+        created_at: v.note.getCreatedAt().toUTCString(),
+        reactions: v.reactions.map((reaction) => ({
+          emoji: reaction.getEmoji(),
+          reacted_by: reaction.getAccountID(),
+        })),
+        attachment_files: v.attachments.map((file) => ({
+          id: file.getId(),
+          name: file.getName(),
+          author_id: file.getAuthorId(),
+          hash: file.getHash(),
+          mime: file.getMime(),
+          nsfw: file.isNsfw(),
+          url: file.getUrl(),
+          thumbnail: file.getThumbnailUrl(),
+        })),
+        author: {
+          id: v.author.getID(),
+          name: v.author.getName(),
+          display_name: v.author.getNickname(),
+          bio: v.author.getBio(),
+          avatar: '',
+          header: '',
+          followed_count: 0,
+          following_count: 0,
+        },
+      };
+    });
 
     return Result.ok(result);
   }
@@ -172,68 +200,46 @@ export class TimelineController {
       return res;
     }
     const accountNotes = Result.unwrap(res);
-
-    const accountData = await this.accountModule.fetchAccounts(
-      accountNotes.map((v) => v.getAuthorID()),
-    );
-
-    if (Result.isErr(accountData)) {
-      return accountData;
+    const noteAdditionalDataRes =
+      await this.getNoteAdditionalData(accountNotes);
+    if (Result.isErr(noteAdditionalDataRes)) {
+      return noteAdditionalDataRes;
     }
-    const accounts = Result.unwrap(accountData);
-    const accountsMap = new Map<AccountID, Account>(
-      accounts.map((v) => [v.getID(), v]),
-    );
+    const noteAdditionalData = Result.unwrap(noteAdditionalDataRes);
 
-    const attachmentsMap = new Map<NoteID, Medium[]>();
-    const reactionsMap = new Map<NoteID, Reaction[]>();
-    for (const v of accountNotes) {
-      const attachmentsRes = await this.noteModule.fetchAttachments(v.getID());
-      attachmentsMap.set(v.getID(), Result.unwrap(attachmentsRes));
-      const reactionsRes = await this.noteModule.fetchReactions(v.getID());
-      reactionsMap.set(v.getID(), Result.unwrap(reactionsRes));
-    }
-
-    const result = accountNotes
-      .filter((v) => accountsMap.has(v.getAuthorID()))
-      .map((v) => {
-        // biome-ignore lint/style/noNonNullAssertion: This variable is safe because it is filtered by the above filter.
-        const account = accountsMap.get(v.getAuthorID())!;
-        const attachments = attachmentsMap.get(v.getID()) ?? [];
-        const reactions = reactionsMap.get(v.getID()) ?? [];
-
-        return {
-          id: v.getID(),
-          content: v.getContent(),
-          contents_warning_comment: v.getCwComment(),
-          visibility: v.getVisibility(),
-          created_at: v.getCreatedAt().toUTCString(),
-          reactions: reactions.map((reaction) => ({
-            emoji: reaction.getEmoji(),
-            reacted_by: reaction.getAccountID(),
-          })),
-          attachment_files: attachments.map((file) => ({
-            id: file.getId(),
-            name: file.getName(),
-            author_id: file.getAuthorId(),
-            hash: file.getHash(),
-            mime: file.getMime(),
-            nsfw: file.isNsfw(),
-            url: file.getUrl(),
-            thumbnail: file.getThumbnailUrl(),
-          })),
-          author: {
-            id: account.getID(),
-            name: account.getName(),
-            display_name: account.getNickname(),
-            bio: account.getBio(),
-            avatar: '',
-            header: '',
-            followed_count: 0,
-            following_count: 0,
-          },
-        };
-      });
+    const result = noteAdditionalData.map((v) => {
+      return {
+        id: v.note.getID(),
+        content: v.note.getContent(),
+        contents_warning_comment: v.note.getCwComment(),
+        visibility: v.note.getVisibility(),
+        created_at: v.note.getCreatedAt().toUTCString(),
+        reactions: v.reactions.map((reaction) => ({
+          emoji: reaction.getEmoji(),
+          reacted_by: reaction.getAccountID(),
+        })),
+        attachment_files: v.attachments.map((file) => ({
+          id: file.getId(),
+          name: file.getName(),
+          author_id: file.getAuthorId(),
+          hash: file.getHash(),
+          mime: file.getMime(),
+          nsfw: file.isNsfw(),
+          url: file.getUrl(),
+          thumbnail: file.getThumbnailUrl(),
+        })),
+        author: {
+          id: v.author.getID(),
+          name: v.author.getName(),
+          display_name: v.author.getNickname(),
+          bio: v.author.getBio(),
+          avatar: '',
+          header: '',
+          followed_count: 0,
+          following_count: 0,
+        },
+      };
+    });
 
     return Result.ok(result);
   }
