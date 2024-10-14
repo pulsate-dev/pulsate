@@ -25,6 +25,12 @@ const TimelineNoteBaseSchema = z.object({
     example: '2021-01-01T00:00:00Z',
     description: 'Note created date',
   }),
+  reactions: z.array(reactionSchema).openapi({
+    description: 'Reactions',
+  }),
+  attachment_files: z.array(noteAttachmentSchema).max(16).openapi({
+    description: 'Note Attachment Media',
+  }),
   author: z.object({
     id: z.string(),
     name: z.string(),

@@ -97,12 +97,22 @@ export class TimelineController {
     const accountsMap = new Map<AccountID, Account>(
       accounts.map((v) => [v.getID(), v]),
     );
+    const attachmentsMap = new Map<NoteID, Medium[]>();
+    const reactionsMap = new Map<NoteID, Reaction[]>();
+    for (const v of accountNotes) {
+      const attachmentsRes = await this.noteModule.fetchAttachments(v.getID());
+      attachmentsMap.set(v.getID(), Result.unwrap(attachmentsRes));
+      const reactionsRes = await this.noteModule.fetchReactions(v.getID());
+      reactionsMap.set(v.getID(), Result.unwrap(reactionsRes));
+    }
 
     const result = accountNotes
       .filter((v) => accountsMap.has(v.getAuthorID()))
       .map((v) => {
         // biome-ignore lint/style/noNonNullAssertion: This variable is safe because it is filtered by the above filter.
         const account = accountsMap.get(v.getAuthorID())!;
+        const attachments = attachmentsMap.get(v.getID()) ?? [];
+        const reactions = reactionsMap.get(v.getID()) ?? [];
 
         return {
           id: v.getID(),
@@ -110,6 +120,20 @@ export class TimelineController {
           contents_warning_comment: v.getCwComment(),
           visibility: v.getVisibility(),
           created_at: v.getCreatedAt().toUTCString(),
+          reactions: reactions.map((reaction) => ({
+            emoji: reaction.getEmoji(),
+            reacted_by: reaction.getAccountID(),
+          })),
+          attachment_files: attachments.map((file) => ({
+            id: file.getId(),
+            name: file.getName(),
+            author_id: file.getAuthorId(),
+            hash: file.getHash(),
+            mime: file.getMime(),
+            nsfw: file.isNsfw(),
+            url: file.getUrl(),
+            thumbnail: file.getThumbnailUrl(),
+          })),
           author: {
             id: account.getID(),
             name: account.getName(),
@@ -156,18 +180,27 @@ export class TimelineController {
     if (Result.isErr(accountData)) {
       return accountData;
     }
-
     const accounts = Result.unwrap(accountData);
-
     const accountsMap = new Map<AccountID, Account>(
       accounts.map((v) => [v.getID(), v]),
     );
+
+    const attachmentsMap = new Map<NoteID, Medium[]>();
+    const reactionsMap = new Map<NoteID, Reaction[]>();
+    for (const v of accountNotes) {
+      const attachmentsRes = await this.noteModule.fetchAttachments(v.getID());
+      attachmentsMap.set(v.getID(), Result.unwrap(attachmentsRes));
+      const reactionsRes = await this.noteModule.fetchReactions(v.getID());
+      reactionsMap.set(v.getID(), Result.unwrap(reactionsRes));
+    }
 
     const result = accountNotes
       .filter((v) => accountsMap.has(v.getAuthorID()))
       .map((v) => {
         // biome-ignore lint/style/noNonNullAssertion: This variable is safe because it is filtered by the above filter.
         const account = accountsMap.get(v.getAuthorID())!;
+        const attachments = attachmentsMap.get(v.getID()) ?? [];
+        const reactions = reactionsMap.get(v.getID()) ?? [];
 
         return {
           id: v.getID(),
@@ -175,6 +208,20 @@ export class TimelineController {
           contents_warning_comment: v.getCwComment(),
           visibility: v.getVisibility(),
           created_at: v.getCreatedAt().toUTCString(),
+          reactions: reactions.map((reaction) => ({
+            emoji: reaction.getEmoji(),
+            reacted_by: reaction.getAccountID(),
+          })),
+          attachment_files: attachments.map((file) => ({
+            id: file.getId(),
+            name: file.getName(),
+            author_id: file.getAuthorId(),
+            hash: file.getHash(),
+            mime: file.getMime(),
+            nsfw: file.isNsfw(),
+            url: file.getUrl(),
+            thumbnail: file.getThumbnailUrl(),
+          })),
           author: {
             id: account.getID(),
             name: account.getName(),
