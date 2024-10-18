@@ -1,7 +1,7 @@
-import { Result } from '@mikuroxina/mini-fn';
+import { Ether, Result } from '@mikuroxina/mini-fn';
 import type { ID } from '../../id/type.js';
 import type { List } from '../model/list.js';
-import type { ListRepository } from '../model/repository.js';
+import { type ListRepository, listRepoSymbol } from '../model/repository.js';
 
 export class EditListService {
   constructor(private readonly listRepository: ListRepository) {}
@@ -55,3 +55,12 @@ export class EditListService {
     }
   }
 }
+
+export const editListSymbol = Ether.newEtherSymbol<EditListService>();
+export const editList = Ether.newEther(
+  editListSymbol,
+  ({ listRepository }) => new EditListService(listRepository),
+  {
+    listRepository: listRepoSymbol,
+  },
+);

@@ -1,13 +1,15 @@
-import { Result } from '@mikuroxina/mini-fn';
+import { Ether, Result } from '@mikuroxina/mini-fn';
 
 import type { AccountID } from '../../../accounts/model/account.js';
 import type { Note, NoteID } from '../../../notes/model/note.js';
 import { ListInternalError, ListNotFoundError } from '../../model/errors.js';
 import type { List, ListID } from '../../model/list.js';
-import type {
-  FetchAccountTimelineFilter,
-  ListRepository,
-  TimelineRepository,
+import {
+  type FetchAccountTimelineFilter,
+  type ListRepository,
+  type TimelineRepository,
+  listRepoSymbol,
+  timelineRepoSymbol,
 } from '../../model/repository.js';
 
 export class InMemoryTimelineRepository implements TimelineRepository {
@@ -93,6 +95,11 @@ export class InMemoryTimelineRepository implements TimelineRepository {
     this.data = new Map(data.map((v) => [v.getID(), v]));
   }
 }
+export const inMemoryTimelineRepo = (data?: Note[]) =>
+  Ether.newEther(
+    timelineRepoSymbol,
+    () => new InMemoryTimelineRepository(data),
+  );
 
 export class InMemoryListRepository implements ListRepository {
   private listData: Map<ListID, List>;
@@ -170,3 +177,5 @@ export class InMemoryListRepository implements ListRepository {
     this.notes = new Map(notes.map((v) => [v.getID(), v]));
   }
 }
+export const inMemoryListRepo = (data?: List[], notes?: Note[]) =>
+  Ether.newEther(listRepoSymbol, () => new InMemoryListRepository(data, notes));

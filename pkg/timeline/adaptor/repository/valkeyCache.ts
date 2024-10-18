@@ -1,13 +1,14 @@
-import { Result } from '@mikuroxina/mini-fn';
+import { Ether, Result } from '@mikuroxina/mini-fn';
 import type { Redis } from 'ioredis';
 
 import type { AccountID } from '../../../accounts/model/account.js';
 import type { Note, NoteID } from '../../../notes/model/note.js';
 import { TimelineInternalError } from '../../model/errors.js';
 import type { ListID } from '../../model/list.js';
-import type {
-  CacheObjectKey,
-  TimelineNotesCacheRepository,
+import {
+  type CacheObjectKey,
+  type TimelineNotesCacheRepository,
+  timelineNotesCacheRepoSymbol,
 } from '../../model/repository.js';
 
 export class ValkeyTimelineCacheRepository
@@ -101,3 +102,8 @@ export class ValkeyTimelineCacheRepository
     }
   }
 }
+export const valkeyTimelineCacheRepo = (redisClient: Redis) =>
+  Ether.newEther(
+    timelineNotesCacheRepoSymbol,
+    () => new ValkeyTimelineCacheRepository(redisClient),
+  );
