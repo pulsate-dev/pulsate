@@ -34,7 +34,7 @@ importers:
         version: 2.0.5
       file-type:
         specifier: ^19.0.0
-        version: 19.5.0
+        version: 19.6.0
       hono:
         specifier: ^4.0.0
         version: 4.6.5
@@ -920,8 +920,8 @@ packages:
   estree-walker@3.0.3:
     resolution: {integrity: sha512-7RUKfXgSMMkzt6ZuXmqapOurLGPPfgj6l9uRZ7lRGolvk0y2yocc35LdcxKC5PQZdn2DMqioAQ2NoWcrTKmm6g==}
 
-  file-type@19.5.0:
-    resolution: {integrity: sha512-dMuq6WWnP6BpQY0zYJNpTtQWgeCImSMG0BTIzUBXvxbwc1HWP/E7AE4UWU9XSCOPGJuOHda0HpDnwM2FW+d90A==}
+  file-type@19.6.0:
+    resolution: {integrity: sha512-VZR5I7k5wkD0HgFnMsq5hOsSc710MJMu5Nc5QYsbe38NN5iPV/XTObYLc/cpttRTf6lX538+5uO1ZQRhYibiZQ==}
     engines: {node: '>=18'}
 
   foreground-child@3.2.1:
@@ -1158,8 +1158,8 @@ packages:
     resolution: {integrity: sha512-vE7JKRyES09KiunauX7nd2Q9/L7lhok4smP9RZTDeD4MVs72Dp2qNFVz39Nz5a0FVEW0BJR6C0DYrq6unoziZA==}
     engines: {node: '>= 14.16'}
 
-  peek-readable@5.2.0:
-    resolution: {integrity: sha512-U94a+eXHzct7vAd19GH3UQ2dH4Satbng0MyYTMaQatL0pvYYL5CTPR25HBhKtecl+4bfu1/i3vC6k0hydO5Vcw==}
+  peek-readable@5.3.1:
+    resolution: {integrity: sha512-GVlENSDW6KHaXcd9zkZltB7tCLosKB/4Hg0fqBJkAoBgYG2Tn1xtMgXtSUuMU9AK/gCm/tTdT8mgAeF4YNeeqw==}
     engines: {node: '>=14.16'}
 
   picocolors@1.1.1:
@@ -1243,8 +1243,8 @@ packages:
     resolution: {integrity: sha512-iq6eVVI64nQQTRYq2KtEg2d2uU7LElhTJwsH4YzIHZshxlgZms/wIc4VoDQTlG/IvVIrBKG06CrZnp0qv7hkcQ==}
     engines: {node: '>=12'}
 
-  strtok3@8.1.0:
-    resolution: {integrity: sha512-ExzDvHYPj6F6QkSNe/JxSlBxTh3OrI6wrAIz53ulxo1c4hBJ1bT9C/JrAthEKHWG9riVH3Xzg7B03Oxty6S2Lw==}
+  strtok3@9.0.1:
+    resolution: {integrity: sha512-ERPW+XkvX9W2A+ov07iy+ZFJpVdik04GhDA4eVogiG9hpC97Kem2iucyzhFxbFRvQ5o2UckFtKZdp1hkGvnrEw==}
     engines: {node: '>=16'}
 
   supports-color@7.2.0:
@@ -2026,10 +2026,10 @@ snapshots:
     dependencies:
       '@types/estree': 1.0.6
 
-  file-type@19.5.0:
+  file-type@19.6.0:
     dependencies:
       get-stream: 9.0.1
-      strtok3: 8.1.0
+      strtok3: 9.0.1
       token-types: 6.0.0
       uint8array-extras: 1.4.0
 
@@ -2251,7 +2251,7 @@ snapshots:
 
   pathval@2.0.0: {}
 
-  peek-readable@5.2.0: {}
+  peek-readable@5.3.1: {}
 
   picocolors@1.1.1: {}
 
@@ -2365,10 +2365,10 @@ snapshots:
     dependencies:
       ansi-regex: 6.0.1
 
-  strtok3@8.1.0:
+  strtok3@9.0.1:
     dependencies:
       '@tokenizer/token': 0.3.0
-      peek-readable: 5.2.0
+      peek-readable: 5.3.1
 
   supports-color@7.2.0:
     dependencies:
