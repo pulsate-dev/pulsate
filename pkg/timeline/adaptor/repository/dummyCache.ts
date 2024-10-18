@@ -1,11 +1,12 @@
-import { Result } from '@mikuroxina/mini-fn';
+import { Ether, Result } from '@mikuroxina/mini-fn';
 
 import type { AccountID } from '../../../accounts/model/account.js';
 import type { Note, NoteID } from '../../../notes/model/note.js';
 import type { ListID } from '../../model/list.js';
-import type {
-  CacheObjectKey,
-  TimelineNotesCacheRepository,
+import {
+  type CacheObjectKey,
+  type TimelineNotesCacheRepository,
+  timelineNotesCacheRepoSymbol,
 } from '../../model/repository.js';
 
 export class InMemoryTimelineCacheRepository
@@ -84,3 +85,9 @@ export class InMemoryTimelineCacheRepository
     this.data.clear();
   }
 }
+
+export const inMemoryTimelineCacheRepo = (data: [AccountID, NoteID[]][] = []) =>
+  Ether.newEther(
+    timelineNotesCacheRepoSymbol,
+    () => new InMemoryTimelineCacheRepository(data),
+  );

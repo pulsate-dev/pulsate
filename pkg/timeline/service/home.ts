@@ -1,11 +1,13 @@
-import { Result } from '@mikuroxina/mini-fn';
+import { Ether, Result } from '@mikuroxina/mini-fn';
 
 import type { AccountID } from '../../accounts/model/account.js';
 import type { Note } from '../../notes/model/note.js';
-import type {
-  FetchHomeTimelineFilter,
-  TimelineNotesCacheRepository,
-  TimelineRepository,
+import {
+  type FetchHomeTimelineFilter,
+  type TimelineNotesCacheRepository,
+  type TimelineRepository,
+  timelineNotesCacheRepoSymbol,
+  timelineRepoSymbol,
 } from '../model/repository.js';
 
 export class HomeTimelineService {
@@ -34,3 +36,13 @@ export class HomeTimelineService {
     );
   }
 }
+export const homeTimelineSymbol = Ether.newEtherSymbol<HomeTimelineService>();
+export const homeTimeline = Ether.newEther(
+  homeTimelineSymbol,
+  ({ timelineRepository, timelineCacheRepository }) =>
+    new HomeTimelineService(timelineCacheRepository, timelineRepository),
+  {
+    timelineCacheRepository: timelineNotesCacheRepoSymbol,
+    timelineRepository: timelineRepoSymbol,
+  },
+);

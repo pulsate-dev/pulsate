@@ -1,7 +1,10 @@
 import { Ether, Option, Result } from '@mikuroxina/mini-fn';
 
 import type { AccountID } from '../../accounts/model/account.js';
-import type { AccountModuleFacade } from '../../intermodule/account.js';
+import {
+  type AccountModuleFacade,
+  accountModuleFacadeSymbol,
+} from '../../intermodule/account.js';
 import type { Note } from '../../notes/model/note.js';
 
 export interface NoteVisibilityCheckArgs {
@@ -64,6 +67,6 @@ export const noteVisibility = Ether.newEther(
   noteVisibilitySymbol,
   ({ accountModule }) => new NoteVisibilityService(accountModule),
   {
-    accountModule: Ether.newEtherSymbol<AccountModuleFacade>(),
+    accountModule: accountModuleFacadeSymbol,
   },
 );
