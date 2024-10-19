@@ -1,9 +1,11 @@
-import { Result } from '@mikuroxina/mini-fn';
+import { Ether, Result } from '@mikuroxina/mini-fn';
 import type { Note } from '../../notes/model/note.js';
 import type { ListID } from '../model/list.js';
-import type {
-  TimelineNotesCacheRepository,
-  TimelineRepository,
+import {
+  type TimelineNotesCacheRepository,
+  type TimelineRepository,
+  timelineNotesCacheRepoSymbol,
+  timelineRepoSymbol,
 } from '../model/repository.js';
 
 export class ListTimelineService {
@@ -29,3 +31,13 @@ export class ListTimelineService {
     return await this.timelineRepository.fetchListTimeline(cachedNotes);
   }
 }
+export const listTimelineSymbol = Ether.newEtherSymbol<ListTimelineService>();
+export const listTimeline = Ether.newEther(
+  listTimelineSymbol,
+  ({ timelineCacheRepo, timelineRepo }) =>
+    new ListTimelineService(timelineCacheRepo, timelineRepo),
+  {
+    timelineCacheRepo: timelineNotesCacheRepoSymbol,
+    timelineRepo: timelineRepoSymbol,
+  },
+);

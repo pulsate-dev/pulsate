@@ -76,6 +76,7 @@ const noteRepository = Ether.newEther(
   Ether.newEtherSymbol<NoteRepository>(),
   () => noteRepoObject,
 );
+export const noteModuleFacadeSymbol = Ether.newEtherSymbol<NoteModuleFacade>();
 
 export const noteModule = new NoteModuleFacade(
   Ether.runEther(
@@ -85,4 +86,8 @@ export const noteModule = new NoteModuleFacade(
       .feed(Ether.compose(noteAttachmentRepository))
       .feed(Ether.compose(reactionRepository)).value,
   ),
+);
+export const noteModuleEther = Ether.newEther(
+  noteModuleFacadeSymbol,
+  () => noteModule,
 );

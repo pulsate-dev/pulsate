@@ -9,23 +9,20 @@ import {
 } from '../adaptors/authenticateMiddleware.js';
 import { prismaClient } from '../adaptors/prisma.js';
 import { valkeyClient } from '../adaptors/valkey.js';
-import { SnowflakeIDGenerator } from '../id/mod.js';
-import {
-  accountModule,
-  dummyAccountModuleFacade,
-} from '../intermodule/account.js';
+import { clockSymbol, snowflakeIDGenerator } from '../id/mod.js';
+import { accountModule, accountModuleEther } from '../intermodule/account.js';
 import { noteModule } from '../intermodule/note.js';
 import { TimelineController } from './adaptor/controller/timeline.js';
 import {
-  InMemoryListRepository,
-  InMemoryTimelineRepository,
+  inMemoryListRepo,
+  inMemoryTimelineRepo,
 } from './adaptor/repository/dummy.js';
-import { InMemoryTimelineCacheRepository } from './adaptor/repository/dummyCache.js';
+import { inMemoryTimelineCacheRepo } from './adaptor/repository/dummyCache.js';
 import {
-  PrismaListRepository,
-  PrismaTimelineRepository,
+  prismaListRepo,
+  prismaTimelineRepo,
 } from './adaptor/repository/prisma.js';
-import { ValkeyTimelineCacheRepository } from './adaptor/repository/valkeyCache.js';
+import { valkeyTimelineCacheRepo } from './adaptor/repository/valkeyCache.js';
 import {
   ListNotFoundError,
   ListTitleTooLongError,
@@ -42,56 +39,33 @@ import {
   GetListMemberRoute,
   GetListTimelineRoute,
 } from './router.js';
-import { AccountTimelineService } from './service/account.js';
-import { CreateListService } from './service/createList.js';
-import { DeleteListService } from './service/deleteList.js';
-import { EditListService } from './service/editList.js';
-import { FetchListService } from './service/fetchList.js';
-import { FetchListMemberService } from './service/fetchMember.js';
-import { HomeTimelineService } from './service/home.js';
-import { ListTimelineService } from './service/list.js';
-import { NoteVisibilityService } from './service/noteVisibility.js';
+import { accountTimeline } from './service/account.js';
+import { createList } from './service/createList.js';
+import { deleteList } from './service/deleteList.js';
+import { editList } from './service/editList.js';
+import { fetchList } from './service/fetchList.js';
+import { fetchListMember } from './service/fetchMember.js';
+import { homeTimeline } from './service/home.js';
+import { listTimeline } from './service/list.js';
+import { noteVisibility } from './service/noteVisibility.js';
 
 const isProduction = process.env.NODE_ENV === 'production';
-const idGenerator = new SnowflakeIDGenerator(0, {
-  now: () => BigInt(Date.now()),
-});
+
+class Clock {
+  now() {
+    return BigInt(Date.now());
+  }
+}
+const clock = Ether.newEther(clockSymbol, () => new Clock());
+const idGenerator = Ether.compose(clock)(snowflakeIDGenerator(0));
 
 const timelineRepository = isProduction
-  ? new PrismaTimelineRepository(prismaClient)
-  : new InMemoryTimelineRepository();
+  ? prismaTimelineRepo(prismaClient)
+  : inMemoryTimelineRepo();
 const listRepository = isProduction
-  ? new PrismaListRepository(prismaClient)
-  : new InMemoryListRepository();
-const noteVisibilityService = new NoteVisibilityService(
-  isProduction ? accountModule : dummyAccountModuleFacade,
-);
-// ToDo: export redis client instances at adaptors package
-const timelineCacheRepository = isProduction
-  ? new ValkeyTimelineCacheRepository(valkeyClient)
-  : new InMemoryTimelineCacheRepository();
+  ? prismaListRepo(prismaClient)
+  : inMemoryListRepo();
 
-const controller = new TimelineController({
-  accountTimelineService: new AccountTimelineService({
-    noteVisibilityService: noteVisibilityService,
-    timelineRepository: timelineRepository,
-  }),
-  createListService: new CreateListService(idGenerator, listRepository),
-  editListService: new EditListService(listRepository),
-  fetchListService: new FetchListService(listRepository),
-  deleteListService: new DeleteListService(listRepository),
-  accountModule,
-  fetchMemberService: new FetchListMemberService(listRepository, accountModule),
-  listTimelineService: new ListTimelineService(
-    timelineCacheRepository,
-    timelineRepository,
-  ),
-  noteModule: noteModule,
-  homeTimeline: new HomeTimelineService(
-    timelineCacheRepository,
-    timelineRepository,
-  ),
-});
 const liftOverPromise = Ether.liftEther(Promise.monad);
 const composer = Ether.composeT(Promise.monad);
 const AuthMiddleware = await Ether.runEtherT(
@@ -99,6 +73,52 @@ const AuthMiddleware = await Ether.runEtherT(
     composer(authenticateToken),
   ).value,
 );
+const noteVisibilityService = Cat.cat(noteVisibility).feed(
+  Ether.compose(accountModuleEther),
+).value;
+
+const timelineCacheRepository = isProduction
+  ? valkeyTimelineCacheRepo(valkeyClient)
+  : inMemoryTimelineCacheRepo([]);
+
+const controller = new TimelineController({
+  accountTimelineService: Ether.runEther(
+    Cat.cat(accountTimeline)
+      .feed(Ether.compose(noteVisibilityService))
+      .feed(Ether.compose(timelineRepository)).value,
+  ),
+  createListService: Ether.runEther(
+    Cat.cat(createList)
+      .feed(Ether.compose(idGenerator))
+      .feed(Ether.compose(listRepository)).value,
+  ),
+  editListService: Ether.runEther(
+    Cat.cat(editList).feed(Ether.compose(listRepository)).value,
+  ),
+  fetchListService: Ether.runEther(
+    Cat.cat(fetchList).feed(Ether.compose(listRepository)).value,
+  ),
+  deleteListService: Ether.runEther(
+    Cat.cat(deleteList).feed(Ether.compose(listRepository)).value,
+  ),
+  accountModule,
+  fetchMemberService: Ether.runEther(
+    Cat.cat(fetchListMember)
+      .feed(Ether.compose(listRepository))
+      .feed(Ether.compose(accountModuleEther)).value,
+  ),
+  listTimelineService: Ether.runEther(
+    Cat.cat(listTimeline)
+      .feed(Ether.compose(timelineCacheRepository))
+      .feed(Ether.compose(timelineRepository)).value,
+  ),
+  noteModule: noteModule,
+  homeTimeline: Ether.runEther(
+    Cat.cat(homeTimeline)
+      .feed(Ether.compose(timelineCacheRepository))
+      .feed(Ether.compose(timelineRepository)).value,
+  ),
+});
 
 export const timeline = new OpenAPIHono<{
   Variables: AuthMiddlewareVariable;

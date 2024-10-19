@@ -86,3 +86,4 @@ export interface ListRepository {
   deleteById(listId: ListID): Promise<Result.Result<Error, void>>;
   edit(list: List): Promise<Result.Result<Error, void>>;
 }
+export const listRepoSymbol = Ether.newEtherSymbol<ListRepository>();

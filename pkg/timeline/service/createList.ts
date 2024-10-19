@@ -1,9 +1,12 @@
-import { Result } from '@mikuroxina/mini-fn';
+import { Ether, Result } from '@mikuroxina/mini-fn';
 
 import type { AccountID } from '../../accounts/model/account.js';
-import type { SnowflakeIDGenerator } from '../../id/mod.js';
+import {
+  type SnowflakeIDGenerator,
+  snowflakeIDGeneratorSymbol,
+} from '../../id/mod.js';
 import { List } from '../model/list.js';
-import type { ListRepository } from '../model/repository.js';
+import { type ListRepository, listRepoSymbol } from '../model/repository.js';
 
 export class CreateListService {
   constructor(
@@ -38,3 +41,14 @@ export class CreateListService {
     return Result.ok(list);
   }
 }
+
+export const createListSymbol = Ether.newEtherSymbol<CreateListService>();
+export const createList = Ether.newEther(
+  createListSymbol,
+  ({ idGenerator, listRepository }) =>
+    new CreateListService(idGenerator, listRepository),
+  {
+    idGenerator: snowflakeIDGeneratorSymbol,
+    listRepository: listRepoSymbol,
+  },
+);

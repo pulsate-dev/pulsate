@@ -1,4 +1,4 @@
-import { Option, Result } from '@mikuroxina/mini-fn';
+import { Ether, Option, Result } from '@mikuroxina/mini-fn';
 import { Prisma, type PrismaClient } from '@prisma/client';
 
 import type { AccountID } from '../../../accounts/model/account.js';
@@ -13,10 +13,12 @@ import {
   TimelineInternalError,
 } from '../../model/errors.js';
 import { List, type ListID } from '../../model/list.js';
-import type {
-  FetchAccountTimelineFilter,
-  ListRepository,
-  TimelineRepository,
+import {
+  type FetchAccountTimelineFilter,
+  type ListRepository,
+  type TimelineRepository,
+  listRepoSymbol,
+  timelineRepoSymbol,
 } from '../../model/repository.js';
 
 export class PrismaTimelineRepository implements TimelineRepository {
@@ -114,6 +116,11 @@ export class PrismaTimelineRepository implements TimelineRepository {
     return Result.ok(this.deserialize(listNotes));
   }
 }
+export const prismaTimelineRepo = (client: PrismaClient) =>
+  Ether.newEther(
+    timelineRepoSymbol,
+    () => new PrismaTimelineRepository(client),
+  );
 
 type DeserializeListArgs =
   | (Prisma.PromiseReturnType<typeof prismaClient.list.findUnique> & {
@@ -328,3 +335,5 @@ export class PrismaListRepository implements ListRepository {
     }
   }
 }
+export const prismaListRepo = (client: PrismaClient) =>
+  Ether.newEther(listRepoSymbol, () => new PrismaListRepository(client));
