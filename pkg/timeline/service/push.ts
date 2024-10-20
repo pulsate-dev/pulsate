@@ -41,6 +41,13 @@ export class PushTimelineService {
       return followers;
     }
     const unwrappedFollowers = Result.unwrap(followers);
+    // NOTE: add note to author's home timeline
+    unwrappedFollowers.push({
+      id: note.getAuthorID(),
+      name: '@@',
+      nickname: '',
+      bio: '',
+    });
 
     /*
     PUBLIC, HOME, FOLLOWER: OK
