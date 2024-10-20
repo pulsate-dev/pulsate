@@ -405,6 +405,102 @@
               "description": "Note created date",
               "example": "2021-01-01T00:00:00Z"
             },
+            "reactions": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "emoji": {
+                    "anyOf": [
+                      {
+                        "type": "string",
+                        "pattern": "[\\u2700-\\u27BF]|[\\uE000-\\uF8FF]|\\uD83C[\\uDC00-\\uDFFF]|\\uD83D[\\uDC00-\\uDFFF]|[\\u2011-\\u26FF]|\\uD83E[\\uDD10-\\uDDFF]"
+                      },
+                      {
+                        "type": "string",
+                        "pattern": "<:(\\w+):(\\d+)>"
+                      }
+                    ],
+                    "description": "Reaction Emoji (Unicode or Custom Emoji)",
+                    "examples": [
+                      "🎉",
+                      "<:custom_emoji:123456789>"
+                    ]
+                  },
+                  "reacted_by": {
+                    "type": "string",
+                    "description": "Reacted account ID",
+                    "example": "38477395"
+                  }
+                },
+                "required": [
+                  "emoji",
+                  "reacted_by"
+                ]
+              },
+              "description": "Reactions"
+            },
+            "attachment_files": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "id": {
+                    "type": "string",
+                    "description": "attachment Medium id",
+                    "example": "39783475"
+                  },
+                  "name": {
+                    "type": "string",
+                    "description": "attachment filename",
+                    "example": "image.jpg"
+                  },
+                  "author_id": {
+                    "type": "string",
+                    "description": "attachment author account id",
+                    "example": "309823457"
+                  },
+                  "hash": {
+                    "type": "string",
+                    "description": "attachment medium blurhash",
+                    "example": "e9f*5oin{dn"
+                  },
+                  "mime": {
+                    "type": "string",
+                    "description": "attachment medium mime type",
+                    "example": "image/jpeg"
+                  },
+                  "nsfw": {
+                    "type": "boolean",
+                    "default": false,
+                    "description": "if true, attachment is nsfw"
+                  },
+                  "url": {
+                    "type": "string",
+                    "format": "uri",
+                    "description": "attachment medium url",
+                    "example": "https://images.example.com/image.webp"
+                  },
+                  "thumbnail": {
+                    "type": "string",
+                    "description": "attachment thumbnail url",
+                    "example": "https://images.example.com/image_thumbnail.webp"
+                  }
+                },
+                "required": [
+                  "id",
+                  "name",
+                  "author_id",
+                  "hash",
+                  "mime",
+                  "nsfw",
+                  "url",
+                  "thumbnail"
+                ]
+              },
+              "maxItems": 16,
+              "description": "Note Attachment Media"
+            },
             "author": {
               "type": "object",
               "properties": {
@@ -451,6 +547,8 @@
             "contents_warning_comment",
             "visibility",
             "created_at",
+            "reactions",
+            "attachment_files",
             "author"
           ]
         }
@@ -3344,6 +3442,78 @@
             }
           }
         }
+      },
+      "delete": {
+        "tags": [
+          "reaction"
+        ],
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "schema": {
+              "type": "string",
+              "description": "Note ID",
+              "example": "1"
+            },
+            "required": true,
+            "name": "id",
+            "in": "path"
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "OK"
+          },
+          "404": {
+            "description": "Reaction not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string",
+                      "enum": [
+                        "NOTE_NOT_FOUND"
+                      ],
+                      "description": "Note not found"
+                    }
+                  },
+                  "required": [
+                    "error"
+                  ]
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string",
+                      "enum": [
+                        "INTERNAL_ERROR"
+                      ],
+                      "description": "Internal Error"
+                    }
+                  },
+                  "required": [
+                    "error"
+                  ],
+                  "description": "Internal Error"
+                }
+              }
+            }
+          }
+        }
       }
     },
     "/notes/:id/bookmark": {
@@ -3692,9 +3862,300 @@
                   "properties": {
                     "error": {
                       "type": "string",
-                      "default": "",
-                      "description": "Error code",
-                      "example": "TEST_ERROR_CODE"
+                      "enum": [
+                        "FILE_NOT_FOUND"
+                      ],
+                      "description": "File not found"
+                    }
+                  },
+                  "required": [
+                    "error"
+                  ]
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string",
+                      "enum": [
+                        "INTERNAL_ERROR"
+                      ],
+                      "description": "Internal server error."
+                    }
+                  },
+                  "required": [
+                    "error"
+                  ]
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/timeline/home": {
+      "get": {
+        "tags": [
+          "timeline"
+        ],
+        "parameters": [
+          {
+            "schema": {
+              "type": "boolean",
+              "description": "If true, only return notes with attachment"
+            },
+            "required": false,
+            "name": "has_attachment",
+            "in": "query"
+          },
+          {
+            "schema": {
+              "type": "boolean",
+              "description": "If true, only return notes without sensitive content"
+            },
+            "required": false,
+            "name": "no_nsfw",
+            "in": "query"
+          },
+          {
+            "schema": {
+              "type": "string",
+              "description": "Return notes before this note ID. specified note ID is not included"
+            },
+            "required": false,
+            "name": "before_id",
+            "in": "query"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "id": {
+                        "type": "string",
+                        "description": "Note ID",
+                        "example": "38477395"
+                      },
+                      "content": {
+                        "type": "string",
+                        "description": "Note content",
+                        "example": "hello world!"
+                      },
+                      "contents_warning_comment": {
+                        "type": "string",
+                        "description": "Contents warning comment",
+                        "example": "(if length not 0) This note contains sensitive content"
+                      },
+                      "visibility": {
+                        "type": "string",
+                        "description": "Note visibility (PUBLIC/HOME/FOLLOWERS/DIRECT)",
+                        "example": "PUBLIC"
+                      },
+                      "created_at": {
+                        "type": "string",
+                        "format": "date-time",
+                        "description": "Note created date",
+                        "example": "2021-01-01T00:00:00Z"
+                      },
+                      "reactions": {
+                        "type": "array",
+                        "items": {
+                          "type": "object",
+                          "properties": {
+                            "emoji": {
+                              "anyOf": [
+                                {
+                                  "type": "string",
+                                  "pattern": "[\\u2700-\\u27BF]|[\\uE000-\\uF8FF]|\\uD83C[\\uDC00-\\uDFFF]|\\uD83D[\\uDC00-\\uDFFF]|[\\u2011-\\u26FF]|\\uD83E[\\uDD10-\\uDDFF]"
+                                },
+                                {
+                                  "type": "string",
+                                  "pattern": "<:(\\w+):(\\d+)>"
+                                }
+                              ],
+                              "description": "Reaction Emoji (Unicode or Custom Emoji)",
+                              "examples": [
+                                "🎉",
+                                "<:custom_emoji:123456789>"
+                              ]
+                            },
+                            "reacted_by": {
+                              "type": "string",
+                              "description": "Reacted account ID",
+                              "example": "38477395"
+                            }
+                          },
+                          "required": [
+                            "emoji",
+                            "reacted_by"
+                          ]
+                        },
+                        "description": "Reactions"
+                      },
+                      "attachment_files": {
+                        "type": "array",
+                        "items": {
+                          "type": "object",
+                          "properties": {
+                            "id": {
+                              "type": "string",
+                              "description": "attachment Medium id",
+                              "example": "39783475"
+                            },
+                            "name": {
+                              "type": "string",
+                              "description": "attachment filename",
+                              "example": "image.jpg"
+                            },
+                            "author_id": {
+                              "type": "string",
+                              "description": "attachment author account id",
+                              "example": "309823457"
+                            },
+                            "hash": {
+                              "type": "string",
+                              "description": "attachment medium blurhash",
+                              "example": "e9f*5oin{dn"
+                            },
+                            "mime": {
+                              "type": "string",
+                              "description": "attachment medium mime type",
+                              "example": "image/jpeg"
+                            },
+                            "nsfw": {
+                              "type": "boolean",
+                              "default": false,
+                              "description": "if true, attachment is nsfw"
+                            },
+                            "url": {
+                              "type": "string",
+                              "format": "uri",
+                              "description": "attachment medium url",
+                              "example": "https://images.example.com/image.webp"
+                            },
+                            "thumbnail": {
+                              "type": "string",
+                              "description": "attachment thumbnail url",
+                              "example": "https://images.example.com/image_thumbnail.webp"
+                            }
+                          },
+                          "required": [
+                            "id",
+                            "name",
+                            "author_id",
+                            "hash",
+                            "mime",
+                            "nsfw",
+                            "url",
+                            "thumbnail"
+                          ]
+                        },
+                        "maxItems": 16,
+                        "description": "Note Attachment Media"
+                      },
+                      "author": {
+                        "type": "object",
+                        "properties": {
+                          "id": {
+                            "type": "string"
+                          },
+                          "name": {
+                            "type": "string"
+                          },
+                          "display_name": {
+                            "type": "string"
+                          },
+                          "bio": {
+                            "type": "string"
+                          },
+                          "avatar": {
+                            "type": "string"
+                          },
+                          "header": {
+                            "type": "string"
+                          },
+                          "followed_count": {
+                            "type": "number"
+                          },
+                          "following_count": {
+                            "type": "number"
+                          }
+                        },
+                        "required": [
+                          "id",
+                          "name",
+                          "display_name",
+                          "bio",
+                          "avatar",
+                          "header",
+                          "followed_count",
+                          "following_count"
+                        ]
+                      }
+                    },
+                    "required": [
+                      "id",
+                      "content",
+                      "contents_warning_comment",
+                      "visibility",
+                      "created_at",
+                      "reactions",
+                      "attachment_files",
+                      "author"
+                    ]
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Nothing left",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string",
+                      "enum": [
+                        "NOTHING_LEFT"
+                      ],
+                      "description": "No more notes exist"
+                    }
+                  },
+                  "required": [
+                    "error"
+                  ]
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string",
+                      "enum": [
+                        "INTERNAL_ERROR"
+                      ],
+                      "description": "Internal server error"
                     }
                   },
                   "required": [
@@ -3760,6 +4221,28 @@
               }
             }
           },
+          "403": {
+            "description": "You are blocked by specified account",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string",
+                      "enum": [
+                        "YOU_ARE_BLOCKED"
+                      ],
+                      "description": "You are blocked by the account"
+                    }
+                  },
+                  "required": [
+                    "error"
+                  ]
+                }
+              }
+            }
+          },
           "404": {
             "description": "Account not found",
             "content": {
@@ -3768,15 +4251,53 @@
                   "type": "object",
                   "properties": {
                     "error": {
-                      "type": "string",
-                      "default": "",
-                      "description": "Error code",
-                      "example": "TEST_ERROR_CODE"
+                      "anyOf": [
+                        {
+                          "type": "string",
+                          "enum": [
+                            "ACCOUNT_NOT_FOUND"
+                          ],
+                          "description": "Account not found."
+                        },
+                        {
+                          "type": "string",
+                          "enum": [
+                            "NOTHING_LEFT"
+                          ],
+                          "description": "No more notes exist"
+                        }
+                      ],
+                      "description": "Error codes",
+                      "example": "ACCOUNT_NOT_FOUND"
                     }
                   },
                   "required": [
                     "error"
-                  ]
+                  ],
+                  "description": "Account not found"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string",
+                      "enum": [
+                        "INTERNAL_ERROR"
+                      ],
+                      "description": "Internal server error"
+                    }
+                  },
+                  "required": [
+                    "error"
+                  ],
+                  "description": "Internal server error"
                 }
               }
             }
@@ -3845,15 +4366,52 @@
                   "type": "object",
                   "properties": {
                     "error": {
-                      "type": "string",
-                      "default": "",
-                      "description": "Error code",
-                      "example": "TEST_ERROR_CODE"
+                      "anyOf": [
+                        {
+                          "type": "string",
+                          "enum": [
+                            "NOTHING_LEFT"
+                          ],
+                          "description": "No more notes exist"
+                        },
+                        {
+                          "type": "string",
+                          "enum": [
+                            "LIST_NOT_FOUND"
+                          ],
+                          "description": "List not found"
+                        }
+                      ],
+                      "description": "Error codes",
+                      "example": "LIST_NOT_FOUND"
                     }
                   },
                   "required": [
                     "error"
                   ]
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string",
+                      "enum": [
+                        "INTERNAL_ERROR"
+                      ],
+                      "description": "Internal server error"
+                    }
+                  },
+                  "required": [
+                    "error"
+                  ],
+                  "description": "Internal server error"
                 }
               }
             }
@@ -3892,7 +4450,7 @@
             }
           },
           "400": {
-            "description": "TITLE_TOO_LONG",
+            "description": "Bad request",
             "content": {
               "application/json": {
                 "schema": {
@@ -3900,14 +4458,39 @@
                   "properties": {
                     "error": {
                       "type": "string",
-                      "default": "",
-                      "description": "Error code",
-                      "example": "TEST_ERROR_CODE"
+                      "enum": [
+                        "TITLE_TOO_LONG"
+                      ],
+                      "description": "List title is too long"
                     }
                   },
                   "required": [
                     "error"
-                  ]
+                  ],
+                  "description": "List title too long"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string",
+                      "enum": [
+                        "INTERNAL_ERROR"
+                      ],
+                      "description": "Internal server error"
+                    }
+                  },
+                  "required": [
+                    "error"
+                  ],
+                  "description": "Internal server error"
                 }
               }
             }
@@ -3938,7 +4521,7 @@
             "description": "OK"
           },
           "404": {
-            "description": "LIST_NOTFOUND",
+            "description": "List not found",
             "content": {
               "application/json": {
                 "schema": {
@@ -3946,14 +4529,39 @@
                   "properties": {
                     "error": {
                       "type": "string",
-                      "default": "",
-                      "description": "Error code",
-                      "example": "TEST_ERROR_CODE"
+                      "enum": [
+                        "LIST_NOT_FOUND"
+                      ],
+                      "description": "List not found"
                     }
                   },
                   "required": [
                     "error"
-                  ]
+                  ],
+                  "description": "List not found"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string",
+                      "enum": [
+                        "INTERNAL_ERROR"
+                      ],
+                      "description": "Internal server error"
+                    }
+                  },
+                  "required": [
+                    "error"
+                  ],
+                  "description": "Internal server error"
                 }
               }
             }
@@ -4002,7 +4610,7 @@
             }
           },
           "400": {
-            "description": "TITLE_TOO_LONG",
+            "description": "List title too long",
             "content": {
               "application/json": {
                 "schema": {
@@ -4010,9 +4618,33 @@
                   "properties": {
                     "error": {
                       "type": "string",
-                      "default": "",
-                      "description": "Error code",
-                      "example": "TEST_ERROR_CODE"
+                      "enum": [
+                        "TITLE_TOO_LONG"
+                      ],
+                      "description": "List title is too long"
+                    }
+                  },
+                  "required": [
+                    "error"
+                  ],
+                  "description": "List title too long"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "List not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string",
+                      "enum": [
+                        "LIST_NOT_FOUND"
+                      ],
+                      "description": "List not found"
                     }
                   },
                   "required": [
@@ -4022,8 +4654,8 @@
               }
             }
           },
-          "404": {
-            "description": "LIST_NOTFOUND",
+          "500": {
+            "description": "Internal error",
             "content": {
               "application/json": {
                 "schema": {
@@ -4031,14 +4663,16 @@
                   "properties": {
                     "error": {
                       "type": "string",
-                      "default": "",
-                      "description": "Error code",
-                      "example": "TEST_ERROR_CODE"
+                      "enum": [
+                        "INTERNAL_ERROR"
+                      ],
+                      "description": "Internal server error"
                     }
                   },
                   "required": [
                     "error"
-                  ]
+                  ],
+                  "description": "Internal server error"
                 }
               }
             }
@@ -4076,7 +4710,7 @@
             }
           },
           "404": {
-            "description": "LIST_NOTFOUND",
+            "description": "List not found",
             "content": {
               "application/json": {
                 "schema": {
@@ -4084,14 +4718,39 @@
                   "properties": {
                     "error": {
                       "type": "string",
-                      "default": "",
-                      "description": "Error code",
-                      "example": "TEST_ERROR_CODE"
+                      "enum": [
+                        "LIST_NOT_FOUND"
+                      ],
+                      "description": "List not found"
                     }
                   },
                   "required": [
                     "error"
-                  ]
+                  ],
+                  "description": "List not found"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string",
+                      "enum": [
+                        "INTERNAL_ERROR"
+                      ],
+                      "description": "Internal server error"
+                    }
+                  },
+                  "required": [
+                    "error"
+                  ],
+                  "description": "Internal server error"
                 }
               }
             }
@@ -4116,7 +4775,7 @@
             }
           },
           "404": {
-            "description": "LIST_NOTFOUND",
+            "description": "List not found",
             "content": {
               "application/json": {
                 "schema": {
@@ -4124,14 +4783,39 @@
                   "properties": {
                     "error": {
                       "type": "string",
-                      "default": "",
-                      "description": "Error code",
-                      "example": "TEST_ERROR_CODE"
+                      "enum": [
+                        "LIST_NOT_FOUND"
+                      ],
+                      "description": "List not found"
                     }
                   },
                   "required": [
                     "error"
-                  ]
+                  ],
+                  "description": "List not found"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string",
+                      "enum": [
+                        "INTERNAL_ERROR"
+                      ],
+                      "description": "Internal server error"
+                    }
+                  },
+                  "required": [
+                    "error"
+                  ],
+                  "description": "Internal server error"
                 }
               }
             }
