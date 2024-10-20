@@ -337,6 +337,54 @@ export const CreateReactionRoute = createRoute({
   },
 });
 
+export const DeleteReactionRoute = createRoute({
+  method: 'delete',
+  tags: ['reaction'],
+  path: '/notes/:id/reaction',
+  security: [
+    {
+      bearer: [],
+    },
+  ],
+  request: {
+    params: z.object({
+      id: z.string().openapi({
+        description: 'Note ID',
+        example: '1',
+      }),
+    }),
+  },
+  responses: {
+    204: {
+      description: 'OK',
+    },
+    404: {
+      description: 'Reaction not found',
+      content: {
+        'application/json': {
+          schema: z.object({
+            error: NoteNotFound,
+          }),
+        },
+      },
+    },
+    500: {
+      description: 'Internal Server Error',
+      content: {
+        'application/json': {
+          schema: z
+            .object({
+              error: NoteInternal,
+            })
+            .openapi({
+              description: 'Internal Error',
+            }),
+        },
+      },
+    },
+  },
+});
+
 export const CreateBookmarkRoute = createRoute({
   method: 'post',
   tags: ['bookmark'],

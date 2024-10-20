@@ -408,7 +408,7 @@ export class PrismaReactionRepository implements ReactionRepository {
       const res = await this.client.reaction.findMany({
         where: {
           reactedToId: id,
-          deletedAt: undefined,
+          deletedAt: null,
         },
       });
 
@@ -422,15 +422,12 @@ export class PrismaReactionRepository implements ReactionRepository {
     Result.Result<Error, void>
   > {
     try {
-      await this.client.reaction.update({
+      await this.client.reaction.delete({
         where: {
           reactedById_reactedToId: {
             reactedById: id.accountID,
             reactedToId: id.noteID,
           },
-        },
-        data: {
-          deletedAt: new Date(),
         },
       });
       return Result.ok(undefined);

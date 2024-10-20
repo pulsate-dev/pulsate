@@ -3,6 +3,7 @@ import { Result } from '@mikuroxina/mini-fn';
 import type { AccountID } from '../../../accounts/model/account.js';
 import type { NoteID } from '../../model/note.js';
 import type { CreateReactionService } from '../../service/createReaction.js';
+import type { DeleteReactionService } from '../../service/deleteReaction.js';
 import type { FetchService } from '../../service/fetch.js';
 import type { CreateReactionResponseSchema } from '../validator/schema.js';
 
@@ -10,6 +11,7 @@ export class ReactionController {
   constructor(
     private readonly createReactionService: CreateReactionService,
     private readonly fetchNoteService: FetchService,
+    private readonly deleteReactionService: DeleteReactionService,
   ) {}
 
   async create(
@@ -58,5 +60,15 @@ export class ReactionController {
       })),
       created_at: note.getCreatedAt().toUTCString(),
     });
+  }
+
+  async delete(
+    noteID: string,
+    accountID: string,
+  ): Promise<Result.Result<Error, void>> {
+    return this.deleteReactionService.handle(
+      noteID as NoteID,
+      accountID as AccountID,
+    );
   }
 }

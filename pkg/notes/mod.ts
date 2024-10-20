@@ -48,6 +48,7 @@ import {
   CreateNoteRoute,
   CreateReactionRoute,
   DeleteBookmarkRoute,
+  DeleteReactionRoute,
   GetNoteRoute,
   RenoteRoute,
 } from './router.js';
@@ -55,6 +56,7 @@ import { CreateService } from './service/create.js';
 import { CreateBookmarkService } from './service/createBookmark.js';
 import { CreateReactionService } from './service/createReaction.js';
 import { DeleteBookmarkService } from './service/deleteBookmark.js';
+import { DeleteReactionService } from './service/deleteReaction.js';
 import { FetchService } from './service/fetch.js';
 import { FetchBookmarkService } from './service/fetchBookmark.js';
 import { RenoteService } from './service/renote.js';
@@ -137,9 +139,11 @@ const createReactionService = new CreateReactionService(
   reactionRepository,
   noteRepository,
 );
+const deleteReactionService = new DeleteReactionService(reactionRepository);
 const reactionController = new ReactionController(
   createReactionService,
   fetchService,
+  deleteReactionService,
 );
 
 noteHandlers.openAPIRegistry.registerComponent('securitySchemes', 'Bearer', {
@@ -294,6 +298,27 @@ noteHandlers.openapi(CreateReactionRoute, async (c) => {
   }
 
   return c.json(Result.unwrap(res), 200);
+});
+
+noteHandlers[DeleteReactionRoute.method](
+  DeleteReactionRoute.path,
+  AuthMiddleware.handle({ forceAuthorized: true }),
+);
+noteHandlers.openapi(DeleteReactionRoute, async (c) => {
+  const { id } = c.req.valid('param');
+  const accountID = Option.unwrap(c.get('accountID'));
+
+  const res = await reactionController.delete(id, accountID);
+
+  if (Result.isErr(res)) {
+    const error = Result.unwrapErr(res);
+    if (error instanceof NoteNotFoundError) {
+      return c.json({ error: 'NOTE_NOT_FOUND' as const }, 404);
+    }
+    return c.json({ error: 'INTERNAL_ERROR' as const }, 500);
+  }
+
+  return new Response(null, { status: 204 });
 });
 
 noteHandlers[CreateBookmarkRoute.method](
