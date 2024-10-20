@@ -39,6 +39,7 @@ import {
   NoteEmojiNotFoundError,
   NoteNoDestinationError,
   NoteNotFoundError,
+  NoteNotReactedYetError,
   NoteTooLongContentsError,
   NoteTooManyAttachmentsError,
   NoteVisibilityInvalidError,
@@ -312,8 +313,8 @@ noteHandlers.openapi(DeleteReactionRoute, async (c) => {
 
   if (Result.isErr(res)) {
     const error = Result.unwrapErr(res);
-    if (error instanceof NoteNotFoundError) {
-      return c.json({ error: 'NOTE_NOT_FOUND' as const }, 404);
+    if (error instanceof NoteNotReactedYetError) {
+      return c.json({ error: 'NOT_REACTED' as const }, 404);
     }
     return c.json({ error: 'INTERNAL_ERROR' as const }, 500);
   }

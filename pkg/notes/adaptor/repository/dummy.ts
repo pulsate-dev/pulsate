@@ -3,7 +3,7 @@ import { Option, Result } from '@mikuroxina/mini-fn';
 import type { AccountID } from '../../../accounts/model/account.js';
 import type { Medium, MediumID } from '../../../drive/model/medium.js';
 import { Bookmark } from '../../model/bookmark.js';
-import { NoteNotFoundError } from '../../model/errors.js';
+import { NoteNotReactedYetError } from '../../model/errors.js';
 import type { Note, NoteID } from '../../model/note.js';
 import { Reaction } from '../../model/reaction.js';
 import type {
@@ -267,7 +267,7 @@ export class InMemoryReactionRepository implements ReactionRepository {
   > {
     if (!this.reactions.has(this.compositeID(id)))
       return Result.err(
-        new NoteNotFoundError('reaction not found', { cause: null }),
+        new NoteNotReactedYetError('reaction not found', { cause: null }),
       );
 
     this.reactions.delete(this.compositeID(id));

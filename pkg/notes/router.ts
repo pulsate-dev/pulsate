@@ -7,6 +7,7 @@ import {
   EmojiNotFound,
   InvalidVisibility,
   NoDestination,
+  NotReacted,
   NoteInternal,
   NoteNotFound,
   TooManyAttachments,
@@ -363,7 +364,7 @@ export const DeleteReactionRoute = createRoute({
       content: {
         'application/json': {
           schema: z.object({
-            error: NoteNotFound,
+            error: NotReacted,
           }),
         },
       },
