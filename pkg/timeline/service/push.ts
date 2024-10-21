@@ -57,13 +57,18 @@ export class PushTimelineService {
     }
 
     // ToDo: bulk insert
-    const res = await Promise.all(
-      unwrappedFollowers.map((v) => {
+    const res = await Promise.all([
+      ...unwrappedFollowers.map((v) => {
         return this.timelineNotesCacheRepository.addNotesToHomeTimeline(v.id, [
           note,
         ]);
       }),
-    );
+      // NOTE: add note to author's home timeline
+      this.timelineNotesCacheRepository.addNotesToHomeTimeline(
+        note.getAuthorID(),
+        [note],
+      ),
+    ]);
     return res.find(Result.isErr) ?? Result.ok(undefined);
   }
 

@@ -55,6 +55,17 @@ describe('PushTimelineService', () => {
     expect(Result.unwrap(res)).toBe(undefined);
   });
 
+  it('push to author home timeline', async () => {
+    const res = await pushTimelineService.handle(dummyPublicNote);
+    const homeTimeline = await timelineCacheRepository.getHomeTimeline(
+      '100' as AccountID,
+    );
+
+    expect(Result.unwrap(res)).toBe(undefined);
+    expect(Result.isErr(homeTimeline)).toBe(false);
+    expect(Result.unwrap(homeTimeline)).toEqual(['1' as NoteID]);
+  });
+
   it('push to list', async () => {
     const res = await pushTimelineService.handle(dummyPublicNote);
     const listTimeline = await timelineCacheRepository.getListTimeline(
