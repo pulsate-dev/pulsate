@@ -9,30 +9,30 @@ import {
 } from '../adaptors/authenticateMiddleware.js';
 import { prismaClient } from '../adaptors/prisma.js';
 import { DriveController } from './adaptor/controller/drive.js';
-import { InMemoryMediaRepository } from './adaptor/repository/dummy.js';
-import { PrismaMediaRepository } from './adaptor/repository/prisma.js';
+import { inMemoryMediaRepo } from './adaptor/repository/dummy.js';
+import { prismaMediaRepo } from './adaptor/repository/prisma.js';
 import { MediaNotFoundError } from './model/errors.js';
 import { GetMediaRoute } from './router.js';
-import { FetchMediaService } from './service/fetch.js';
+import { fetchMediaService } from './service/fetch.js';
 
 const isProduction = process.env.NODE_ENV === 'production';
 const composer = Ether.composeT(Promise.monad);
-const liftOverPromise = <const D extends Record<string, symbol>, T>(
-  ether: Ether.Ether<D, T>,
-): Ether.EtherT<D, Promise.PromiseHkt, T> => ({
-  ...ether,
-  handler: (resolved) => Promise.pure(ether.handler(resolved)),
-});
+const liftOverPromise = Ether.liftEther(Promise.monad);
 const AuthMiddleware = await Ether.runEtherT(
   Cat.cat(liftOverPromise(authenticateMiddleware)).feed(
     composer(authenticateToken),
   ).value,
 );
+
 const mediaRepository = isProduction
-  ? new PrismaMediaRepository(prismaClient)
-  : new InMemoryMediaRepository([]);
-const fetchService = new FetchMediaService(mediaRepository);
-const controller = new DriveController(fetchService);
+  ? prismaMediaRepo(prismaClient)
+  : inMemoryMediaRepo([]);
+
+const controller = new DriveController(
+  Ether.runEther(
+    Cat.cat(fetchMediaService).feed(Ether.compose(mediaRepository)).value,
+  ),
+);
 
 export const drive = new OpenAPIHono<{
   Variables: AuthMiddlewareVariable;

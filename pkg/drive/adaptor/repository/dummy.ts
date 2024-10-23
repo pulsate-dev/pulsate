@@ -1,8 +1,11 @@
-import { Option, Result } from '@mikuroxina/mini-fn';
+import { Ether, Option, Result } from '@mikuroxina/mini-fn';
 
 import type { AccountID } from '../../../accounts/model/account.js';
 import type { Medium, MediumID } from '../../model/medium.js';
-import type { MediaRepository } from '../../model/repository.js';
+import {
+  type MediaRepository,
+  mediaRepoSymbol,
+} from '../../model/repository.js';
 
 export class InMemoryMediaRepository implements MediaRepository {
   private readonly data: Map<string, Medium> = new Map();
@@ -33,3 +36,5 @@ export class InMemoryMediaRepository implements MediaRepository {
     return Option.some(res);
   }
 }
+export const inMemoryMediaRepo = (media: Medium[]) =>
+  Ether.newEther(mediaRepoSymbol, () => new InMemoryMediaRepository(media));

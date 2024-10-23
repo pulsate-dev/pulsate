@@ -10,7 +10,11 @@ import {
 import { prismaClient } from '../adaptors/prisma.js';
 import { valkeyClient } from '../adaptors/valkey.js';
 import { clockSymbol, snowflakeIDGenerator } from '../id/mod.js';
-import { accountModule, accountModuleEther } from '../intermodule/account.js';
+import {
+  accountModule,
+  accountModuleEther,
+  dummyAccountModuleFacade,
+} from '../intermodule/account.js';
 import { noteModule } from '../intermodule/note.js';
 import { TimelineController } from './adaptor/controller/timeline.js';
 import {
@@ -74,7 +78,9 @@ const AuthMiddleware = await Ether.runEtherT(
   ).value,
 );
 const noteVisibilityService = Cat.cat(noteVisibility).feed(
-  Ether.compose(accountModuleEther),
+  Ether.compose(
+    accountModuleEther(isProduction ? accountModule : dummyAccountModuleFacade),
+  ),
 ).value;
 
 const timelineCacheRepository = isProduction
@@ -101,11 +107,17 @@ const controller = new TimelineController({
   deleteListService: Ether.runEther(
     Cat.cat(deleteList).feed(Ether.compose(listRepository)).value,
   ),
-  accountModule,
+  accountModule: isProduction ? accountModule : dummyAccountModuleFacade,
   fetchMemberService: Ether.runEther(
     Cat.cat(fetchListMember)
       .feed(Ether.compose(listRepository))
-      .feed(Ether.compose(accountModuleEther)).value,
+      .feed(
+        Ether.compose(
+          accountModuleEther(
+            isProduction ? accountModule : dummyAccountModuleFacade,
+          ),
+        ),
+      ).value,
   ),
   listTimelineService: Ether.runEther(
     Cat.cat(listTimeline)
