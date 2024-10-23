@@ -1,4 +1,4 @@
-import { Result } from '@mikuroxina/mini-fn';
+import { Ether, Result } from '@mikuroxina/mini-fn';
 import type { Note } from '../notes/model/note.js';
 
 import { prismaClient } from '../adaptors/prisma.js';
@@ -28,6 +28,11 @@ export class TimelineModuleFacade {
     return Result.ok(undefined);
   }
 }
+export const timelineModuleFacadeSymbol =
+  Ether.newEtherSymbol<TimelineModuleFacade>();
+export const timelineModuleFacadeEther = (
+  timelineModule: TimelineModuleFacade,
+) => Ether.newEther(timelineModuleFacadeSymbol, () => timelineModule);
 
 export const timelineModuleFacade = new TimelineModuleFacade(
   new PushTimelineService(

@@ -1,9 +1,15 @@
-import { Option, Result } from '@mikuroxina/mini-fn';
+import { Ether, Option, Result } from '@mikuroxina/mini-fn';
 
 import type { AccountID } from '../../accounts/model/account.js';
 import type { MediumID } from '../../drive/model/medium.js';
-import type { SnowflakeIDGenerator } from '../../id/mod.js';
-import type { TimelineModuleFacade } from '../../intermodule/timeline.js';
+import {
+  type SnowflakeIDGenerator,
+  snowflakeIDGeneratorSymbol,
+} from '../../id/mod.js';
+import {
+  type TimelineModuleFacade,
+  timelineModuleFacadeSymbol,
+} from '../../intermodule/timeline.js';
 import {
   NoteInternalError,
   NoteNoDestinationError,
@@ -11,9 +17,11 @@ import {
   NoteTooManyAttachmentsError,
 } from '../model/errors.js';
 import { Note, type NoteID, type NoteVisibility } from '../model/note.js';
-import type {
-  NoteAttachmentRepository,
-  NoteRepository,
+import {
+  type NoteAttachmentRepository,
+  type NoteRepository,
+  noteAttachmentRepoSymbol,
+  noteRepoSymbol,
 } from '../model/repository.js';
 
 export class CreateService {
@@ -90,3 +98,20 @@ export class CreateService {
     private readonly timelineModule: TimelineModuleFacade,
   ) {}
 }
+export const createServiceSymbol = Ether.newEtherSymbol<CreateService>();
+export const createService = Ether.newEther(
+  createServiceSymbol,
+  ({ noteRepository, idGenerator, noteAttachmentRepository, timelineModule }) =>
+    new CreateService(
+      noteRepository,
+      idGenerator,
+      noteAttachmentRepository,
+      timelineModule,
+    ),
+  {
+    noteRepository: noteRepoSymbol,
+    idGenerator: snowflakeIDGeneratorSymbol,
+    noteAttachmentRepository: noteAttachmentRepoSymbol,
+    timelineModule: timelineModuleFacadeSymbol,
+  },
+);

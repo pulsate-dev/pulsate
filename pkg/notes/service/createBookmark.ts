@@ -1,4 +1,4 @@
-import { Option, Result } from '@mikuroxina/mini-fn';
+import { Ether, Option, Result } from '@mikuroxina/mini-fn';
 
 import type { AccountID } from '../../accounts/model/account.js';
 import {
@@ -6,9 +6,11 @@ import {
   NoteNotFoundError,
 } from '../model/errors.js';
 import type { Note, NoteID } from '../model/note.js';
-import type {
-  BookmarkRepository,
-  NoteRepository,
+import {
+  type BookmarkRepository,
+  type NoteRepository,
+  bookmarkRepoSymbol,
+  noteRepoSymbol,
 } from '../model/repository.js';
 
 export class CreateBookmarkService {
@@ -49,3 +51,15 @@ export class CreateBookmarkService {
     return Result.map(() => Option.unwrap(note))(creation);
   }
 }
+
+export const createBookmarkSymbol =
+  Ether.newEtherSymbol<CreateBookmarkService>();
+export const createBookmark = Ether.newEther(
+  createBookmarkSymbol,
+  ({ bookmarkRepository, noteRepository }) =>
+    new CreateBookmarkService(bookmarkRepository, noteRepository),
+  {
+    bookmarkRepository: bookmarkRepoSymbol,
+    noteRepository: noteRepoSymbol,
+  },
+);

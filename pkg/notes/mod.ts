@@ -8,29 +8,31 @@ import {
   authenticateMiddleware,
 } from '../adaptors/authenticateMiddleware.js';
 import { prismaClient } from '../adaptors/prisma.js';
-import { SnowflakeIDGenerator } from '../id/mod.js';
+import { clockSymbol, snowflakeIDGenerator } from '../id/mod.js';
 import {
   accountModule,
+  accountModuleEther,
   dummyAccountModuleFacade,
 } from '../intermodule/account.js';
 import {
   dummyTimelineModuleFacade,
   timelineModuleFacade,
+  timelineModuleFacadeEther,
 } from '../intermodule/timeline.js';
 import { BookmarkController } from './adaptor/controller/bookmark.js';
 import { NoteController } from './adaptor/controller/note.js';
 import { ReactionController } from './adaptor/controller/reaction.js';
 import {
-  InMemoryBookmarkRepository,
-  InMemoryNoteAttachmentRepository,
-  InMemoryNoteRepository,
-  InMemoryReactionRepository,
+  inMemoryBookmarkRepo,
+  inMemoryNoteAttachmentRepo,
+  inMemoryNoteRepo,
+  inMemoryReactionRepo,
 } from './adaptor/repository/dummy.js';
 import {
-  PrismaBookmarkRepository,
-  PrismaNoteAttachmentRepository,
-  PrismaNoteRepository,
-  PrismaReactionRepository,
+  prismaBookmarkRepo,
+  prismaNoteAttachmentRepo,
+  prismaNoteRepo,
+  prismaReactionRepo,
 } from './adaptor/repository/prisma.js';
 import {
   NoteAccountSilencedError,
@@ -53,98 +55,129 @@ import {
   GetNoteRoute,
   RenoteRoute,
 } from './router.js';
-import { CreateService } from './service/create.js';
-import { CreateBookmarkService } from './service/createBookmark.js';
-import { CreateReactionService } from './service/createReaction.js';
-import { DeleteBookmarkService } from './service/deleteBookmark.js';
-import { DeleteReactionService } from './service/deleteReaction.js';
-import { FetchService } from './service/fetch.js';
-import { FetchBookmarkService } from './service/fetchBookmark.js';
-import { RenoteService } from './service/renote.js';
+import { createService } from './service/create.js';
+import { createBookmark } from './service/createBookmark.js';
+import { createReactionService } from './service/createReaction.js';
+import { deleteBookmarkService } from './service/deleteBookmark.js';
+import { deleteReaction } from './service/deleteReaction.js';
+import { fetch } from './service/fetch.js';
+import { fetchBookmarkService } from './service/fetchBookmark.js';
+import { renote } from './service/renote.js';
 
 const isProduction = process.env.NODE_ENV === 'production';
 export const noteHandlers = new OpenAPIHono<{
   Variables: AuthMiddlewareVariable;
 }>();
 const noteRepository = isProduction
-  ? new PrismaNoteRepository(prismaClient)
-  : new InMemoryNoteRepository();
+  ? prismaNoteRepo(prismaClient)
+  : inMemoryNoteRepo([]);
 const bookmarkRepository = isProduction
-  ? new PrismaBookmarkRepository(prismaClient)
-  : new InMemoryBookmarkRepository();
+  ? prismaBookmarkRepo(prismaClient)
+  : inMemoryBookmarkRepo([]);
 const reactionRepository = isProduction
-  ? new PrismaReactionRepository(prismaClient)
-  : new InMemoryReactionRepository();
+  ? prismaReactionRepo(prismaClient)
+  : inMemoryReactionRepo([]);
 const attachmentRepository = isProduction
-  ? new PrismaNoteAttachmentRepository(prismaClient)
-  : new InMemoryNoteAttachmentRepository([], []);
-const idGenerator = new SnowflakeIDGenerator(0, {
-  now: () => BigInt(Date.now()),
-});
+  ? prismaNoteAttachmentRepo(prismaClient)
+  : inMemoryNoteAttachmentRepo([], []);
+
+class Clock {
+  now() {
+    return BigInt(Date.now());
+  }
+}
+const clock = Ether.newEther(clockSymbol, () => new Clock());
+const idGenerator = Ether.compose(clock)(snowflakeIDGenerator(0));
 
 const composer = Ether.composeT(Promise.monad);
-const liftOverPromise = <const D extends Record<string, symbol>, T>(
-  ether: Ether.Ether<D, T>,
-): Ether.EtherT<D, Promise.PromiseHkt, T> => ({
-  ...ether,
-  handler: (resolved) => Promise.pure(ether.handler(resolved)),
-});
+const liftOverPromise = Ether.liftEther(Promise.monad);
 const AuthMiddleware = await Ether.runEtherT(
   Cat.cat(liftOverPromise(authenticateMiddleware)).feed(
     composer(authenticateToken),
   ).value,
 );
 
-// Note
-const createService = new CreateService(
-  noteRepository,
-  idGenerator,
-  attachmentRepository,
-  isProduction ? timelineModuleFacade : dummyTimelineModuleFacade(),
+const createServiceObj = Ether.runEther(
+  Cat.cat(createService)
+    .feed(Ether.compose(noteRepository))
+    .feed(Ether.compose(idGenerator))
+    .feed(Ether.compose(attachmentRepository))
+    .feed(
+      Ether.compose(
+        timelineModuleFacadeEther(
+          isProduction ? timelineModuleFacade : dummyTimelineModuleFacade(),
+        ),
+      ),
+    ).value,
 );
-const fetchService = new FetchService(
-  noteRepository,
-  accountModule,
-  attachmentRepository,
-  reactionRepository,
+
+const fetchServiceObj = Ether.runEther(
+  Cat.cat(fetch)
+    .feed(Ether.compose(noteRepository))
+    .feed(
+      Ether.compose(
+        accountModuleEther(
+          isProduction ? accountModule : dummyAccountModuleFacade,
+        ),
+      ),
+    )
+    .feed(Ether.compose(attachmentRepository))
+    .feed(Ether.compose(reactionRepository)).value,
 );
-const renoteService = new RenoteService(
-  noteRepository,
-  idGenerator,
-  attachmentRepository,
-  isProduction ? accountModule : dummyAccountModuleFacade,
+
+const renoteServiceObj = Ether.runEther(
+  Cat.cat(renote)
+    .feed(Ether.compose(noteRepository))
+    .feed(Ether.compose(idGenerator))
+    .feed(Ether.compose(attachmentRepository))
+    .feed(
+      Ether.compose(
+        accountModuleEther(
+          isProduction ? accountModule : dummyAccountModuleFacade,
+        ),
+      ),
+    ).value,
 );
+
 const controller = new NoteController(
-  createService,
-  fetchService,
-  renoteService,
-  accountModule,
+  createServiceObj,
+  fetchServiceObj,
+  renoteServiceObj,
+  isProduction ? accountModule : dummyAccountModuleFacade,
 );
 
 // Bookmark
-const createBookmarkService = new CreateBookmarkService(
-  bookmarkRepository,
-  noteRepository,
+const createBookmarkServiceObj = Ether.runEther(
+  Cat.cat(createBookmark)
+    .feed(Ether.compose(noteRepository))
+    .feed(Ether.compose(bookmarkRepository)).value,
 );
-const fetchBookmarkService = new FetchBookmarkService(bookmarkRepository);
-const deleteBookmarkService = new DeleteBookmarkService(bookmarkRepository);
+const fetchBookmarkServiceObj = Ether.runEther(
+  Cat.cat(fetchBookmarkService).feed(Ether.compose(bookmarkRepository)).value,
+);
 const bookmarkController = new BookmarkController(
-  createBookmarkService,
-  fetchBookmarkService,
-  deleteBookmarkService,
-  fetchService,
+  createBookmarkServiceObj,
+  fetchBookmarkServiceObj,
+  Ether.runEther(
+    Cat.cat(deleteBookmarkService).feed(Ether.compose(bookmarkRepository))
+      .value,
+  ),
+  fetchServiceObj,
 );
 
 // Reaction
-const createReactionService = new CreateReactionService(
-  reactionRepository,
-  noteRepository,
+const createReactionServiceObj = Ether.runEther(
+  Cat.cat(createReactionService)
+    .feed(Ether.compose(reactionRepository))
+    .feed(Ether.compose(noteRepository)).value,
 );
-const deleteReactionService = new DeleteReactionService(reactionRepository);
+const deleteReactionServiceObj = Ether.runEther(
+  Cat.cat(deleteReaction).feed(Ether.compose(reactionRepository)).value,
+);
 const reactionController = new ReactionController(
-  createReactionService,
-  fetchService,
-  deleteReactionService,
+  createReactionServiceObj,
+  fetchServiceObj,
+  deleteReactionServiceObj,
 );
 
 noteHandlers.openAPIRegistry.registerComponent('securitySchemes', 'Bearer', {

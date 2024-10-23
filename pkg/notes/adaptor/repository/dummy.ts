@@ -1,4 +1,4 @@
-import { Option, Result } from '@mikuroxina/mini-fn';
+import { Ether, Option, Result } from '@mikuroxina/mini-fn';
 
 import type { AccountID } from '../../../accounts/model/account.js';
 import type { Medium, MediumID } from '../../../drive/model/medium.js';
@@ -6,11 +6,15 @@ import { Bookmark } from '../../model/bookmark.js';
 import { NoteNotReactedYetError } from '../../model/errors.js';
 import type { Note, NoteID } from '../../model/note.js';
 import { Reaction } from '../../model/reaction.js';
-import type {
-  BookmarkRepository,
-  NoteAttachmentRepository,
-  NoteRepository,
-  ReactionRepository,
+import {
+  type BookmarkRepository,
+  type NoteAttachmentRepository,
+  type NoteRepository,
+  type ReactionRepository,
+  bookmarkRepoSymbol,
+  noteAttachmentRepoSymbol,
+  noteRepoSymbol,
+  reactionRepoSymbol,
 } from '../../model/repository.js';
 
 export class InMemoryNoteRepository implements NoteRepository {
@@ -75,6 +79,8 @@ export class InMemoryNoteRepository implements NoteRepository {
     );
   }
 }
+export const inMemoryNoteRepo = (note: Note[]) =>
+  Ether.newEther(noteRepoSymbol, () => new InMemoryNoteRepository(note));
 
 export class InMemoryBookmarkRepository implements BookmarkRepository {
   private readonly bookmarks: Map<[NoteID, AccountID], Bookmark>;
@@ -142,6 +148,11 @@ export class InMemoryBookmarkRepository implements BookmarkRepository {
     return Promise.resolve(Option.some(bookmarks));
   }
 }
+export const inMemoryBookmarkRepo = (bookmarks: Bookmark[]) =>
+  Ether.newEther(
+    bookmarkRepoSymbol,
+    () => new InMemoryBookmarkRepository(bookmarks),
+  );
 
 export class InMemoryNoteAttachmentRepository
   implements NoteAttachmentRepository
@@ -179,6 +190,14 @@ export class InMemoryNoteAttachmentRepository
     return Result.ok(res);
   }
 }
+export const inMemoryNoteAttachmentRepo = (
+  medium: Medium[],
+  attachments: [NoteID, MediumID[]][],
+) =>
+  Ether.newEther(
+    noteAttachmentRepoSymbol,
+    () => new InMemoryNoteAttachmentRepository(medium, attachments),
+  );
 
 type CompositeKey = `${NoteID}_${AccountID}`;
 export class InMemoryReactionRepository implements ReactionRepository {
@@ -275,3 +294,8 @@ export class InMemoryReactionRepository implements ReactionRepository {
     return Result.ok(undefined);
   }
 }
+export const inMemoryReactionRepo = (reactions: Reaction[]) =>
+  Ether.newEther(
+    reactionRepoSymbol,
+    () => new InMemoryReactionRepository(reactions),
+  );

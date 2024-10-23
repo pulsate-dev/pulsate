@@ -131,10 +131,9 @@ export const accountModule = new AccountModuleFacade(
       .feed(Ether.compose(accountRepository)).value,
   ),
 );
-export const accountModuleEther = Ether.newEther(
-  accountModuleFacadeSymbol,
-  () => accountModule,
-);
+
+export const accountModuleEther = (accountModuleFacade: AccountModuleFacade) =>
+  Ether.newEther(accountModuleFacadeSymbol, () => accountModuleFacade);
 
 const inMemoryAccountRepository = Ether.newEther(
   accountRepoSymbol,
