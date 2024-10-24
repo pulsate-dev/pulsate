@@ -82,7 +82,7 @@ const noteVisibilityService = Cat.cat(noteVisibility).feed(
 ).value;
 
 const timelineCacheRepository = isProduction
-  ? valkeyTimelineCacheRepo(valkeyClient)
+  ? valkeyTimelineCacheRepo(valkeyClient())
   : inMemoryTimelineCacheRepo([]);
 
 const controller = new TimelineController({
@@ -166,7 +166,7 @@ timeline.openapi(GetHomeTimelineRoute, async (c) => {
 
 timeline[GetAccountTimelineRoute.method](
   GetAccountTimelineRoute.path,
-  AuthMiddleware.handle({ forceAuthorized: false }),
+  AuthMiddleware.handle({ forceAuthorized: true }),
 );
 timeline.openapi(GetAccountTimelineRoute, async (c) => {
   const actorID = Option.unwrap(c.get('accountID'));

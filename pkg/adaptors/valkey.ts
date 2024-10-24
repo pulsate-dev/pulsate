@@ -1,3 +1,5 @@
 import { Redis } from 'ioredis';
 
-export const valkeyClient = new Redis('localhost:6379');
+export const valkeyClient = (): Redis => {
+  return new Redis('localhost:6379');
+};
