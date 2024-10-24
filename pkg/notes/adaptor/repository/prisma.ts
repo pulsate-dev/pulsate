@@ -1,4 +1,4 @@
-import { Option, Result } from '@mikuroxina/mini-fn';
+import { Ether, Option, Result } from '@mikuroxina/mini-fn';
 import type { Prisma, PrismaClient } from '@prisma/client';
 
 import type { AccountID } from '../../../accounts/model/account.js';
@@ -7,11 +7,15 @@ import { Medium, type MediumID } from '../../../drive/model/medium.js';
 import { Bookmark } from '../../model/bookmark.js';
 import { Note, type NoteID, type NoteVisibility } from '../../model/note.js';
 import { Reaction } from '../../model/reaction.js';
-import type {
-  BookmarkRepository,
-  NoteAttachmentRepository,
-  NoteRepository,
-  ReactionRepository,
+import {
+  type BookmarkRepository,
+  type NoteAttachmentRepository,
+  type NoteRepository,
+  type ReactionRepository,
+  bookmarkRepoSymbol,
+  noteAttachmentRepoSymbol,
+  noteRepoSymbol,
+  reactionRepoSymbol,
 } from '../../model/repository.js';
 
 type DeserializeNoteArgs = Prisma.PromiseReturnType<
@@ -174,6 +178,8 @@ export class PrismaNoteRepository implements NoteRepository {
     }
   }
 }
+export const prismaNoteRepo = (client: PrismaClient) =>
+  Ether.newEther(noteRepoSymbol, () => new PrismaNoteRepository(client));
 
 export class PrismaBookmarkRepository implements BookmarkRepository {
   constructor(private readonly client: PrismaClient) {}
@@ -263,6 +269,11 @@ export class PrismaBookmarkRepository implements BookmarkRepository {
     }
   }
 }
+export const prismaBookmarkRepo = (client: PrismaClient) =>
+  Ether.newEther(
+    bookmarkRepoSymbol,
+    () => new PrismaBookmarkRepository(client),
+  );
 
 type DeserializeNoteAttachmentArgs = Prisma.PromiseReturnType<
   typeof prismaClient.noteAttachment.findMany<{ include: { medium: true } }>
@@ -327,6 +338,11 @@ export class PrismaNoteAttachmentRepository
     }
   }
 }
+export const prismaNoteAttachmentRepo = (client: PrismaClient) =>
+  Ether.newEther(
+    noteAttachmentRepoSymbol,
+    () => new PrismaNoteAttachmentRepository(client),
+  );
 
 type DeserializeReactionArgs = Prisma.PromiseReturnType<
   typeof prismaClient.reaction.findUnique
@@ -436,3 +452,8 @@ export class PrismaReactionRepository implements ReactionRepository {
     }
   }
 }
+export const prismaReactionRepo = (client: PrismaClient) =>
+  Ether.newEther(
+    reactionRepoSymbol,
+    () => new PrismaReactionRepository(client),
+  );

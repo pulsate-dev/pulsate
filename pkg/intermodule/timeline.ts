@@ -1,6 +1,7 @@
-import { Result } from '@mikuroxina/mini-fn';
+import { Ether, Result } from '@mikuroxina/mini-fn';
 import type { Note } from '../notes/model/note.js';
 
+import { isProduction } from '../adaptors/env.js';
 import { prismaClient } from '../adaptors/prisma.js';
 import { valkeyClient } from '../adaptors/valkey.js';
 import { InMemoryListRepository } from '../timeline/adaptor/repository/dummy.js';
@@ -28,6 +29,12 @@ export class TimelineModuleFacade {
     return Result.ok(undefined);
   }
 }
+export const timelineModuleFacadeSymbol =
+  Ether.newEtherSymbol<TimelineModuleFacade>();
+export const timelineModuleFacadeEther = Ether.newEther(
+  timelineModuleFacadeSymbol,
+  () => (isProduction ? timelineModuleFacade : dummyTimelineModuleFacade()),
+);
 
 export const timelineModuleFacade = new TimelineModuleFacade(
   new PushTimelineService(

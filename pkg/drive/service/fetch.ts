@@ -1,9 +1,9 @@
-import { Option, type Result } from '@mikuroxina/mini-fn';
+import { Ether, Option, type Result } from '@mikuroxina/mini-fn';
 
 import type { AccountID } from '../../accounts/model/account.js';
 import { MediaNotFoundError } from '../model/errors.js';
 import type { Medium } from '../model/medium.js';
-import type { MediaRepository } from '../model/repository.js';
+import { type MediaRepository, mediaRepoSymbol } from '../model/repository.js';
 
 export class FetchMediaService {
   constructor(private readonly mediaRepository: MediaRepository) {}
@@ -17,3 +17,12 @@ export class FetchMediaService {
     )(res);
   }
 }
+export const fetchMediaServiceSymbol =
+  Ether.newEtherSymbol<FetchMediaService>();
+export const fetchMediaService = Ether.newEther(
+  fetchMediaServiceSymbol,
+  ({ mediaRepository }) => new FetchMediaService(mediaRepository),
+  {
+    mediaRepository: mediaRepoSymbol,
+  },
+);

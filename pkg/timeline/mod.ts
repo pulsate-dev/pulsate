@@ -10,7 +10,11 @@ import {
 import { prismaClient } from '../adaptors/prisma.js';
 import { valkeyClient } from '../adaptors/valkey.js';
 import { clockSymbol, snowflakeIDGenerator } from '../id/mod.js';
-import { accountModule, accountModuleEther } from '../intermodule/account.js';
+import {
+  accountModule,
+  accountModuleEther,
+  dummyAccountModuleFacade,
+} from '../intermodule/account.js';
 import { noteModule } from '../intermodule/note.js';
 import { TimelineController } from './adaptor/controller/timeline.js';
 import {
@@ -101,7 +105,7 @@ const controller = new TimelineController({
   deleteListService: Ether.runEther(
     Cat.cat(deleteList).feed(Ether.compose(listRepository)).value,
   ),
-  accountModule,
+  accountModule: isProduction ? accountModule : dummyAccountModuleFacade,
   fetchMemberService: Ether.runEther(
     Cat.cat(fetchListMember)
       .feed(Ether.compose(listRepository))

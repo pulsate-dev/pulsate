@@ -1,10 +1,16 @@
-import { Option, Result } from '@mikuroxina/mini-fn';
+import { Ether, Option, Result } from '@mikuroxina/mini-fn';
 
 import type { Account, AccountID } from '../../accounts/model/account.js';
 import { AccountNotFoundError } from '../../accounts/model/errors.js';
 import type { MediumID } from '../../drive/model/medium.js';
-import type { SnowflakeIDGenerator } from '../../id/mod.js';
-import type { AccountModuleFacade } from '../../intermodule/account.js';
+import {
+  type SnowflakeIDGenerator,
+  snowflakeIDGeneratorSymbol,
+} from '../../id/mod.js';
+import {
+  type AccountModuleFacade,
+  accountModuleFacadeSymbol,
+} from '../../intermodule/account.js';
 import {
   NoteInsufficientPermissionError,
   NoteNotFoundError,
@@ -13,9 +19,11 @@ import {
 } from '../model/errors.js';
 import type { NoteID, NoteVisibility } from '../model/note.js';
 import { Note } from '../model/note.js';
-import type {
-  NoteAttachmentRepository,
-  NoteRepository,
+import {
+  type NoteAttachmentRepository,
+  type NoteRepository,
+  noteAttachmentRepoSymbol,
+  noteRepoSymbol,
 } from '../model/repository.js';
 
 export class RenoteService {
@@ -157,3 +165,20 @@ export class RenoteService {
     return true;
   }
 }
+export const renoteSymbol = Ether.newEtherSymbol<RenoteService>();
+export const renote = Ether.newEther(
+  renoteSymbol,
+  ({ noteRepository, idGenerator, noteAttachmentRepository, accountModule }) =>
+    new RenoteService(
+      noteRepository,
+      idGenerator,
+      noteAttachmentRepository,
+      accountModule,
+    ),
+  {
+    noteRepository: noteRepoSymbol,
+    idGenerator: snowflakeIDGeneratorSymbol,
+    noteAttachmentRepository: noteAttachmentRepoSymbol,
+    accountModule: accountModuleFacadeSymbol,
+  },
+);

@@ -1,10 +1,12 @@
-import { Option, Result } from '@mikuroxina/mini-fn';
+import { Ether, Option, Result } from '@mikuroxina/mini-fn';
 import type { AccountID } from '../../accounts/model/account.js';
 import { NoteNotFoundError } from '../model/errors.js';
 import type { Note, NoteID } from '../model/note.js';
-import type {
-  NoteRepository,
-  ReactionRepository,
+import {
+  type NoteRepository,
+  type ReactionRepository,
+  noteRepoSymbol,
+  reactionRepoSymbol,
 } from '../model/repository.js';
 
 export class CreateReactionService {
@@ -33,3 +35,14 @@ export class CreateReactionService {
     return Result.map(() => Option.unwrap(note))(reaction);
   }
 }
+export const createReactionServiceSymbol =
+  Ether.newEtherSymbol<CreateReactionService>();
+export const createReactionService = Ether.newEther(
+  createReactionServiceSymbol,
+  ({ reactionRepository, noteRepository }) =>
+    new CreateReactionService(reactionRepository, noteRepository),
+  {
+    reactionRepository: reactionRepoSymbol,
+    noteRepository: noteRepoSymbol,
+  },
+);

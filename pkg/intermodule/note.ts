@@ -1,4 +1,5 @@
 import { Cat, Ether, type Result } from '@mikuroxina/mini-fn';
+import { isProduction } from '../adaptors/env.js';
 import { prismaClient } from '../adaptors/prisma.js';
 import type { Medium } from '../drive/model/medium.js';
 import {
@@ -51,7 +52,6 @@ export class NoteModuleFacade {
   }
 }
 
-const isProduction = process.env.NODE_ENV === 'production';
 const attachmentRepoObject = isProduction
   ? new PrismaNoteAttachmentRepository(prismaClient)
   : new InMemoryNoteAttachmentRepository([], []);
@@ -78,6 +78,10 @@ const noteRepository = Ether.newEther(
 );
 export const noteModuleFacadeSymbol = Ether.newEtherSymbol<NoteModuleFacade>();
 
+/**
+ *  Dependency Injected NoteModule Object
+ *  production: Prisma Repository / development: InMemory Repository  (auto-detected)
+ */
 export const noteModule = new NoteModuleFacade(
   Ether.runEther(
     Cat.cat(fetch)
@@ -87,6 +91,11 @@ export const noteModule = new NoteModuleFacade(
       .feed(Ether.compose(reactionRepository)).value,
   ),
 );
+
+/**
+ * Dependency Injected NoteModule Ether Object
+ *  production: Prisma Repository / development: InMemory Repository  (auto-detected)
+ */
 export const noteModuleEther = Ether.newEther(
   noteModuleFacadeSymbol,
   () => noteModule,
