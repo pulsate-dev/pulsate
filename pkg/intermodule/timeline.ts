@@ -31,10 +31,10 @@ export class TimelineModuleFacade {
 }
 export const timelineModuleFacadeSymbol =
   Ether.newEtherSymbol<TimelineModuleFacade>();
-export const timelineModuleFacadeEther = () =>
-  Ether.newEther(timelineModuleFacadeSymbol, () =>
-    isProduction ? timelineModuleFacade : dummyTimelineModuleFacade(),
-  );
+export const timelineModuleFacadeEther = Ether.newEther(
+  timelineModuleFacadeSymbol,
+  () => (isProduction ? timelineModuleFacade : dummyTimelineModuleFacade()),
+);
 
 export const timelineModuleFacade = new TimelineModuleFacade(
   new PushTimelineService(

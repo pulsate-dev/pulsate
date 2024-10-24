@@ -148,7 +148,7 @@ export const dummyAccountModuleFacade = new AccountModuleFacade(
   ),
 );
 
-export const accountModuleEther = () =>
-  Ether.newEther(accountModuleFacadeSymbol, () =>
-    isProduction ? accountModule : dummyAccountModuleFacade,
-  );
+export const accountModuleEther = Ether.newEther(
+  accountModuleFacadeSymbol,
+  () => (isProduction ? accountModule : dummyAccountModuleFacade),
+);
