@@ -78,9 +78,7 @@ const AuthMiddleware = await Ether.runEtherT(
   ).value,
 );
 const noteVisibilityService = Cat.cat(noteVisibility).feed(
-  Ether.compose(
-    accountModuleEther(isProduction ? accountModule : dummyAccountModuleFacade),
-  ),
+  Ether.compose(accountModuleEther()),
 ).value;
 
 const timelineCacheRepository = isProduction
@@ -111,13 +109,7 @@ const controller = new TimelineController({
   fetchMemberService: Ether.runEther(
     Cat.cat(fetchListMember)
       .feed(Ether.compose(listRepository))
-      .feed(
-        Ether.compose(
-          accountModuleEther(
-            isProduction ? accountModule : dummyAccountModuleFacade,
-          ),
-        ),
-      ).value,
+      .feed(Ether.compose(accountModuleEther())).value,
   ),
   listTimelineService: Ether.runEther(
     Cat.cat(listTimeline)
