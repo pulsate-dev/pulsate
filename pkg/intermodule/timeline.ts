@@ -33,7 +33,7 @@ export const timelineModuleFacadeSymbol =
   Ether.newEtherSymbol<TimelineModuleFacade>();
 export const timelineModuleFacadeEther = Ether.newEther(
   timelineModuleFacadeSymbol,
-  () => (isProduction ? timelineModuleFacade : dummyTimelineModuleFacade()),
+  () => timelineModuleFacade,
 );
 
 export const timelineModuleFacade = new TimelineModuleFacade(
@@ -41,14 +41,25 @@ export const timelineModuleFacade = new TimelineModuleFacade(
     accountModule,
     new NoteVisibilityService(accountModule),
     // ToDo: Use valkey here
-    new ValkeyTimelineCacheRepository(valkeyClient),
+    isProduction
+      ? new ValkeyTimelineCacheRepository(valkeyClient())
+      : new InMemoryTimelineCacheRepository(),
     // ToDo: Implement PrismaListRepository
-    new FetchSubscribedListService(new PrismaListRepository(prismaClient)),
+    new FetchSubscribedListService(
+      isProduction
+        ? new PrismaListRepository(prismaClient)
+        : new InMemoryListRepository(),
+    ),
   ),
 );
 
+/**
+ * Dummy timeline module.\
+ * **NOTE: MUST USE THIS OBJECT FOR TESTING ONLY**
+ * @param timelineCacheRepository
+ */
 export const dummyTimelineModuleFacade = (
-  timelineCacheRepository: InMemoryTimelineCacheRepository = new InMemoryTimelineCacheRepository(),
+  timelineCacheRepository: InMemoryTimelineCacheRepository,
 ) =>
   new TimelineModuleFacade(
     new PushTimelineService(
