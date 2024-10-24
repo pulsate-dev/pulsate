@@ -14,11 +14,7 @@ import {
   accountModuleEther,
   dummyAccountModuleFacade,
 } from '../intermodule/account.js';
-import {
-  dummyTimelineModuleFacade,
-  timelineModuleFacade,
-  timelineModuleFacadeEther,
-} from '../intermodule/timeline.js';
+import { timelineModuleFacadeEther } from '../intermodule/timeline.js';
 import { BookmarkController } from './adaptor/controller/bookmark.js';
 import { NoteController } from './adaptor/controller/note.js';
 import { ReactionController } from './adaptor/controller/reaction.js';
@@ -102,25 +98,13 @@ const createServiceObj = Ether.runEther(
     .feed(Ether.compose(noteRepository))
     .feed(Ether.compose(idGenerator))
     .feed(Ether.compose(attachmentRepository))
-    .feed(
-      Ether.compose(
-        timelineModuleFacadeEther(
-          isProduction ? timelineModuleFacade : dummyTimelineModuleFacade(),
-        ),
-      ),
-    ).value,
+    .feed(Ether.compose(timelineModuleFacadeEther())).value,
 );
 
 const fetchServiceObj = Ether.runEther(
   Cat.cat(fetch)
     .feed(Ether.compose(noteRepository))
-    .feed(
-      Ether.compose(
-        accountModuleEther(
-          isProduction ? accountModule : dummyAccountModuleFacade,
-        ),
-      ),
-    )
+    .feed(Ether.compose(accountModuleEther()))
     .feed(Ether.compose(attachmentRepository))
     .feed(Ether.compose(reactionRepository)).value,
 );
@@ -130,13 +114,7 @@ const renoteServiceObj = Ether.runEther(
     .feed(Ether.compose(noteRepository))
     .feed(Ether.compose(idGenerator))
     .feed(Ether.compose(attachmentRepository))
-    .feed(
-      Ether.compose(
-        accountModuleEther(
-          isProduction ? accountModule : dummyAccountModuleFacade,
-        ),
-      ),
-    ).value,
+    .feed(Ether.compose(accountModuleEther())).value,
 );
 
 const controller = new NoteController(

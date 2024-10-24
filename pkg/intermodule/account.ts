@@ -19,6 +19,7 @@ import { fetch } from '../accounts/service/fetch.js';
 import type { FetchFollowService } from '../accounts/service/fetchFollow.js';
 import { fetchFollow } from '../accounts/service/fetchFollow.js';
 import { dummyAccounts, dummyfollows } from '../accounts/testData/testData.js';
+import { isProduction } from '../adaptors/env.js';
 import { prismaClient } from '../adaptors/prisma.js';
 
 export type { Account } from '../accounts/model/account.js';
@@ -110,7 +111,6 @@ export class AccountModuleFacade {
 export const accountModuleFacadeSymbol =
   Ether.newEtherSymbol<AccountModuleFacade>();
 
-const isProduction = process.env.NODE_ENV === 'production';
 const accountRepoObject = isProduction
   ? new PrismaAccountRepository(prismaClient)
   : new InMemoryAccountRepository([]);
@@ -132,9 +132,6 @@ export const accountModule = new AccountModuleFacade(
   ),
 );
 
-export const accountModuleEther = (accountModuleFacade: AccountModuleFacade) =>
-  Ether.newEther(accountModuleFacadeSymbol, () => accountModuleFacade);
-
 const inMemoryAccountRepository = Ether.newEther(
   accountRepoSymbol,
   () => new InMemoryAccountRepository(dummyAccounts),
@@ -150,3 +147,8 @@ export const dummyAccountModuleFacade = new AccountModuleFacade(
       .feed(Ether.compose(inMemoryAccountRepository)).value,
   ),
 );
+
+export const accountModuleEther = () =>
+  Ether.newEther(accountModuleFacadeSymbol, () =>
+    isProduction ? accountModule : dummyAccountModuleFacade,
+  );
