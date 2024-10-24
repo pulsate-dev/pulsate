@@ -98,13 +98,13 @@ const createServiceObj = Ether.runEther(
     .feed(Ether.compose(noteRepository))
     .feed(Ether.compose(idGenerator))
     .feed(Ether.compose(attachmentRepository))
-    .feed(Ether.compose(timelineModuleFacadeEther())).value,
+    .feed(Ether.compose(timelineModuleFacadeEther)).value,
 );
 
 const fetchServiceObj = Ether.runEther(
   Cat.cat(fetch)
     .feed(Ether.compose(noteRepository))
-    .feed(Ether.compose(accountModuleEther()))
+    .feed(Ether.compose(accountModuleEther))
     .feed(Ether.compose(attachmentRepository))
     .feed(Ether.compose(reactionRepository)).value,
 );
@@ -114,7 +114,7 @@ const renoteServiceObj = Ether.runEther(
     .feed(Ether.compose(noteRepository))
     .feed(Ether.compose(idGenerator))
     .feed(Ether.compose(attachmentRepository))
-    .feed(Ether.compose(accountModuleEther())).value,
+    .feed(Ether.compose(accountModuleEther)).value,
 );
 
 const controller = new NoteController(
