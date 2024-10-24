@@ -73,9 +73,16 @@ export class PrismaTimelineRepository implements TimelineRepository {
       orderBy: {
         createdAt: 'desc',
       },
-      cursor: {
-        id: filter.beforeId ?? '',
-      },
+      ...(filter.beforeId
+        ? {
+            cursor: {
+              id: filter.beforeId ?? '',
+            },
+            // NOTE: Not include specified record
+            skip: 1,
+          }
+        : {}),
+      take: this.TIMELINE_NOTE_LIMIT,
     });
 
     return Result.ok(this.deserialize(accountNotes));

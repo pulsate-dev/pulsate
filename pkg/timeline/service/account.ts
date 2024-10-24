@@ -38,7 +38,6 @@ export class AccountTimelineService {
 
     // NOTE: AccountTimeline not include direct note
     const directFiltered = res[1].filter((v) => v.getVisibility() !== 'DIRECT');
-
     const filtered: Note[] = [];
     for (const v of directFiltered) {
       const isVisible = await this.noteVisibilityService.handle({

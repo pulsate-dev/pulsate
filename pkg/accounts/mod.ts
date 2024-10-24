@@ -345,9 +345,35 @@ accounts[GetAccountRoute.method](
   AuthMiddleware.handle({ forceAuthorized: false }),
 );
 accounts.openapi(GetAccountRoute, async (c) => {
-  const id = c.req.param('id');
+  const { identifier } = c.req.valid('param');
 
-  const res = await controller.getAccount(id);
+  if (identifier.includes('@')) {
+    const res = await controller.getAccountByName(identifier);
+    if (Result.isErr(res)) {
+      const error = Result.unwrapErr(res);
+
+      if (error instanceof AccountNotFoundError) {
+        return c.json({ error: 'ACCOUNT_NOT_FOUND' as const }, 404);
+      }
+      return c.json({ error: 'INTERNAL_ERROR' as const }, 500);
+    }
+    return c.json(
+      {
+        id: res[1].id,
+        name: res[1].name,
+        nickname: res[1].nickname,
+        bio: res[1].bio,
+        avatar: '',
+        header: '',
+        followed_count: res[1].followed_count,
+        following_count: res[1].following_count,
+        note_count: res[1].note_count,
+      },
+      200,
+    );
+  }
+
+  const res = await controller.getAccount(identifier);
   if (Result.isErr(res)) {
     const error = Result.unwrapErr(res);
 
@@ -356,7 +382,6 @@ accounts.openapi(GetAccountRoute, async (c) => {
     }
     return c.json({ error: 'INTERNAL_ERROR' as const }, 500);
   }
-
   return c.json(
     {
       id: res[1].id,
