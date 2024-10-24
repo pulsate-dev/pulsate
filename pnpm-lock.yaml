@@ -25,7 +25,7 @@ importers:
         version: 5.21.1(prisma@5.21.1)
       '@scalar/hono-api-reference':
         specifier: ^0.5.0
-        version: 0.5.155(hono@4.6.5)
+        version: 0.5.156(hono@4.6.5)
       argon2:
         specifier: ^0.41.0
         version: 0.41.1
@@ -733,18 +733,18 @@ packages:
     cpu: [x64]
     os: [win32]
 
-  '@scalar/hono-api-reference@0.5.155':
-    resolution: {integrity: sha512-7sUxr/EFUyO3suACAIN5dUXKAyZAI3XEW/J/qSkMZHyWPBfhJb/ZhvaU+hNQlR0GEb3zg5aC6D9qK3Z3zEXjAA==}
+  '@scalar/hono-api-reference@0.5.156':
+    resolution: {integrity: sha512-/byPVH0rs40qxuOInnikDeq+19wQZ0NIq0K3WJMNBeZvr0lpGqsBf4frj0soon8UAVq/uZnOMcK6jwcC50a0bg==}
     engines: {node: '>=18'}
     peerDependencies:
       hono: ^4.0.0
 
-  '@scalar/openapi-types@0.1.3':
-    resolution: {integrity: sha512-UPUquC/ZSAdeSDbpdqMzeBVcgeytqJTj9P3QR4X9IRti5I1jXoCOUBY84CGGLXfcWquB7wfwHxn3DqQEnQmBVw==}
+  '@scalar/openapi-types@0.1.4':
+    resolution: {integrity: sha512-+wRXgmqzgDnj8Dxqf4OOPMPo4or/LRd1Bsy4pnrIW0yBt8rKSdtBb+jH/aRnhgDDmKVjWxJ+KFk7WlSKvZwNTw==}
     engines: {node: '>=18'}
 
-  '@scalar/types@0.0.16':
-    resolution: {integrity: sha512-9Pcp4xdQuRGwf4bZmx1e6NKz5QD06kG4S8kxryD3UfVCtnDDqBG6vUWJjjkFzlUK/jvAx7Rl92C4mK5GrauTng==}
+  '@scalar/types@0.0.17':
+    resolution: {integrity: sha512-wUrvNnYFMULsHENX/9TP3oyECRTtZsP06mOZU+RlWg9sRtzWVTjlBCahkgUETL93J+Bz2RLFSKVgPyNN4fpIpA==}
     engines: {node: '>=18'}
 
   '@sec-ant/readable-stream@0.4.1':
@@ -1802,16 +1802,16 @@ snapshots:
   '@rollup/rollup-win32-x64-msvc@4.24.0':
     optional: true
 
-  '@scalar/hono-api-reference@0.5.155(hono@4.6.5)':
+  '@scalar/hono-api-reference@0.5.156(hono@4.6.5)':
     dependencies:
-      '@scalar/types': 0.0.16
+      '@scalar/types': 0.0.17
       hono: 4.6.5
 
-  '@scalar/openapi-types@0.1.3': {}
+  '@scalar/openapi-types@0.1.4': {}
 
-  '@scalar/types@0.0.16':
+  '@scalar/types@0.0.17':
     dependencies:
-      '@scalar/openapi-types': 0.1.3
+      '@scalar/openapi-types': 0.1.4
       '@unhead/schema': 1.11.10
 
   '@sec-ant/readable-stream@0.4.1': {}
