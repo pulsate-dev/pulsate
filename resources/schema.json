@@ -1442,7 +1442,7 @@
         }
       }
     },
-    "/accounts/:id": {
+    "/accounts/:identifier": {
       "get": {
         "tags": [
           "accounts"
@@ -1450,12 +1450,23 @@
         "parameters": [
           {
             "schema": {
-              "type": "string",
-              "description": "Account ID",
-              "example": "495849959300385847"
+              "anyOf": [
+                {
+                  "type": "string",
+                  "description": "account name",
+                  "example": "@johndoe@example.com"
+                },
+                {
+                  "type": "string",
+                  "description": "account id",
+                  "example": "31644833000002"
+                }
+              ],
+              "description": "account name or id",
+              "example": "@johndoe@example.com"
             },
             "required": true,
-            "name": "id",
+            "name": "identifier",
             "in": "path"
           }
         ],
@@ -3478,9 +3489,9 @@
                     "error": {
                       "type": "string",
                       "enum": [
-                        "NOTE_NOT_FOUND"
+                        "NOT_REACTED"
                       ],
-                      "description": "Note not found"
+                      "description": "You did not react to this note"
                     }
                   },
                   "required": [
