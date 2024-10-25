@@ -76,7 +76,7 @@ export class PrismaTimelineRepository implements TimelineRepository {
       ...(filter.beforeId
         ? {
             cursor: {
-              id: filter.beforeId ?? '',
+              id: filter.beforeId,
             },
             // NOTE: Not include specified record
             skip: 1,
