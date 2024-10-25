@@ -578,13 +578,24 @@ export const RefreshRoute = createRoute({
 export const GetAccountRoute = createRoute({
   method: 'get',
   tags: ['accounts'],
-  path: '/accounts/:id',
+  path: '/accounts/:identifier',
   request: {
     params: z.object({
-      id: z.string().openapi({
-        example: '495849959300385847',
-        description: 'Account ID',
-      }),
+      identifier: z
+        .union([
+          z.string().openapi({
+            example: '@johndoe@example.com',
+            description: 'account name',
+          }),
+          z.string().openapi({
+            example: '31644833000002',
+            description: 'account id',
+          }),
+        ])
+        .openapi({
+          example: '@johndoe@example.com',
+          description: 'account name or id',
+        }),
     }),
   },
   responses: {
