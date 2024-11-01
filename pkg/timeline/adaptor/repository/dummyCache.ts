@@ -1,6 +1,7 @@
 import { Ether, Result } from '@mikuroxina/mini-fn';
 
 import type { AccountID } from '../../../accounts/model/account.js';
+import { compareID } from '../../../id/mod.js';
 import type { Note, NoteID } from '../../../notes/model/note.js';
 import type { ListID } from '../../model/list.js';
 import {
@@ -75,7 +76,7 @@ export class InMemoryTimelineCacheRepository
     if (!fetched) {
       return Result.err(new Error('Not found'));
     }
-    return Result.ok(fetched.sort((a, b) => Number(BigInt(b) - BigInt(a))));
+    return Result.ok(fetched.sort(compareID));
   }
 
   async getListTimeline(
@@ -85,7 +86,7 @@ export class InMemoryTimelineCacheRepository
     if (!fetched) {
       return Result.err(new Error('Not found'));
     }
-    return Result.ok(fetched.sort((a, b) => Number(BigInt(b) - BigInt(a))));
+    return Result.ok(fetched.sort(compareID));
   }
 
   reset(

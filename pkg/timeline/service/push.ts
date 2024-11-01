@@ -20,7 +20,7 @@ export class PushTimelineService {
     private readonly timelineNotesCacheRepository: TimelineNotesCacheRepository,
     private readonly fetchSubscribedListService: FetchSubscribedListService,
     /**
-     * @description Limit of timeline cache
+     * @description Limit length of timeline caches
      * @private
      */
     private readonly TIMELINE_CACHE_LIMIT = 300,
@@ -35,48 +35,40 @@ export class PushTimelineService {
     timelineID: T extends 'home' ? AccountID : ListID,
   ): Promise<Result.Result<Error, void>> {
     if (timelineType === 'home') {
-      const timeline = await this.timelineNotesCacheRepository.getHomeTimeline(
-        timelineID as AccountID,
-      );
-      if (Result.isErr(timeline)) {
-        return timeline;
+      const timelineRes =
+        await this.timelineNotesCacheRepository.getHomeTimeline(
+          timelineID as AccountID,
+        );
+      if (Result.isErr(timelineRes)) {
+        return timelineRes;
       }
-      const unwrappedTimeline = Result.unwrap(timeline);
-      if (unwrappedTimeline.length >= this.TIMELINE_CACHE_LIMIT) {
-        const oldestNote = unwrappedTimeline[unwrappedTimeline.length - 1];
-        if (!oldestNote) {
-          return Result.err(
-            new TimelineInternalError("Can't get oldest note", { cause: null }),
-          );
-        }
-
+      const timeline = Result.unwrap(timelineRes);
+      if (timeline.length >= this.TIMELINE_CACHE_LIMIT) {
+        const oldNotes = timeline.slice(this.TIMELINE_CACHE_LIMIT - 1);
+        console.log(timeline.length, this.TIMELINE_CACHE_LIMIT);
         return this.timelineNotesCacheRepository.deleteNotesFromHomeTimeline(
           timelineID as AccountID,
-          [oldestNote],
+          oldNotes,
         );
       }
       return Result.ok(undefined);
     }
 
     if (timelineType === 'list') {
-      const timeline = await this.timelineNotesCacheRepository.getListTimeline(
-        timelineID as ListID,
-      );
-      if (Result.isErr(timeline)) {
-        return timeline;
+      const timelineRes =
+        await this.timelineNotesCacheRepository.getListTimeline(
+          timelineID as ListID,
+        );
+      if (Result.isErr(timelineRes)) {
+        return timelineRes;
       }
-      const unwrappedTimeline = Result.unwrap(timeline);
-      if (unwrappedTimeline.length >= this.TIMELINE_CACHE_LIMIT) {
-        const oldestNote = unwrappedTimeline[unwrappedTimeline.length - 1];
-        if (!oldestNote) {
-          return Result.err(
-            new TimelineInternalError("Can't get oldest note", { cause: null }),
-          );
-        }
+      const timeline = Result.unwrap(timelineRes);
+      if (timeline.length >= this.TIMELINE_CACHE_LIMIT) {
+        const oldNotes = timeline.slice(this.TIMELINE_CACHE_LIMIT - 1);
 
         return this.timelineNotesCacheRepository.deleteNotesFromListTimeline(
           timelineID as ListID,
-          [oldestNote],
+          oldNotes,
         );
       }
 
