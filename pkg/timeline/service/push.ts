@@ -1,8 +1,11 @@
 import { Ether, Result } from '@mikuroxina/mini-fn';
 
+import type { AccountID } from '../../accounts/model/account.js';
 import type { AccountModuleFacade } from '../../intermodule/account.js';
 import { NoteVisibilityInvalidError } from '../../notes/model/errors.js';
 import type { Note } from '../../notes/model/note.js';
+import { TimelineInternalError } from '../model/errors.js';
+import type { ListID } from '../model/list.js';
 import {
   type TimelineNotesCacheRepository,
   timelineNotesCacheRepoSymbol,
@@ -16,7 +19,73 @@ export class PushTimelineService {
     private readonly noteVisibility: NoteVisibilityService,
     private readonly timelineNotesCacheRepository: TimelineNotesCacheRepository,
     private readonly fetchSubscribedListService: FetchSubscribedListService,
+    /**
+     * @description Limit of timeline cache
+     * @private
+     */
+    private readonly TIMELINE_CACHE_LIMIT = 300,
   ) {}
+
+  /**
+   * @description Check the number of cached timelines and delete old ones if the limit is reached
+   * @private
+   */
+  private async timelineLimitCheck<T extends 'home' | 'list'>(
+    timelineType: T,
+    timelineID: T extends 'home' ? AccountID : ListID,
+  ): Promise<Result.Result<Error, void>> {
+    if (timelineType === 'home') {
+      const timeline = await this.timelineNotesCacheRepository.getHomeTimeline(
+        timelineID as AccountID,
+      );
+      if (Result.isErr(timeline)) {
+        return timeline;
+      }
+      const unwrappedTimeline = Result.unwrap(timeline);
+      if (unwrappedTimeline.length >= this.TIMELINE_CACHE_LIMIT) {
+        const oldestNote = unwrappedTimeline[unwrappedTimeline.length - 1];
+        if (!oldestNote) {
+          return Result.err(
+            new TimelineInternalError("Can't get oldest note", { cause: null }),
+          );
+        }
+
+        return this.timelineNotesCacheRepository.deleteNotesFromHomeTimeline(
+          timelineID as AccountID,
+          [oldestNote],
+        );
+      }
+      return Result.ok(undefined);
+    }
+
+    if (timelineType === 'list') {
+      const timeline = await this.timelineNotesCacheRepository.getListTimeline(
+        timelineID as ListID,
+      );
+      if (Result.isErr(timeline)) {
+        return timeline;
+      }
+      const unwrappedTimeline = Result.unwrap(timeline);
+      if (unwrappedTimeline.length >= this.TIMELINE_CACHE_LIMIT) {
+        const oldestNote = unwrappedTimeline[unwrappedTimeline.length - 1];
+        if (!oldestNote) {
+          return Result.err(
+            new TimelineInternalError("Can't get oldest note", { cause: null }),
+          );
+        }
+
+        return this.timelineNotesCacheRepository.deleteNotesFromListTimeline(
+          timelineID as ListID,
+          [oldestNote],
+        );
+      }
+
+      return Result.ok(undefined);
+    }
+    return Result.err(
+      new TimelineInternalError('Unknown timeline type', { cause: null }),
+    );
+  }
 
   /**
    * @description Push note to home timeline
@@ -54,6 +123,13 @@ export class PushTimelineService {
       return Result.err(
         new NoteVisibilityInvalidError('Note invisible', { cause: null }),
       );
+    }
+
+    for (const v of unwrappedFollowers) {
+      const checkRes = await this.timelineLimitCheck('home', v.id);
+      if (Result.isErr(checkRes)) {
+        return checkRes;
+      }
     }
 
     // ToDo: bulk insert
@@ -97,6 +173,13 @@ export class PushTimelineService {
       return Result.err(
         new NoteVisibilityInvalidError('Note invisible', { cause: null }),
       );
+    }
+
+    for (const v of unwrappedLists) {
+      const checkRes = await this.timelineLimitCheck('list', v);
+      if (Result.isErr(checkRes)) {
+        return checkRes;
+      }
     }
 
     const res = await Promise.all(

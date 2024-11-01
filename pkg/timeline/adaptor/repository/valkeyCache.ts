@@ -101,6 +101,40 @@ export class ValkeyTimelineCacheRepository
       );
     }
   }
+
+  async deleteNotesFromHomeTimeline(
+    accountID: AccountID,
+    noteIDs: NoteID[],
+  ): Promise<Result.Result<Error, void>> {
+    try {
+      await this.redisClient.zrem(
+        this.generateObjectKey(accountID, 'home'),
+        ...noteIDs,
+      );
+      return Result.ok(undefined);
+    } catch (e) {
+      return Result.err(
+        new TimelineInternalError('unknown valkey error', { cause: e }),
+      );
+    }
+  }
+
+  async deleteNotesFromListTimeline(
+    listID: ListID,
+    noteIDs: NoteID[],
+  ): Promise<Result.Result<Error, void>> {
+    try {
+      await this.redisClient.zrem(
+        this.generateObjectKey(listID, 'list'),
+        ...noteIDs,
+      );
+      return Result.ok(undefined);
+    } catch (e) {
+      return Result.err(
+        new TimelineInternalError('unknown valkey error', { cause: e }),
+      );
+    }
+  }
 }
 export const valkeyTimelineCacheRepo = (redisClient: Redis) =>
   Ether.newEther(

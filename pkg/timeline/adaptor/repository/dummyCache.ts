@@ -12,14 +12,21 @@ import {
 export class InMemoryTimelineCacheRepository
   implements TimelineNotesCacheRepository
 {
-  private readonly data: Map<CacheObjectKey, NoteID[]>;
-  constructor(data: [AccountID, NoteID[]][] = []) {
-    this.data = new Map(
-      data.map(([accountID, noteIDs]) => [
-        `timeline:home:${accountID}`,
-        noteIDs,
-      ]),
-    );
+  private data: Map<CacheObjectKey, NoteID[]>;
+  constructor(
+    homeData: [AccountID, NoteID[]][] = [],
+    listData: [ListID, NoteID[]][] = [],
+  ) {
+    const home = homeData.map((v): [CacheObjectKey, NoteID[]] => {
+      const key = this.generateObjectKey(v[0], 'home');
+      return [key, v[1]];
+    });
+    const list = listData.map((v): [CacheObjectKey, NoteID[]] => {
+      const key = this.generateObjectKey(v[0], 'list');
+      return [key, v[1]];
+    });
+
+    this.data = new Map([...home, ...list]);
   }
 
   private generateObjectKey(
@@ -68,7 +75,7 @@ export class InMemoryTimelineCacheRepository
     if (!fetched) {
       return Result.err(new Error('Not found'));
     }
-    return Result.ok(fetched.sort());
+    return Result.ok(fetched.sort((a, b) => Number(BigInt(b) - BigInt(a))));
   }
 
   async getListTimeline(
@@ -78,11 +85,57 @@ export class InMemoryTimelineCacheRepository
     if (!fetched) {
       return Result.err(new Error('Not found'));
     }
-    return Result.ok(fetched.sort());
+    return Result.ok(fetched.sort((a, b) => Number(BigInt(b) - BigInt(a))));
   }
 
-  reset(): void {
-    this.data.clear();
+  reset(
+    homeData: [AccountID, NoteID[]][] = [],
+    listData: [ListID, NoteID[]][] = [],
+  ) {
+    const home = homeData.map((v): [CacheObjectKey, NoteID[]] => {
+      const key = this.generateObjectKey(v[0], 'home');
+      return [key, v[1]];
+    });
+    const list = listData.map((v): [CacheObjectKey, NoteID[]] => {
+      const key = this.generateObjectKey(v[0], 'list');
+      return [key, v[1]];
+    });
+
+    this.data = new Map([...home, ...list]);
+  }
+
+  async deleteNotesFromHomeTimeline(
+    accountID: AccountID,
+    noteIDs: NoteID[],
+  ): Promise<Result.Result<Error, void>> {
+    const objectKey = this.generateObjectKey(accountID, 'home');
+    const fetched = this.data.get(objectKey);
+    if (!fetched) {
+      return Result.err(new Error('Not found'));
+    }
+    this.data.set(
+      objectKey,
+      fetched.filter((v) => !noteIDs.includes(v)),
+    );
+
+    return Result.ok(undefined);
+  }
+
+  async deleteNotesFromListTimeline(
+    listID: ListID,
+    noteIDs: NoteID[],
+  ): Promise<Result.Result<Error, void>> {
+    const objectKey = this.generateObjectKey(listID, 'list');
+    const fetched = this.data.get(objectKey);
+    if (!fetched) {
+      return Result.err(new Error('Not found'));
+    }
+    this.data.set(
+      objectKey,
+      fetched.filter((v) => !noteIDs.includes(v)),
+    );
+
+    return Result.ok(undefined);
   }
 }
 
