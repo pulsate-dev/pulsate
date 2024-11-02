@@ -99,3 +99,11 @@ export const IDSchema = <T>() =>
       }
     })
     .transform((s) => s as ID<T>);
+
+/**
+ * Compare two IDs (sort in descending order)
+ * @param a
+ * @param b
+ */
+export const compareID = <T>(a: ID<T>, b: ID<T>): number =>
+  Number(BigInt(b) - BigInt(a));

@@ -65,6 +65,25 @@ export interface TimelineNotesCacheRepository {
   getHomeTimeline(
     accountID: AccountID,
   ): Promise<Result.Result<Error, NoteID[]>>;
+
+  /**
+   * @description Delete notes from home timeline
+   * @param accountID
+   * @param noteIDs
+   */
+  deleteNotesFromHomeTimeline(
+    accountID: AccountID,
+    noteIDs: NoteID[],
+  ): Promise<Result.Result<Error, void>>;
+  /**
+   * @description Delete notes from list timeline
+   * @param listID
+   * @param noteIDs
+   */
+  deleteNotesFromListTimeline(
+    listID: ListID,
+    noteIDs: NoteID[],
+  ): Promise<Result.Result<Error, void>>;
 }
 export const timelineNotesCacheRepoSymbol =
   Ether.newEtherSymbol<TimelineNotesCacheRepository>();

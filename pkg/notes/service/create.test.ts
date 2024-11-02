@@ -29,7 +29,11 @@ const attachmentRepository = new InMemoryNoteAttachmentRepository(
   [],
 );
 
-const timelineCacheRepository = new InMemoryTimelineCacheRepository();
+const timelineCacheRepository = new InMemoryTimelineCacheRepository([
+  ['101' as AccountID, []],
+  ['102' as AccountID, []],
+  ['103' as AccountID, []],
+]);
 const createService = new CreateService(
   noteRepository,
   new SnowflakeIDGenerator(0, {
@@ -118,12 +122,7 @@ describe('CreateService', () => {
     const res1 = await timelineCacheRepository.getHomeTimeline(
       '103' as AccountID,
     );
-    const res2 = await timelineCacheRepository.getHomeTimeline(
-      '103' as AccountID,
-    );
     expect(Result.isOk(res1)).toBe(true);
-    expect(Result.isOk(res2)).toBe(true);
     expect(Result.unwrap(res1)).toHaveLength(1);
-    expect(Result.unwrap(res2)).toHaveLength(1);
   });
 });
