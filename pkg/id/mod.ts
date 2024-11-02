@@ -105,5 +105,5 @@ export const IDSchema = <T>() =>
  * @param a
  * @param b
  */
-export const compareID = <T>(a: ID<T>, b: ID<T>) =>
+export const compareID = <T>(a: ID<T>, b: ID<T>): number =>
   Number(BigInt(b) - BigInt(a));
