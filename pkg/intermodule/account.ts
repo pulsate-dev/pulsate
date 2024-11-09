@@ -1,8 +1,6 @@
 import { Cat, Ether, Result } from '@mikuroxina/mini-fn';
-import {
-  InMemoryAccountRepository,
-  newFollowRepo,
-} from '../accounts/adaptor/repository/dummy.js';
+import { InMemoryAccountRepository } from '../accounts/adaptor/repository/dummy/account.js';
+import { newFollowRepo } from '../accounts/adaptor/repository/dummy/follow.js';
 import {
   PrismaAccountRepository,
   prismaFollowRepo,

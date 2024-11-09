@@ -1,9 +1,7 @@
 import { Ether, type Option, type Result } from '@mikuroxina/mini-fn';
 
-import type { Medium } from '@prisma/client';
-import type { MediumID } from '../../drive/model/medium.js';
-import type { Account } from './account.js';
-import type { AccountID } from './account.js';
+import type { Medium, MediumID } from '../../drive/model/medium.js';
+import type { Account, AccountID } from './account.js';
 import type { AccountFollow } from './follow.js';
 import type { InactiveAccount } from './inactiveAccount.js';
 

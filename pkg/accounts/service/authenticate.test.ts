@@ -2,7 +2,7 @@ import { Result } from '@mikuroxina/mini-fn';
 import { describe, expect, it } from 'vitest';
 
 import { Argon2idPasswordEncoder } from '../../password/mod.js';
-import { InMemoryAccountRepository } from '../adaptor/repository/dummy.js';
+import { InMemoryAccountRepository } from '../adaptor/repository/dummy/account.js';
 import { Account, type AccountID } from '../model/account.js';
 import { AuthenticateService } from './authenticate.js';
 import { AuthenticationTokenService } from './authenticationTokenService.js';

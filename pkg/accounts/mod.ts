@@ -11,11 +11,9 @@ import { argon2idPasswordEncoder } from '../password/mod.js';
 import { newTurnstileCaptchaValidator } from './adaptor/captcha/turnstile.js';
 import { AccountController } from './adaptor/controller/account.js';
 import { captchaMiddleware } from './adaptor/middileware/captcha.js';
-import {
-  InMemoryAccountRepository,
-  newFollowRepo,
-  verifyTokenRepo,
-} from './adaptor/repository/dummy.js';
+import { InMemoryAccountRepository } from './adaptor/repository/dummy/account.js';
+import { newFollowRepo } from './adaptor/repository/dummy/follow.js';
+import { verifyTokenRepo } from './adaptor/repository/dummy/verifyToken.js';
 import {
   PrismaAccountRepository,
   prismaFollowRepo,

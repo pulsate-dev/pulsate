@@ -1,7 +1,7 @@
 import { Option, Result } from '@mikuroxina/mini-fn';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 
-import { InMemoryAccountRepository } from '../../accounts/adaptor/repository/dummy.js';
+import { InMemoryAccountRepository } from '../../accounts/adaptor/repository/dummy/account.js';
 import { Account, type AccountID } from '../../accounts/model/account.js';
 import type { MediumID } from '../../drive/model/medium.js';
 import { testMedium, testNSFWMedium } from '../../drive/testData/testData.js';

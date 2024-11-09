@@ -1,10 +1,8 @@
 import { Option, Result } from '@mikuroxina/mini-fn';
 import { describe, expect, it } from 'vitest';
 
-import {
-  InMemoryAccountFollowRepository,
-  InMemoryAccountRepository,
-} from '../adaptor/repository/dummy.js';
+import { InMemoryAccountRepository } from '../adaptor/repository/dummy/account.js';
+import { InMemoryAccountFollowRepository } from '../adaptor/repository/dummy/follow.js';
 import { Account, type AccountID } from '../model/account.js';
 import { FollowService } from './follow.js';
 
