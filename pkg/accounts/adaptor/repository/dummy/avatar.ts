@@ -12,21 +12,21 @@ export class InMemoryAccountAvatarRepository
   private data: Map<AccountID, MediumID>;
   constructor(
     media: Medium[] = [],
-    accountHeader: { accountID: AccountID; mediumID: MediumID }[] = [],
+    accountAvatar: { accountID: AccountID; mediumID: MediumID }[] = [],
   ) {
     this.media = new Map(media.map((m) => [m.getId(), m]));
     this.data = new Map(
-      accountHeader.map(({ accountID, mediumID }) => [accountID, mediumID]),
+      accountAvatar.map(({ accountID, mediumID }) => [accountID, mediumID]),
     );
   }
 
   reset(
     media: Medium[] = [],
-    accountHeader: { accountID: AccountID; mediumID: MediumID }[] = [],
+    accountAvatar: { accountID: AccountID; mediumID: MediumID }[] = [],
   ) {
     this.media = new Map(media.map((m) => [m.getId(), m]));
     this.data = new Map(
-      accountHeader.map(({ accountID, mediumID }) => [accountID, mediumID]),
+      accountAvatar.map(({ accountID, mediumID }) => [accountID, mediumID]),
     );
   }
 
