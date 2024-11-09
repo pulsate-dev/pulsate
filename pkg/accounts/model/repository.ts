@@ -1,5 +1,7 @@
 import { Ether, type Option, type Result } from '@mikuroxina/mini-fn';
 
+import type { Medium } from '@prisma/client';
+import type { MediumID } from '../../drive/model/medium.js';
 import type { Account } from './account.js';
 import type { AccountID } from './account.js';
 import type { AccountFollow } from './follow.js';
@@ -61,3 +63,21 @@ export interface AccountFollowRepository {
   ): Promise<Result.Result<Error, AccountFollow[]>>;
 }
 export const followRepoSymbol = Ether.newEtherSymbol<AccountFollowRepository>();
+
+export interface AccountAvatarRepository {
+  create(
+    accountID: AccountID,
+    mediumID: MediumID,
+  ): Promise<Result.Result<Error, void>>;
+  findByID(accountID: AccountID): Promise<Result.Result<Error, Medium>>;
+  delete(accountID: AccountID): Promise<Result.Result<Error, void>>;
+}
+
+export interface AccountHeaderRepository {
+  create(
+    accountID: AccountID,
+    mediumID: MediumID,
+  ): Promise<Result.Result<Error, void>>;
+  findByID(accountID: AccountID): Promise<Result.Result<Error, Medium>>;
+  delete(accountID: AccountID): Promise<Result.Result<Error, void>>;
+}
