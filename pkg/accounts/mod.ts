@@ -383,17 +383,18 @@ accounts.openapi(GetAccountRoute, async (c) => {
       }
       return c.json({ error: 'INTERNAL_ERROR' as const }, 500);
     }
+    const account = Result.unwrap(res);
     return c.json(
       {
-        id: res[1].id,
-        name: res[1].name,
-        nickname: res[1].nickname,
-        bio: res[1].bio,
-        avatar: '',
-        header: '',
-        followed_count: res[1].followed_count,
-        following_count: res[1].following_count,
-        note_count: res[1].note_count,
+        id: account.id,
+        name: account.name,
+        nickname: account.nickname,
+        bio: account.bio,
+        avatar: account.avatar,
+        header: account.header,
+        followed_count: account.followed_count,
+        following_count: account.following_count,
+        note_count: account.note_count,
       },
       200,
     );
@@ -408,17 +409,18 @@ accounts.openapi(GetAccountRoute, async (c) => {
     }
     return c.json({ error: 'INTERNAL_ERROR' as const }, 500);
   }
+  const account = Result.unwrap(res);
   return c.json(
     {
-      id: res[1].id,
-      name: res[1].name,
-      nickname: res[1].nickname,
-      bio: res[1].bio,
-      avatar: '',
-      header: '',
-      followed_count: res[1].followed_count,
-      following_count: res[1].following_count,
-      note_count: res[1].note_count,
+      id: account.id,
+      name: account.name,
+      nickname: account.nickname,
+      bio: account.bio,
+      avatar: account.avatar,
+      header: account.header,
+      followed_count: account.followed_count,
+      following_count: account.following_count,
+      note_count: account.note_count,
     },
     200,
   );

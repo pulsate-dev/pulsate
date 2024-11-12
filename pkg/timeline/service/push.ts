@@ -45,7 +45,6 @@ export class PushTimelineService {
       const timeline = Result.unwrap(timelineRes);
       if (timeline.length >= this.TIMELINE_CACHE_LIMIT) {
         const oldNotes = timeline.slice(this.TIMELINE_CACHE_LIMIT - 1);
-        console.log(timeline.length, this.TIMELINE_CACHE_LIMIT);
         return this.timelineNotesCacheRepository.deleteNotesFromHomeTimeline(
           timelineID as AccountID,
           oldNotes,

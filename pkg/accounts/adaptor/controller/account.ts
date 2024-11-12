@@ -221,24 +221,38 @@ export class AccountController {
     if (Result.isErr(res)) {
       return res;
     }
+    const account = Result.unwrap(res);
+
+    const avatarRes = await this.avatarService.fetchByAccountID(
+      account.getID(),
+    );
+    const headerRes = await this.headerService.fetchByAccountID(
+      account.getID(),
+    );
+    const avatar = Result.isOk(avatarRes)
+      ? Result.unwrap(avatarRes).getUrl()
+      : '';
+    const header = Result.isOk(headerRes)
+      ? Result.unwrap(headerRes).getUrl()
+      : '';
 
     return Result.ok({
-      id: res[1].getID(),
-      email: res[1].getMail(),
-      name: res[1].getName() as string,
-      nickname: res[1].getNickname(),
-      bio: res[1].getBio(),
+      id: account.getID(),
+      email: account.getMail(),
+      name: account.getName() as string,
+      nickname: account.getNickname(),
+      bio: account.getBio(),
       // ToDo: fill the following fields
-      avatar: '',
-      header: '',
+      avatar: avatar,
+      header: header,
       followed_count: 0,
       following_count: 0,
       note_count: 0,
-      created_at: res[1].getCreatedAt(),
-      role: res[1].getRole(),
-      frozen: res[1].getFrozen(),
-      status: res[1].getStatus(),
-      silenced: res[1].getSilenced(),
+      created_at: account.getCreatedAt(),
+      role: account.getRole(),
+      frozen: account.getFrozen(),
+      status: account.getStatus(),
+      silenced: account.getSilenced(),
     });
   }
 
@@ -249,24 +263,38 @@ export class AccountController {
     if (Result.isErr(res)) {
       return res;
     }
+    const account = Result.unwrap(res);
+
+    const avatarRes = await this.avatarService.fetchByAccountID(
+      account.getID(),
+    );
+    const headerRes = await this.headerService.fetchByAccountID(
+      account.getID(),
+    );
+    const avatar = Result.isOk(avatarRes)
+      ? Result.unwrap(avatarRes).getUrl()
+      : '';
+    const header = Result.isOk(headerRes)
+      ? Result.unwrap(headerRes).getUrl()
+      : '';
 
     return Result.ok({
-      id: res[1].getID(),
-      email: res[1].getMail(),
-      name: res[1].getName() as string,
-      nickname: res[1].getNickname(),
-      bio: res[1].getBio(),
+      id: account.getID(),
+      email: account.getMail(),
+      name: account.getName() as string,
+      nickname: account.getNickname(),
+      bio: account.getBio(),
       // ToDo: fill the following fields
-      avatar: '',
-      header: '',
+      avatar: avatar,
+      header: header,
       followed_count: 0,
       following_count: 0,
       note_count: 0,
-      created_at: res[1].getCreatedAt(),
-      role: res[1].getRole(),
-      frozen: res[1].getFrozen(),
-      status: res[1].getStatus(),
-      silenced: res[1].getSilenced(),
+      created_at: account.getCreatedAt(),
+      role: account.getRole(),
+      frozen: account.getFrozen(),
+      status: account.getStatus(),
+      silenced: account.getSilenced(),
     });
   }
 
