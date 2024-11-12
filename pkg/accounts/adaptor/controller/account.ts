@@ -449,11 +449,12 @@ export class AccountController {
   }
 
   async setAvatar(
-    actor: string,
+    targetAccountName: string,
+    actorID: string,
     medium: string,
   ): Promise<Result.Result<Error, void>> {
     const accountRes = await this.fetchService.fetchAccount(
-      actor as AccountName,
+      targetAccountName as AccountName,
     );
     if (Result.isErr(accountRes)) {
       return accountRes;
@@ -463,6 +464,7 @@ export class AccountController {
     const res = await this.avatarService.create(
       account.getID(),
       medium as MediumID,
+      actorID as AccountID,
     );
     if (Result.isErr(res)) {
       return res;
@@ -472,11 +474,12 @@ export class AccountController {
   }
 
   async setHeader(
-    actor: string,
+    targetAccountName: string,
+    actorID: string,
     medium: string,
   ): Promise<Result.Result<Error, void>> {
     const accountRes = await this.fetchService.fetchAccount(
-      actor as AccountName,
+      targetAccountName as AccountName,
     );
     if (Result.isErr(accountRes)) {
       return accountRes;
@@ -486,6 +489,7 @@ export class AccountController {
     const res = await this.headerService.create(
       account.getID(),
       medium as MediumID,
+      actorID as AccountID,
     );
     if (Result.isErr(res)) {
       return res;
@@ -494,16 +498,22 @@ export class AccountController {
     return Result.ok(undefined);
   }
 
-  async unsetAvatar(actor: string): Promise<Result.Result<Error, void>> {
+  async unsetAvatar(
+    targetAccountName: string,
+    actorID: string,
+  ): Promise<Result.Result<Error, void>> {
     const accountRes = await this.fetchService.fetchAccount(
-      actor as AccountName,
+      targetAccountName as AccountName,
     );
     if (Result.isErr(accountRes)) {
       return accountRes;
     }
     const account = Result.unwrap(accountRes);
 
-    const res = await this.avatarService.delete(account.getID());
+    const res = await this.avatarService.delete(
+      account.getID(),
+      actorID as AccountID,
+    );
     if (Result.isErr(res)) {
       return res;
     }
@@ -511,14 +521,22 @@ export class AccountController {
     return Result.ok(undefined);
   }
 
-  async unsetHeader(actor: string): Promise<Result.Result<Error, void>> {
-    const accountRes = await this.fetchService.fetchAccount(actor as AccountID);
+  async unsetHeader(
+    targetAccountName: string,
+    actorID: string,
+  ): Promise<Result.Result<Error, void>> {
+    const accountRes = await this.fetchService.fetchAccount(
+      targetAccountName as AccountID,
+    );
     if (Result.isErr(accountRes)) {
       return accountRes;
     }
     const account = Result.unwrap(accountRes);
 
-    const res = await this.headerService.delete(account.getID());
+    const res = await this.headerService.delete(
+      account.getID(),
+      actorID as AccountID,
+    );
     if (Result.isErr(res)) {
       return res;
     }

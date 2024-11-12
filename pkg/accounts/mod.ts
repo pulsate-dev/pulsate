@@ -635,11 +635,16 @@ accounts.openapi(GetAccountFollowerRoute, async (c) => {
   );
 });
 
+accounts[SetAccountAvatarRoute.method](
+  SetAccountAvatarRoute.path,
+  AuthMiddleware.handle({ forceAuthorized: true }),
+);
 accounts.openapi(SetAccountAvatarRoute, async (c) => {
   const { name } = c.req.valid('param');
   const { medium_id } = c.req.valid('json');
+  const actorID = Option.unwrap(c.get('accountID'));
 
-  const res = await controller.setAvatar(name, medium_id);
+  const res = await controller.setAvatar(name, actorID, medium_id);
   if (Result.isErr(res)) {
     const error = Result.unwrapErr(res);
 
@@ -657,10 +662,16 @@ accounts.openapi(SetAccountAvatarRoute, async (c) => {
 
   return new Response(null, { status: 204 });
 });
+
+accounts[UnsetAccountAvatarRoute.method](
+  UnsetAccountAvatarRoute.path,
+  AuthMiddleware.handle({ forceAuthorized: true }),
+);
 accounts.openapi(UnsetAccountAvatarRoute, async (c) => {
   const { name } = c.req.valid('param');
+  const actorID = Option.unwrap(c.get('accountID'));
 
-  const res = await controller.unsetAvatar(name);
+  const res = await controller.unsetAvatar(name, actorID);
   if (Result.isErr(res)) {
     const error = Result.unwrapErr(res);
 
@@ -675,11 +686,17 @@ accounts.openapi(UnsetAccountAvatarRoute, async (c) => {
 
   return new Response(null, { status: 204 });
 });
+
+accounts[SetAccountHeaderRoute.method](
+  SetAccountHeaderRoute.path,
+  AuthMiddleware.handle({ forceAuthorized: true }),
+);
 accounts.openapi(SetAccountHeaderRoute, async (c) => {
   const { name } = c.req.valid('param');
   const { medium_id } = c.req.valid('json');
+  const actorID = Option.unwrap(c.get('accountID'));
 
-  const res = await controller.setHeader(name, medium_id);
+  const res = await controller.setHeader(name, actorID, medium_id);
   if (Result.isErr(res)) {
     const error = Result.unwrapErr(res);
 
@@ -697,10 +714,16 @@ accounts.openapi(SetAccountHeaderRoute, async (c) => {
 
   return new Response(null, { status: 204 });
 });
+
+accounts[UnsetAccountHeaderRoute.method](
+  UnsetAccountHeaderRoute.path,
+  AuthMiddleware.handle({ forceAuthorized: true }),
+);
 accounts.openapi(UnsetAccountHeaderRoute, async (c) => {
+  const actorID = Option.unwrap(c.get('accountID'));
   const { name } = c.req.valid('param');
 
-  const res = await controller.unsetHeader(name);
+  const res = await controller.unsetHeader(name, actorID);
   if (Result.isErr(res)) {
     const error = Result.unwrapErr(res);
 
