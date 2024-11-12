@@ -1,9 +1,15 @@
-import { Result } from '@mikuroxina/mini-fn';
+import { Ether, Result } from '@mikuroxina/mini-fn';
 import type { Medium, MediumID } from '../../drive/model/medium.js';
-import type { MediaModuleFacade } from '../../intermodule/media.js';
+import {
+  type MediaModuleFacade,
+  mediaModuleFacadeSymbol,
+} from '../../intermodule/media.js';
 import type { AccountID } from '../model/account.js';
 import { AccountInsufficientPermissionError } from '../model/errors.js';
-import type { AccountHeaderRepository } from '../model/repository.js';
+import {
+  type AccountHeaderRepository,
+  accountHeaderRepoSymbol,
+} from '../model/repository.js';
 
 export class AccountHeaderService {
   constructor(
@@ -71,3 +77,13 @@ export class AccountHeaderService {
     return await this.headerRepository.findByID(accountID);
   }
 }
+export const accountHeaderSymbol = Ether.newEtherSymbol<AccountHeaderService>();
+export const accountHeader = Ether.newEther(
+  accountHeaderSymbol,
+  ({ mediaModule, headerRepository }) =>
+    new AccountHeaderService(headerRepository, mediaModule),
+  {
+    mediaModule: mediaModuleFacadeSymbol,
+    headerRepository: accountHeaderRepoSymbol,
+  },
+);

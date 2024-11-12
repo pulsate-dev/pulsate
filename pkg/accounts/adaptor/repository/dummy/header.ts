@@ -1,9 +1,12 @@
-import { Result } from '@mikuroxina/mini-fn';
+import { Ether, Result } from '@mikuroxina/mini-fn';
 import { MediaNotFoundError } from '../../../../drive/model/errors.js';
 import type { Medium, MediumID } from '../../../../drive/model/medium.js';
 import type { AccountID } from '../../../model/account.js';
 import { AccountNotFoundError } from '../../../model/errors.js';
-import type { AccountHeaderRepository } from '../../../model/repository.js';
+import {
+  type AccountHeaderRepository,
+  accountHeaderRepoSymbol,
+} from '../../../model/repository.js';
 
 export class InMemoryAccountHeaderRepository
   implements AccountHeaderRepository
@@ -65,3 +68,11 @@ export class InMemoryAccountHeaderRepository
     return Result.ok(this.media.get(mediumID) as Medium);
   }
 }
+export const inMemoryAccountHeaderRepo = (
+  media: Medium[],
+  accountHeader: { accountID: AccountID; mediumID: MediumID }[],
+) =>
+  Ether.newEther(
+    accountHeaderRepoSymbol,
+    () => new InMemoryAccountHeaderRepository(media, accountHeader),
+  );

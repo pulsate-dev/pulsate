@@ -1,5 +1,6 @@
 import { createRoute, z } from '@hono/zod-openapi';
 
+import { FileNotFound } from '../drive/adaptor/presenter/errors.js';
 import {
   AccountAlreadyVerified,
   AccountNameInUse,
@@ -32,6 +33,7 @@ import {
   LoginResponseSchema,
   RefreshRequestSchema,
   ResendVerificationEmailRequestSchema,
+  SetAccountAvatarRequestSchema,
   UpdateAccountRequestSchema,
   UpdateAccountResponseSchema,
   VerifyEmailRequestSchema,
@@ -973,6 +975,264 @@ export const GetAccountFollowerRoute = createRoute({
       content: {
         'application/json': {
           schema: GetAccountFollowingSchema,
+        },
+      },
+    },
+    404: {
+      description: 'Not Found',
+      content: {
+        'application/json': {
+          schema: z
+            .object({
+              error: AccountNotFound,
+            })
+            .openapi({
+              description: 'account not found',
+            }),
+        },
+      },
+    },
+    500: {
+      description: 'Internal Server Error',
+      content: {
+        'application/json': {
+          schema: InternalErrorResponseSchema,
+        },
+      },
+    },
+  },
+});
+
+export const SetAccountAvatarRoute = createRoute({
+  method: 'post',
+  tags: ['accounts'],
+  path: '/accounts/:name/avatar',
+  security: [
+    {
+      bearer: [],
+    },
+  ],
+  request: {
+    params: z.object({
+      name: z.string().min(3).max(64).openapi({
+        example: 'example_man',
+        description:
+          'Characters must be [A-Za-z0-9-.] The first and last characters must be [A-Za-z0-9-.]',
+      }),
+    }),
+    body: {
+      content: {
+        'application/json': {
+          schema: SetAccountAvatarRequestSchema,
+        },
+      },
+    },
+  },
+  responses: {
+    204: {
+      description: 'No Content',
+    },
+    403: {
+      description: 'Forbidden',
+      content: {
+        'application/json': {
+          schema: z
+            .object({
+              error: NoPermission,
+            })
+            .openapi({
+              description: 'You can not do this action.',
+            }),
+        },
+      },
+    },
+    404: {
+      description: 'Not Found',
+      content: {
+        'application/json': {
+          schema: z
+            .object({
+              error: z.union([AccountNotFound, FileNotFound]),
+            })
+            .openapi({
+              description: 'account not found',
+            }),
+        },
+      },
+    },
+    500: {
+      description: 'Internal Server Error',
+      content: {
+        'application/json': {
+          schema: InternalErrorResponseSchema,
+        },
+      },
+    },
+  },
+});
+
+export const UnsetAccountAvatarRoute = createRoute({
+  method: 'delete',
+  tags: ['accounts'],
+  path: '/accounts/:name/avatar',
+  security: [
+    {
+      bearer: [],
+    },
+  ],
+  request: {
+    params: z.object({
+      name: z.string().min(3).max(64).openapi({
+        example: 'example_man',
+        description:
+          'Characters must be [A-Za-z0-9-.] The first and last characters must be [A-Za-z0-9-.]',
+      }),
+    }),
+  },
+  responses: {
+    204: {
+      description: 'No Content',
+    },
+    403: {
+      description: 'Forbidden',
+      content: {
+        'application/json': {
+          schema: z
+            .object({
+              error: NoPermission,
+            })
+            .openapi({
+              description: 'You can not do this action.',
+            }),
+        },
+      },
+    },
+    404: {
+      description: 'Not Found',
+      content: {
+        'application/json': {
+          schema: z
+            .object({
+              error: AccountNotFound,
+            })
+            .openapi({
+              description: 'account not found',
+            }),
+        },
+      },
+    },
+    500: {
+      description: 'Internal Server Error',
+      content: {
+        'application/json': {
+          schema: InternalErrorResponseSchema,
+        },
+      },
+    },
+  },
+});
+
+export const SetAccountHeaderRoute = createRoute({
+  method: 'post',
+  tags: ['accounts'],
+  path: '/accounts/:name/header',
+  security: [
+    {
+      bearer: [],
+    },
+  ],
+  request: {
+    params: z.object({
+      name: z.string().min(3).max(64).openapi({
+        example: 'example_man',
+        description:
+          'Characters must be [A-Za-z0-9-.] The first and last characters must be [A-Za-z0-9-.]',
+      }),
+    }),
+    body: {
+      content: {
+        'application/json': {
+          schema: SetAccountAvatarRequestSchema,
+        },
+      },
+    },
+  },
+  responses: {
+    204: {
+      description: 'No Content',
+    },
+    403: {
+      description: 'Forbidden',
+      content: {
+        'application/json': {
+          schema: z
+            .object({
+              error: NoPermission,
+            })
+            .openapi({
+              description: 'You can not do this action.',
+            }),
+        },
+      },
+    },
+    404: {
+      description: 'Not Found',
+      content: {
+        'application/json': {
+          schema: z
+            .object({
+              error: z.union([AccountNotFound, FileNotFound]),
+            })
+            .openapi({
+              description: 'account not found',
+            }),
+        },
+      },
+    },
+    500: {
+      description: 'Internal Server Error',
+      content: {
+        'application/json': {
+          schema: InternalErrorResponseSchema,
+        },
+      },
+    },
+  },
+});
+
+export const UnsetAccountHeaderRoute = createRoute({
+  method: 'delete',
+  tags: ['accounts'],
+  path: '/accounts/:name/head',
+  security: [
+    {
+      bearer: [],
+    },
+  ],
+  request: {
+    params: z.object({
+      name: z.string().min(3).max(64).openapi({
+        example: 'example_man',
+        description:
+          'Characters must be [A-Za-z0-9-.] The first and last characters must be [A-Za-z0-9-.]',
+      }),
+    }),
+  },
+  responses: {
+    204: {
+      description: 'No Content',
+    },
+    403: {
+      description: 'Forbidden',
+      content: {
+        'application/json': {
+          schema: z
+            .object({
+              error: NoPermission,
+            })
+            .openapi({
+              description: 'You can not do this action.',
+            }),
         },
       },
     },

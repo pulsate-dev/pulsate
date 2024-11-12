@@ -1,14 +1,17 @@
 import type { z } from '@hono/zod-openapi';
 import { Option, Result } from '@mikuroxina/mini-fn';
 
+import type { MediumID } from '../../../drive/model/medium.js';
 import type { AccountID, AccountName } from '../../model/account.js';
 import type { AccountFollow } from '../../model/follow.js';
 import type { AuthenticateService } from '../../service/authenticate.js';
+import type { AccountAvatarService } from '../../service/avatar.js';
 import type { EditService } from '../../service/edit.js';
 import type { FetchService } from '../../service/fetch.js';
 import type { FetchFollowService } from '../../service/fetchFollow.js';
 import type { FollowService } from '../../service/follow.js';
 import type { FreezeService } from '../../service/freeze.js';
+import type { AccountHeaderService } from '../../service/header.js';
 import type { RegisterService } from '../../service/register.js';
 import type { ResendVerifyTokenService } from '../../service/resendToken.js';
 import type { SilenceService } from '../../service/silence.js';
@@ -35,6 +38,8 @@ export class AccountController {
   private readonly unFollowService: UnfollowService;
   private readonly fetchFollowService: FetchFollowService;
   private readonly resendTokenService: ResendVerifyTokenService;
+  private readonly headerService: AccountHeaderService;
+  private readonly avatarService: AccountAvatarService;
 
   constructor(args: {
     registerService: RegisterService;
@@ -48,6 +53,8 @@ export class AccountController {
     unFollowService: UnfollowService;
     fetchFollowService: FetchFollowService;
     resendTokenService: ResendVerifyTokenService;
+    headerService: AccountHeaderService;
+    avatarService: AccountAvatarService;
   }) {
     this.registerService = args.registerService;
     this.editService = args.editService;
@@ -60,6 +67,8 @@ export class AccountController {
     this.unFollowService = args.unFollowService;
     this.fetchFollowService = args.fetchFollowService;
     this.resendTokenService = args.resendTokenService;
+    this.headerService = args.headerService;
+    this.avatarService = args.avatarService;
   }
 
   async createAccount(
@@ -437,5 +446,83 @@ export class AccountController {
         };
       }),
     );
+  }
+
+  async setAvatar(
+    actor: string,
+    medium: string,
+  ): Promise<Result.Result<Error, void>> {
+    const accountRes = await this.fetchService.fetchAccount(
+      actor as AccountName,
+    );
+    if (Result.isErr(accountRes)) {
+      return accountRes;
+    }
+    const account = Result.unwrap(accountRes);
+
+    const res = await this.avatarService.create(
+      account.getID(),
+      medium as MediumID,
+    );
+    if (Result.isErr(res)) {
+      return res;
+    }
+
+    return Result.ok(undefined);
+  }
+
+  async setHeader(
+    actor: string,
+    medium: string,
+  ): Promise<Result.Result<Error, void>> {
+    const accountRes = await this.fetchService.fetchAccount(
+      actor as AccountName,
+    );
+    if (Result.isErr(accountRes)) {
+      return accountRes;
+    }
+    const account = Result.unwrap(accountRes);
+
+    const res = await this.headerService.create(
+      account.getID(),
+      medium as MediumID,
+    );
+    if (Result.isErr(res)) {
+      return res;
+    }
+
+    return Result.ok(undefined);
+  }
+
+  async unsetAvatar(actor: string): Promise<Result.Result<Error, void>> {
+    const accountRes = await this.fetchService.fetchAccount(
+      actor as AccountName,
+    );
+    if (Result.isErr(accountRes)) {
+      return accountRes;
+    }
+    const account = Result.unwrap(accountRes);
+
+    const res = await this.avatarService.delete(account.getID());
+    if (Result.isErr(res)) {
+      return res;
+    }
+
+    return Result.ok(undefined);
+  }
+
+  async unsetHeader(actor: string): Promise<Result.Result<Error, void>> {
+    const accountRes = await this.fetchService.fetchAccount(actor as AccountID);
+    if (Result.isErr(accountRes)) {
+      return accountRes;
+    }
+    const account = Result.unwrap(accountRes);
+
+    const res = await this.headerService.delete(account.getID());
+    if (Result.isErr(res)) {
+      return res;
+    }
+
+    return Result.ok(undefined);
   }
 }

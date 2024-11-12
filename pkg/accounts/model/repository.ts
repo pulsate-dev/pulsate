@@ -70,6 +70,8 @@ export interface AccountAvatarRepository {
   findByID(accountID: AccountID): Promise<Result.Result<Error, Medium>>;
   delete(accountID: AccountID): Promise<Result.Result<Error, void>>;
 }
+export const accountAvatarRepoSymbol =
+  Ether.newEtherSymbol<AccountAvatarRepository>();
 
 export interface AccountHeaderRepository {
   create(
@@ -79,3 +81,5 @@ export interface AccountHeaderRepository {
   findByID(accountID: AccountID): Promise<Result.Result<Error, Medium>>;
   delete(accountID: AccountID): Promise<Result.Result<Error, void>>;
 }
+export const accountHeaderRepoSymbol =
+  Ether.newEtherSymbol<AccountHeaderRepository>();

@@ -6,13 +6,17 @@ import {
   authenticateMiddleware,
 } from '../adaptors/authenticateMiddleware.js';
 import { prismaClient } from '../adaptors/prisma.js';
+import { MediaNotFoundError } from '../drive/model/errors.js';
 import { clockSymbol, snowflakeIDGenerator } from '../id/mod.js';
+import { mediaModuleFacadeEther } from '../intermodule/media.js';
 import { argon2idPasswordEncoder } from '../password/mod.js';
 import { newTurnstileCaptchaValidator } from './adaptor/captcha/turnstile.js';
 import { AccountController } from './adaptor/controller/account.js';
 import { captchaMiddleware } from './adaptor/middileware/captcha.js';
 import { InMemoryAccountRepository } from './adaptor/repository/dummy/account.js';
+import { inMemoryAccountAvatarRepo } from './adaptor/repository/dummy/avatar.js';
 import { newFollowRepo } from './adaptor/repository/dummy/follow.js';
+import { inMemoryAccountHeaderRepo } from './adaptor/repository/dummy/header.js';
 import { verifyTokenRepo } from './adaptor/repository/dummy/verifyToken.js';
 import {
   PrismaAccountRepository,
@@ -50,21 +54,27 @@ import {
   LoginRoute,
   RefreshRoute,
   ResendVerificationEmailRoute,
+  SetAccountAvatarRoute,
+  SetAccountHeaderRoute,
   SilenceAccountRoute,
   UnFollowAccountRoute,
   UnFreezeAccountRoute,
   UnSilenceAccountRoute,
+  UnsetAccountAvatarRoute,
+  UnsetAccountHeaderRoute,
   UpdateAccountRoute,
   VerifyEmailRoute,
 } from './router.js';
 import { authenticate } from './service/authenticate.js';
 import { authenticateToken } from './service/authenticationTokenService.js';
+import { accountAvatar } from './service/avatar.js';
 import { edit } from './service/edit.js';
 import { etag } from './service/etagService.js';
 import { fetch } from './service/fetch.js';
 import { fetchFollow } from './service/fetchFollow.js';
 import { follow } from './service/follow.js';
 import { freeze } from './service/freeze.js';
+import { accountHeader } from './service/header.js';
 import { register } from './service/register.js';
 import { resendToken } from './service/resendToken.js';
 import { dummy } from './service/sendNotification.js';
@@ -89,6 +99,8 @@ const accountRepository = Ether.newEther(
 const accountFollowRepository = isProduction
   ? prismaFollowRepo(prismaClient)
   : newFollowRepo();
+const accountHeaderRepository = inMemoryAccountHeaderRepo([], []);
+const accountAvatarRepository = inMemoryAccountAvatarRepo([], []);
 
 class Clock {
   now() {
@@ -165,6 +177,16 @@ export const controller = new AccountController({
     Cat.cat(fetchFollow)
       .feed(Ether.compose(accountFollowRepository))
       .feed(Ether.compose(accountRepository)).value,
+  ),
+  headerService: Ether.runEther(
+    Cat.cat(accountHeader)
+      .feed(Ether.compose(accountHeaderRepository))
+      .feed(Ether.compose(mediaModuleFacadeEther)).value,
+  ),
+  avatarService: Ether.runEther(
+    Cat.cat(accountAvatar)
+      .feed(Ether.compose(accountAvatarRepository))
+      .feed(Ether.compose(mediaModuleFacadeEther)).value,
   ),
 });
 
@@ -605,4 +627,85 @@ accounts.openapi(GetAccountFollowerRoute, async (c) => {
     }),
     200,
   );
+});
+
+accounts.openapi(SetAccountAvatarRoute, async (c) => {
+  const { name } = c.req.valid('param');
+  const { medium_id } = c.req.valid('json');
+
+  const res = await controller.setAvatar(name, medium_id);
+  if (Result.isErr(res)) {
+    const error = Result.unwrapErr(res);
+
+    if (error instanceof AccountNotFoundError) {
+      return c.json({ error: 'ACCOUNT_NOT_FOUND' as const }, 404);
+    }
+    if (error instanceof AccountInsufficientPermissionError) {
+      return c.json({ error: 'NO_PERMISSION' as const }, 403);
+    }
+    if (error instanceof MediaNotFoundError) {
+      return c.json({ error: 'FILE_NOT_FOUND' as const }, 404);
+    }
+    return c.json({ error: 'INTERNAL_ERROR' as const }, 500);
+  }
+
+  return new Response(null, { status: 204 });
+});
+accounts.openapi(UnsetAccountAvatarRoute, async (c) => {
+  const { name } = c.req.valid('param');
+
+  const res = await controller.unsetAvatar(name);
+  if (Result.isErr(res)) {
+    const error = Result.unwrapErr(res);
+
+    if (error instanceof AccountNotFoundError) {
+      return c.json({ error: 'ACCOUNT_NOT_FOUND' as const }, 404);
+    }
+    if (error instanceof AccountInsufficientPermissionError) {
+      return c.json({ error: 'NO_PERMISSION' as const }, 403);
+    }
+    return c.json({ error: 'INTERNAL_ERROR' as const }, 500);
+  }
+
+  return new Response(null, { status: 204 });
+});
+accounts.openapi(SetAccountHeaderRoute, async (c) => {
+  const { name } = c.req.valid('param');
+  const { medium_id } = c.req.valid('json');
+
+  const res = await controller.setHeader(name, medium_id);
+  if (Result.isErr(res)) {
+    const error = Result.unwrapErr(res);
+
+    if (error instanceof AccountNotFoundError) {
+      return c.json({ error: 'ACCOUNT_NOT_FOUND' as const }, 404);
+    }
+    if (error instanceof AccountInsufficientPermissionError) {
+      return c.json({ error: 'NO_PERMISSION' as const }, 403);
+    }
+    if (error instanceof MediaNotFoundError) {
+      return c.json({ error: 'FILE_NOT_FOUND' as const }, 404);
+    }
+    return c.json({ error: 'INTERNAL_ERROR' as const }, 500);
+  }
+
+  return new Response(null, { status: 204 });
+});
+accounts.openapi(UnsetAccountHeaderRoute, async (c) => {
+  const { name } = c.req.valid('param');
+
+  const res = await controller.unsetHeader(name);
+  if (Result.isErr(res)) {
+    const error = Result.unwrapErr(res);
+
+    if (error instanceof AccountNotFoundError) {
+      return c.json({ error: 'ACCOUNT_NOT_FOUND' as const }, 404);
+    }
+    if (error instanceof AccountInsufficientPermissionError) {
+      return c.json({ error: 'NO_PERMISSION' as const }, 403);
+    }
+    return c.json({ error: 'INTERNAL_ERROR' as const }, 500);
+  }
+
+  return new Response(null, { status: 204 });
 });
