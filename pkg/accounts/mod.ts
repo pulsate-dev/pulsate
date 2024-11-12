@@ -18,11 +18,13 @@ import { inMemoryAccountAvatarRepo } from './adaptor/repository/dummy/avatar.js'
 import { newFollowRepo } from './adaptor/repository/dummy/follow.js';
 import { inMemoryAccountHeaderRepo } from './adaptor/repository/dummy/header.js';
 import { verifyTokenRepo } from './adaptor/repository/dummy/verifyToken.js';
+import { prismaAccountAvatarRepo } from './adaptor/repository/prisma/avatar.js';
+import { prismaAccountHeaderRepo } from './adaptor/repository/prisma/header.js';
 import {
   PrismaAccountRepository,
   prismaFollowRepo,
   prismaVerifyTokenRepo,
-} from './adaptor/repository/prisma.js';
+} from './adaptor/repository/prisma/prisma.js';
 import type { AccountName } from './model/account.js';
 import {
   AccountAlreadyFollowingError,
@@ -99,8 +101,12 @@ const accountRepository = Ether.newEther(
 const accountFollowRepository = isProduction
   ? prismaFollowRepo(prismaClient)
   : newFollowRepo();
-const accountHeaderRepository = inMemoryAccountHeaderRepo([], []);
-const accountAvatarRepository = inMemoryAccountAvatarRepo([], []);
+const accountHeaderRepository = isProduction
+  ? prismaAccountHeaderRepo(prismaClient)
+  : inMemoryAccountHeaderRepo([], []);
+const accountAvatarRepository = isProduction
+  ? prismaAccountAvatarRepo(prismaClient)
+  : inMemoryAccountAvatarRepo([], []);
 
 class Clock {
   now() {

@@ -1,7 +1,7 @@
 import { Ether, Option, Result } from '@mikuroxina/mini-fn';
 import { Prisma, type PrismaClient } from '@prisma/client';
 
-import type { prismaClient } from '../../../adaptors/prisma.js';
+import type { prismaClient } from '../../../../adaptors/prisma.js';
 import {
   Account,
   type AccountFrozen,
@@ -10,12 +10,12 @@ import {
   type AccountRole,
   type AccountSilenced,
   type AccountStatus,
-} from '../../model/account.js';
+} from '../../../model/account.js';
 import {
   AccountInternalError,
   AccountNotFoundError,
-} from '../../model/errors.js';
-import { AccountFollow } from '../../model/follow.js';
+} from '../../../model/errors.js';
+import { AccountFollow } from '../../../model/follow.js';
 import {
   type AccountFollowRepository,
   type AccountRepository,
@@ -23,7 +23,7 @@ import {
   accountRepoSymbol,
   followRepoSymbol,
   verifyTokenRepoSymbol,
-} from '../../model/repository.js';
+} from '../../../model/repository.js';
 
 type AccountPrismaArgs = Prisma.PromiseReturnType<
   typeof prismaClient.account.findUnique

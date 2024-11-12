@@ -4,7 +4,7 @@ import { newFollowRepo } from '../accounts/adaptor/repository/dummy/follow.js';
 import {
   PrismaAccountRepository,
   prismaFollowRepo,
-} from '../accounts/adaptor/repository/prisma.js';
+} from '../accounts/adaptor/repository/prisma/prisma.js';
 import type {
   Account,
   AccountID,

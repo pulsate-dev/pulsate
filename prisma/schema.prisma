@@ -149,7 +149,7 @@ model Medium {
 }
 
 model AccountAvatar {
-  accountId String  @map("account_id")
+  accountId String  @unique @map("account_id")
   account   Account @relation("avatar", fields: [accountId], references: [id])
   mediumId  String  @map("medium_id")
   medium    Medium  @relation(fields: [mediumId], references: [id])
@@ -159,7 +159,7 @@ model AccountAvatar {
 }
 
 model AccountHeader {
-  accountId String  @map("account_id")
+  accountId String  @unique @map("account_id")
   account   Account @relation("header", fields: [accountId], references: [id])
   mediumId  String  @map("medium_id")
   medium    Medium  @relation(fields: [mediumId], references: [id])
