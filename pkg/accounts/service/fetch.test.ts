@@ -1,7 +1,7 @@
 import { Result } from '@mikuroxina/mini-fn';
 import { afterEach, describe, expect, it } from 'vitest';
 
-import { InMemoryAccountRepository } from '../adaptor/repository/dummy.js';
+import { InMemoryAccountRepository } from '../adaptor/repository/dummy/account.js';
 import { Account, type AccountID } from '../model/account.js';
 import { FetchService } from './fetch.js';
 

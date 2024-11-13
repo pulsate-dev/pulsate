@@ -3,10 +3,8 @@ import { describe, expect, it } from 'vitest';
 
 import { MockClock, SnowflakeIDGenerator } from '../../id/mod.js';
 import { Argon2idPasswordEncoder } from '../../password/mod.js';
-import {
-  InMemoryAccountRepository,
-  InMemoryAccountVerifyTokenRepository,
-} from '../adaptor/repository/dummy.js';
+import { InMemoryAccountRepository } from '../adaptor/repository/dummy/account.js';
+import { InMemoryAccountVerifyTokenRepository } from '../adaptor/repository/dummy/verifyToken.js';
 import type { AccountName, AccountRole } from '../model/account.js';
 import { RegisterService } from './register.js';
 import { DummySendNotificationService } from './sendNotification.js';

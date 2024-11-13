@@ -259,3 +259,14 @@ export const GetAccountFollowingSchema = z
 export const GetAccountFollowerSchema = z
   .array(GetAccountResponseSchema)
   .openapi('GetAccountFollowerResponse');
+
+// this is base schema. don't use directly / export this variable.
+const SetAccountImageRequestBaseSchema = z.object({
+  medium_id: z.string().openapi({
+    description: 'Medium ID',
+    example: '38477395',
+  }),
+});
+
+export const SetAccountAvatarRequestSchema = SetAccountImageRequestBaseSchema;
+export const SetAccountHeaderRequestSchema = SetAccountImageRequestBaseSchema;

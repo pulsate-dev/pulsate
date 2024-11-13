@@ -1,14 +1,17 @@
 import type { z } from '@hono/zod-openapi';
 import { Option, Result } from '@mikuroxina/mini-fn';
 
+import type { Medium, MediumID } from '../../../drive/model/medium.js';
 import type { AccountID, AccountName } from '../../model/account.js';
 import type { AccountFollow } from '../../model/follow.js';
 import type { AuthenticateService } from '../../service/authenticate.js';
+import type { AccountAvatarService } from '../../service/avatar.js';
 import type { EditService } from '../../service/edit.js';
 import type { FetchService } from '../../service/fetch.js';
 import type { FetchFollowService } from '../../service/fetchFollow.js';
 import type { FollowService } from '../../service/follow.js';
 import type { FreezeService } from '../../service/freeze.js';
+import type { AccountHeaderService } from '../../service/header.js';
 import type { RegisterService } from '../../service/register.js';
 import type { ResendVerifyTokenService } from '../../service/resendToken.js';
 import type { SilenceService } from '../../service/silence.js';
@@ -35,6 +38,8 @@ export class AccountController {
   private readonly unFollowService: UnfollowService;
   private readonly fetchFollowService: FetchFollowService;
   private readonly resendTokenService: ResendVerifyTokenService;
+  private readonly headerService: AccountHeaderService;
+  private readonly avatarService: AccountAvatarService;
 
   constructor(args: {
     registerService: RegisterService;
@@ -48,6 +53,8 @@ export class AccountController {
     unFollowService: UnfollowService;
     fetchFollowService: FetchFollowService;
     resendTokenService: ResendVerifyTokenService;
+    headerService: AccountHeaderService;
+    avatarService: AccountAvatarService;
   }) {
     this.registerService = args.registerService;
     this.editService = args.editService;
@@ -60,6 +67,8 @@ export class AccountController {
     this.unFollowService = args.unFollowService;
     this.fetchFollowService = args.fetchFollowService;
     this.resendTokenService = args.resendTokenService;
+    this.headerService = args.headerService;
+    this.avatarService = args.avatarService;
   }
 
   async createAccount(
@@ -212,24 +221,38 @@ export class AccountController {
     if (Result.isErr(res)) {
       return res;
     }
+    const account = Result.unwrap(res);
+
+    const avatarRes = await this.avatarService.fetchByAccountID(
+      account.getID(),
+    );
+    const headerRes = await this.headerService.fetchByAccountID(
+      account.getID(),
+    );
+    const avatar = Result.mapOr('')((avatarImage: Medium): string =>
+      avatarImage.getUrl(),
+    )(avatarRes);
+    const header = Result.mapOr('')((headerImage: Medium): string =>
+      headerImage.getUrl(),
+    )(headerRes);
 
     return Result.ok({
-      id: res[1].getID(),
-      email: res[1].getMail(),
-      name: res[1].getName() as string,
-      nickname: res[1].getNickname(),
-      bio: res[1].getBio(),
+      id: account.getID(),
+      email: account.getMail(),
+      name: account.getName() as string,
+      nickname: account.getNickname(),
+      bio: account.getBio(),
       // ToDo: fill the following fields
-      avatar: '',
-      header: '',
+      avatar: avatar,
+      header: header,
       followed_count: 0,
       following_count: 0,
       note_count: 0,
-      created_at: res[1].getCreatedAt(),
-      role: res[1].getRole(),
-      frozen: res[1].getFrozen(),
-      status: res[1].getStatus(),
-      silenced: res[1].getSilenced(),
+      created_at: account.getCreatedAt(),
+      role: account.getRole(),
+      frozen: account.getFrozen(),
+      status: account.getStatus(),
+      silenced: account.getSilenced(),
     });
   }
 
@@ -240,24 +263,38 @@ export class AccountController {
     if (Result.isErr(res)) {
       return res;
     }
+    const account = Result.unwrap(res);
+
+    const avatarRes = await this.avatarService.fetchByAccountID(
+      account.getID(),
+    );
+    const headerRes = await this.headerService.fetchByAccountID(
+      account.getID(),
+    );
+    const avatar = Result.mapOr('')((avatarImage: Medium): string =>
+      avatarImage.getUrl(),
+    )(avatarRes);
+    const header = Result.mapOr('')((headerImage: Medium): string =>
+      headerImage.getUrl(),
+    )(headerRes);
 
     return Result.ok({
-      id: res[1].getID(),
-      email: res[1].getMail(),
-      name: res[1].getName() as string,
-      nickname: res[1].getNickname(),
-      bio: res[1].getBio(),
+      id: account.getID(),
+      email: account.getMail(),
+      name: account.getName() as string,
+      nickname: account.getNickname(),
+      bio: account.getBio(),
       // ToDo: fill the following fields
-      avatar: '',
-      header: '',
+      avatar: avatar,
+      header: header,
       followed_count: 0,
       following_count: 0,
       note_count: 0,
-      created_at: res[1].getCreatedAt(),
-      role: res[1].getRole(),
-      frozen: res[1].getFrozen(),
-      status: res[1].getStatus(),
-      silenced: res[1].getSilenced(),
+      created_at: account.getCreatedAt(),
+      role: account.getRole(),
+      frozen: account.getFrozen(),
+      status: account.getStatus(),
+      silenced: account.getSilenced(),
     });
   }
 
@@ -436,6 +473,82 @@ export class AccountController {
           silenced: v.getSilenced(),
         };
       }),
+    );
+  }
+
+  async setAvatar(
+    targetAccountName: string,
+    actorID: string,
+    medium: string,
+  ): Promise<Result.Result<Error, void>> {
+    const accountRes = await this.fetchService.fetchAccount(
+      targetAccountName as AccountName,
+    );
+    if (Result.isErr(accountRes)) {
+      return accountRes;
+    }
+    const account = Result.unwrap(accountRes);
+
+    return await this.avatarService.create(
+      account.getID(),
+      medium as MediumID,
+      actorID as AccountID,
+    );
+  }
+
+  async setHeader(
+    targetAccountName: string,
+    actorID: string,
+    medium: string,
+  ): Promise<Result.Result<Error, void>> {
+    const accountRes = await this.fetchService.fetchAccount(
+      targetAccountName as AccountName,
+    );
+    if (Result.isErr(accountRes)) {
+      return accountRes;
+    }
+    const account = Result.unwrap(accountRes);
+
+    return await this.headerService.create(
+      account.getID(),
+      medium as MediumID,
+      actorID as AccountID,
+    );
+  }
+
+  async unsetAvatar(
+    targetAccountName: string,
+    actorID: string,
+  ): Promise<Result.Result<Error, void>> {
+    const accountRes = await this.fetchService.fetchAccount(
+      targetAccountName as AccountName,
+    );
+    if (Result.isErr(accountRes)) {
+      return accountRes;
+    }
+    const account = Result.unwrap(accountRes);
+
+    return await this.avatarService.delete(
+      account.getID(),
+      actorID as AccountID,
+    );
+  }
+
+  async unsetHeader(
+    targetAccountName: string,
+    actorID: string,
+  ): Promise<Result.Result<Error, void>> {
+    const accountRes = await this.fetchService.fetchAccount(
+      targetAccountName as AccountID,
+    );
+    if (Result.isErr(accountRes)) {
+      return accountRes;
+    }
+    const account = Result.unwrap(accountRes);
+
+    return await this.headerService.delete(
+      account.getID(),
+      actorID as AccountID,
     );
   }
 }

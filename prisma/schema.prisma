@@ -28,6 +28,8 @@ model Account {
 
   following          Following[]          @relation("following")
   followed           Following[]          @relation("followed")
+  avatar             AccountAvatar[]      @relation("avatar")
+  header             AccountHeader[]      @relation("header")
   note               Note[]
   reaction           Reaction[]
   bookmark           Bookmark[]
@@ -140,8 +142,30 @@ model Medium {
   createdAt      DateTime         @default(now()) @map("created_at")
   deletedAt      DateTime?        @map("deleted_at")
   noteAttachment NoteAttachment[]
+  AccountAvatar  AccountAvatar[]
+  AccountHeader  AccountHeader[]
 
   @@map("medium")
+}
+
+model AccountAvatar {
+  accountId String  @unique @map("account_id")
+  account   Account @relation("avatar", fields: [accountId], references: [id])
+  mediumId  String  @map("medium_id")
+  medium    Medium  @relation(fields: [mediumId], references: [id])
+
+  @@id([accountId, mediumId])
+  @@map("account_avatar")
+}
+
+model AccountHeader {
+  accountId String  @unique @map("account_id")
+  account   Account @relation("header", fields: [accountId], references: [id])
+  mediumId  String  @map("medium_id")
+  medium    Medium  @relation(fields: [mediumId], references: [id])
+
+  @@id([accountId, mediumId])
+  @@map("account_header")
 }
 
 model NoteAttachment {

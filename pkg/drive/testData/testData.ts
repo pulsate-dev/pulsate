@@ -22,3 +22,14 @@ export const testNSFWMedium = Medium.new({
   thumbnailUrl: 'https://example.com/test_thumbnail.jpg',
   hash: '40kdflnrh',
 });
+
+export const testOtherMedium = Medium.new({
+  id: '303' as MediumID,
+  name: 'test.jpg',
+  mime: 'image/jpeg',
+  authorId: '102' as AccountID,
+  nsfw: false,
+  url: 'https://example.com/test.jpg',
+  thumbnailUrl: 'https://example.com/test_thumbnail.jpg',
+  hash: '40kdflnrh',
+});

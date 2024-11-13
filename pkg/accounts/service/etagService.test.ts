@@ -1,7 +1,7 @@
 import { Option } from '@mikuroxina/mini-fn';
 import { afterEach, describe, expect, it } from 'vitest';
 
-import { InMemoryAccountRepository } from '../adaptor/repository/dummy.js';
+import { InMemoryAccountRepository } from '../adaptor/repository/dummy/account.js';
 import { Account, type AccountID } from '../model/account.js';
 import { EtagService } from './etagService.js';
 

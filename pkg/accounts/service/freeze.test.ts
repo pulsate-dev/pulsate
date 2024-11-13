@@ -1,7 +1,7 @@
 import { Option, Result } from '@mikuroxina/mini-fn';
 import { beforeEach, describe, expect, it } from 'vitest';
 
-import { InMemoryAccountRepository } from '../adaptor/repository/dummy.js';
+import { InMemoryAccountRepository } from '../adaptor/repository/dummy/account.js';
 import { Account, type AccountID } from '../model/account.js';
 import { FreezeService } from './freeze.js';
 

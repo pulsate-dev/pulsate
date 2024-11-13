@@ -1,7 +1,7 @@
 import { Ether, type Option, type Result } from '@mikuroxina/mini-fn';
 
-import type { Account } from './account.js';
-import type { AccountID } from './account.js';
+import type { Medium, MediumID } from '../../drive/model/medium.js';
+import type { Account, AccountID } from './account.js';
 import type { AccountFollow } from './follow.js';
 import type { InactiveAccount } from './inactiveAccount.js';
 
@@ -61,3 +61,37 @@ export interface AccountFollowRepository {
   ): Promise<Result.Result<Error, AccountFollow[]>>;
 }
 export const followRepoSymbol = Ether.newEtherSymbol<AccountFollowRepository>();
+
+export interface AccountAvatarRepository {
+  /**
+   * Set an avatar image to account.\
+   * NOTE: This method **WILL NOT** overwrite the existing avatar. (returns error)
+   * @param accountID
+   * @param mediumID
+   */
+  create(
+    accountID: AccountID,
+    mediumID: MediumID,
+  ): Promise<Result.Result<Error, void>>;
+  findByID(accountID: AccountID): Promise<Result.Result<Error, Medium>>;
+  delete(accountID: AccountID): Promise<Result.Result<Error, void>>;
+}
+export const accountAvatarRepoSymbol =
+  Ether.newEtherSymbol<AccountAvatarRepository>();
+
+export interface AccountHeaderRepository {
+  /**
+   * Set a header image to account.\
+   * NOTE: This method **WILL NOT** overwrite the existing header. (returns error)
+   * @param accountID
+   * @param mediumID
+   */
+  create(
+    accountID: AccountID,
+    mediumID: MediumID,
+  ): Promise<Result.Result<Error, void>>;
+  findByID(accountID: AccountID): Promise<Result.Result<Error, Medium>>;
+  delete(accountID: AccountID): Promise<Result.Result<Error, void>>;
+}
+export const accountHeaderRepoSymbol =
+  Ether.newEtherSymbol<AccountHeaderRepository>();

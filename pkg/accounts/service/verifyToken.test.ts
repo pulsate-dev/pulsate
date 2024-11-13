@@ -2,10 +2,8 @@ import { Result } from '@mikuroxina/mini-fn';
 import { describe, expect, it } from 'vitest';
 
 import { MockClock } from '../../id/mod.js';
-import {
-  InMemoryAccountRepository,
-  InMemoryAccountVerifyTokenRepository,
-} from '../adaptor/repository/dummy.js';
+import { InMemoryAccountRepository } from '../adaptor/repository/dummy/account.js';
+import { InMemoryAccountVerifyTokenRepository } from '../adaptor/repository/dummy/verifyToken.js';
 import { Account, type AccountID } from '../model/account.js';
 import { VerifyAccountTokenService } from './verifyToken.js';
 
