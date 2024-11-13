@@ -17,7 +17,9 @@ export class FetchMediaService {
     )(res);
   }
 
-  async fetchMediaByID(mediumID: MediumID) {
+  async fetchMediaByID(
+    mediumID: MediumID,
+  ): Promise<Result.Result<Error, Medium>> {
     const res = await this.mediaRepository.findById(mediumID);
     return Option.okOrElse(
       () => new MediaNotFoundError('Failed to fetch media', { cause: null }),

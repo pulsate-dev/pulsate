@@ -1,7 +1,7 @@
 import type { z } from '@hono/zod-openapi';
 import { Option, Result } from '@mikuroxina/mini-fn';
 
-import type { MediumID } from '../../../drive/model/medium.js';
+import type { Medium, MediumID } from '../../../drive/model/medium.js';
 import type { AccountID, AccountName } from '../../model/account.js';
 import type { AccountFollow } from '../../model/follow.js';
 import type { AuthenticateService } from '../../service/authenticate.js';
@@ -229,12 +229,12 @@ export class AccountController {
     const headerRes = await this.headerService.fetchByAccountID(
       account.getID(),
     );
-    const avatar = Result.isOk(avatarRes)
-      ? Result.unwrap(avatarRes).getUrl()
-      : '';
-    const header = Result.isOk(headerRes)
-      ? Result.unwrap(headerRes).getUrl()
-      : '';
+    const avatar = Result.mapOr('')((avatarImage: Medium): string =>
+      avatarImage.getUrl(),
+    )(avatarRes);
+    const header = Result.mapOr('')((headerImage: Medium): string =>
+      headerImage.getUrl(),
+    )(headerRes);
 
     return Result.ok({
       id: account.getID(),
@@ -271,12 +271,12 @@ export class AccountController {
     const headerRes = await this.headerService.fetchByAccountID(
       account.getID(),
     );
-    const avatar = Result.isOk(avatarRes)
-      ? Result.unwrap(avatarRes).getUrl()
-      : '';
-    const header = Result.isOk(headerRes)
-      ? Result.unwrap(headerRes).getUrl()
-      : '';
+    const avatar = Result.mapOr('')((avatarImage: Medium): string =>
+      avatarImage.getUrl(),
+    )(avatarRes);
+    const header = Result.mapOr('')((headerImage: Medium): string =>
+      headerImage.getUrl(),
+    )(headerRes);
 
     return Result.ok({
       id: account.getID(),
@@ -489,16 +489,11 @@ export class AccountController {
     }
     const account = Result.unwrap(accountRes);
 
-    const res = await this.avatarService.create(
+    return await this.avatarService.create(
       account.getID(),
       medium as MediumID,
       actorID as AccountID,
     );
-    if (Result.isErr(res)) {
-      return res;
-    }
-
-    return Result.ok(undefined);
   }
 
   async setHeader(
@@ -514,16 +509,11 @@ export class AccountController {
     }
     const account = Result.unwrap(accountRes);
 
-    const res = await this.headerService.create(
+    return await this.headerService.create(
       account.getID(),
       medium as MediumID,
       actorID as AccountID,
     );
-    if (Result.isErr(res)) {
-      return res;
-    }
-
-    return Result.ok(undefined);
   }
 
   async unsetAvatar(
@@ -538,15 +528,10 @@ export class AccountController {
     }
     const account = Result.unwrap(accountRes);
 
-    const res = await this.avatarService.delete(
+    return await this.avatarService.delete(
       account.getID(),
       actorID as AccountID,
     );
-    if (Result.isErr(res)) {
-      return res;
-    }
-
-    return Result.ok(undefined);
   }
 
   async unsetHeader(
@@ -561,14 +546,9 @@ export class AccountController {
     }
     const account = Result.unwrap(accountRes);
 
-    const res = await this.headerService.delete(
+    return await this.headerService.delete(
       account.getID(),
       actorID as AccountID,
     );
-    if (Result.isErr(res)) {
-      return res;
-    }
-
-    return Result.ok(undefined);
   }
 }

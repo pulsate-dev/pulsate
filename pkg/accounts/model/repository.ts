@@ -63,6 +63,12 @@ export interface AccountFollowRepository {
 export const followRepoSymbol = Ether.newEtherSymbol<AccountFollowRepository>();
 
 export interface AccountAvatarRepository {
+  /**
+   * Set an avatar image to account.\
+   * NOTE: This method **WILL NOT** overwrite the existing avatar. (returns error)
+   * @param accountID
+   * @param mediumID
+   */
   create(
     accountID: AccountID,
     mediumID: MediumID,
@@ -74,6 +80,12 @@ export const accountAvatarRepoSymbol =
   Ether.newEtherSymbol<AccountAvatarRepository>();
 
 export interface AccountHeaderRepository {
+  /**
+   * Set a header image to account.\
+   * NOTE: This method **WILL NOT** overwrite the existing header. (returns error)
+   * @param accountID
+   * @param mediumID
+   */
   create(
     accountID: AccountID,
     mediumID: MediumID,
