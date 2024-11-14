@@ -102,6 +102,26 @@ export interface ListRepository {
   fetchListsByMemberAccountID(
     accountID: AccountID,
   ): Promise<Result.Result<Error, List[]>>;
+
+  /**
+   * @description Append account to list
+   * @param listID
+   * @param accountID
+   */
+  appendListMember(
+    listID: ListID,
+    accountID: AccountID,
+  ): Promise<Result.Result<Error, void>>;
+  /**
+   * @description Remove account from list
+   * @param listID
+   * @param accountID
+   */
+  removeListMember(
+    listID: ListID,
+    accountID: AccountID,
+  ): Promise<Result.Result<Error, void>>;
+
   deleteById(listId: ListID): Promise<Result.Result<Error, void>>;
   edit(list: List): Promise<Result.Result<Error, void>>;
 }
