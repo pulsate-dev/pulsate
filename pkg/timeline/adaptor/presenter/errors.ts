@@ -23,6 +23,11 @@ export const TitleTooLong = z.literal('TITLE_TOO_LONG').openapi({
 export const YouAreBlocked = z.literal('YOU_ARE_BLOCKED').openapi({
   description: 'You are blocked by the account',
 });
+
 export const TimelineInternalError = z.literal('INTERNAL_ERROR').openapi({
   description: 'Internal server error',
+});
+
+export const NoPermission = z.literal('NO_PERMISSION').openapi({
+  description: 'No permission to access this object',
 });

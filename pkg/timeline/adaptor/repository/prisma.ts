@@ -341,6 +341,42 @@ export class PrismaListRepository implements ListRepository {
       return Result.err(this.parsePrismaError(e));
     }
   }
+
+  async appendListMember(
+    listID: ListID,
+    accountID: AccountID,
+  ): Promise<Result.Result<Error, void>> {
+    try {
+      await this.prisma.listMember.create({
+        data: {
+          listId: listID,
+          memberId: accountID,
+        },
+      });
+
+      return Result.ok(undefined);
+    } catch (e) {
+      return Result.err(this.parsePrismaError(e));
+    }
+  }
+  async removeListMember(
+    listID: ListID,
+    accountID: AccountID,
+  ): Promise<Result.Result<Error, void>> {
+    try {
+      await this.prisma.listMember.delete({
+        where: {
+          listId_memberId: {
+            listId: listID,
+            memberId: accountID,
+          },
+        },
+      });
+      return Result.ok(undefined);
+    } catch (e) {
+      return Result.err(this.parsePrismaError(e));
+    }
+  }
 }
 export const prismaListRepo = (client: PrismaClient) =>
   Ether.newEther(listRepoSymbol, () => new PrismaListRepository(client));

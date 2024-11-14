@@ -85,3 +85,14 @@ export class ListInternalError extends Error {
     this.cause = options.cause;
   }
 }
+
+/**
+ * Account don't have permission to do this action
+ */
+export class TimelineInsufficientPermissionError extends Error {
+  constructor(message: string, options: { cause: unknown }) {
+    super(message);
+    this.name = 'TimelineInsufficientPermissionError';
+    this.cause = options.cause;
+  }
+}

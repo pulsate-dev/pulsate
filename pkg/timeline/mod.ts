@@ -28,12 +28,16 @@ import {
 } from './adaptor/repository/prisma.js';
 import { valkeyTimelineCacheRepo } from './adaptor/repository/valkeyCache.js';
 import {
+  ListInternalError,
   ListNotFoundError,
   ListTitleTooLongError,
+  ListTooManyMembersError,
   TimelineBlockedByAccountError,
+  TimelineInsufficientPermissionError,
   TimelineNoMoreNotesError,
 } from './model/errors.js';
 import {
+  AppendListMemberRoute,
   CreateListRoute,
   DeleteListRoute,
   EditListRoute,
@@ -44,6 +48,7 @@ import {
   GetListTimelineRoute,
 } from './router.js';
 import { accountTimeline } from './service/account.js';
+import { appendListMember } from './service/appendMember.js';
 import { createList } from './service/createList.js';
 import { deleteList } from './service/deleteList.js';
 import { editList } from './service/editList.js';
@@ -121,6 +126,9 @@ const controller = new TimelineController({
     Cat.cat(homeTimeline)
       .feed(Ether.compose(timelineCacheRepository))
       .feed(Ether.compose(timelineRepository)).value,
+  ),
+  appendListMemberService: Ether.runEther(
+    Cat.cat(appendListMember).feed(Ether.compose(listRepository)).value,
   ),
 });
 
@@ -336,4 +344,36 @@ timeline.openapi(GetListMemberRoute, async (c) => {
 
   const unwrapped = Result.unwrap(res);
   return c.json(unwrapped, 200);
+});
+
+timeline[AppendListMemberRoute.method](
+  AppendListMemberRoute.path,
+  AuthMiddleware.handle({ forceAuthorized: true }),
+);
+timeline.openapi(AppendListMemberRoute, async (c) => {
+  const actorID = Option.unwrap(c.get('accountID'));
+  const { id } = c.req.valid('param');
+  const { account_id } = c.req.valid('json');
+
+  const res = await controller.appendListMember(id, account_id, actorID);
+  if (Result.isErr(res)) {
+    const error = Result.unwrapErr(res);
+
+    if (error instanceof ListNotFoundError) {
+      return c.json({ error: 'LIST_NOT_FOUND' as const }, 404);
+    }
+    if (error instanceof AccountNotFoundError) {
+      return c.json({ error: 'ACCOUNT_NOT_FOUND' as const }, 404);
+    }
+    if (error instanceof TimelineInsufficientPermissionError) {
+      return c.json({ error: 'NO_PERMISSION' as const }, 403);
+    }
+    if (error instanceof ListTooManyMembersError) {
+      return c.json({ error: 'TOO_MANY_MEMBERS' as const }, 400);
+    }
+    if (error instanceof ListInternalError) {
+      return c.json({ error: 'INTERNAL_ERROR' as const }, 500);
+    }
+  }
+  return new Response(undefined, { status: 204 });
 });

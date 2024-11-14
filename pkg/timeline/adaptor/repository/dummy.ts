@@ -1,6 +1,7 @@
 import { Ether, Result } from '@mikuroxina/mini-fn';
 
 import type { AccountID } from '../../../accounts/model/account.js';
+import { AccountNotFoundError } from '../../../accounts/model/errors.js';
 import type { Note, NoteID } from '../../../notes/model/note.js';
 import { ListInternalError, ListNotFoundError } from '../../model/errors.js';
 import type { List, ListID } from '../../model/list.js';
@@ -168,6 +169,46 @@ export class InMemoryListRepository implements ListRepository {
       return Result.err(new ListNotFoundError('Not found', { cause: null }));
     }
     return Result.ok(list.getMemberIds() as AccountID[]);
+  }
+
+  async appendListMember(
+    listID: ListID,
+    accountID: AccountID,
+  ): Promise<Result.Result<Error, void>> {
+    const list = this.listData.get(listID);
+    if (!list) {
+      return Result.err(new ListNotFoundError('Not found', { cause: null }));
+    }
+
+    if (list.getMemberIds().includes(accountID)) {
+      // ToDo: Replace Error to ListMemberAlreadyExistsError
+      return Result.err(
+        new ListInternalError('Account already exists', { cause: null }),
+      );
+    }
+
+    list.addMember(accountID);
+
+    return Result.ok(undefined);
+  }
+
+  async removeListMember(
+    listID: ListID,
+    accountID: AccountID,
+  ): Promise<Result.Result<Error, void>> {
+    const list = this.listData.get(listID);
+    if (!list) {
+      return Result.err(new ListNotFoundError('Not found', { cause: null }));
+    }
+
+    if (!list.getMemberIds().includes(accountID)) {
+      return Result.err(
+        new AccountNotFoundError('List member not found', { cause: null }),
+      );
+    }
+
+    list.removeMember(accountID);
+    return Result.ok(undefined);
   }
 
   reset(data: readonly List[] = [], notes: readonly Note[] = []) {

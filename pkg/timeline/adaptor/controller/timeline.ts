@@ -9,6 +9,7 @@ import type { Note, NoteID } from '../../../notes/model/note.js';
 import type { Reaction } from '../../../notes/model/reaction.js';
 import type { ListID } from '../../model/list.js';
 import type { AccountTimelineService } from '../../service/account.js';
+import type { AppendListMemberService } from '../../service/appendMember.js';
 import type { CreateListService } from '../../service/createList.js';
 import type { DeleteListService } from '../../service/deleteList.js';
 import type { EditListService } from '../../service/editList.js';
@@ -38,6 +39,7 @@ export class TimelineController {
   private readonly listTimelineService: ListTimelineService;
   private readonly noteModule: NoteModuleFacade;
   private readonly homeTimeline: HomeTimelineService;
+  private readonly appendListMemberService: AppendListMemberService;
 
   constructor(args: {
     accountTimelineService: AccountTimelineService;
@@ -50,6 +52,7 @@ export class TimelineController {
     listTimelineService: ListTimelineService;
     noteModule: NoteModuleFacade;
     homeTimeline: HomeTimelineService;
+    appendListMemberService: AppendListMemberService;
   }) {
     this.accountTimelineService = args.accountTimelineService;
     this.accountModule = args.accountModule;
@@ -61,6 +64,7 @@ export class TimelineController {
     this.listTimelineService = args.listTimelineService;
     this.noteModule = args.noteModule;
     this.homeTimeline = args.homeTimeline;
+    this.appendListMemberService = args.appendListMemberService;
   }
 
   private async getNoteAdditionalData(notes: readonly Note[]): Promise<
@@ -439,5 +443,17 @@ export class TimelineController {
     });
 
     return Result.ok({ assignees: res });
+  }
+
+  async appendListMember(
+    listID: string,
+    memberID: string,
+    actorID: string,
+  ): Promise<Result.Result<Error, void>> {
+    return this.appendListMemberService.handle(
+      listID as ListID,
+      memberID as AccountID,
+      actorID as AccountID,
+    );
   }
 }
