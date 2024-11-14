@@ -10,7 +10,7 @@ import { type ListRepository, listRepoSymbol } from '../model/repository.js';
 
 export class AppendListMemberService {
   // ToDo: make this configurable
-  private LIST_MEMBER_LIMIT = 250;
+  private readonly LIST_MEMBER_LIMIT = 250;
   constructor(private readonly listRepository: ListRepository) {}
 
   /**
@@ -34,7 +34,10 @@ export class AppendListMemberService {
         }),
       );
     }
-    const allowedRes = this.isAllowed(actorID, Result.unwrap(listRes));
+    const allowedRes = this.verifyActorPermission(
+      actorID,
+      Result.unwrap(listRes),
+    );
     if (Result.isErr(allowedRes)) {
       return allowedRes;
     }
@@ -60,7 +63,10 @@ export class AppendListMemberService {
     return await this.listRepository.appendListMember(listID, accountID);
   }
 
-  private isAllowed(actor: AccountID, list: List): Result.Result<Error, void> {
+  private verifyActorPermission(
+    actor: AccountID,
+    list: List,
+  ): Result.Result<Error, void> {
     if (list.getOwnerId() !== actor) {
       return Result.err(
         new TimelineInsufficientPermissionError(
