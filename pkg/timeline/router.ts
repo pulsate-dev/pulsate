@@ -3,9 +3,11 @@ import { createRoute, z } from '@hono/zod-openapi';
 import { AccountNotFound } from '../accounts/adaptor/presenter/errors.js';
 import {
   ListNotFound,
+  NoPermission,
   NothingLeft,
   TimelineInternalError,
   TitleTooLong,
+  TooManyMembers,
   YouAreBlocked,
 } from './adaptor/presenter/errors.js';
 import {
@@ -464,6 +466,116 @@ export const GetListMemberRoute = createRoute({
             }),
         },
       },
+    },
+  },
+});
+
+export const AppendListMemberRoute = createRoute({
+  method: 'post',
+  tags: ['timeline'],
+  path: '/lists/:id/members',
+  security: [
+    {
+      bearer: [],
+    },
+  ],
+  request: {
+    params: z.object({
+      id: z.string().openapi('List ID'),
+    }),
+    body: {
+      content: {
+        'application/json': {
+          schema: z.object({
+            account_id: z.string().openapi('Account ID'),
+          }),
+        },
+      },
+    },
+  },
+  responses: {
+    204: {
+      description: 'OK',
+    },
+    400: {
+      content: {
+        'application/json': {
+          schema: z.object({
+            error: TooManyMembers,
+          }),
+        },
+      },
+      description: 'Too many members',
+    },
+    403: {
+      content: {
+        'application/json': {
+          schema: z.object({
+            error: z.union([NoPermission, YouAreBlocked]),
+          }),
+        },
+      },
+      description: 'You do not have permission to add member to this list',
+    },
+    404: {
+      content: {
+        'application/json': {
+          schema: z.object({
+            error: z.union([ListNotFound, AccountNotFound]),
+          }),
+        },
+      },
+      description: 'List not found',
+    },
+  },
+});
+
+export const DeleteListMemberRoute = createRoute({
+  method: 'delete',
+  tags: ['timeline'],
+  path: '/lists/:id/members',
+  security: [
+    {
+      bearer: [],
+    },
+  ],
+  request: {
+    params: z.object({
+      id: z.string().openapi('List ID'),
+    }),
+    body: {
+      content: {
+        'application/json': {
+          schema: z.object({
+            account_id: z.string().openapi('Account ID'),
+          }),
+        },
+      },
+    },
+  },
+  responses: {
+    204: {
+      description: 'OK',
+    },
+    403: {
+      content: {
+        'application/json': {
+          schema: z.object({
+            error: z.union([NoPermission, YouAreBlocked]),
+          }),
+        },
+      },
+      description: 'You do not have permission to remove member to this list',
+    },
+    404: {
+      content: {
+        'application/json': {
+          schema: z.object({
+            error: z.union([ListNotFound, AccountNotFound]),
+          }),
+        },
+      },
+      description: 'List not found',
     },
   },
 });
