@@ -17,6 +17,7 @@ import type { FetchListService } from '../../service/fetchList.js';
 import type { FetchListMemberService } from '../../service/fetchMember.js';
 import type { HomeTimelineService } from '../../service/home.js';
 import type { ListTimelineService } from '../../service/list.js';
+import type { RemoveListMemberService } from '../../service/removeMember.js';
 import type {
   CreateListResponseSchema,
   EditListRequestSchema,
@@ -40,6 +41,7 @@ export class TimelineController {
   private readonly noteModule: NoteModuleFacade;
   private readonly homeTimeline: HomeTimelineService;
   private readonly appendListMemberService: AppendListMemberService;
+  private readonly removeListMemberService: RemoveListMemberService;
 
   constructor(args: {
     accountTimelineService: AccountTimelineService;
@@ -53,6 +55,7 @@ export class TimelineController {
     noteModule: NoteModuleFacade;
     homeTimeline: HomeTimelineService;
     appendListMemberService: AppendListMemberService;
+    removeListMemberService: RemoveListMemberService;
   }) {
     this.accountTimelineService = args.accountTimelineService;
     this.accountModule = args.accountModule;
@@ -65,6 +68,7 @@ export class TimelineController {
     this.noteModule = args.noteModule;
     this.homeTimeline = args.homeTimeline;
     this.appendListMemberService = args.appendListMemberService;
+    this.removeListMemberService = args.removeListMemberService;
   }
 
   private async getNoteAdditionalData(notes: readonly Note[]): Promise<
@@ -451,6 +455,18 @@ export class TimelineController {
     actorID: string,
   ): Promise<Result.Result<Error, void>> {
     return this.appendListMemberService.handle(
+      listID as ListID,
+      memberID as AccountID,
+      actorID as AccountID,
+    );
+  }
+
+  async removeListMember(
+    listID: string,
+    memberID: string,
+    actorID: string,
+  ): Promise<Result.Result<Error, void>> {
+    return this.removeListMemberService.handle(
       listID as ListID,
       memberID as AccountID,
       actorID as AccountID,
