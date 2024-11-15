@@ -33,8 +33,10 @@ describe('RemoveListMemberService', () => {
       '2' as AccountID,
       '1' as AccountID,
     );
+    const listRes = await listRepository.fetchListMembers('10' as ListID);
 
     expect(Result.isErr(res)).toBe(false);
+    expect(Result.unwrap(listRes)).toHaveLength(1);
   });
 
   it("should return error if list doesn't exist", async () => {
