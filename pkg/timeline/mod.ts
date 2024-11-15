@@ -39,6 +39,7 @@ import {
 import {
   AppendListMemberRoute,
   CreateListRoute,
+  DeleteListMemberRoute,
   DeleteListRoute,
   EditListRoute,
   FetchListRoute,
@@ -57,6 +58,7 @@ import { fetchListMember } from './service/fetchMember.js';
 import { homeTimeline } from './service/home.js';
 import { listTimeline } from './service/list.js';
 import { noteVisibility } from './service/noteVisibility.js';
+import { removeListMember } from './service/removeMember.js';
 
 const isProduction = process.env.NODE_ENV === 'production';
 
@@ -129,6 +131,9 @@ const controller = new TimelineController({
   ),
   appendListMemberService: Ether.runEther(
     Cat.cat(appendListMember).feed(Ether.compose(listRepository)).value,
+  ),
+  removeListMemberService: Ether.runEther(
+    Cat.cat(removeListMember).feed(Ether.compose(listRepository)).value,
   ),
 });
 
@@ -370,6 +375,35 @@ timeline.openapi(AppendListMemberRoute, async (c) => {
     }
     if (error instanceof ListTooManyMembersError) {
       return c.json({ error: 'TOO_MANY_MEMBERS' as const }, 400);
+    }
+    if (error instanceof ListInternalError) {
+      return c.json({ error: 'INTERNAL_ERROR' as const }, 500);
+    }
+  }
+  return new Response(undefined, { status: 204 });
+});
+
+timeline[DeleteListMemberRoute.method](
+  DeleteListMemberRoute.path,
+  AuthMiddleware.handle({ forceAuthorized: true }),
+);
+timeline.openapi(DeleteListMemberRoute, async (c) => {
+  const actorID = Option.unwrap(c.get('accountID'));
+  const { id } = c.req.valid('param');
+  const { account_id } = c.req.valid('json');
+
+  const res = await controller.removeListMember(id, account_id, actorID);
+  if (Result.isErr(res)) {
+    const error = Result.unwrapErr(res);
+
+    if (error instanceof ListNotFoundError) {
+      return c.json({ error: 'LIST_NOT_FOUND' as const }, 404);
+    }
+    if (error instanceof AccountNotFoundError) {
+      return c.json({ error: 'ACCOUNT_NOT_FOUND' as const }, 404);
+    }
+    if (error instanceof TimelineInsufficientPermissionError) {
+      return c.json({ error: 'NO_PERMISSION' as const }, 403);
     }
     if (error instanceof ListInternalError) {
       return c.json({ error: 'INTERNAL_ERROR' as const }, 500);
