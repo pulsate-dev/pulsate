@@ -2303,6 +2303,412 @@
         }
       }
     },
+    "/accounts/:name/avatar": {
+      "post": {
+        "tags": [
+          "accounts"
+        ],
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "schema": {
+              "type": "string",
+              "minLength": 3,
+              "maxLength": 64,
+              "description": "Characters must be [A-Za-z0-9-.] The first and last characters must be [A-Za-z0-9-.]",
+              "example": "example_man"
+            },
+            "required": true,
+            "name": "name",
+            "in": "path"
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "medium_id": {
+                    "type": "string",
+                    "description": "Medium ID",
+                    "example": "38477395"
+                  }
+                },
+                "required": [
+                  "medium_id"
+                ]
+              }
+            }
+          }
+        },
+        "responses": {
+          "204": {
+            "description": "No Content"
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string",
+                      "enum": [
+                        "NO_PERMISSION"
+                      ],
+                      "description": "You can't do this action."
+                    }
+                  },
+                  "required": [
+                    "error"
+                  ],
+                  "description": "You can not do this action."
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "anyOf": [
+                        {
+                          "type": "string",
+                          "enum": [
+                            "ACCOUNT_NOT_FOUND"
+                          ],
+                          "description": "Account not found."
+                        },
+                        {
+                          "type": "string",
+                          "enum": [
+                            "FILE_NOT_FOUND"
+                          ],
+                          "description": "File not found"
+                        }
+                      ]
+                    }
+                  },
+                  "required": [
+                    "error"
+                  ],
+                  "description": "account not found"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/InternalErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "accounts"
+        ],
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "schema": {
+              "type": "string",
+              "minLength": 3,
+              "maxLength": 64,
+              "description": "Characters must be [A-Za-z0-9-.] The first and last characters must be [A-Za-z0-9-.]",
+              "example": "example_man"
+            },
+            "required": true,
+            "name": "name",
+            "in": "path"
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "No Content"
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string",
+                      "enum": [
+                        "NO_PERMISSION"
+                      ],
+                      "description": "You can't do this action."
+                    }
+                  },
+                  "required": [
+                    "error"
+                  ],
+                  "description": "You can not do this action."
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string",
+                      "enum": [
+                        "ACCOUNT_NOT_FOUND"
+                      ],
+                      "description": "Account not found."
+                    }
+                  },
+                  "required": [
+                    "error"
+                  ],
+                  "description": "account not found"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/InternalErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/accounts/:name/header": {
+      "post": {
+        "tags": [
+          "accounts"
+        ],
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "schema": {
+              "type": "string",
+              "minLength": 3,
+              "maxLength": 64,
+              "description": "Characters must be [A-Za-z0-9-.] The first and last characters must be [A-Za-z0-9-.]",
+              "example": "example_man"
+            },
+            "required": true,
+            "name": "name",
+            "in": "path"
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "medium_id": {
+                    "type": "string",
+                    "description": "Medium ID",
+                    "example": "38477395"
+                  }
+                },
+                "required": [
+                  "medium_id"
+                ]
+              }
+            }
+          }
+        },
+        "responses": {
+          "204": {
+            "description": "No Content"
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string",
+                      "enum": [
+                        "NO_PERMISSION"
+                      ],
+                      "description": "You can't do this action."
+                    }
+                  },
+                  "required": [
+                    "error"
+                  ],
+                  "description": "You can not do this action."
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "anyOf": [
+                        {
+                          "type": "string",
+                          "enum": [
+                            "ACCOUNT_NOT_FOUND"
+                          ],
+                          "description": "Account not found."
+                        },
+                        {
+                          "type": "string",
+                          "enum": [
+                            "FILE_NOT_FOUND"
+                          ],
+                          "description": "File not found"
+                        }
+                      ]
+                    }
+                  },
+                  "required": [
+                    "error"
+                  ],
+                  "description": "account not found"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/InternalErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/accounts/:name/head": {
+      "delete": {
+        "tags": [
+          "accounts"
+        ],
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "schema": {
+              "type": "string",
+              "minLength": 3,
+              "maxLength": 64,
+              "description": "Characters must be [A-Za-z0-9-.] The first and last characters must be [A-Za-z0-9-.]",
+              "example": "example_man"
+            },
+            "required": true,
+            "name": "name",
+            "in": "path"
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "No Content"
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string",
+                      "enum": [
+                        "NO_PERMISSION"
+                      ],
+                      "description": "You can't do this action."
+                    }
+                  },
+                  "required": [
+                    "error"
+                  ],
+                  "description": "You can not do this action."
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string",
+                      "enum": [
+                        "ACCOUNT_NOT_FOUND"
+                      ],
+                      "description": "Account not found."
+                    }
+                  },
+                  "required": [
+                    "error"
+                  ],
+                  "description": "account not found"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/InternalErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/notes": {
       "post": {
         "tags": [
