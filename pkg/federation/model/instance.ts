@@ -28,9 +28,9 @@ export interface CreateInstanceArgs {
   firstContact: Date;
   extentions: string[];
   // private
-  state: InstanceBlocking;
+  blocking: InstanceBlocking;
   silenced: InstanceSilenced;
-  deliverState: InstanceDelivering;
+  delivering: InstanceDelivering;
   updated: Option.Option<Date>;
 }
 
@@ -251,7 +251,7 @@ export class Instance {
     this.setUpdated();
   }
 
-  isBlocked(): boolean {
+  isBlocking(): boolean {
     return this.state === 'blocking';
   }
 
@@ -323,16 +323,16 @@ export class Instance {
     this.adminContact = arg.adminContact;
     this.isLocal = arg.isLocal;
     this.firstContact = arg.firstContact;
-    this.state = arg.state;
+    this.state = arg.blocking;
     this.silenced = arg.silenced;
-    this.deliverState = arg.deliverState;
+    this.deliverState = arg.delivering;
     this.updated = arg.updated;
   }
 
   public static new(
     arg: Omit<
       CreateInstanceArgs,
-      'state' | 'silenced' | 'deliverState' | 'updated'
+      'blocking' | 'silenced' | 'delivering' | 'updated'
     >,
   ): Instance {
     if (arg.softwareName === '') arg.softwareName = 'Unknown';
@@ -340,9 +340,9 @@ export class Instance {
 
     return new Instance({
       ...arg,
-      state: 'normal',
+      blocking: 'normal',
       silenced: 'normal',
-      deliverState: 'normal',
+      delivering: 'normal',
       updated: Option.none(),
     });
   }
