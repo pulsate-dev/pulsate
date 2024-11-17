@@ -2,9 +2,18 @@ import { Option } from '@mikuroxina/mini-fn';
 import type { ID } from '../../id/type.js';
 
 export type InstanceID = ID<Instance>;
-export type InstanceState = 'normal' | 'blocked';
+/**
+ * Instance blocked by local
+ */
+export type InstanceBlocking = 'normal' | 'blocking';
+/**
+ * Instance silenced by local
+ */
 export type InstanceSilenced = 'normal' | 'silenced';
-export type InstanceDeliverState = 'normal' | 'stopped';
+/**
+ * Instance deliver state
+ */
+export type InstanceDelivering = 'normal' | 'stopped';
 
 export interface CreateInstanceArgs {
   id: InstanceID;
@@ -19,9 +28,9 @@ export interface CreateInstanceArgs {
   firstContact: Date;
   extentions: string[];
   // private
-  state: InstanceState;
+  state: InstanceBlocking;
   silenced: InstanceSilenced;
-  deliverState: InstanceDeliverState;
+  deliverState: InstanceDelivering;
   updated: Option.Option<Date>;
 }
 
@@ -46,7 +55,7 @@ export class Instance {
    */
   private description: string;
   /**
-   * Instance FQDN
+   * Instance FQDN(Fully Qualified Domain Name)
    * @example "pulsate.social"
    */
   private readonly fqdn: string;
@@ -85,7 +94,7 @@ export class Instance {
    * - `normal` - Instance is active
    * - `blocked` - Instance is blocked(reject all activity)
    */
-  private state: InstanceState;
+  private state: InstanceBlocking;
   /**
    * Instance silenced state
    * - `normal` - Instance is not silenced
@@ -97,7 +106,7 @@ export class Instance {
    * - `normal` - Instance is delivering notes
    * - `stopped` - Instance is not delivering notes
    */
-  private deliverState: InstanceDeliverState;
+  private deliverState: InstanceDelivering;
   /**
    * Instance isLocal flag
    * - `true` - Instance is local
@@ -157,8 +166,10 @@ export class Instance {
   }
 
   /**
-   * Instance FQDN
+   * Instance FQDN(Fully Qualified Domain Name)
    * @returns Instance FQDN
+   * @example "social.example.com"
+   * @example "social.example.com:3000"
    */
   getFQDN(): string {
     return this.fqdn;
@@ -241,13 +252,13 @@ export class Instance {
   }
 
   isBlocked(): boolean {
-    return this.state === 'blocked';
+    return this.state === 'blocking';
   }
 
   /**
    * Set instance state
    */
-  setInstanceState(state: InstanceState) {
+  setInstanceState(state: InstanceBlocking) {
     this.state = state;
     this.setUpdated();
   }
@@ -271,7 +282,7 @@ export class Instance {
   /**
    * Set instance deliver state
    */
-  setDeliverState(state: InstanceDeliverState) {
+  setDeliverState(state: InstanceDelivering) {
     this.deliverState = state;
     this.setUpdated();
   }
