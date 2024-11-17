@@ -6,6 +6,10 @@ Instance {
   "adminName": "Pulsate project",
   "deliverState": "normal",
   "description": "pulsate official instance",
+  "extentions": [
+    "quote",
+    "emoji_reaction",
+  ],
   "firstContact": 2023-09-10T00:00:00.000Z,
   "fqdn": "social.example.com:3000",
   "id": "1",

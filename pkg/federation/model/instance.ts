@@ -17,6 +17,7 @@ export interface CreateInstanceArgs {
   adminContact: string;
   isLocal: boolean;
   firstContact: Date;
+  extentions: string[];
   // private
   state: InstanceState;
   silenced: InstanceSilenced;
@@ -59,6 +60,15 @@ export class Instance {
    * @example "1.0.0"
    */
   private softwareVersion: string;
+  /**
+   * Instance software extentions list
+   * @example
+   * ```
+   * ["quote", "emoji_reaction"]
+   * ```
+   */
+  private extentions: string[];
+
   /**
    * Instance admin name
    * @example "Pulsate project"
@@ -180,6 +190,23 @@ export class Instance {
   }
 
   /**
+   * Instance software extentions list
+   * @returns Instance software extentions list
+   */
+  getExtentions(): string[] {
+    return this.extentions;
+  }
+
+  /**
+   * Set instance software extentions list
+   * @param extentions Software extentions list
+   */
+  setExtentions(extentions: string[]) {
+    this.extentions = extentions;
+    this.setUpdated();
+  }
+
+  /**
    * Instance admin name
    * @returns Instance admin name
    */
@@ -280,6 +307,7 @@ export class Instance {
     this.fqdn = arg.fqdn.host;
     this.softwareName = arg.softwareName;
     this.softwareVersion = arg.softwareVersion;
+    this.extentions = arg.extentions;
     this.adminName = arg.adminName;
     this.adminContact = arg.adminContact;
     this.isLocal = arg.isLocal;
