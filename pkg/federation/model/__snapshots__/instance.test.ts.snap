@@ -1,0 +1,22 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`Instance > should create new instance 1`] = `
+Instance {
+  "adminContact": "https://example.com/contact",
+  "adminName": "Pulsate project",
+  "deliverState": "normal",
+  "description": "pulsate official instance",
+  "firstContact": 2023-09-10T00:00:00.000Z,
+  "fqdn": "social.example.com:3000",
+  "id": "1",
+  "isLocal": true,
+  "name": "Pulsate social",
+  "silenced": "normal",
+  "softwareName": "Pulsate",
+  "softwareVersion": "0.1.0",
+  "state": "normal",
+  "updated": [
+    Symbol(OptionNone),
+  ],
+}
+`;
