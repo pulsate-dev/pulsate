@@ -1,0 +1,27 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`Actor > should create new instance 1`] = `
+Actor {
+  "accountID": "141421356",
+  "actorKeyPair": [
+    ActorKeyPair {
+      "actorID": "1",
+      "id": "10",
+      "privateKey": [
+        Symbol(OptionSome),
+        "privkey",
+      ],
+      "publicKey": "pubkey",
+      "publicKeyID": "https://social.example.com/actor/1#main-key",
+    },
+  ],
+  "followersURL": "https://social.example.com/accounts/31415926535/followers",
+  "followingURL": "https://social.example.com/accounts/31415926535/following",
+  "id": "1",
+  "inboxURL": "https://social.example.com/accounts/31415926535/inbox",
+  "instanceID": "31415926535",
+  "outboxURL": "https://social.example.com/accounts/31415926535/outbox",
+  "profileURL": "https://social.example.com/accounts/@john@example.com",
+  "sharedInboxURL": "https://social.example.com/shared-inbox",
+}
+`;
