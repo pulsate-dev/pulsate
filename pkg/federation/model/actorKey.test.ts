@@ -1,7 +1,7 @@
 import { Option, Result } from '@mikuroxina/mini-fn';
 import { describe, expect, it } from 'vitest';
 import type { ActorID } from './actor.js';
-import { ActorKeyPair, type ActorKeyPairID } from './actorKey.js';
+import { ActorKeyPair, type ActorKeyPairID, type PEMKey } from './actorKey.js';
 
 describe('ActorKeyPair', () => {
   it('should create new instance', () => {
@@ -22,8 +22,9 @@ Ood5BmUWJtg96v2FYxxjnDBQkD1qFpvFWoyzRNU9owBlTUKD+qI6NH0jGVlwlGDJ
 kZsIgf4501KTKY3YH3fHKj3bXb9MozcTrKQW12arM5jFEX6DXYy77YqA5bmXhM9x
 BphzO/AaWgS/aBlm//20N6c3Oxzi1vi4VKVFRVYcKsk9jnSxlkpsm1GzKd8WJEeZ
 tLtTfqF3d8xvBL9knI2i628CAwEAAQ==
------END PUBLIC KEY-----`,
-      privateKey: Option.some(`-----BEGIN PRIVATE KEY-----
+-----END PUBLIC KEY-----` as PEMKey,
+      privateKey: Option.some(
+        `-----BEGIN PRIVATE KEY-----
 MIIJRAIBADANBgkqhkiG9w0BAQEFAASCCS4wggkqAgEAAoICAQCopTt/0NNt4jO/
 RrgzlH0ERasNv/hIJP0gEtKCX8X7Tt+PJhuCUTlMwSdpkj64L6wWQ/qtTudZFBCB
 EaZCN12/fWjDVGx0ELQMHeEz+uj2bf2Sl+KIT8Uc4PWdnIz94tHZhdXBBYfFPWoL
@@ -74,7 +75,8 @@ mEbdxOGQ+G5pmyID6/ByHPRuFxO9ehDsmxkJ6gq+019u3ufuKCxlqpm8h2+zKLcC
 E2rJ1lmw2r/MXDRvfcK1T3utLYdEoGn049skcBQyNWN8YvonXPz/Qc5Ps5ODzJYG
 iNDpt5V9fc0O4yg3wC4SZrJsaLJJpu0GFqZTu0FKmUO12z5eKF+1aMf4UdCguqV2
 vfBYk096qOEdFfQma6qWoXYQa4orPLtI
------END PRIVATE KEY-----`),
+-----END PRIVATE KEY-----` as PEMKey,
+      ),
     });
 
     expect(res).toMatchSnapshot();
@@ -98,8 +100,9 @@ Ood5BmUWJtg96v2FYxxjnDBQkD1qFpvFWoyzRNU9owBlTUKD+qI6NH0jGVlwlGDJ
 kZsIgf4501KTKY3YH3fHKj3bXb9MozcTrKQW12arM5jFEX6DXYy77YqA5bmXhM9x
 BphzO/AaWgS/aBlm//20N6c3Oxzi1vi4VKVFRVYcKsk9jnSxlkpsm1GzKd8WJEeZ
 tLtTfqF3d8xvBL9knI2i628CAwEAAQ==
------END PUBLIC KEY-----`,
-      privateKey: Option.some(`-----BEGIN PRIVATE KEY-----
+-----END PUBLIC KEY-----` as PEMKey,
+      privateKey: Option.some(
+        `-----BEGIN PRIVATE KEY-----
 MIIJRAIBADANBgkqhkiG9w0BAQEFAASCCS4wggkqAgEAAoICAQCopTt/0NNt4jO/
 RrgzlH0ERasNv/hIJP0gEtKCX8X7Tt+PJhuCUTlMwSdpkj64L6wWQ/qtTudZFBCB
 EaZCN12/fWjDVGx0ELQMHeEz+uj2bf2Sl+KIT8Uc4PWdnIz94tHZhdXBBYfFPWoL
@@ -150,7 +153,8 @@ mEbdxOGQ+G5pmyID6/ByHPRuFxO9ehDsmxkJ6gq+019u3ufuKCxlqpm8h2+zKLcC
 E2rJ1lmw2r/MXDRvfcK1T3utLYdEoGn049skcBQyNWN8YvonXPz/Qc5Ps5ODzJYG
 iNDpt5V9fc0O4yg3wC4SZrJsaLJJpu0GFqZTu0FKmUO12z5eKF+1aMf4UdCguqV2
 vfBYk096qOEdFfQma6qWoXYQa4orPLtI
------END PRIVATE KEY-----`),
+-----END PRIVATE KEY-----` as PEMKey,
+      ),
     });
 
     const publicKey = await keyPair.getPublicKeyObject();

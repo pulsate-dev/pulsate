@@ -2,7 +2,7 @@ import { Option } from '@mikuroxina/mini-fn';
 import { describe, expect, it } from 'vitest';
 import type { AccountID } from '../../accounts/model/account.js';
 import { Actor, type ActorID } from './actor.js';
-import { ActorKeyPair, type ActorKeyPairID } from './actorKey.js';
+import { ActorKeyPair, type ActorKeyPairID, type PEMKey } from './actorKey.js';
 import type { InstanceID } from './instance.js';
 
 describe('Actor', () => {
@@ -31,8 +31,8 @@ describe('Actor', () => {
         ActorKeyPair.new({
           id: '10' as ActorKeyPairID,
           actorID: '1' as ActorID,
-          publicKey: 'pubkey',
-          privateKey: Option.some('privkey'),
+          publicKey: 'pubkey' as PEMKey,
+          privateKey: Option.some('privkey' as PEMKey),
           publicKeyID: new URL('https://social.example.com/actor/1#main-key'),
         }),
       ],
