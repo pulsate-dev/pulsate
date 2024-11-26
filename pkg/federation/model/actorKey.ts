@@ -4,13 +4,30 @@ import { importRSAKey } from '../cryptoLib.js';
 import type { ActorID } from './actor.js';
 
 export type ActorKeyPairID = ID<ActorKeyPair>;
+declare const PEMKeyNominal: unique symbol;
+/**
+ * PEM Key type
+ * @example
+ * ```
+ * -----BEGIN PUBLIC KEY-----
+ * ...key string (pem encoded)
+ * -----END PUBLIC KEY-----
+ * ```
+ * @example
+ * ```
+ * -----BEGIN PRIVATE KEY-----
+ * ...key string (pem encoded)
+ * -----END PRIVATE KEY-----
+ * ```
+ */
+export type PEMKey = string & { [PEMKeyNominal]: never };
 
 export interface CreateActorKeyPairArgs {
   id: ActorKeyPairID;
   actorID: ActorID;
   publicKeyID: URL;
-  publicKey: string;
-  privateKey: Option.Option<string>;
+  publicKey: PEMKey;
+  privateKey: Option.Option<PEMKey>;
 }
 
 /**
@@ -32,13 +49,13 @@ export class ActorKeyPair {
   /**
    * Public key for verify ActivityPub activity objects (PEM Format)
    */
-  private readonly publicKey: string;
+  private readonly publicKey: PEMKey;
 
   /**
    * Private key for sign ActivityPub activity objects (PEM Format)\
    * NOTE: if actor is remote account, this field is `Option.None`.
    */
-  private readonly privateKey: Option.Option<string>;
+  private readonly privateKey: Option.Option<PEMKey>;
 
   private constructor(args: CreateActorKeyPairArgs) {
     this.id = args.id;
@@ -81,7 +98,7 @@ export class ActorKeyPair {
    * Public key for verify ActivityPub activity objects (PEM Format)
    * @returns Public key
    */
-  getPublicKeyString(): string {
+  getPublicKeyString(): PEMKey {
     return this.publicKey;
   }
 
@@ -98,7 +115,7 @@ export class ActorKeyPair {
    * NOTE: if actor is remote account, this field is `Option.None`.
    * @returns Private key
    */
-  getPrivateKeyString(): Option.Option<string> {
+  getPrivateKeyString(): Option.Option<PEMKey> {
     return this.privateKey;
   }
 
@@ -109,7 +126,7 @@ export class ActorKeyPair {
   async getPrivateKeyObject(): Promise<Result.Result<Error, CryptoKey>> {
     if (Option.isNone(this.privateKey)) {
       // ToDo: Replace Error type
-      return Result.err(new Error(''));
+      return Result.err(new Error('Private key is not set'));
     }
     const privateKey = Option.unwrap(this.privateKey);
 

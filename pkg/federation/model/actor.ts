@@ -73,9 +73,12 @@ export class Actor {
   private sharedInboxURL: URL;
 
   /**
-   * Actor KeyPair for activity sign / verify
+   * Actor KeyPairs for activity signing / verifying
+   * NOTE: Actor has multiple key pairs for activity signing / verifying
+   * @see https://codeberg.org/fediverse/fep/src/branch/main/fep/521a/fep-521a.md
+   * @see https://w3c.github.io/vc-data-integrity/vocab/security/vocabulary.html#Multikey
    */
-  private actorKeyPair: ActorKeyPair[];
+  private readonly actorKeyPair: ActorKeyPair[];
 
   private constructor(args: CreateActorArgs) {
     this.id = args.id;
@@ -209,17 +212,12 @@ export class Actor {
   }
 
   /**
-   * Actor KeyPair for activity sign / verify
+   * Actor KeyPairs for activity sign / verify
+   * NOTE: Actor has multiple key pairs for activity signing / verifying
+   * @see https://codeberg.org/fediverse/fep/src/branch/main/fep/521a/fep-521a.md
+   * @see https://w3c.github.io/vc-data-integrity/vocab/security/vocabulary.html#Multikey
    */
   getActorKeyPair(): ActorKeyPair[] {
     return this.actorKeyPair;
-  }
-
-  /**
-   * Replace ActorKeyPair
-   * @param keyPair
-   */
-  setActorKeyPair(keyPair: ActorKeyPair[]) {
-    this.actorKeyPair = keyPair;
   }
 }

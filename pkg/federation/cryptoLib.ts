@@ -31,7 +31,7 @@ const importRSAPrivateKey = async (
 
     return Result.ok(keyObject);
   } catch (e) {
-    return Result.err(new Error('', { cause: e }));
+    return Result.err(new Error('Private key import failed', { cause: e }));
   }
 };
 
@@ -55,16 +55,16 @@ const importRSAPublicKey = async (
 
     return Result.ok(keyObject);
   } catch (e) {
-    return Result.err(new Error('', { cause: e }));
+    return Result.err(new Error('Public key import failed', { cause: e }));
   }
 };
 
 const convertPEMToArrayBuffer = (key: string) => {
   const base64 = key
-    .replace(/-----BEGIN PRIVATE KEY-----/, '')
-    .replace(/-----BEGIN PUBLIC KEY-----/, '')
-    .replace(/-----END PUBLIC KEY-----/, '')
-    .replace(/-----END PRIVATE KEY-----/, '')
-    .replace(/\n/g, '');
+    .replaceAll('-----BEGIN PRIVATE KEY-----', '')
+    .replaceAll('-----BEGIN PUBLIC KEY-----', '')
+    .replaceAll('-----END PUBLIC KEY-----', '')
+    .replaceAll('-----END PRIVATE KEY-----', '')
+    .replaceAll('\n', '');
   return Uint8Array.from(atob(base64), (c) => c.charCodeAt(0));
 };
