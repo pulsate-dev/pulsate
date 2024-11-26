@@ -78,7 +78,7 @@ export class Actor {
    * @see https://codeberg.org/fediverse/fep/src/branch/main/fep/521a/fep-521a.md
    * @see https://w3c.github.io/vc-data-integrity/vocab/security/vocabulary.html#Multikey
    */
-  private readonly actorKeyPair: ActorKeyPair[];
+  private readonly actorKeyPair: readonly ActorKeyPair[];
 
   private constructor(args: CreateActorArgs) {
     this.id = args.id;
@@ -217,7 +217,7 @@ export class Actor {
    * @see https://codeberg.org/fediverse/fep/src/branch/main/fep/521a/fep-521a.md
    * @see https://w3c.github.io/vc-data-integrity/vocab/security/vocabulary.html#Multikey
    */
-  getActorKeyPair(): ActorKeyPair[] {
+  getActorKeyPair(): readonly ActorKeyPair[] {
     return this.actorKeyPair;
   }
 }
