@@ -35,6 +35,7 @@ export interface AccountVerifyTokenRepository {
   findByID(
     id: AccountID,
   ): Promise<Option.Option<{ token: string; expire: Date }>>;
+  delete(id: AccountID): Promise<Result.Result<Error, void>>;
 }
 export const verifyTokenRepoSymbol =
   Ether.newEtherSymbol<AccountVerifyTokenRepository>();

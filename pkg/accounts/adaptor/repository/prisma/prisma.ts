@@ -256,6 +256,20 @@ export class PrismaAccountVerifyTokenRepository
       expire: res.expiresAt,
     });
   }
+
+  async delete(id: AccountID): Promise<Result.Result<Error, void>> {
+    try {
+      await this.prisma.accountVerifyToken.delete({
+        where: {
+          accountId: id,
+        },
+      });
+      console.log('done');
+      return Result.ok(undefined);
+    } catch (e) {
+      return Result.err(parsePrismaError(e));
+    }
+  }
 }
 export const prismaVerifyTokenRepo = (client: PrismaClient) =>
   Ether.newEther(

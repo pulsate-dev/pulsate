@@ -14,24 +14,29 @@ export class InMemoryAccountVerifyTokenRepository
     this.data = new Map();
   }
 
-  create(
+  async create(
     accountID: AccountID,
     token: string,
     expire: Date,
   ): Promise<Result.Result<Error, void>> {
     this.data.set(accountID.toString(), { token, expire });
-    return Promise.resolve(Result.ok(undefined));
+    return Result.ok(undefined);
   }
 
-  findByID(
+  async findByID(
     id: AccountID,
   ): Promise<Option.Option<{ token: string; expire: Date }>> {
     const data = this.data.get(id);
     if (!data) {
-      return Promise.resolve(Option.none());
+      return Option.none();
     }
 
-    return Promise.resolve(Option.some(data));
+    return Option.some(data);
+  }
+
+  async delete(id: AccountID): Promise<Result.Result<Error, void>> {
+    this.data.delete(id);
+    return Result.ok(undefined);
   }
 }
 

@@ -66,22 +66,23 @@ export class VerifyAccountTokenService {
     accountName: AccountName,
     token: string,
   ): Promise<Result.Result<Error, void>> {
-    const account = await this.accountRepository.findByName(accountName);
-    if (Option.isNone(account)) {
+    const accountRes = await this.accountRepository.findByName(accountName);
+    if (Option.isNone(accountRes)) {
       return Result.err(
         new AccountNotFoundError('account not found', { cause: null }),
       );
     }
+    const account = Option.unwrap(accountRes);
 
-    const res = await this.repository.findByID(account[1].getID());
-    if (Option.isNone(res)) {
-      // ToDo(laminne): Consider whether to create an error type (e.g. AccountNotFoundError)
+    const tokenRes = await this.repository.findByID(account.getID());
+    if (Option.isNone(tokenRes)) {
       return Result.err(
         new AccountNotFoundError('account not found', { cause: null }),
       );
     }
+    const tokenData = Option.unwrap(tokenRes);
 
-    if (res[1].expire < new Date()) {
+    if (tokenData.expire < new Date()) {
       return Result.err(
         new AccountMailAddressVerificationTokenInvalidError('Token expired', {
           cause: null,
@@ -89,12 +90,24 @@ export class VerifyAccountTokenService {
       );
     }
 
-    if (res[1].token !== token) {
+    if (tokenData.token !== token) {
       return Result.err(
         new AccountMailAddressVerificationTokenInvalidError('Token not match', {
           cause: null,
         }),
       );
+    }
+
+    account.activate();
+    const editRes = await this.accountRepository.edit(account);
+    if (Result.isErr(editRes)) {
+      return editRes;
+    }
+
+    // tokenを削除する
+    const deleteTokenRes = await this.repository.delete(account.getID());
+    if (Result.isErr(deleteTokenRes)) {
+      return deleteTokenRes;
     }
 
     return Result.ok(undefined);
