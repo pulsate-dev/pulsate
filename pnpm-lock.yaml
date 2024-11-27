@@ -52,7 +52,7 @@ importers:
         version: 0.33.5
       typescript:
         specifier: ^5.3.3
-        version: 5.6.3
+        version: 5.7.2
     devDependencies:
       '@biomejs/biome':
         specifier: ^1.8.3
@@ -1296,8 +1296,8 @@ packages:
   tslib@2.6.3:
     resolution: {integrity: sha512-xNvxJEOUiWPGhUuUdQgAJPKOOJfGnIyKySOc09XkKsgdUV/3E2zvwZYdejjmRgPCgcym1juLH3226yA7sEFJKQ==}
 
-  typescript@5.6.3:
-    resolution: {integrity: sha512-hjcS1mhfuyi4WW8IWtjP7brDrG2cuDZukyrYrSauoXGNgx0S7zceP07adYkJycEr56BOUTNPzbInooiN3fn1qw==}
+  typescript@5.7.2:
+    resolution: {integrity: sha512-i5t66RHxDvVN40HfDd1PsEThGNnlMCMT3jMUuoh9/0TaqWevNontacunWyN02LA9/fIbEWlcHZcgTKb9QoaLfg==}
     engines: {node: '>=14.17'}
     hasBin: true
 
@@ -2421,7 +2421,7 @@ snapshots:
   tslib@2.6.3:
     optional: true
 
-  typescript@5.6.3: {}
+  typescript@5.7.2: {}
 
   uint8array-extras@1.4.0: {}
 
