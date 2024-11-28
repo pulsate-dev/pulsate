@@ -98,16 +98,15 @@ export class VerifyAccountTokenService {
       );
     }
 
+    const deleteTokenRes = await this.repository.delete(account.getID());
+    if (Result.isErr(deleteTokenRes)) {
+      return deleteTokenRes;
+    }
+
     account.activate();
     const editRes = await this.accountRepository.edit(account);
     if (Result.isErr(editRes)) {
       return editRes;
-    }
-
-    // tokenを削除する
-    const deleteTokenRes = await this.repository.delete(account.getID());
-    if (Result.isErr(deleteTokenRes)) {
-      return deleteTokenRes;
     }
 
     return Result.ok(undefined);

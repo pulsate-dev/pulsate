@@ -35,6 +35,12 @@ export interface AccountVerifyTokenRepository {
   findByID(
     id: AccountID,
   ): Promise<Option.Option<{ token: string; expire: Date }>>;
+
+  /**
+   * Delete a token by account ID.\
+   * NOTE: If the account ID does not exist, it will return error.
+   * @param id
+   */
   delete(id: AccountID): Promise<Result.Result<Error, void>>;
 }
 export const verifyTokenRepoSymbol =

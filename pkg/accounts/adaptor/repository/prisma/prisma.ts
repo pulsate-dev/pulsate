@@ -264,7 +264,6 @@ export class PrismaAccountVerifyTokenRepository
           accountId: id,
         },
       });
-      console.log('done');
       return Result.ok(undefined);
     } catch (e) {
       return Result.err(parsePrismaError(e));
