@@ -1,4 +1,4 @@
-import { Result } from '@mikuroxina/mini-fn';
+import { Option, Result } from '@mikuroxina/mini-fn';
 import { describe, expect, it } from 'vitest';
 
 import { MockClock } from '../../id/mod.js';
@@ -40,7 +40,9 @@ describe('VerifyAccountTokenService', () => {
     if (Result.isErr(token)) {
       return;
     }
-
+    expect(Option.isNone(await repository.findByID('1' as AccountID))).toBe(
+      false,
+    );
     const verify = await service.verify('@johndoe@example.com', token[1]);
     if (Result.isErr(verify)) {
       return;
@@ -48,6 +50,9 @@ describe('VerifyAccountTokenService', () => {
 
     expect(Result.isOk(token)).toBe(true);
     expect(Result.isOk(verify)).toBe(true);
+    expect(Option.isNone(await repository.findByID('1' as AccountID))).toBe(
+      true,
+    );
   });
 
   it('expired token', async () => {
