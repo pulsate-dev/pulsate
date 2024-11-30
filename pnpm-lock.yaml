@@ -50,6 +50,9 @@ importers:
       sharp:
         specifier: ^0.33.4
         version: 0.33.5
+      tslog:
+        specifier: ^4.9.3
+        version: 4.9.3
       typescript:
         specifier: ^5.3.3
         version: 5.7.2
@@ -614,7 +617,6 @@ packages:
 
   '@ls-lint/ls-lint@2.2.3':
     resolution: {integrity: sha512-ekM12jNm/7O2I/hsRv9HvYkRdfrHpiV1epVuI2NP+eTIcEgdIdKkKCs9KgQydu/8R5YXTov9aHdOgplmCHLupw==}
-    cpu: [x64, arm64, s390x]
     os: [darwin, linux, win32]
     hasBin: true
 
@@ -1295,6 +1297,10 @@ packages:
 
   tslib@2.6.3:
     resolution: {integrity: sha512-xNvxJEOUiWPGhUuUdQgAJPKOOJfGnIyKySOc09XkKsgdUV/3E2zvwZYdejjmRgPCgcym1juLH3226yA7sEFJKQ==}
+
+  tslog@4.9.3:
+    resolution: {integrity: sha512-oDWuGVONxhVEBtschLf2cs/Jy8i7h1T+CpdkTNWQgdAF7DhRo2G8vMCgILKe7ojdEkLhICWgI1LYSSKaJsRgcw==}
+    engines: {node: '>=16'}
 
   typescript@5.7.2:
     resolution: {integrity: sha512-i5t66RHxDvVN40HfDd1PsEThGNnlMCMT3jMUuoh9/0TaqWevNontacunWyN02LA9/fIbEWlcHZcgTKb9QoaLfg==}
@@ -2420,6 +2426,8 @@ snapshots:
 
   tslib@2.6.3:
     optional: true
+
+  tslog@4.9.3: {}
 
   typescript@5.7.2: {}
 

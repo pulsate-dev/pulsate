@@ -12,6 +12,7 @@ import { mediaModuleFacadeEther } from '../intermodule/media.js';
 import { argon2idPasswordEncoder } from '../password/mod.js';
 import { newTurnstileCaptchaValidator } from './adaptor/captcha/turnstile.js';
 import { AccountController } from './adaptor/controller/account.js';
+import { accountModuleLogger } from './adaptor/logger.js';
 import { captchaMiddleware } from './adaptor/middileware/captcha.js';
 import { InMemoryAccountRepository } from './adaptor/repository/dummy/account.js';
 import { inMemoryAccountAvatarRepo } from './adaptor/repository/dummy/avatar.js';
@@ -228,6 +229,7 @@ accounts.openapi(CreateAccountRoute, async (c) => {
   const res = await controller.createAccount(name, email, passphrase);
   if (Result.isErr(res)) {
     const error = Result.unwrapErr(res);
+    accountModuleLogger.warn(error);
     if (error instanceof AccountNameInvalidUsageError) {
       return c.json({ error: 'INVALID_ACCOUNT_NAME' as const }, 400);
     }
@@ -243,6 +245,7 @@ accounts.openapi(CreateAccountRoute, async (c) => {
     if (error instanceof AccountNameAlreadyInUseError) {
       return c.json({ error: 'ACCOUNT_NAME_IN_USE' as const }, 409);
     }
+    accountModuleLogger.error('Uncaught error', error);
     return c.json({ error: 'INTERNAL_ERROR' as const }, 500);
   }
 
@@ -276,7 +279,7 @@ accounts.openapi(UpdateAccountRoute, async (c) => {
   );
   if (Result.isErr(res)) {
     const error = Result.unwrapErr(res);
-
+    accountModuleLogger.warn(error);
     if (error instanceof AccountMailAddressLengthError) {
       return c.json({ error: 'INVALID_SEQUENCE' as const }, 400);
     }
@@ -286,6 +289,7 @@ accounts.openapi(UpdateAccountRoute, async (c) => {
     if (error instanceof AccountNotFoundError) {
       return c.json({ error: 'ACCOUNT_NOT_FOUND' as const }, 404);
     }
+    accountModuleLogger.error('Uncaught error', error);
     return c.json({ error: 'INTERNAL_ERROR' as const }, 500);
   }
 
@@ -303,7 +307,7 @@ accounts.openapi(FreezeAccountRoute, async (c) => {
   const res = await controller.freezeAccount(targetName, actor);
   if (Result.isErr(res)) {
     const error = Result.unwrapErr(res);
-
+    accountModuleLogger.warn(error);
     if (error instanceof AccountNotFoundError) {
       return c.json({ error: 'ACCOUNT_NOT_FOUND' as const }, 404);
     }
@@ -314,6 +318,7 @@ accounts.openapi(FreezeAccountRoute, async (c) => {
       return c.json({ error: 'NO_PERMISSION' as const }, 403);
     }
 
+    accountModuleLogger.error('Uncaught error', error);
     return c.json({ error: 'INTERNAL_ERROR' as const }, 500);
   }
 
@@ -331,7 +336,7 @@ accounts.openapi(UnFreezeAccountRoute, async (c) => {
   const res = await controller.unFreezeAccount(targetName, actor);
   if (Result.isErr(res)) {
     const error = Result.unwrapErr(res);
-
+    accountModuleLogger.warn(error);
     if (error instanceof AccountNotFoundError) {
       return c.json({ error: 'ACCOUNT_NOT_FOUND' as const }, 404);
     }
@@ -339,6 +344,7 @@ accounts.openapi(UnFreezeAccountRoute, async (c) => {
       return c.json({ error: 'NO_PERMISSION' as const }, 403);
     }
 
+    accountModuleLogger.error('Uncaught error', error);
     return c.json({ error: 'INTERNAL_ERROR' as const }, 500);
   }
 
@@ -352,7 +358,7 @@ accounts.openapi(VerifyEmailRoute, async (c) => {
   const res = await controller.verifyEmail(name, token);
   if (Result.isErr(res)) {
     const error = Result.unwrapErr(res);
-
+    accountModuleLogger.warn(error);
     if (error instanceof AccountNotFoundError) {
       return c.json({ error: 'ACCOUNT_NOT_FOUND' as const }, 404);
     }
@@ -360,6 +366,7 @@ accounts.openapi(VerifyEmailRoute, async (c) => {
       return c.json({ error: 'INVALID_TOKEN' as const }, 400);
     }
 
+    accountModuleLogger.error('Uncaught error', error);
     return c.json({ error: 'INTERNAL_ERROR' as const }, 500);
   }
 
@@ -377,10 +384,11 @@ accounts.openapi(GetAccountRoute, async (c) => {
     const res = await controller.getAccountByName(identifier);
     if (Result.isErr(res)) {
       const error = Result.unwrapErr(res);
-
+      accountModuleLogger.warn(error);
       if (error instanceof AccountNotFoundError) {
         return c.json({ error: 'ACCOUNT_NOT_FOUND' as const }, 404);
       }
+      accountModuleLogger.error('Uncaught error', error);
       return c.json({ error: 'INTERNAL_ERROR' as const }, 500);
     }
     const account = Result.unwrap(res);
@@ -403,10 +411,11 @@ accounts.openapi(GetAccountRoute, async (c) => {
   const res = await controller.getAccount(identifier);
   if (Result.isErr(res)) {
     const error = Result.unwrapErr(res);
-
+    accountModuleLogger.warn(error);
     if (error instanceof AccountNotFoundError) {
       return c.json({ error: 'ACCOUNT_NOT_FOUND' as const }, 404);
     }
+    accountModuleLogger.error('Uncaught error', error);
     return c.json({ error: 'INTERNAL_ERROR' as const }, 500);
   }
   const account = Result.unwrap(res);
@@ -432,7 +441,7 @@ accounts.openapi(LoginRoute, async (c) => {
   const res = await controller.login(name as AccountName, passphrase);
   if (Result.isErr(res)) {
     const error = Result.unwrapErr(res);
-
+    accountModuleLogger.warn(error);
     if (error instanceof AccountAuthenticationFailedError) {
       return c.json({ error: 'FAILED_TO_LOGIN' as const }, 400);
     }
@@ -442,7 +451,7 @@ accounts.openapi(LoginRoute, async (c) => {
     if (error instanceof AccountLoginRejectedError) {
       return c.json({ error: 'YOU_ARE_FROZEN' as const }, 403);
     }
-
+    accountModuleLogger.error('Uncaught error', error);
     return c.json({ error: 'INTERNAL_ERROR' as const }, 500);
   }
 
@@ -463,7 +472,7 @@ accounts.openapi(SilenceAccountRoute, async (c) => {
   const res = await controller.silenceAccount(name, actor);
   if (Result.isErr(res)) {
     const error = Result.unwrapErr(res);
-
+    accountModuleLogger.warn(error);
     if (error instanceof AccountInsufficientPermissionError) {
       return c.json({ error: 'NO_PERMISSION' as const }, 403);
     }
@@ -471,7 +480,7 @@ accounts.openapi(SilenceAccountRoute, async (c) => {
     if (error instanceof AccountNotFoundError) {
       return c.json({ error: 'ACCOUNT_NOT_FOUND' as const }, 404);
     }
-
+    accountModuleLogger.error('Uncaught error', error);
     return c.json({ error: 'INTERNAL_ERROR' }, 500);
   }
 
@@ -488,14 +497,14 @@ accounts.openapi(UnSilenceAccountRoute, async (c) => {
   const res = await controller.unSilenceAccount(name, actor);
   if (Result.isErr(res)) {
     const error = Result.unwrapErr(res);
-
+    accountModuleLogger.warn(error);
     if (error instanceof AccountInsufficientPermissionError) {
       return c.json({ error: 'NO_PERMISSION' as const }, 403);
     }
     if (error instanceof AccountNotFoundError) {
       return c.json({ error: 'ACCOUNT_NOT_FOUND' as const }, 404);
     }
-
+    accountModuleLogger.error('Uncaught error', error);
     return c.json({ error: 'INTERNAL_ERROR' }, 500);
   }
 
@@ -513,7 +522,7 @@ accounts.openapi(FollowAccountRoute, async (c) => {
   const res = await controller.followAccount(fromName, targetName);
   if (Result.isErr(res)) {
     const error = Result.unwrapErr(res);
-
+    accountModuleLogger.warn(error);
     if (error instanceof AccountAlreadyFollowingError) {
       return c.json({ error: 'ALREADY_FOLLOWING' as const }, 403);
     }
@@ -524,7 +533,7 @@ accounts.openapi(FollowAccountRoute, async (c) => {
     if (error instanceof AccountNotFoundError) {
       return c.json({ error: 'ACCOUNT_NOT_FOUND' as const }, 404);
     }
-
+    accountModuleLogger.error('Uncaught error', error);
     return c.json({ error: 'INTERNAL_ERROR' }, 500);
   }
 
@@ -542,14 +551,14 @@ accounts.openapi(UnFollowAccountRoute, async (c) => {
   const res = await controller.unFollowAccount(fromName, targetName);
   if (Result.isErr(res)) {
     const error = Result.unwrapErr(res);
-
+    accountModuleLogger.warn(error);
     if (error instanceof AccountNotFoundError) {
       return c.json({ error: 'ACCOUNT_NOT_FOUND' as const }, 404);
     }
     if (error instanceof AccountNotFollowingError) {
       return c.json({ error: 'YOU_ARE_NOT_FOLLOW_ACCOUNT' as const }, 403);
     }
-
+    accountModuleLogger.error('Uncaught error', error);
     return c.json({ error: 'INTERNAL_ERROR' }, 500);
   }
 
@@ -562,14 +571,14 @@ accounts.openapi(ResendVerificationEmailRoute, async (c) => {
   const res = await controller.resendVerificationEmail(name);
   if (Result.isErr(res)) {
     const error = Result.unwrapErr(res);
-
+    accountModuleLogger.warn(error);
     if (error instanceof AccountNotFoundError) {
       return c.json({ error: 'ACCOUNT_NOT_FOUND' as const }, 404);
     }
     if (error instanceof AccountMailAddressAlreadyVerifiedError) {
       return c.json({ error: 'ACCOUNT_ALREADY_VERIFIED' as const }, 400);
     }
-
+    accountModuleLogger.error('Uncaught error', error);
     return c.json({ error: 'INTERNAL_ERROR' as const }, 500);
   }
 
@@ -581,11 +590,11 @@ accounts.openapi(GetAccountFollowingRoute, async (c) => {
   const res = await controller.fetchFollowing(id);
   if (Result.isErr(res)) {
     const error = Result.unwrapErr(res);
-
+    accountModuleLogger.warn(error);
     if (error instanceof AccountNotFoundError) {
       return c.json({ error: 'ACCOUNT_NOT_FOUND' as const }, 404);
     }
-
+    accountModuleLogger.error('Uncaught error', error);
     return c.json({ error: 'INTERNAL_ERROR' as const }, 500);
   }
   const unwrap = Result.unwrap(res);
@@ -611,11 +620,11 @@ accounts.openapi(GetAccountFollowerRoute, async (c) => {
   const res = await controller.fetchFollower(id);
   if (Result.isErr(res)) {
     const error = Result.unwrapErr(res);
-
+    accountModuleLogger.warn(error);
     if (error instanceof AccountNotFoundError) {
       return c.json({ error: 'ACCOUNT_NOT_FOUND' as const }, 404);
     }
-
+    accountModuleLogger.error('Uncaught error', error);
     return c.json({ error: 'INTERNAL_ERROR' as const }, 500);
   }
   const unwrap = Result.unwrap(res);
@@ -649,7 +658,7 @@ accounts.openapi(SetAccountAvatarRoute, async (c) => {
   const res = await controller.setAvatar(name, actorID, medium_id);
   if (Result.isErr(res)) {
     const error = Result.unwrapErr(res);
-
+    accountModuleLogger.warn(error);
     if (error instanceof AccountNotFoundError) {
       return c.json({ error: 'ACCOUNT_NOT_FOUND' as const }, 404);
     }
@@ -659,6 +668,7 @@ accounts.openapi(SetAccountAvatarRoute, async (c) => {
     if (error instanceof MediaNotFoundError) {
       return c.json({ error: 'FILE_NOT_FOUND' as const }, 404);
     }
+    accountModuleLogger.error('Uncaught error', error);
     return c.json({ error: 'INTERNAL_ERROR' as const }, 500);
   }
 
@@ -676,13 +686,14 @@ accounts.openapi(UnsetAccountAvatarRoute, async (c) => {
   const res = await controller.unsetAvatar(name, actorID);
   if (Result.isErr(res)) {
     const error = Result.unwrapErr(res);
-
+    accountModuleLogger.warn(error);
     if (error instanceof AccountNotFoundError) {
       return c.json({ error: 'ACCOUNT_NOT_FOUND' as const }, 404);
     }
     if (error instanceof AccountInsufficientPermissionError) {
       return c.json({ error: 'NO_PERMISSION' as const }, 403);
     }
+    accountModuleLogger.error('Uncaught error', error);
     return c.json({ error: 'INTERNAL_ERROR' as const }, 500);
   }
 
@@ -701,7 +712,7 @@ accounts.openapi(SetAccountHeaderRoute, async (c) => {
   const res = await controller.setHeader(name, actorID, medium_id);
   if (Result.isErr(res)) {
     const error = Result.unwrapErr(res);
-
+    accountModuleLogger.warn(error);
     if (error instanceof AccountNotFoundError) {
       return c.json({ error: 'ACCOUNT_NOT_FOUND' as const }, 404);
     }
@@ -711,6 +722,7 @@ accounts.openapi(SetAccountHeaderRoute, async (c) => {
     if (error instanceof MediaNotFoundError) {
       return c.json({ error: 'FILE_NOT_FOUND' as const }, 404);
     }
+    accountModuleLogger.error('Uncaught error', error);
     return c.json({ error: 'INTERNAL_ERROR' as const }, 500);
   }
 

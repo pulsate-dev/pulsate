@@ -62,7 +62,7 @@ glob.stream(include).on('data', async (p) => {
       platform: 'node',
       outbase: '.',
       outdir: 'build',
-      sourcemap: 'external',
+      sourcemap: 'inline',
     })
     .catch(() => ctrl.fail(p));
 
