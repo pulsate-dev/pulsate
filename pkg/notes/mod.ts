@@ -18,6 +18,7 @@ import { timelineModuleFacadeEther } from '../intermodule/timeline.js';
 import { BookmarkController } from './adaptor/controller/bookmark.js';
 import { NoteController } from './adaptor/controller/note.js';
 import { ReactionController } from './adaptor/controller/reaction.js';
+import { noteModuleLogger } from './adaptor/logger.js';
 import {
   inMemoryBookmarkRepo,
   inMemoryNoteAttachmentRepo,
@@ -194,7 +195,7 @@ noteHandlers.openapi(CreateNoteRoute, async (c) => {
   });
   if (Result.isErr(res)) {
     const error = Result.unwrapErr(res);
-
+    noteModuleLogger.warn(error);
     if (error instanceof NoteTooManyAttachmentsError) {
       return c.json({ error: 'TOO_MANY_ATTACHMENTS' as const }, 400);
     }
@@ -216,6 +217,8 @@ noteHandlers.openapi(CreateNoteRoute, async (c) => {
     if (error instanceof NoteAttachmentNotFoundError) {
       return c.json({ error: 'ATTACHMENT_NOT_FOUND' as const }, 404);
     }
+
+    noteModuleLogger.error('Uncaught error', error);
     return c.json({ error: 'INTERNAL_ERROR' as const }, 500);
   }
 
@@ -231,9 +234,12 @@ noteHandlers.openapi(GetNoteRoute, async (c) => {
   const res = await controller.getNoteByID(id);
   if (Result.isErr(res)) {
     const error = Result.unwrapErr(res);
+    noteModuleLogger.warn(error);
     if (error instanceof NoteNotFoundError) {
       return c.json({ error: 'NOTE_NOT_FOUND' as const }, 404);
     }
+
+    noteModuleLogger.error('Uncaught error', error);
     return c.json({ error: 'INTERNAL_ERROR' as const }, 500);
   }
 
@@ -260,6 +266,7 @@ noteHandlers.openapi(RenoteRoute, async (c) => {
 
   if (Result.isErr(res)) {
     const error = Result.unwrapErr(res);
+    noteModuleLogger.warn(error);
 
     if (error instanceof NoteTooManyAttachmentsError) {
       return c.json({ error: 'TOO_MANY_ATTACHMENTS' as const }, 400);
@@ -279,6 +286,8 @@ noteHandlers.openapi(RenoteRoute, async (c) => {
     if (error instanceof NoteNotFoundError) {
       return c.json({ error: 'NOTE_NOT_FOUND' as const }, 404);
     }
+
+    noteModuleLogger.error('Uncaught error', error);
     return c.json({ error: 'INTERNAL_ERROR' as const }, 500);
   }
 
@@ -297,6 +306,8 @@ noteHandlers.openapi(CreateReactionRoute, async (c) => {
   const res = await reactionController.create(id, accountID, req.emoji);
   if (Result.isErr(res)) {
     const error = Result.unwrapErr(res);
+    noteModuleLogger.warn(error);
+
     if (error instanceof NoteAlreadyReactedError) {
       return c.json({ error: 'ALREADY_REACTED' as const }, 400);
     }
@@ -306,6 +317,8 @@ noteHandlers.openapi(CreateReactionRoute, async (c) => {
     if (error instanceof NoteNotFoundError) {
       return c.json({ error: 'NOTE_NOT_FOUND' as const }, 404);
     }
+
+    noteModuleLogger.error('Uncaught error', error);
     return c.json({ error: 'INTERNAL_ERROR' as const }, 500);
   }
 
@@ -324,9 +337,13 @@ noteHandlers.openapi(DeleteReactionRoute, async (c) => {
 
   if (Result.isErr(res)) {
     const error = Result.unwrapErr(res);
+    noteModuleLogger.warn(error);
+
     if (error instanceof NoteNotReactedYetError) {
       return c.json({ error: 'NOT_REACTED' as const }, 404);
     }
+
+    noteModuleLogger.error('Uncaught error', error);
     return c.json({ error: 'INTERNAL_ERROR' as const }, 500);
   }
 
@@ -345,10 +362,13 @@ noteHandlers.openapi(CreateBookmarkRoute, async (c) => {
 
   if (Result.isErr(res)) {
     const error = Result.unwrapErr(res);
+    noteModuleLogger.warn(error);
 
     if (error instanceof NoteNotFoundError) {
       return c.json({ error: 'NOTE_NOT_FOUND' as const }, 404);
     }
+
+    noteModuleLogger.error('Uncaught error', error);
     return c.json({ error: 'INTERNAL_ERROR' as const }, 500);
   }
 
@@ -367,10 +387,13 @@ noteHandlers.openapi(DeleteBookmarkRoute, async (c) => {
 
   if (Result.isErr(res)) {
     const error = Result.unwrapErr(res);
+    noteModuleLogger.warn(error);
 
     if (error instanceof NoteNotFoundError) {
       return c.json({ error: 'NOTE_NOT_FOUND' as const }, 404);
     }
+
+    noteModuleLogger.error('Uncaught error', error);
     return c.json({ error: 'INTERNAL_ERROR' as const }, 500);
   }
 

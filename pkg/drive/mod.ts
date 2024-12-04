@@ -9,6 +9,7 @@ import {
 } from '../adaptors/authenticateMiddleware.js';
 import { prismaClient } from '../adaptors/prisma.js';
 import { DriveController } from './adaptor/controller/drive.js';
+import { driveModuleLogger } from './adaptor/logger.js';
 import { inMemoryMediaRepo } from './adaptor/repository/dummy.js';
 import { prismaMediaRepo } from './adaptor/repository/prisma.js';
 import { MediaNotFoundError } from './model/errors.js';
@@ -66,10 +67,11 @@ drive.openapi(GetMediaRoute, async (c) => {
   const res = await controller.getMediaByAuthorId(accountID as AccountID);
   if (Result.isErr(res)) {
     const error = Result.unwrapErr(res);
+    driveModuleLogger.warn(error);
     if (error instanceof MediaNotFoundError) {
       return c.json({ error: 'FILE_NOT_FOUND' as const }, 404);
     }
-
+    driveModuleLogger.error('Uncaught error', error);
     return c.json({ error: 'INTERNAL_ERROR' as const }, 500);
   }
 

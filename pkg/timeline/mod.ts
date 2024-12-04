@@ -17,6 +17,7 @@ import {
 } from '../intermodule/account.js';
 import { noteModule } from '../intermodule/note.js';
 import { TimelineController } from './adaptor/controller/timeline.js';
+import { timelineModuleLogger } from './adaptor/logger.js';
 import {
   inMemoryListRepo,
   inMemoryTimelineRepo,
@@ -28,7 +29,6 @@ import {
 } from './adaptor/repository/prisma.js';
 import { valkeyTimelineCacheRepo } from './adaptor/repository/valkeyCache.js';
 import {
-  ListInternalError,
   ListNotFoundError,
   ListTitleTooLongError,
   ListTooManyMembersError,
@@ -166,11 +166,13 @@ timeline.openapi(GetHomeTimelineRoute, async (c) => {
   );
   if (Result.isErr(res)) {
     const error = Result.unwrapErr(res);
+    timelineModuleLogger.warn(error);
 
     if (error instanceof TimelineNoMoreNotesError) {
       return c.json({ error: 'NOTHING_LEFT' as const }, 404);
     }
 
+    timelineModuleLogger.error('Uncaught error', error);
     return c.json({ error: 'INTERNAL_ERROR' as const }, 500);
   }
 
@@ -195,6 +197,7 @@ timeline.openapi(GetAccountTimelineRoute, async (c) => {
   );
   if (Result.isErr(res)) {
     const error = Result.unwrapErr(res);
+    timelineModuleLogger.warn(error);
 
     if (error instanceof TimelineBlockedByAccountError) {
       return c.json({ error: 'YOU_ARE_BLOCKED' as const }, 403);
@@ -208,6 +211,7 @@ timeline.openapi(GetAccountTimelineRoute, async (c) => {
       return c.json({ error: 'NOTHING_LEFT' as const }, 404);
     }
 
+    timelineModuleLogger.error('Uncaught error', error);
     return c.json({ error: 'INTERNAL_ERROR' as const }, 500);
   }
 
@@ -224,6 +228,7 @@ timeline.openapi(GetListTimelineRoute, async (c) => {
   const res = await controller.getListTimeline(id);
   if (Result.isErr(res)) {
     const error = Result.unwrapErr(res);
+    timelineModuleLogger.warn(error);
 
     if (error instanceof ListNotFoundError) {
       return c.json({ error: 'LIST_NOT_FOUND' as const }, 404);
@@ -233,6 +238,7 @@ timeline.openapi(GetListTimelineRoute, async (c) => {
       return c.json({ error: 'NOTHING_LEFT' as const }, 404);
     }
 
+    timelineModuleLogger.error('Uncaught error', error);
     return c.json({ error: 'INTERNAL_ERROR' as const }, 500);
   }
 
@@ -251,11 +257,13 @@ timeline.openapi(CreateListRoute, async (c) => {
   const res = await controller.createList(req.title, req.public, ownerID);
   if (Result.isErr(res)) {
     const error = Result.unwrapErr(res);
+    timelineModuleLogger.warn(error);
 
     if (error instanceof ListTitleTooLongError) {
       return c.json({ error: 'TITLE_TOO_LONG' as const }, 400);
     }
 
+    timelineModuleLogger.error('Uncaught error', error);
     return c.json({ error: 'INTERNAL_ERROR' as const }, 500);
   }
 
@@ -274,6 +282,7 @@ timeline.openapi(EditListRoute, async (c) => {
 
   if (Result.isErr(res)) {
     const error = Result.unwrapErr(res);
+    timelineModuleLogger.warn(error);
 
     if (error instanceof ListNotFoundError) {
       return c.json({ error: 'LIST_NOT_FOUND' as const }, 404);
@@ -283,6 +292,7 @@ timeline.openapi(EditListRoute, async (c) => {
       return c.json({ error: 'TITLE_TOO_LONG' as const }, 400);
     }
 
+    timelineModuleLogger.error('Uncaught error', error);
     return c.json({ error: 'INTERNAL_ERROR' as const }, 500);
   }
 
@@ -300,10 +310,13 @@ timeline.openapi(FetchListRoute, async (c) => {
   const res = await controller.fetchList(id);
   if (Result.isErr(res)) {
     const error = Result.unwrapErr(res);
+    timelineModuleLogger.warn(error);
+
     if (error instanceof ListNotFoundError) {
       return c.json({ error: 'LIST_NOT_FOUND' as const }, 404);
     }
 
+    timelineModuleLogger.error('Uncaught error', error);
     return c.json({ error: 'INTERNAL_ERROR' as const }, 500);
   }
 
@@ -320,10 +333,13 @@ timeline.openapi(DeleteListRoute, async (c) => {
   const res = await controller.deleteList(id);
   if (Result.isErr(res)) {
     const error = Result.unwrapErr(res);
+    timelineModuleLogger.warn(error);
+
     if (error instanceof ListNotFoundError) {
       return c.json({ error: 'LIST_NOT_FOUND' as const }, 404);
     }
 
+    timelineModuleLogger.error('Uncaught error', error);
     return c.json({ error: 'INTERNAL_ERROR' as const }, 500);
   }
 
@@ -340,10 +356,13 @@ timeline.openapi(GetListMemberRoute, async (c) => {
   const res = await controller.getListMembers(id);
   if (Result.isErr(res)) {
     const error = Result.unwrapErr(res);
+    timelineModuleLogger.warn(error);
+
     if (error instanceof ListNotFoundError) {
       return c.json({ error: 'LIST_NOT_FOUND' as const }, 404);
     }
 
+    timelineModuleLogger.error('Uncaught error', error);
     return c.json({ error: 'INTERNAL_ERROR' as const }, 500);
   }
 
@@ -363,6 +382,7 @@ timeline.openapi(AppendListMemberRoute, async (c) => {
   const res = await controller.appendListMember(id, account_id, actorID);
   if (Result.isErr(res)) {
     const error = Result.unwrapErr(res);
+    timelineModuleLogger.warn(error);
 
     if (error instanceof ListNotFoundError) {
       return c.json({ error: 'LIST_NOT_FOUND' as const }, 404);
@@ -376,9 +396,9 @@ timeline.openapi(AppendListMemberRoute, async (c) => {
     if (error instanceof ListTooManyMembersError) {
       return c.json({ error: 'TOO_MANY_MEMBERS' as const }, 400);
     }
-    if (error instanceof ListInternalError) {
-      return c.json({ error: 'INTERNAL_ERROR' as const }, 500);
-    }
+
+    timelineModuleLogger.error('Uncaught error', error);
+    return c.json({ error: 'INTERNAL_ERROR' as const }, 500);
   }
   return new Response(undefined, { status: 204 });
 });
@@ -395,6 +415,7 @@ timeline.openapi(DeleteListMemberRoute, async (c) => {
   const res = await controller.removeListMember(id, account_id, actorID);
   if (Result.isErr(res)) {
     const error = Result.unwrapErr(res);
+    timelineModuleLogger.warn(error);
 
     if (error instanceof ListNotFoundError) {
       return c.json({ error: 'LIST_NOT_FOUND' as const }, 404);
@@ -405,9 +426,9 @@ timeline.openapi(DeleteListMemberRoute, async (c) => {
     if (error instanceof TimelineInsufficientPermissionError) {
       return c.json({ error: 'NO_PERMISSION' as const }, 403);
     }
-    if (error instanceof ListInternalError) {
-      return c.json({ error: 'INTERNAL_ERROR' as const }, 500);
-    }
+
+    timelineModuleLogger.error('Uncaught error', error);
+    return c.json({ error: 'INTERNAL_ERROR' as const }, 500);
   }
   return new Response(undefined, { status: 204 });
 });

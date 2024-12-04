@@ -7,6 +7,13 @@ import { accounts } from './pkg/accounts/mod.js';
 import { drive } from './pkg/drive/mod.js';
 import { noteHandlers } from './pkg/notes/mod.js';
 import { timeline } from './pkg/timeline/mod.js';
+import { Logger } from 'tslog';
+import { isProduction } from './pkg/adaptors/env.js';
+
+const coreLogger = new Logger({
+  name: "Pulsate",
+  type: "pretty",
+})
 
 export const app = new Hono().get('/doc', async (c) => {
   // NOTE: If you create a new module, you must add module API doc base path here.
@@ -85,4 +92,13 @@ app.get(
   }),
 );
 
-serve({ fetch: app.fetch, port: 3000 });
+serve({ fetch: app.fetch, port: 3000 }, (addr) => {
+  coreLogger.info("Pulsate v0.1");
+  if (isProduction) {
+    coreLogger.info("Production mode");
+  } else {
+    coreLogger.info("Development mode");
+  }
+
+  coreLogger.info(`Server started at ${addr.address}:${addr.port} ${addr.family}`);
+});
