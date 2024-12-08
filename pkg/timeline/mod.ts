@@ -186,7 +186,7 @@ timeline[GetAccountTimelineRoute.method](
 timeline.openapi(GetAccountTimelineRoute, async (c) => {
   const actorID = Option.unwrap(c.get('accountID'));
   const { id } = c.req.param();
-  const { has_attachment, no_nsfw, before_id } = c.req.valid('query');
+  const { has_attachment, no_nsfw, before_id, after_id } = c.req.valid('query');
 
   const res = await controller.getAccountTimeline(
     id,
@@ -194,6 +194,7 @@ timeline.openapi(GetAccountTimelineRoute, async (c) => {
     has_attachment,
     no_nsfw,
     before_id,
+    after_id,
   );
   if (Result.isErr(res)) {
     const error = Result.unwrapErr(res);

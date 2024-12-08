@@ -46,7 +46,11 @@ const timelineFilterQuerySchema = z
       }),
     before_id: z.string().optional().openapi({
       description:
-        'Return notes before this note ID. specified note ID is not included',
+        'Return notes before this note ID. specified note ID is not included. NOTE: after_id and before_id are exclusive.',
+    }),
+    after_id: z.string().optional().openapi({
+      description:
+        'Return notes after this note ID. Specified note is not included. NOTE: after_id and before_id are exclusive.',
     }),
   })
   .openapi('TimelineFilterQuerySchema');
