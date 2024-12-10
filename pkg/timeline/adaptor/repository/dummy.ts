@@ -64,7 +64,6 @@ export class InMemoryTimelineRepository implements TimelineRepository {
         ? filtered.findIndex((note) => note.getID() === filter.beforeId)
         : filtered.length;
 
-      console.log(filtered.slice(beforeIndex).map((v) => v.getID()));
       return Result.ok(filtered.slice(beforeIndex + 1));
     }
 
