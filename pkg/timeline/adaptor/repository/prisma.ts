@@ -11,6 +11,7 @@ import {
 import {
   ListNotFoundError,
   TimelineInternalError,
+  TimelineInvalidFilterRangeError,
 } from '../../model/errors.js';
 import { List, type ListID } from '../../model/list.js';
 import {
@@ -66,12 +67,21 @@ export class PrismaTimelineRepository implements TimelineRepository {
     accountId: AccountID,
     filter: FetchAccountTimelineFilter,
   ): Promise<Result.Result<Error, Note[]>> {
+    if (filter.afterID && filter.beforeId) {
+      return Result.err(
+        new TimelineInvalidFilterRangeError(
+          'beforeID and afterID cannot be specified at the same time',
+          { cause: null },
+        ),
+      );
+    }
+
     const accountNotes = await this.prisma.note.findMany({
       where: {
         authorId: accountId,
       },
       orderBy: {
-        createdAt: 'desc',
+        createdAt: filter.afterID ? 'asc' : 'desc',
       },
       ...(filter.beforeId
         ? {
@@ -79,6 +89,14 @@ export class PrismaTimelineRepository implements TimelineRepository {
               id: filter.beforeId,
             },
             // NOTE: Not include specified record
+            skip: 1,
+          }
+        : {}),
+      ...(filter.afterID
+        ? {
+            cursor: {
+              id: filter.afterID,
+            },
             skip: 1,
           }
         : {}),

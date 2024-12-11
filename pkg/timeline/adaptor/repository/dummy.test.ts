@@ -3,6 +3,7 @@ import { afterEach, describe, expect, it } from 'vitest';
 
 import type { AccountID } from '../../../accounts/model/account.js';
 import { Note, type NoteID } from '../../../notes/model/note.js';
+import { TimelineInvalidFilterRangeError } from '../../model/errors.js';
 import { List, type ListID } from '../../model/list.js';
 import { InMemoryListRepository, InMemoryTimelineRepository } from './dummy.js';
 
@@ -65,6 +66,74 @@ describe('InMemoryTimelineRepository', () => {
       dummyFollowersNote,
       dummyDirectNote,
     ]);
+  });
+
+  it('filter: if beforeID is specified, return notes before the specified note', async () => {
+    /**
+     * NOTE:
+     * new        old
+     * ---------------
+     *         ↓ beforeID
+     * 4,  3,  2,  1
+     *           |→ return 1
+     */
+    const actual = await repository.getAccountTimeline('100' as AccountID, {
+      id: '100' as AccountID,
+      hasAttachment: true,
+      noNsfw: false,
+      beforeId: '2' as NoteID,
+    });
+
+    expect(Result.isOk(actual)).toBe(true);
+    expect(Result.unwrap(actual)).toStrictEqual([dummyPublicNote]);
+  });
+
+  it('filter: if afterID is specified, return notes after the specified note', async () => {
+    /**
+     * NOTE:
+     * new        old
+     * ---------------
+     *             ↓ afterID
+     * 4,  3,  2,  1
+     *         ←| return 3,2 (4 is filtered out because it is DIRECT note)
+     */
+    const actual = await repository.getAccountTimeline('100' as AccountID, {
+      id: '100' as AccountID,
+      hasAttachment: true,
+      noNsfw: false,
+      afterID: '2' as NoteID,
+    });
+
+    expect(Result.isOk(actual)).toBe(true);
+    expect(Result.unwrap(actual)).toStrictEqual([
+      dummyFollowersNote,
+      dummyHomeNote,
+    ]);
+  });
+
+  it('filter: if after/beforeID are not specified, return 20 notes from the latest note', async () => {
+    const actual = await repository.getAccountTimeline('100' as AccountID, {
+      id: '100' as AccountID,
+      hasAttachment: true,
+      noNsfw: false,
+    });
+
+    expect(Result.isOk(actual)).toBe(true);
+    expect(Result.unwrap(actual)).toHaveLength(3);
+  });
+
+  it('filter: if after/beforeID both are specified, return error', async () => {
+    const actual = await repository.getAccountTimeline('100' as AccountID, {
+      id: '100' as AccountID,
+      hasAttachment: true,
+      noNsfw: false,
+      afterID: '1' as NoteID,
+      beforeId: '1' as NoteID,
+    });
+    expect(Result.isErr(actual)).toBe(true);
+    expect(Result.unwrapErr(actual)).toBeInstanceOf(
+      TimelineInvalidFilterRangeError,
+    );
   });
 
   it('Account Timeline only returns PUBLIC/HOME/FOLLOWERS notes', async () => {

@@ -65,6 +65,17 @@ export class ListTooManyMembersError extends Error {
 }
 
 /**
+ * beforeID and afterID specified at the same time
+ */
+export class TimelineInvalidFilterRangeError extends Error {
+  constructor(message: string, options: { cause: unknown }) {
+    super(message);
+    this.name = 'TimelineInvalidFilterRangeError';
+    this.cause = options.cause;
+  }
+}
+
+/**
  * Too many target accounts
  */
 export class ListTooManyTargetsError extends Error {
