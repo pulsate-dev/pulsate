@@ -10,9 +10,18 @@ export interface FetchAccountTimelineFilter {
   hasAttachment: boolean;
   /** @default false */
   noNsfw: boolean;
-  /** @default undefined
-   *  @description if undefined, Retrieved from latest notes */
+  /**
+   * @default undefined
+   * @description if undefined, Retrieved from latest notes\
+   * NOTE: Only one of beforeID/afterID can be set.
+   */
   beforeId?: NoteID;
+  /**
+   * @default undefined
+   * @description if undefined, Retrieved from oldest notes\
+   * NOTE: Only one of beforeID/afterID can be set.
+   */
+  afterID?: NoteID;
 }
 export type FetchHomeTimelineFilter = Omit<FetchAccountTimelineFilter, 'id'>;
 

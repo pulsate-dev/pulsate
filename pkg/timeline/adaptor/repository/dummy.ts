@@ -3,7 +3,11 @@ import { Ether, Result } from '@mikuroxina/mini-fn';
 import type { AccountID } from '../../../accounts/model/account.js';
 import { AccountNotFoundError } from '../../../accounts/model/errors.js';
 import type { Note, NoteID } from '../../../notes/model/note.js';
-import { ListInternalError, ListNotFoundError } from '../../model/errors.js';
+import {
+  ListInternalError,
+  ListNotFoundError,
+  TimelineInvalidFilterRangeError,
+} from '../../model/errors.js';
 import type { List, ListID } from '../../model/list.js';
 import {
   type FetchAccountTimelineFilter,
@@ -24,24 +28,48 @@ export class InMemoryTimelineRepository implements TimelineRepository {
     accountId: AccountID,
     filter: FetchAccountTimelineFilter,
   ): Promise<Result.Result<Error, Note[]>> {
+    if (filter.afterID && filter.beforeId) {
+      return Result.err(
+        new TimelineInvalidFilterRangeError(
+          'beforeID and afterID cannot be specified at the same time',
+          { cause: null },
+        ),
+      );
+    }
+
     const accountNotes = [...this.data].filter(
-      (note) => note[1].getAuthorID() === accountId,
+      ([_, note]) => note.getAuthorID() === accountId,
     );
 
     // NOTE: filter out DIRECT notes
-    const filtered = accountNotes.filter(
-      (note) => note[1].getVisibility() !== 'DIRECT',
-    );
+    const filtered = accountNotes
+      .filter(([_, note]) => note.getVisibility() !== 'DIRECT')
+      .map((v) => v[1]);
 
     // ToDo: filter hasAttachment, noNSFW
     filtered.sort(
-      (a, b) => b[1].getCreatedAt().getTime() - a[1].getCreatedAt().getTime(),
+      (a, b) => b.getCreatedAt().getTime() - a.getCreatedAt().getTime(),
     );
-    const beforeIndex = filter.beforeId
-      ? filtered.findIndex((note) => note[1].getID() === filter.beforeId)
-      : filtered.length;
 
-    return Result.ok(filtered.slice(0, beforeIndex).map((note) => note[1]));
+    if (filter.afterID) {
+      const afterIndex = filtered
+        .reverse()
+        .findIndex((note) => note.getID() === filter.afterID);
+
+      return Result.ok(filtered.slice(afterIndex).reverse());
+    }
+
+    if (filter.beforeId) {
+      const beforeIndex = filter.beforeId
+        ? filtered.findIndex((note) => note.getID() === filter.beforeId)
+        : filtered.length;
+
+      return Result.ok(filtered.slice(beforeIndex + 1));
+    }
+
+    // ToDo: replace 20 with constant
+    // NOTE: 20 is the default number of notes to be returned
+    return Result.ok(filtered.slice(0, 20));
   }
 
   async getHomeTimeline(
