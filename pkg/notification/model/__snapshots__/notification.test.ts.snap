@@ -6,7 +6,6 @@ Notification {
   "actorType": "account",
   "createdAt": 2023-09-10T00:00:00.000Z,
   "id": "1",
-  "isRead": false,
   "notificationType": "followed",
   "readAt": [
     Symbol(OptionNone),

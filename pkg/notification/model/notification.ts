@@ -47,11 +47,6 @@ export interface CreateNotificationArgs {
    * Created At
    */
   createdAt: Date;
-
-  /**
-   * Read Status
-   */
-  isRead: boolean;
   /**
    * Read At
    */
@@ -66,7 +61,6 @@ export class Notification {
   private readonly actorType: NotificationActorType;
   private readonly actorID: AccountID;
 
-  private isRead: boolean;
   private readAt: Option.Option<Date>;
 
   private constructor(args: CreateNotificationArgs) {
@@ -76,15 +70,12 @@ export class Notification {
     this.actorType = args.actorType;
     this.actorID = args.actorID;
     this.createdAt = args.createdAt;
-
-    this.isRead = args.isRead;
     this.readAt = args.readAt;
   }
 
   static new(args: Omit<CreateNotificationArgs, 'isRead' | 'readAt'>) {
     return new Notification({
       ...args,
-      isRead: false,
       readAt: Option.none(),
     });
   }
@@ -146,15 +137,14 @@ export class Notification {
    * Get Read Status
    */
   getIsRead(): boolean {
-    return this.isRead;
+    return Option.isSome(this.readAt);
   }
 
   /**
    * Set read status to true(read)
    */
-  setRead() {
-    this.isRead = true;
-    this.readAt = Option.some(new Date());
+  setRead(date: Date) {
+    this.readAt = Option.some(date);
   }
 
   /**
