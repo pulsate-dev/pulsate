@@ -141,7 +141,8 @@ export class Notification {
   }
 
   /**
-   * Set read status to true(read)
+   * Set time when message read\
+   * NOTE: Once a message has been read, it cannot be marked as unread.
    */
   setRead(date: Date) {
     this.readAt = Option.some(date);
