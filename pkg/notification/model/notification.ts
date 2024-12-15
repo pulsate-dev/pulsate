@@ -141,7 +141,8 @@ export class Notification {
   }
 
   /**
-   * Set time when message read\
+   * Set time when message read
+   *
    * NOTE: Once a message has been read, it cannot be marked as unread.
    */
   setRead(date: Date) {
