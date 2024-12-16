@@ -5,6 +5,7 @@ import type {
 } from '../../../model/notification.js';
 import {
   NOTIFICATION_DEFAULT_LIMIT,
+  NOTIFICATION_MAX_LIMIT,
   type NotificationFilter,
   type NotificationRepository,
 } from '../../../model/repository/notification.js';
@@ -48,6 +49,10 @@ export class InMemoryNotificationRepository implements NotificationRepository {
     const limit = Option.isSome(filter.limit)
       ? Option.unwrap(filter.limit)
       : NOTIFICATION_DEFAULT_LIMIT;
+    if (limit > NOTIFICATION_MAX_LIMIT) {
+      // ToDo: Define NotificationCursorLimitOutOfRangeError
+      return Result.err(new Error('Limit exceeds the maximum value'));
+    }
 
     if (Option.isNone(filter.cursor)) {
       return Result.ok(res.slice(0, limit));
