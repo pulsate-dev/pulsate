@@ -1,5 +1,47 @@
-import type { Result } from '@mikuroxina/mini-fn';
+import type { Option, Result } from '@mikuroxina/mini-fn';
 import type { Notification, NotificationID } from '../notification.js';
+
+export interface NotificationFilter {
+  /**
+   * Maximum number of notifications to return
+   *
+   * NOTE:
+   * - Default: 30
+   * - Maximum: 50
+   */
+  limit: Option.Option<number>;
+  /**
+   * Cursor {@link NotificationCursor}
+   *
+   * NOTE:
+   * - if not specified(Option.none()), it returns the number of notifications specified by *limit* from the last notification.
+   */
+  cursor: Option.Option<NotificationCursor>;
+}
+
+/**
+ * Notification cursor
+ *
+ * NOTE:
+ * ```
+ * Old -> New
+ * 1   2   3   4   5
+ *         ^ before
+ *        ←| returns 1,2 (specified notification is excluded)
+ *
+ * Old -> New
+ * 1   2   3   4   5
+ *         ^ after
+ *         |→ returns 4,5 (specified notification is included)
+ * ```
+ */
+export interface NotificationCursor {
+  /**
+   * Cursor type
+   */
+  type: 'before' | 'after';
+  id: NotificationID;
+}
 
 export interface NotificationRepository {
   /**
@@ -21,6 +63,7 @@ export interface NotificationRepository {
    */
   findByRecipientID(
     recipientID: string,
+    filter: NotificationFilter,
   ): Promise<Result.Result<Error, Notification[]>>;
   /**
    * Update only readAt.
