@@ -7,9 +7,11 @@ import {
   type NotificationID,
   type NotificationType,
 } from '../../../model/notification.js';
-import type {
-  NotificationFilter,
-  NotificationRepository,
+import {
+  NOTIFICATION_DEFAULT_LIMIT,
+  NOTIFICATION_MAX_LIMIT,
+  type NotificationFilter,
+  type NotificationRepository,
 } from '../../../model/repository/notification.js';
 
 export class PrismaNotificationRepository implements NotificationRepository {
@@ -101,11 +103,13 @@ export class PrismaNotificationRepository implements NotificationRepository {
 
     return {
       orderBy: {
-        // デフォルト: desc, afterIDが指定されている場合はasc
+        // default: desc, if afterID is specified: asc
         createdAt: orderBy(),
       },
       ...cursor(),
-      take: 30,
+      take: Option.isSome(filter.limit)
+        ? Option.unwrap(filter.limit)
+        : NOTIFICATION_DEFAULT_LIMIT,
     };
   }
 
@@ -183,6 +187,13 @@ export class PrismaNotificationRepository implements NotificationRepository {
     filter: NotificationFilter,
   ): Promise<Result.Result<Error, Notification[]>> {
     try {
+      if (Option.isSome(filter.limit)) {
+        if (Option.unwrap(filter.limit) > NOTIFICATION_MAX_LIMIT) {
+          // ToDo: Define NotificationCursorLimitOutOfRangeError
+          return Result.err(new Error('Limit exceeds the maximum value'));
+        }
+      }
+
       const res = await this.prisma.notification.findMany({
         where: {
           recipientID: recipientID,

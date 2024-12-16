@@ -43,6 +43,9 @@ export interface NotificationCursor {
   id: NotificationID;
 }
 
+export const NOTIFICATION_DEFAULT_LIMIT = 30;
+export const NOTIFICATION_MAX_LIMIT = 50;
+
 export interface NotificationRepository {
   /**
    * Create a notification
@@ -60,6 +63,7 @@ export interface NotificationRepository {
    *
    * NOTE: Read notification is included.
    * @param recipientID Recipient account ID
+   * @param filter {@link NotificationFilter}
    */
   findByRecipientID(
     recipientID: string,
@@ -69,8 +73,7 @@ export interface NotificationRepository {
    * Update only readAt.
    *
    * NOTE: If the notification is already read, it returns error.
-   * @param id Notification ID
-   * @param readAt When the notification was read
+   * @param notification Notification
    */
   updateReadAt(notification: Notification): Promise<Result.Result<Error, void>>;
 }
