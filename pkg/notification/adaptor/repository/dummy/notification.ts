@@ -1,4 +1,4 @@
-import { Option, Result } from '@mikuroxina/mini-fn';
+import { Ether, Option, Result } from '@mikuroxina/mini-fn';
 import type {
   Notification,
   NotificationID,
@@ -8,6 +8,7 @@ import {
   NOTIFICATION_MAX_LIMIT,
   type NotificationFilter,
   type NotificationRepository,
+  notificationRepoSymbol,
 } from '../../../model/repository/notification.js';
 
 export class InMemoryNotificationRepository implements NotificationRepository {
@@ -89,3 +90,8 @@ export class InMemoryNotificationRepository implements NotificationRepository {
     return Result.ok(undefined);
   }
 }
+export const inMemoryNotificationRepo = (data?: Notification[]) =>
+  Ether.newEther(
+    notificationRepoSymbol,
+    () => new InMemoryNotificationRepository(data),
+  );

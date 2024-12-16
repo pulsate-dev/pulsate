@@ -1,4 +1,4 @@
-import { Option, Result } from '@mikuroxina/mini-fn';
+import { Ether, Option, Result } from '@mikuroxina/mini-fn';
 import type { Prisma, PrismaClient } from '@prisma/client';
 import type { AccountID } from '../../../../accounts/model/account.js';
 import {
@@ -12,6 +12,7 @@ import {
   NOTIFICATION_MAX_LIMIT,
   type NotificationFilter,
   type NotificationRepository,
+  notificationRepoSymbol,
 } from '../../../model/repository/notification.js';
 
 export class PrismaNotificationRepository implements NotificationRepository {
@@ -239,3 +240,8 @@ export class PrismaNotificationRepository implements NotificationRepository {
     }
   }
 }
+export const prismaNotificationRepo = (client: PrismaClient) =>
+  Ether.newEther(
+    notificationRepoSymbol,
+    () => new PrismaNotificationRepository(client),
+  );

@@ -1,4 +1,4 @@
-import type { Option, Result } from '@mikuroxina/mini-fn';
+import { Ether, type Option, type Result } from '@mikuroxina/mini-fn';
 import type { Notification, NotificationID } from '../notification.js';
 
 export interface NotificationFilter {
@@ -77,3 +77,5 @@ export interface NotificationRepository {
    */
   updateReadAt(notification: Notification): Promise<Result.Result<Error, void>>;
 }
+export const notificationRepoSymbol =
+  Ether.newEtherSymbol<NotificationRepository>();
