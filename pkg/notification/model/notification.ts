@@ -80,6 +80,10 @@ export class Notification {
     });
   }
 
+  static reconstruct(args: CreateNotificationArgs) {
+    return new Notification(args);
+  }
+
   /**
    * Get Notification ID
    * @example
