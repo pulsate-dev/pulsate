@@ -12,7 +12,7 @@
     "email": "info@pulsate.dev"
   },
   "engines": {
-    "node": "20.18.1"
+    "node": "22.12.0"
   },
   "scripts": {
     "start": "node --env-file=.env --enable-source-maps ./build/main.js",
@@ -35,7 +35,7 @@
     "@hono/swagger-ui": "^0.5.0",
     "@hono/zod-openapi": "^0.18.0",
     "@mikuroxina/mini-fn": "^6.3.1",
-    "@prisma/client": "5.22.0",
+    "@prisma/client": "6.0.1",
     "@scalar/hono-api-reference": "^0.5.0",
     "argon2": "^0.41.0",
     "blurhash": "^2.0.5",
@@ -43,7 +43,7 @@
     "hono": "^4.0.0",
     "ioredis": "^5.4.1",
     "jose": "^5.2.1",
-    "prisma": "^5.9.1",
+    "prisma": "^6.0.0",
     "sharp": "^0.33.4",
     "tslog": "^4.9.3",
     "typescript": "^5.3.3"
@@ -51,7 +51,7 @@
   "devDependencies": {
     "@biomejs/biome": "^1.8.3",
     "@ls-lint/ls-lint": "^2.2.3",
-    "@types/node": "^20.11.16",
+    "@types/node": "^22.0.0",
     "@vitest/coverage-v8": "^2.0.0",
     "esbuild": "^0.24.0",
     "glob": "^11.0.0",
