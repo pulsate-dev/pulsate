@@ -38,6 +38,9 @@ model Account {
   accountVerifyToken AccountVerifyToken[]
   list               List[]
 
+  recievedNotification Notification[] @relation("recipient")
+  sentNotification     Notification[] @relation("actor")
+
   @@map("account")
 }
 
@@ -189,4 +192,16 @@ model AccountVerifyToken {
   expiresAt DateTime @map("expires_at")
 
   @@map("account_verify_token")
+}
+
+model Notification {
+  id               String    @id
+  recipientID      String    @map("recipient_id")
+  recipient        Account   @relation("recipient", fields: [recipientID], references: [id])
+  notificationType Int       @map("notification_type")
+  actorType        String
+  actorID          String    @map("actor_id")
+  actor            Account   @relation("actor", fields: [actorID], references: [id])
+  createdAt        DateTime  @map("created_at")
+  readAt           DateTime? @map("read_at")
 }
