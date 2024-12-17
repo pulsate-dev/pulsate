@@ -15,41 +15,38 @@ import {
   notificationRepoSymbol,
 } from '../../../model/repository/notification.js';
 
+/**
+ * NOTE:
+ * - 0 is reserved.
+ * - followed -> 1
+ * - followRequested -> 2
+ * - followAccepted -> 3
+ * - mentioned -> 4
+ * - renoted ->  5
+ * - reacted ->  6
+ */
+const NOTIFICATION_TYPE_MAP = {
+  followed: 1,
+  followRequested: 2,
+  followAccepted: 3,
+  mentioned: 4,
+  renoted: 5,
+  reacted: 6,
+} as const satisfies Record<NotificationType, number>;
+const NOTIFICATION_TYPE_CODE_MAP: Record<number, NotificationType> = [];
+
+for (const [k, v] of Object.entries(NOTIFICATION_TYPE_MAP)) {
+  if (v in NOTIFICATION_TYPE_CODE_MAP) throw new Error('Duplicate value');
+
+  NOTIFICATION_TYPE_CODE_MAP[v] = k as NotificationType;
+}
+Object.freeze(NOTIFICATION_TYPE_CODE_MAP);
+
 export class PrismaNotificationRepository implements NotificationRepository {
   private readonly prisma: PrismaClient;
-  /**
-   * NOTE:
-   * - 0 is reserved.
-   * - followed -> 1
-   * - followRequested -> 2
-   * - followAccepted -> 3
-   * - mentioned -> 4
-   * - renoted ->  5
-   * - reacted ->  6
-   */
-  private readonly NOTIFICATION_TYPE_MAP = {
-    followed: 1,
-    followRequested: 2,
-    followAccepted: 3,
-    mentioned: 4,
-    renoted: 5,
-    reacted: 6,
-  } as const satisfies Record<NotificationType, number>;
-  private readonly NOTIFICATION_TYPE_CODE_MAP: Record<
-    number,
-    NotificationType
-  > = [];
 
   constructor(prisma: PrismaClient) {
     this.prisma = prisma;
-
-    for (const [k, v] of Object.entries(this.NOTIFICATION_TYPE_MAP)) {
-      if (v in this.NOTIFICATION_TYPE_CODE_MAP)
-        throw new Error('Duplicate value');
-
-      this.NOTIFICATION_TYPE_CODE_MAP[v] = k as NotificationType;
-    }
-    Object.freeze(this.NOTIFICATION_TYPE_CODE_MAP);
   }
 
   private serialize(
@@ -63,7 +60,7 @@ export class PrismaNotificationRepository implements NotificationRepository {
         },
       },
       notificationType:
-        this.NOTIFICATION_TYPE_MAP[notification.getNotificationType()],
+        NOTIFICATION_TYPE_MAP[notification.getNotificationType()],
       actorType: notification.getActorType(),
       actor: {
         connect: {
@@ -134,7 +131,7 @@ export class PrismaNotificationRepository implements NotificationRepository {
       return Result.err(new Error('Notification not found'));
     }
     const notificationType =
-      this.NOTIFICATION_TYPE_CODE_MAP[notification.notificationType];
+      NOTIFICATION_TYPE_CODE_MAP[notification.notificationType];
     if (!notificationType) {
       return Result.err(new Error('Invalid notification type'));
     }

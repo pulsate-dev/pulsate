@@ -72,10 +72,8 @@ export class InMemoryNotificationRepository implements NotificationRepository {
         );
       }
       case 'before': {
-        return (() => {
-          const beforeIndex = res.findIndex((n) => n.getID() === cursor.id);
-          return Result.ok(res.slice(beforeIndex + 1, beforeIndex + 1 + limit));
-        })();
+        const beforeIndex = res.findIndex((n) => n.getID() === cursor.id);
+        return Result.ok(res.slice(beforeIndex + 1, beforeIndex + 1 + limit));
       }
     }
   }
