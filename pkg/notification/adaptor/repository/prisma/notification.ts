@@ -38,17 +38,18 @@ export class PrismaNotificationRepository implements NotificationRepository {
   private readonly NOTIFICATION_TYPE_CODE_MAP: Record<
     number,
     NotificationType
-  > = {
-    1: 'followed',
-    2: 'followRequested',
-    3: 'followAccepted',
-    4: 'mentioned',
-    5: 'renoted',
-    6: 'reacted',
-  } as const;
+  > = [];
 
   constructor(prisma: PrismaClient) {
     this.prisma = prisma;
+
+    for (const [k, v] of Object.entries(this.NOTIFICATION_TYPE_MAP)) {
+      if (v in this.NOTIFICATION_TYPE_CODE_MAP)
+        throw new Error('Duplicate value');
+
+      this.NOTIFICATION_TYPE_CODE_MAP[v] = k as NotificationType;
+    }
+    Object.freeze(this.NOTIFICATION_TYPE_CODE_MAP);
   }
 
   private serialize(

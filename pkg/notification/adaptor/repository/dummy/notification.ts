@@ -63,21 +63,20 @@ export class InMemoryNotificationRepository implements NotificationRepository {
     const cursor = Option.unwrap(filter.cursor);
 
     switch (cursor.type) {
-      case 'after':
-        return (() => {
-          const afterIndex = res
-            .reverse()
-            .findIndex((n) => n.getID() === cursor.id);
-          return Result.ok(
-            res.slice(afterIndex + 1, afterIndex + limit).reverse(),
-          );
-        })();
-
-      case 'before':
+      case 'after': {
+        const afterIndex = res
+          .reverse()
+          .findIndex((n) => n.getID() === cursor.id);
+        return Result.ok(
+          res.slice(afterIndex + 1, afterIndex + limit).reverse(),
+        );
+      }
+      case 'before': {
         return (() => {
           const beforeIndex = res.findIndex((n) => n.getID() === cursor.id);
           return Result.ok(res.slice(beforeIndex + 1, beforeIndex + 1 + limit));
         })();
+      }
     }
   }
 
