@@ -17,12 +17,43 @@ import {
 
 export class PrismaNotificationRepository implements NotificationRepository {
   private readonly prisma: PrismaClient;
+  /**
+   * NOTE:
+   * - 0 is reserved.
+   * - followed -> 1
+   * - followRequested -> 2
+   * - followAccepted -> 3
+   * - mentioned -> 4
+   * - renoted ->  5
+   * - reacted ->  6
+   */
+  private readonly NOTIFICATION_TYPE_MAP = {
+    followed: 1,
+    followRequested: 2,
+    followAccepted: 3,
+    mentioned: 4,
+    renoted: 5,
+    reacted: 6,
+  } as const satisfies Record<NotificationType, number>;
+  private readonly NOTIFICATION_TYPE_CODE_MAP: Record<
+    number,
+    NotificationType
+  > = {
+    1: 'followed',
+    2: 'followRequested',
+    3: 'followAccepted',
+    4: 'mentioned',
+    5: 'renoted',
+    6: 'reacted',
+  } as const;
 
   constructor(prisma: PrismaClient) {
     this.prisma = prisma;
   }
 
-  serialize(notification: Notification): Prisma.NotificationCreateInput {
+  private serialize(
+    notification: Notification,
+  ): Prisma.NotificationCreateInput {
     return {
       id: notification.getID(),
       recipient: {
@@ -30,32 +61,8 @@ export class PrismaNotificationRepository implements NotificationRepository {
           id: notification.getRecipientID(),
         },
       },
-      /**
-       * NOTE:
-       * - 0 is reserved.
-       * - followed -> 1
-       * - followRequested -> 2
-       * - followAccepted -> 3
-       * - mentioned -> 4
-       * - renoted ->  5
-       * - reacted ->  6
-       */
-      notificationType: ((notificationType: NotificationType): number => {
-        switch (notificationType) {
-          case 'followed':
-            return 1;
-          case 'followRequested':
-            return 2;
-          case 'followAccepted':
-            return 3;
-          case 'mentioned':
-            return 4;
-          case 'renoted':
-            return 5;
-          case 'reacted':
-            return 6;
-        }
-      })(notification.getNotificationType()),
+      notificationType:
+        this.NOTIFICATION_TYPE_MAP[notification.getNotificationType()],
       actorType: notification.getActorType(),
       actor: {
         connect: {
@@ -67,7 +74,9 @@ export class PrismaNotificationRepository implements NotificationRepository {
     };
   }
 
-  serializeFilter(filter: NotificationFilter): Prisma.NotificationFindManyArgs {
+  private serializeFilter(
+    filter: NotificationFilter,
+  ): Prisma.NotificationFindManyArgs {
     const orderBy = () => {
       if (Option.isNone(filter.cursor)) {
         // default: desc
@@ -104,7 +113,7 @@ export class PrismaNotificationRepository implements NotificationRepository {
 
     return {
       orderBy: {
-        // default: desc, if afterID is specified: asc
+        // default: desc, if afterID specified: asc
         createdAt: orderBy(),
       },
       ...cursor(),
@@ -114,7 +123,7 @@ export class PrismaNotificationRepository implements NotificationRepository {
     };
   }
 
-  deserialize(
+  private deserialize(
     notification: Prisma.PromiseReturnType<
       typeof this.prisma.notification.findUnique
     >,
@@ -123,29 +132,17 @@ export class PrismaNotificationRepository implements NotificationRepository {
       // ToDo: Define NotificationNotFoundError
       return Result.err(new Error('Notification not found'));
     }
+    const notificationType =
+      this.NOTIFICATION_TYPE_CODE_MAP[notification.notificationType];
+    if (!notificationType) {
+      return Result.err(new Error('Invalid notification type'));
+    }
 
     return Result.ok(
       Notification.reconstruct({
         id: notification.id as NotificationID,
         recipientID: notification.recipientID as AccountID,
-        notificationType: ((notificationType: number): NotificationType => {
-          switch (notificationType) {
-            case 1:
-              return 'followed';
-            case 2:
-              return 'followRequested';
-            case 3:
-              return 'followAccepted';
-            case 4:
-              return 'mentioned';
-            case 5:
-              return 'renoted';
-            case 6:
-              return 'reacted';
-            default:
-              throw new Error('Invalid notification type');
-          }
-        })(notification.notificationType),
+        notificationType,
         actorType: notification.actorType as NotificationActorType,
         actorID: notification.actorID as AccountID,
         createdAt: notification.createdAt,

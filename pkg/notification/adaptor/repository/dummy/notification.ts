@@ -55,20 +55,30 @@ export class InMemoryNotificationRepository implements NotificationRepository {
       return Result.err(new Error('Limit exceeds the maximum value'));
     }
 
+    // if cursor is not specified, return the latest n notifications
     if (Option.isNone(filter.cursor)) {
       return Result.ok(res.slice(0, limit));
     }
 
     const cursor = Option.unwrap(filter.cursor);
-    if (cursor.type === 'after') {
-      const afterIndex = res
-        .reverse()
-        .findIndex((n) => n.getID() === cursor.id);
-      return Result.ok(res.slice(afterIndex + 1, afterIndex + limit).reverse());
-    }
 
-    const beforeIndex = res.findIndex((n) => n.getID() === cursor.id);
-    return Result.ok(res.slice(beforeIndex + 1, beforeIndex + 1 + limit));
+    switch (cursor.type) {
+      case 'after':
+        return (() => {
+          const afterIndex = res
+            .reverse()
+            .findIndex((n) => n.getID() === cursor.id);
+          return Result.ok(
+            res.slice(afterIndex + 1, afterIndex + limit).reverse(),
+          );
+        })();
+
+      case 'before':
+        return (() => {
+          const beforeIndex = res.findIndex((n) => n.getID() === cursor.id);
+          return Result.ok(res.slice(beforeIndex + 1, beforeIndex + 1 + limit));
+        })();
+    }
   }
 
   async updateReadAt(
