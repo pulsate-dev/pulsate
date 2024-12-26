@@ -76,8 +76,8 @@ importers:
         specifier: ^11.0.0
         version: 11.0.0
       ignore:
-        specifier: ^6.0.0
-        version: 6.0.2
+        specifier: ^7.0.0
+        version: 7.0.0
       kleur:
         specifier: ^4.1.5
         version: 4.1.5
@@ -996,8 +996,8 @@ packages:
   ieee754@1.2.1:
     resolution: {integrity: sha512-dcyqhDvX1C46lXZcVqCpK+FtMRQVdIMN6/Df5js2zouUsqG7I6sFxitIC+7KYK29KdXOLHdu9zL4sFnoVQnqaA==}
 
-  ignore@6.0.2:
-    resolution: {integrity: sha512-InwqeHHN2XpumIkMvpl/DCJVrAHgCsG5+cn1XlnLWGwtZBm8QJfSusItfrwx81CTp5agNZqpKU2J/ccC5nGT4A==}
+  ignore@7.0.0:
+    resolution: {integrity: sha512-lcX8PNQygAa22u/0BysEY8VhaFRzlOkvdlKczDPnJvrkJD1EuqzEky5VYYKM2iySIuaVIDv9N190DfSreSLw2A==}
     engines: {node: '>= 4'}
 
   ioredis@5.4.2:
@@ -2124,7 +2124,7 @@ snapshots:
 
   ieee754@1.2.1: {}
 
-  ignore@6.0.2: {}
+  ignore@7.0.0: {}
 
   ioredis@5.4.2:
     dependencies:
