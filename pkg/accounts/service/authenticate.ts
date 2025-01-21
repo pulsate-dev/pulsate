@@ -15,6 +15,7 @@ import {
   accountRepoSymbol,
 } from '../model/repository.js';
 import {
+  type AuthenticationToken,
   type AuthenticationTokenService,
   authenticateTokenSymbol,
 } from './authenticationTokenService.js';
@@ -37,7 +38,7 @@ export class AuthenticateService {
   async handle(
     name: AccountName,
     passphrase: string,
-  ): Promise<Result.Result<Error, string>> {
+  ): Promise<Result.Result<Error, AuthenticationToken>> {
     const account = await this.accountRepository.findByName(name);
     if (Option.isNone(account)) {
       return Result.err(
