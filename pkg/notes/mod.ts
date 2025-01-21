@@ -88,10 +88,13 @@ const idGenerator = Ether.compose(clock)(snowflakeIDGenerator(0));
 
 const composer = Ether.composeT(Promise.monad);
 const liftOverPromise = Ether.liftEther(Promise.monad);
+
+const authToken = await Cat.cat(authenticateToken).feed(
+  composer(liftOverPromise(clock)),
+).value;
 const AuthMiddleware = await Ether.runEtherT(
-  Cat.cat(liftOverPromise(authenticateMiddleware)).feed(
-    composer(authenticateToken),
-  ).value,
+  Cat.cat(liftOverPromise(authenticateMiddleware)).feed(composer(authToken))
+    .value,
 );
 
 const createServiceObj = Ether.runEther(

@@ -127,17 +127,17 @@ const verifyAccountTokenService = Cat.cat(verifyAccountToken)
   .feed(Ether.compose(accountRepository)).value;
 
 const composer = Ether.composeT(Promise.monad);
-const liftOverPromise = <const D extends Record<string, symbol>, T>(
-  ether: Ether.Ether<D, T>,
-): Ether.EtherT<D, Promise.PromiseHkt, T> => ({
-  ...ether,
-  handler: (resolved) => Promise.pure(ether.handler(resolved)),
-});
+const liftOverPromise = Ether.liftEther(Promise.monad);
+
+const authToken = await Cat.cat(authenticateToken).feed(
+  composer(liftOverPromise(clock)),
+).value;
+
 export const controller = new AccountController({
   authenticateService: await Ether.runEtherT(
     Cat.cat(liftOverPromise(authenticate))
       .feed(composer(liftOverPromise(accountRepository)))
-      .feed(composer(authenticateToken))
+      .feed(composer(authToken))
       .feed(composer(liftOverPromise(argon2idPasswordEncoder))).value,
   ),
   editService: Ether.runEther(
@@ -204,9 +204,8 @@ const CaptchaMiddleware = Ether.runEther(
   )(captchaMiddleware),
 );
 const AuthMiddleware = await Ether.runEtherT(
-  Cat.cat(liftOverPromise(authenticateMiddleware)).feed(
-    composer(authenticateToken),
-  ).value,
+  Cat.cat(liftOverPromise(authenticateMiddleware)).feed(composer(authToken))
+    .value,
 );
 
 accounts.openAPIRegistry.registerComponent('securitySchemes', 'Bearer', {

@@ -1,13 +1,15 @@
 import { Ether, Option, type Promise } from '@mikuroxina/mini-fn';
 import * as jose from 'jose';
 
+import { type Clock, clockSymbol } from '../../id/mod.js';
 import type { PulsateTime } from '../../time/mod.js';
 
 export class AuthenticationTokenService {
   private readonly privateKey: CryptoKey;
   private readonly publicKey: CryptoKey;
+  private readonly clock: Clock;
 
-  static async new() {
+  static async new(clock: Clock) {
     // generate ECDSA P-256 Private/Public Key (For JWT alg: "ES256")
     // cf. https://datatracker.ietf.org/doc/html/rfc7518#section-3.1
     const { privateKey, publicKey } = (await crypto.subtle.generateKey(
@@ -15,12 +17,17 @@ export class AuthenticationTokenService {
       true,
       ['sign', 'verify'],
     )) as CryptoKeyPair;
-    return new AuthenticationTokenService(privateKey, publicKey);
+    return new AuthenticationTokenService(privateKey, publicKey, clock);
   }
 
-  private constructor(privateKey: CryptoKey, publicKey: CryptoKey) {
+  private constructor(
+    privateKey: CryptoKey,
+    publicKey: CryptoKey,
+    clock: Clock,
+  ) {
     this.privateKey = privateKey;
     this.publicKey = publicKey;
+    this.clock = clock;
   }
 
   public async generate(
@@ -53,8 +60,10 @@ export class AuthenticationTokenService {
 
 export const authenticateTokenSymbol =
   Ether.newEtherSymbol<AuthenticationTokenService>();
-const authenticationTokenObject = AuthenticationTokenService.new();
 export const authenticateToken = Ether.newEtherT<Promise.PromiseHkt>()(
   authenticateTokenSymbol,
-  () => authenticationTokenObject,
+  ({ clock }) => AuthenticationTokenService.new(clock),
+  {
+    clock: clockSymbol,
+  },
 );

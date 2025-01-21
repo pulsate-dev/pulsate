@@ -1,6 +1,7 @@
 import { Result } from '@mikuroxina/mini-fn';
 import { describe, expect, it } from 'vitest';
 
+import { MockClock } from '../../id/mod.js';
 import { Argon2idPasswordEncoder } from '../../password/mod.js';
 import { InMemoryAccountRepository } from '../adaptor/repository/dummy/account.js';
 import { Account, type AccountID } from '../model/account.js';
@@ -33,7 +34,9 @@ describe('AuthenticateService', () => {
       }),
     );
 
-    const authenticationTokenService = await AuthenticationTokenService.new();
+    const authenticationTokenService = await AuthenticationTokenService.new(
+      new MockClock(new Date('2022-01-01T00:00:00Z')),
+    );
 
     const service = new AuthenticateService({
       accountRepository: accountRepository,

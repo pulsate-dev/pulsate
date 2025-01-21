@@ -1,10 +1,13 @@
 import { Option } from '@mikuroxina/mini-fn';
 import { describe, expect, it } from 'vitest';
 
+import { MockClock } from '../../id/mod.js';
 import { convertTo } from '../../time/mod.js';
 import { AuthenticationTokenService } from './authenticationTokenService.js';
 
-const service = await AuthenticationTokenService.new();
+const service = await AuthenticationTokenService.new(
+  new MockClock(new Date('2022-01-01T00:00:00Z')),
+);
 
 describe('AuthenticationTokenService', () => {
   it('verify JWT Token', async () => {
