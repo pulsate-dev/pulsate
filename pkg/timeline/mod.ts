@@ -79,10 +79,13 @@ const listRepository = isProduction
 
 const liftOverPromise = Ether.liftEther(Promise.monad);
 const composer = Ether.composeT(Promise.monad);
+
+const authToken = Cat.cat(authenticateToken).feed(
+  composer(liftOverPromise(clock)),
+).value;
 const AuthMiddleware = await Ether.runEtherT(
-  Cat.cat(liftOverPromise(authenticateMiddleware)).feed(
-    composer(authenticateToken),
-  ).value,
+  Cat.cat(liftOverPromise(authenticateMiddleware)).feed(composer(authToken))
+    .value,
 );
 const noteVisibilityService = Cat.cat(noteVisibility).feed(
   Ether.compose(accountModuleEther),

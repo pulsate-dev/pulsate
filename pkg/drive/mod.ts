@@ -8,6 +8,7 @@ import {
   authenticateMiddleware,
 } from '../adaptors/authenticateMiddleware.js';
 import { prismaClient } from '../adaptors/prisma.js';
+import { clockSymbol } from '../id/mod.js';
 import { DriveController } from './adaptor/controller/drive.js';
 import { driveModuleLogger } from './adaptor/logger.js';
 import { inMemoryMediaRepo } from './adaptor/repository/dummy.js';
@@ -19,10 +20,20 @@ import { fetchMediaService } from './service/fetch.js';
 const isProduction = process.env.NODE_ENV === 'production';
 const composer = Ether.composeT(Promise.monad);
 const liftOverPromise = Ether.liftEther(Promise.monad);
+
+class Clock {
+  now() {
+    return BigInt(Date.now());
+  }
+}
+const clock = Ether.newEther(clockSymbol, () => new Clock());
+const authToken = Cat.cat(authenticateToken).feed(
+  composer(liftOverPromise(clock)),
+).value;
+
 const AuthMiddleware = await Ether.runEtherT(
-  Cat.cat(liftOverPromise(authenticateMiddleware)).feed(
-    composer(authenticateToken),
-  ).value,
+  Cat.cat(liftOverPromise(authenticateMiddleware)).feed(composer(authToken))
+    .value,
 );
 
 const mediaRepository = isProduction

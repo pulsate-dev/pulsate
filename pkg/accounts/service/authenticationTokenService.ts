@@ -1,13 +1,19 @@
 import { Ether, Option, type Promise } from '@mikuroxina/mini-fn';
 import * as jose from 'jose';
 
-import type { PulsateTime } from '../../time/mod.js';
+import { type Clock, clockSymbol } from '../../id/mod.js';
+
+declare const authenticationTokenNominal: unique symbol;
+export type AuthenticationToken = string & {
+  [authenticationTokenNominal]: unknown;
+};
 
 export class AuthenticationTokenService {
   private readonly privateKey: CryptoKey;
   private readonly publicKey: CryptoKey;
+  private readonly clock: Clock;
 
-  static async new() {
+  static async new(clock: Clock) {
     // generate ECDSA P-256 Private/Public Key (For JWT alg: "ES256")
     // cf. https://datatracker.ietf.org/doc/html/rfc7518#section-3.1
     const { privateKey, publicKey } = (await crypto.subtle.generateKey(
@@ -15,30 +21,47 @@ export class AuthenticationTokenService {
       true,
       ['sign', 'verify'],
     )) as CryptoKeyPair;
-    return new AuthenticationTokenService(privateKey, publicKey);
+    return new AuthenticationTokenService(privateKey, publicKey, clock);
   }
 
-  private constructor(privateKey: CryptoKey, publicKey: CryptoKey) {
+  private constructor(
+    privateKey: CryptoKey,
+    publicKey: CryptoKey,
+    clock: Clock,
+  ) {
     this.privateKey = privateKey;
     this.publicKey = publicKey;
+    this.clock = clock;
   }
 
   public async generate(
     subject: string,
-    issuedAt: PulsateTime,
-    expiredAt: PulsateTime,
     accountName: string,
-  ): Promise<Option.Option<string>> {
-    const token = await new jose.SignJWT({
+  ): Promise<Option.Option<AuthenticationToken>> {
+    const currentTime = this.clock.now();
+
+    const refreshToken = await new jose.SignJWT({
       accountName: accountName,
     })
       .setProtectedHeader({ alg: 'ES256' })
-      .setIssuedAt(issuedAt)
+      .setIssuedAt(Number(currentTime / 1000n))
       .setSubject(subject)
-      .setExpirationTime(expiredAt)
+      // Note: 2592000s = 30days
+      .setExpirationTime(Number(currentTime / 1000n) + 60 * 60 * 24 * 30)
       .sign(this.privateKey);
 
-    return Option.some(token);
+    const authToken = (await new jose.SignJWT({
+      accountName: accountName,
+      refreshToken,
+    })
+      .setProtectedHeader({ alg: 'ES256' })
+      .setIssuedAt(Number(currentTime / 1000n))
+      .setSubject(subject)
+      // Note: 900s = 15min
+      .setExpirationTime(Number(currentTime / 1000n) + 60 * 15)
+      .sign(this.privateKey)) as AuthenticationToken;
+
+    return Option.some(authToken);
   }
 
   public async verify(token: string): Promise<boolean> {
@@ -53,8 +76,10 @@ export class AuthenticationTokenService {
 
 export const authenticateTokenSymbol =
   Ether.newEtherSymbol<AuthenticationTokenService>();
-const authenticationTokenObject = AuthenticationTokenService.new();
 export const authenticateToken = Ether.newEtherT<Promise.PromiseHkt>()(
   authenticateTokenSymbol,
-  () => authenticationTokenObject,
+  ({ clock }) => AuthenticationTokenService.new(clock),
+  {
+    clock: clockSymbol,
+  },
 );
