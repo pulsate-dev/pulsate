@@ -3,6 +3,11 @@ import * as jose from 'jose';
 
 import { type Clock, clockSymbol } from '../../id/mod.js';
 
+declare const authenticationTokenNominal: unique symbol;
+export type AuthenticationToken = string & {
+  [authenticationTokenNominal]: unknown;
+};
+
 export class AuthenticationTokenService {
   private readonly privateKey: CryptoKey;
   private readonly publicKey: CryptoKey;
@@ -32,7 +37,7 @@ export class AuthenticationTokenService {
   public async generate(
     subject: string,
     accountName: string,
-  ): Promise<Option.Option<string>> {
+  ): Promise<Option.Option<AuthenticationToken>> {
     const currentTime = this.clock.now();
 
     const refreshToken = await new jose.SignJWT({
@@ -45,7 +50,7 @@ export class AuthenticationTokenService {
       .setExpirationTime(Number(currentTime / 1000n) + 60 * 60 * 24 * 30)
       .sign(this.privateKey);
 
-    const authToken = await new jose.SignJWT({
+    const authToken = (await new jose.SignJWT({
       accountName: accountName,
       refreshToken,
     })
@@ -54,7 +59,7 @@ export class AuthenticationTokenService {
       .setSubject(subject)
       // Note: 900s = 15min
       .setExpirationTime(Number(currentTime / 1000n) + 60 * 15)
-      .sign(this.privateKey);
+      .sign(this.privateKey)) as AuthenticationToken;
 
     return Option.some(authToken);
   }

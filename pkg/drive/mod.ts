@@ -27,7 +27,7 @@ class Clock {
   }
 }
 const clock = Ether.newEther(clockSymbol, () => new Clock());
-const authToken = await Cat.cat(authenticateToken).feed(
+const authToken = Cat.cat(authenticateToken).feed(
   composer(liftOverPromise(clock)),
 ).value;
 

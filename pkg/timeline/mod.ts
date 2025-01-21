@@ -80,7 +80,7 @@ const listRepository = isProduction
 const liftOverPromise = Ether.liftEther(Promise.monad);
 const composer = Ether.composeT(Promise.monad);
 
-const authToken = await Cat.cat(authenticateToken).feed(
+const authToken = Cat.cat(authenticateToken).feed(
   composer(liftOverPromise(clock)),
 ).value;
 const AuthMiddleware = await Ether.runEtherT(
