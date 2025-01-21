@@ -4,7 +4,6 @@ import {
   type PasswordEncoder,
   passwordEncoderSymbol,
 } from '../../password/mod.js';
-import { addSecondsToDate, convertTo } from '../../time/mod.js';
 import type { AccountName } from '../model/account.js';
 import {
   AccountAuthenticationFailedError,
@@ -19,11 +18,6 @@ import {
   type AuthenticationTokenService,
   authenticateTokenSymbol,
 } from './authenticationTokenService.js';
-
-export interface TokenPair {
-  authorizationToken: string;
-  refreshToken: string;
-}
 
 export class AuthenticateService {
   private readonly accountRepository: AccountRepository;
@@ -43,7 +37,7 @@ export class AuthenticateService {
   async handle(
     name: AccountName,
     passphrase: string,
-  ): Promise<Result.Result<Error, TokenPair>> {
+  ): Promise<Result.Result<Error, string>> {
     const account = await this.accountRepository.findByName(name);
     if (Option.isNone(account)) {
       return Result.err(
@@ -63,14 +57,13 @@ export class AuthenticateService {
       );
     }
 
-    const authorizationToken = await this.authenticationTokenService.generate(
-      Option.unwrap(account).getID(),
-      convertTo(new Date()),
-      convertTo(addSecondsToDate(new Date(), 900)),
-      Option.unwrap(account).getName(),
-    );
+    const authorizationTokenRes =
+      await this.authenticationTokenService.generate(
+        Option.unwrap(account).getID(),
+        Option.unwrap(account).getName(),
+      );
 
-    if (Option.isNone(authorizationToken)) {
+    if (Option.isNone(authorizationTokenRes)) {
       return Result.err(
         new AccountInternalError('Failed to generate authorization token', {
           cause: null,
@@ -78,25 +71,7 @@ export class AuthenticateService {
       );
     }
 
-    const refreshToken = await this.authenticationTokenService.generate(
-      Option.unwrap(account).getID(),
-      convertTo(new Date()),
-      convertTo(addSecondsToDate(new Date(), 2_592_000)),
-      Option.unwrap(account).getName(),
-    );
-
-    if (Option.isNone(refreshToken)) {
-      return Result.err(
-        new AccountInternalError('Failed to generate refresh token', {
-          cause: null,
-        }),
-      );
-    }
-
-    return Result.ok({
-      authorizationToken: Option.unwrap(authorizationToken),
-      refreshToken: Option.unwrap(refreshToken),
-    });
+    return Result.ok(Option.unwrap(authorizationTokenRes));
   }
 }
 

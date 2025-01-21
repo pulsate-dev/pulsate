@@ -2,7 +2,6 @@ import { Ether, Option, type Promise } from '@mikuroxina/mini-fn';
 import * as jose from 'jose';
 
 import { type Clock, clockSymbol } from '../../id/mod.js';
-import type { PulsateTime } from '../../time/mod.js';
 
 export class AuthenticationTokenService {
   private readonly privateKey: CryptoKey;
@@ -32,20 +31,32 @@ export class AuthenticationTokenService {
 
   public async generate(
     subject: string,
-    issuedAt: PulsateTime,
-    expiredAt: PulsateTime,
     accountName: string,
   ): Promise<Option.Option<string>> {
-    const token = await new jose.SignJWT({
+    const currentTime = this.clock.now();
+
+    const refreshToken = await new jose.SignJWT({
       accountName: accountName,
     })
       .setProtectedHeader({ alg: 'ES256' })
-      .setIssuedAt(issuedAt)
+      .setIssuedAt(Number(currentTime / 1000n))
       .setSubject(subject)
-      .setExpirationTime(expiredAt)
+      // Note: 2592000s = 30days
+      .setExpirationTime(Number(currentTime / 1000n) + 60 * 60 * 24 * 30)
       .sign(this.privateKey);
 
-    return Option.some(token);
+    const authToken = await new jose.SignJWT({
+      accountName: accountName,
+      refreshToken,
+    })
+      .setProtectedHeader({ alg: 'ES256' })
+      .setIssuedAt(Number(currentTime / 1000n))
+      .setSubject(subject)
+      // Note: 900s = 15min
+      .setExpirationTime(Number(currentTime / 1000n) + 60 * 15)
+      .sign(this.privateKey);
+
+    return Option.some(authToken);
   }
 
   public async verify(token: string): Promise<boolean> {

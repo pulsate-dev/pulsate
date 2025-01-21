@@ -311,8 +311,7 @@ export class AccountController {
     }
 
     return Result.ok({
-      authorization_token: res[1].authorizationToken,
-      refresh_token: res[1].refreshToken,
+      authorization_token: Result.unwrap(res),
     });
   }
 
