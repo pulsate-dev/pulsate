@@ -1,7 +1,11 @@
-import { Ether, Option, type Promise } from '@mikuroxina/mini-fn';
+import { Ether, Option, type Promise, Result } from '@mikuroxina/mini-fn';
 import * as jose from 'jose';
 
 import { type Clock, clockSymbol } from '../../id/mod.js';
+import {
+  AccountAuthenticationTokenInvalidError,
+  AccountRefreshTokenInvalidError,
+} from '../model/errors.js';
 
 declare const authenticationTokenNominal: unique symbol;
 export type AuthenticationToken = string & {
@@ -62,6 +66,44 @@ export class AuthenticationTokenService {
       .sign(this.privateKey)) as AuthenticationToken;
 
     return Option.some(authToken);
+  }
+
+  public async renewAuthToken(
+    token: AuthenticationToken,
+  ): Promise<Result.Result<Error, AuthenticationToken>> {
+    if (!(await this.verify(token))) {
+      return Result.err(
+        new AccountAuthenticationTokenInvalidError(
+          'Authentication token is invalid',
+          { cause: null },
+        ),
+      );
+    }
+
+    const { refreshToken, accountName, sub } = jose.decodeJwt(token);
+
+    if (!(await this.verify(refreshToken as string))) {
+      return Result.err(
+        new AccountRefreshTokenInvalidError('Refresh token is invalid', {
+          cause: null,
+        }),
+      );
+    }
+
+    const currentTime = this.clock.now();
+
+    const authToken = (await new jose.SignJWT({
+      accountName,
+      refreshToken,
+    })
+      .setProtectedHeader({ alg: 'ES256' })
+      .setIssuedAt(Number(currentTime / 1000n))
+      .setSubject(sub ?? '')
+      // Note: 900s = 15min
+      .setExpirationTime(Number(currentTime / 1000n) + 60 * 15)
+      .sign(this.privateKey)) as AuthenticationToken;
+
+    return Result.ok(authToken as AuthenticationToken);
   }
 
   public async verify(token: string): Promise<boolean> {
