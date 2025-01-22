@@ -1,4 +1,4 @@
-import { Ether, Option } from '@mikuroxina/mini-fn';
+import { Ether, Option, Result } from '@mikuroxina/mini-fn';
 import type { MiddlewareHandler } from 'hono';
 import { createMiddleware } from 'hono/factory';
 
@@ -80,7 +80,9 @@ export class AuthenticateMiddlewareService {
       }
       c.set('token', token);
 
-      const isValidToken = await this.authTokenService.verify(token);
+      const isValidToken = Result.isOk(
+        await this.authTokenService.verify(token),
+      );
       const parsed = this.parseToken(token);
       if (!isValidToken) {
         return c.json({ error: 'UNAUTHORIZED' }, { status: 401 });

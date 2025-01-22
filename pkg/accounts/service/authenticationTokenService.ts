@@ -3,8 +3,8 @@ import * as jose from 'jose';
 
 import { type Clock, clockSymbol } from '../../id/mod.js';
 import {
+  AccountAuthenticationTokenExpiredError,
   AccountAuthenticationTokenInvalidError,
-  AccountRefreshTokenInvalidError,
 } from '../model/errors.js';
 
 declare const authenticationTokenNominal: unique symbol;
@@ -54,7 +54,7 @@ export class AuthenticationTokenService {
       .setExpirationTime(Number(currentTime / 1000n) + 60 * 60 * 24 * 30)
       .sign(this.privateKey);
 
-    const authToken = (await new jose.SignJWT({
+    const authToken = await new jose.SignJWT({
       accountName: accountName,
       refreshToken,
     })
@@ -63,31 +63,23 @@ export class AuthenticationTokenService {
       .setSubject(subject)
       // Note: 900s = 15min
       .setExpirationTime(Number(currentTime / 1000n) + 60 * 15)
-      .sign(this.privateKey)) as AuthenticationToken;
+      .sign(this.privateKey);
 
-    return Option.some(authToken);
+    return Option.some(authToken as AuthenticationToken);
   }
 
   public async renewAuthToken(
     token: AuthenticationToken,
   ): Promise<Result.Result<Error, AuthenticationToken>> {
-    if (!(await this.verify(token))) {
-      return Result.err(
-        new AccountAuthenticationTokenInvalidError(
-          'Authentication token is invalid',
-          { cause: null },
-        ),
-      );
-    }
-
     const { refreshToken, accountName, sub } = jose.decodeJwt(token);
 
-    if (!(await this.verify(refreshToken as string))) {
-      return Result.err(
-        new AccountRefreshTokenInvalidError('Refresh token is invalid', {
-          cause: null,
-        }),
-      );
+    const authTokenVerifyRes = await this.verify(token);
+    const refreshTokenVerifyRes = await this.verify(refreshToken as string);
+    if (Result.isErr(authTokenVerifyRes)) {
+      return authTokenVerifyRes;
+    }
+    if (Result.isErr(refreshTokenVerifyRes)) {
+      return refreshTokenVerifyRes;
     }
 
     const currentTime = this.clock.now();
@@ -106,12 +98,27 @@ export class AuthenticationTokenService {
     return Result.ok(authToken as AuthenticationToken);
   }
 
-  public async verify(token: string): Promise<boolean> {
+  public async verify(token: string): Promise<Result.Result<Error, void>> {
     try {
       await jose.jwtVerify(token, this.publicKey);
-      return true;
-    } catch {
-      return false;
+      return Result.ok(undefined);
+    } catch (e) {
+      if (e instanceof jose.errors.JWTInvalid) {
+        return Result.err(
+          new AccountAuthenticationTokenInvalidError('Token is invalid', {
+            cause: e,
+          }),
+        );
+      }
+      if (e instanceof jose.errors.JWTExpired) {
+        return Result.err(
+          new AccountAuthenticationTokenExpiredError('Token is expired', {
+            cause: e,
+          }),
+        );
+      }
+
+      return Result.err(e as Error);
     }
   }
 }

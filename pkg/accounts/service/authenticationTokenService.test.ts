@@ -21,7 +21,7 @@ describe('AuthenticationTokenService', () => {
       return;
     }
 
-    expect(await service.verify(token[1])).toBe(true);
+    expect(Result.isOk(await service.verify(token[1]))).toBe(true);
   });
 
   it('if token expired', async () => {
@@ -31,7 +31,9 @@ describe('AuthenticationTokenService', () => {
     const expired = await service.generate('', '');
     expect(Option.isSome(expired)).toBe(true);
 
-    expect(await service.verify(Option.unwrap(expired))).toBe(false);
+    expect(Result.isOk(await service.verify(Option.unwrap(expired)))).toBe(
+      false,
+    );
   });
 
   it('renew: if token is valid, it should return a new token', async () => {
@@ -49,15 +51,21 @@ describe('AuthenticationTokenService', () => {
     );
 
     const renewed = await service.renewAuthToken(Option.unwrap(token));
-    const { refreshToken: newRefreshToken, ...newPayload } = jose.decodeJwt(
-      Result.unwrap(renewed),
-    );
+    try {
+      const { refreshToken: newRefreshToken, ...newPayload } = jose.decodeJwt(
+        Result.unwrap(renewed),
+      );
 
-    // renewed token must be valid token
-    expect(await service.verify(Result.unwrap(renewed))).toBe(true);
+      // renewed token must be valid token
+      expect(Result.isOk(await service.verify(Result.unwrap(renewed)))).toBe(
+        true,
+      );
 
-    expect(oldPayload).not.toStrictEqual(newPayload);
-    expect(oldRefreshToken).toStrictEqual(newRefreshToken);
+      expect(oldPayload).not.toStrictEqual(newPayload);
+      expect(oldRefreshToken).toStrictEqual(newRefreshToken);
+    } catch (e) {
+      expect(e).toBe(null);
+    }
   });
 
   it('renew: if authToken is expired, it should return error', async () => {
@@ -65,7 +73,7 @@ describe('AuthenticationTokenService', () => {
       new MockClock(new Date('2022-01-01T00:00:00Z')),
     );
     const expired = await service.generate('314', '628');
-    if (Option.isNone(expired)) return;
+    expect(Option.isNone(expired)).toBe(false);
 
     const result = await service.renewAuthToken(Option.unwrap(expired));
     expect(Result.isErr(result)).toBe(true);
