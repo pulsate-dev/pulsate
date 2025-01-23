@@ -303,16 +303,10 @@
             "type": "string",
             "description": "authorization token",
             "example": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIzZTE2NDQ4MzMwMDAwMDIiLCJpYXQiOjE2NDA5OTUyMDEsInJlZnJlc2hfdG9rZW4iOiJleUpoYkdjaU9pSklVekkxTmlJc0luUjVjQ0k2SWtwWFZDSjkuZXlKemRXSWlPaUl6WlRFMk5EUTRNek13TURBd01ESWlMQ0pwWVhRaU9qRTJOREE1T1RVeU1ERjkud2Q4cWJVcWowWGtCU1hud0FxM0lRYU1nQS1RTFd2MHVKU1NLX3BIVTZCYyJ9.mRUfLIYOGlLuC9D72zBriVvrHYrQgVHW7ntQ-bp5SHs"
-          },
-          "refresh_token": {
-            "type": "string",
-            "description": "refresh token",
-            "example": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIzZTE2NDQ4MzMwMDAwMDIiLCJpYXQiOjE2NDA5OTUyMDEsInJlZnJlc2hfdG9rZW4iOiJleUpoYkdjaU9pSklVekkxTmlJc0luUjVjQ0k2SWtwWFZDSjkuZXlKemRXSWlPaUl6WlRFMk5EUTRNek13TURBd01ESWlMQ0pwWVhRaU9qRTJOREE1T1RVeU1ERjkud2Q4cWJVcWowWGtCU1hud0FxM0lRYU1nQS1RTFd2MHVKU1NLX3BIVTZCYyJ9.mRUfLIYOGlLuC9D72zBriVvrHYrQgVHW7ntQ-bp5SHs"
           }
         },
         "required": [
-          "authorization_token",
-          "refresh_token"
+          "authorization_token"
         ]
       },
       "LoginRequest": {
@@ -343,17 +337,17 @@
           "captcha_token"
         ]
       },
-      "RefreshRequest": {
+      "RefreshResponse": {
         "type": "object",
         "properties": {
-          "refresh_token": {
+          "authorization_token": {
             "type": "string",
-            "description": "refresh token",
+            "description": "authorization token",
             "example": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIzZTE2NDQ4MzMwMDAwMDIiLCJpYXQiOjE2NDA5OTUyMDEsInJlZnJlc2hfdG9rZW4iOiJleUpoYkdjaU9pSklVekkxTmlJc0luUjVjQ0k2SWtwWFZDSjkuZXlKemRXSWlPaUl6WlRFMk5EUTRNek13TURBd01ESWlMQ0pwWVhRaU9qRTJOREE1T1RVeU1ERjkud2Q4cWJVcWowWGtCU1hud0FxM0lRYU1nQS1RTFd2MHVKU1NLX3BIVTZCYyJ9.mRUfLIYOGlLuC9D72zBriVvrHYrQgVHW7ntQ-bp5SHs"
           }
         },
         "required": [
-          "refresh_token"
+          "authorization_token"
         ]
       },
       "ResendVerificationEmailRequest": {
@@ -1606,22 +1600,24 @@
         "tags": [
           "accounts"
         ],
-        "requestBody": {
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/RefreshRequest"
-              }
-            }
+        "parameters": [
+          {
+            "schema": {
+              "type": "string",
+              "description": "Bearer token"
+            },
+            "required": true,
+            "name": "Authorization",
+            "in": "header"
           }
-        },
+        ],
         "responses": {
           "200": {
             "description": "OK",
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/UpdateAccountResponse"
+                  "$ref": "#/components/schemas/RefreshResponse"
                 }
               }
             }
@@ -4344,10 +4340,19 @@
           {
             "schema": {
               "type": "string",
-              "description": "Return notes before this note ID. specified note ID is not included"
+              "description": "Return notes before this note ID. specified note ID is not included. NOTE: after_id and before_id are exclusive."
             },
             "required": false,
             "name": "before_id",
+            "in": "query"
+          },
+          {
+            "schema": {
+              "type": "string",
+              "description": "Return notes after this note ID. Specified note is not included. NOTE: after_id and before_id are exclusive."
+            },
+            "required": false,
+            "name": "after_id",
             "in": "query"
           }
         ],
@@ -4620,10 +4625,19 @@
           {
             "schema": {
               "type": "string",
-              "description": "Return notes before this note ID. specified note ID is not included"
+              "description": "Return notes before this note ID. specified note ID is not included. NOTE: after_id and before_id are exclusive."
             },
             "required": false,
             "name": "before_id",
+            "in": "query"
+          },
+          {
+            "schema": {
+              "type": "string",
+              "description": "Return notes after this note ID. Specified note is not included. NOTE: after_id and before_id are exclusive."
+            },
+            "required": false,
+            "name": "after_id",
             "in": "query"
           }
         ],
@@ -4757,10 +4771,19 @@
           {
             "schema": {
               "type": "string",
-              "description": "Return notes before this note ID. specified note ID is not included"
+              "description": "Return notes before this note ID. specified note ID is not included. NOTE: after_id and before_id are exclusive."
             },
             "required": false,
             "name": "before_id",
+            "in": "query"
+          },
+          {
+            "schema": {
+              "type": "string",
+              "description": "Return notes after this note ID. Specified note is not included. NOTE: after_id and before_id are exclusive."
+            },
+            "required": false,
+            "name": "after_id",
             "in": "query"
           }
         ],
@@ -5233,6 +5256,244 @@
                     "error"
                   ],
                   "description": "Internal server error"
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "timeline"
+        ],
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "schema": {
+              "$ref": "#/components/schemas/List ID"
+            },
+            "required": true,
+            "name": "id",
+            "in": "path"
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "account_id": {
+                    "$ref": "#/components/schemas/Account ID"
+                  }
+                },
+                "required": [
+                  "account_id"
+                ]
+              }
+            }
+          }
+        },
+        "responses": {
+          "204": {
+            "description": "OK"
+          },
+          "400": {
+            "description": "Too many members",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string",
+                      "enum": [
+                        "TOO_MANY_TARGETS"
+                      ],
+                      "description": "Too many members to assign list"
+                    }
+                  },
+                  "required": [
+                    "error"
+                  ]
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "You do not have permission to add member to this list",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "anyOf": [
+                        {
+                          "type": "string",
+                          "enum": [
+                            "NO_PERMISSION"
+                          ],
+                          "description": "No permission to access this object"
+                        },
+                        {
+                          "type": "string",
+                          "enum": [
+                            "YOU_ARE_BLOCKED"
+                          ],
+                          "description": "You are blocked by the account"
+                        }
+                      ]
+                    }
+                  },
+                  "required": [
+                    "error"
+                  ]
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "List not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "anyOf": [
+                        {
+                          "type": "string",
+                          "enum": [
+                            "LIST_NOT_FOUND"
+                          ],
+                          "description": "List not found"
+                        },
+                        {
+                          "type": "string",
+                          "enum": [
+                            "ACCOUNT_NOT_FOUND"
+                          ],
+                          "description": "Account not found."
+                        }
+                      ]
+                    }
+                  },
+                  "required": [
+                    "error"
+                  ]
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "timeline"
+        ],
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "schema": {
+              "$ref": "#/components/schemas/List ID"
+            },
+            "required": true,
+            "name": "id",
+            "in": "path"
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "account_id": {
+                    "$ref": "#/components/schemas/Account ID"
+                  }
+                },
+                "required": [
+                  "account_id"
+                ]
+              }
+            }
+          }
+        },
+        "responses": {
+          "204": {
+            "description": "OK"
+          },
+          "403": {
+            "description": "You do not have permission to remove member to this list",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "anyOf": [
+                        {
+                          "type": "string",
+                          "enum": [
+                            "NO_PERMISSION"
+                          ],
+                          "description": "No permission to access this object"
+                        },
+                        {
+                          "type": "string",
+                          "enum": [
+                            "YOU_ARE_BLOCKED"
+                          ],
+                          "description": "You are blocked by the account"
+                        }
+                      ]
+                    }
+                  },
+                  "required": [
+                    "error"
+                  ]
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "List not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "anyOf": [
+                        {
+                          "type": "string",
+                          "enum": [
+                            "LIST_NOT_FOUND"
+                          ],
+                          "description": "List not found"
+                        },
+                        {
+                          "type": "string",
+                          "enum": [
+                            "ACCOUNT_NOT_FOUND"
+                          ],
+                          "description": "Account not found."
+                        }
+                      ]
+                    }
+                  },
+                  "required": [
+                    "error"
+                  ]
                 }
               }
             }

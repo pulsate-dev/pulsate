@@ -47,7 +47,8 @@ describe('AuthenticateService', () => {
     const result = Result.unwrap(
       await service.handle('@test@example.com', 'じゃすた・いぐざんぽぅ'),
     );
-    expect(await authenticationTokenService.verify(result)).toBe(true);
-    expect(await authenticationTokenService.verify(result)).toBe(true);
+    expect(Result.isOk(await authenticationTokenService.verify(result))).toBe(
+      true,
+    );
   });
 });

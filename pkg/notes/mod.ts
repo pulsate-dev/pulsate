@@ -1,11 +1,10 @@
 import { OpenAPIHono } from '@hono/zod-openapi';
-import { Cat, Ether, Option, Promise, Result } from '@mikuroxina/mini-fn';
+import { Cat, Ether, Option, Result } from '@mikuroxina/mini-fn';
 
 import { AccountNotFoundError } from '../accounts/model/errors.js';
-import { authenticateToken } from '../accounts/service/authenticationTokenService.js';
 import {
   type AuthMiddlewareVariable,
-  authenticateMiddleware,
+  AuthenticateMiddlewareService,
 } from '../adaptors/authenticateMiddleware.js';
 import { prismaClient } from '../adaptors/prisma.js';
 import { clockSymbol, snowflakeIDGenerator } from '../id/mod.js';
@@ -86,16 +85,7 @@ class Clock {
 const clock = Ether.newEther(clockSymbol, () => new Clock());
 const idGenerator = Ether.compose(clock)(snowflakeIDGenerator(0));
 
-const composer = Ether.composeT(Promise.monad);
-const liftOverPromise = Ether.liftEther(Promise.monad);
-
-const authToken = Cat.cat(authenticateToken).feed(
-  composer(liftOverPromise(clock)),
-).value;
-const AuthMiddleware = await Ether.runEtherT(
-  Cat.cat(liftOverPromise(authenticateMiddleware)).feed(composer(authToken))
-    .value,
-);
+const AuthMiddleware = new AuthenticateMiddlewareService();
 
 const createServiceObj = Ether.runEther(
   Cat.cat(createService)
