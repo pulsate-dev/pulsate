@@ -3,10 +3,7 @@ import type { MiddlewareHandler } from 'hono';
 import { createMiddleware } from 'hono/factory';
 
 import { z } from '@hono/zod-openapi';
-import {
-  type AuthenticationTokenService,
-  authenticateTokenSymbol,
-} from '../accounts/service/authenticationTokenService.js';
+import { controller } from '../accounts/mod.js';
 
 /* eslint-disable-next-line @typescript-eslint/consistent-type-definitions */
 export type AuthMiddlewareVariable = {
@@ -30,12 +27,6 @@ const tokenPayloadSchema = z.object({
 });
 
 export class AuthenticateMiddlewareService {
-  private readonly authTokenService: AuthenticationTokenService;
-
-  constructor(authTokenService: AuthenticationTokenService) {
-    this.authTokenService = authTokenService;
-  }
-
   private parseToken(
     token: string,
   ): Option.Option<z.infer<typeof tokenPayloadSchema>> {
@@ -80,9 +71,7 @@ export class AuthenticateMiddlewareService {
       }
       c.set('token', token);
 
-      const isValidToken = Result.isOk(
-        await this.authTokenService.verify(token),
-      );
+      const isValidToken = Result.isOk(await controller.verifyAuthToken(token));
       const parsed = this.parseToken(token);
       if (!isValidToken) {
         return c.json({ error: 'UNAUTHORIZED' }, { status: 401 });
@@ -103,8 +92,5 @@ export const authenticateMiddlewareSymbol =
   Ether.newEtherSymbol<AuthenticateMiddlewareService>();
 export const authenticateMiddleware = Ether.newEther(
   authenticateMiddlewareSymbol,
-  ({ authTokenService }) => new AuthenticateMiddlewareService(authTokenService),
-  {
-    authTokenService: authenticateTokenSymbol,
-  },
+  () => new AuthenticateMiddlewareService(),
 );

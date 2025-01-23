@@ -3,7 +3,7 @@ import { Cat, Ether, Option, Promise, Result } from '@mikuroxina/mini-fn';
 
 import {
   type AuthMiddlewareVariable,
-  authenticateMiddleware,
+  AuthenticateMiddlewareService,
 } from '../adaptors/authenticateMiddleware.js';
 import { prismaClient } from '../adaptors/prisma.js';
 import { MediaNotFoundError } from '../drive/model/errors.js';
@@ -73,7 +73,10 @@ import {
   VerifyEmailRoute,
 } from './router.js';
 import { authenticate } from './service/authenticate.js';
-import { authenticateToken } from './service/authenticationTokenService.js';
+import {
+  authenticateToken,
+  authenticateTokenSymbol,
+} from './service/authenticationTokenService.js';
 import { accountAvatar } from './service/avatar.js';
 import { edit } from './service/edit.js';
 import { etag } from './service/etagService.js';
@@ -133,9 +136,13 @@ const verifyAccountTokenService = Cat.cat(verifyAccountToken)
 const composer = Ether.composeT(Promise.monad);
 const liftOverPromise = Ether.liftEther(Promise.monad);
 
-const authToken = Cat.cat(authenticateToken).feed(
-  composer(liftOverPromise(clock)),
-).value;
+const authTokenObj = Ether.runEtherT(
+  Cat.cat(authenticateToken).feed(composer(liftOverPromise(clock))).value,
+);
+const authToken = Ether.newEtherT<Promise.PromiseHkt>()(
+  authenticateTokenSymbol,
+  () => authTokenObj,
+);
 
 export const controller = new AccountController({
   authenticateService: await Ether.runEtherT(
@@ -199,9 +206,7 @@ export const controller = new AccountController({
       .feed(Ether.compose(accountAvatarRepository))
       .feed(Ether.compose(mediaModuleFacadeEther)).value,
   ),
-  authenticationTokenService: await Ether.runEtherT(
-    Cat.cat(authenticateToken).feed(composer(liftOverPromise(clock))).value,
-  ),
+  authenticationTokenService: await Ether.runEtherT(authToken),
 });
 
 // ToDo: load secret from config file
@@ -210,10 +215,7 @@ const CaptchaMiddleware = Ether.runEther(
     newTurnstileCaptchaValidator(process.env.TURNSTILE_SECRET ?? ''),
   )(captchaMiddleware),
 );
-const AuthMiddleware = await Ether.runEtherT(
-  Cat.cat(liftOverPromise(authenticateMiddleware)).feed(composer(authToken))
-    .value,
-);
+const AuthMiddleware = new AuthenticateMiddlewareService();
 
 accounts.openAPIRegistry.registerComponent('securitySchemes', 'Bearer', {
   type: 'http',

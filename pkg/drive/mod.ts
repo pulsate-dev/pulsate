@@ -1,14 +1,14 @@
 import { OpenAPIHono } from '@hono/zod-openapi';
-import { Cat, Ether, Option, Promise, Result } from '@mikuroxina/mini-fn';
+import { Cat, Ether, Option, Result } from '@mikuroxina/mini-fn';
 
 import type { AccountID } from '../accounts/model/account.js';
-import { authenticateToken } from '../accounts/service/authenticationTokenService.js';
+
 import {
   type AuthMiddlewareVariable,
-  authenticateMiddleware,
+  AuthenticateMiddlewareService,
 } from '../adaptors/authenticateMiddleware.js';
+import { isProduction } from '../adaptors/env.js';
 import { prismaClient } from '../adaptors/prisma.js';
-import { clockSymbol } from '../id/mod.js';
 import { DriveController } from './adaptor/controller/drive.js';
 import { driveModuleLogger } from './adaptor/logger.js';
 import { inMemoryMediaRepo } from './adaptor/repository/dummy.js';
@@ -17,24 +17,7 @@ import { MediaNotFoundError } from './model/errors.js';
 import { GetMediaRoute } from './router.js';
 import { fetchMediaService } from './service/fetch.js';
 
-const isProduction = process.env.NODE_ENV === 'production';
-const composer = Ether.composeT(Promise.monad);
-const liftOverPromise = Ether.liftEther(Promise.monad);
-
-class Clock {
-  now() {
-    return BigInt(Date.now());
-  }
-}
-const clock = Ether.newEther(clockSymbol, () => new Clock());
-const authToken = Cat.cat(authenticateToken).feed(
-  composer(liftOverPromise(clock)),
-).value;
-
-const AuthMiddleware = await Ether.runEtherT(
-  Cat.cat(liftOverPromise(authenticateMiddleware)).feed(composer(authToken))
-    .value,
-);
+const AuthMiddleware = new AuthenticateMiddlewareService();
 
 const mediaRepository = isProduction
   ? prismaMediaRepo(prismaClient)

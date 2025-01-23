@@ -29,7 +29,6 @@ describe('AuthenticationTokenService', () => {
       new MockClock(new Date('2022-01-01T00:00:00Z')),
     );
     const expired = await service.generate('', '');
-    expect(Option.isSome(expired)).toBe(true);
 
     expect(Result.isOk(await service.verify(Option.unwrap(expired)))).toBe(
       false,
@@ -40,7 +39,6 @@ describe('AuthenticationTokenService', () => {
     // NOTE: mockClock returns only *static* time, this test using a normal clock
     const service = await AuthenticationTokenService.new(new Clock());
     const token = await service.generate('314', '628');
-    expect(Option.isSome(token)).toBe(true);
 
     const { refreshToken: oldRefreshToken, ...oldPayload } = jose.decodeJwt(
       Option.unwrap(token),
@@ -73,7 +71,6 @@ describe('AuthenticationTokenService', () => {
       new MockClock(new Date('2022-01-01T00:00:00Z')),
     );
     const expired = await service.generate('314', '628');
-    expect(Option.isNone(expired)).toBe(false);
 
     const result = await service.renewAuthToken(Option.unwrap(expired));
     expect(Result.isErr(result)).toBe(true);

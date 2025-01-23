@@ -573,4 +573,8 @@ export class AccountController {
       actorID as AccountID,
     );
   }
+
+  async verifyAuthToken(token: string): Promise<Result.Result<Error, void>> {
+    return this.authenticationTokenService.verify(token);
+  }
 }
