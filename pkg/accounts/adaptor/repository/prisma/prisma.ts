@@ -17,6 +17,7 @@ import {
 } from '../../../model/errors.js';
 import { AccountFollow } from '../../../model/follow.js';
 import {
+  type AccountFollowCount,
   type AccountFollowRepository,
   type AccountRepository,
   type AccountVerifyTokenRepository,
@@ -374,6 +375,29 @@ export class PrismaAccountFollowRepository implements AccountFollowRepository {
       },
     });
     return Result.ok(res.map((f) => this.fromPrismaArgs(f)));
+  }
+
+  async followCount(
+    accountID: AccountID,
+  ): Promise<Result.Result<Error, AccountFollowCount>> {
+    try {
+      const followers = await this.prisma.following.count({
+        where: {
+          toId: accountID,
+        },
+      });
+      const following = await this.prisma.following.count({
+        where: {
+          fromId: accountID,
+        },
+      });
+      return Result.ok({
+        followers,
+        following,
+      });
+    } catch (e) {
+      return Result.err(parsePrismaError(e));
+    }
   }
 
   private fromPrismaArgs(args: AccountFollowPrismaArgs): AccountFollow {

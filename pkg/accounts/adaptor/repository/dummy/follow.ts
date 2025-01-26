@@ -3,6 +3,7 @@ import type { AccountID } from '../../../model/account.js';
 import { AccountNotFoundError } from '../../../model/errors.js';
 import type { AccountFollow } from '../../../model/follow.js';
 import {
+  type AccountFollowCount,
   type AccountFollowRepository,
   followRepoSymbol,
 } from '../../../model/repository.js';
@@ -76,6 +77,26 @@ export class InMemoryAccountFollowRepository
         })
         .slice(0, limit),
     );
+  }
+
+  async followCount(
+    accountID: AccountID,
+  ): Promise<Result.Result<Error, AccountFollowCount>> {
+    const count: AccountFollowCount = {
+      followers: 0,
+      following: 0,
+    };
+
+    for (const v of this.data) {
+      if (v.getTargetID() === accountID) {
+        count.followers += 1;
+      }
+      if (v.getFromID() === accountID) {
+        count.following += 1;
+      }
+    }
+
+    return Result.ok(count);
   }
 }
 

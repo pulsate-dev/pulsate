@@ -46,6 +46,13 @@ export interface AccountVerifyTokenRepository {
 export const verifyTokenRepoSymbol =
   Ether.newEtherSymbol<AccountVerifyTokenRepository>();
 
+/**
+ * Number of followers and followers of the account
+ */
+export interface AccountFollowCount {
+  followers: number;
+  following: number;
+}
 export interface AccountFollowRepository {
   follow(follow: AccountFollow): Promise<Result.Result<Error, void>>;
   unfollow(
@@ -66,6 +73,9 @@ export interface AccountFollowRepository {
     accountID: AccountID,
     limit: number,
   ): Promise<Result.Result<Error, AccountFollow[]>>;
+  followCount(
+    accountID: AccountID,
+  ): Promise<Result.Result<Error, AccountFollowCount>>;
 }
 export const followRepoSymbol = Ether.newEtherSymbol<AccountFollowRepository>();
 

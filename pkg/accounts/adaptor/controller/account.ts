@@ -4,6 +4,7 @@ import { Option, Result } from '@mikuroxina/mini-fn';
 import type { Medium, MediumID } from '../../../drive/model/medium.js';
 import type { AccountID, AccountName } from '../../model/account.js';
 import type { AccountFollow } from '../../model/follow.js';
+import type { AccountFollowCount } from '../../model/repository.js';
 import type { AuthenticateService } from '../../service/authenticate.js';
 import type {
   AuthenticationToken,
@@ -243,6 +244,15 @@ export class AccountController {
     const header = Result.mapOr('')((headerImage: Medium): string =>
       headerImage.getUrl(),
     )(headerRes);
+    const followCountRes = await this.fetchFollowService.fetchFollowCount(
+      account.getID(),
+    );
+    const followingCount = Result.mapOr(0)(
+      (v: AccountFollowCount) => v.following,
+    )(followCountRes);
+    const followersCount = Result.mapOr(0)(
+      (v: AccountFollowCount) => v.followers,
+    )(followCountRes);
 
     return Result.ok({
       id: account.getID(),
@@ -251,10 +261,10 @@ export class AccountController {
       nickname: account.getNickname(),
       bio: account.getBio(),
       // ToDo: fill the following fields
-      avatar: avatar,
-      header: header,
-      followed_count: 0,
-      following_count: 0,
+      avatar,
+      header,
+      followed_count: followersCount,
+      following_count: followingCount,
       note_count: 0,
       created_at: account.getCreatedAt(),
       role: account.getRole(),
@@ -285,6 +295,15 @@ export class AccountController {
     const header = Result.mapOr('')((headerImage: Medium): string =>
       headerImage.getUrl(),
     )(headerRes);
+    const followCountRes = await this.fetchFollowService.fetchFollowCount(
+      account.getID(),
+    );
+    const followingCount = Result.mapOr(0)(
+      (v: AccountFollowCount) => v.following,
+    )(followCountRes);
+    const followersCount = Result.mapOr(0)(
+      (v: AccountFollowCount) => v.followers,
+    )(followCountRes);
 
     return Result.ok({
       id: account.getID(),
@@ -292,11 +311,11 @@ export class AccountController {
       name: account.getName() as string,
       nickname: account.getNickname(),
       bio: account.getBio(),
+      avatar,
+      header,
+      followed_count: followersCount,
+      following_count: followingCount,
       // ToDo: fill the following fields
-      avatar: avatar,
-      header: header,
-      followed_count: 0,
-      following_count: 0,
       note_count: 0,
       created_at: account.getCreatedAt(),
       role: account.getRole(),
@@ -422,27 +441,63 @@ export class AccountController {
       return followings;
     }
 
-    const accounts = await this.fetchService.fetchManyAccountsByID(
+    const accountsRes = await this.fetchService.fetchManyAccountsByID(
       Result.unwrap(followings),
     );
+    if (Result.isErr(accountsRes)) {
+      return accountsRes;
+    }
+    const accounts = Result.unwrap(accountsRes);
 
-    if (Result.isErr(accounts)) {
-      return accounts;
+    // Note: remove duplicated accounts
+    const accountIDs = new Set(accounts.map((v) => v.getID()));
+    // [header,avatar]
+    const headerAvatarImages = new Map<AccountID, [string, string]>();
+    const followCounts = new Map<AccountID, AccountFollowCount>();
+
+    for (const id of accountIDs) {
+      const avatarRes = await this.avatarService.fetchByAccountID(id);
+      const avatar = Result.mapOr('')((avatarImage: Medium): string =>
+        avatarImage.getUrl(),
+      )(avatarRes);
+      const headerRes = await this.headerService.fetchByAccountID(id);
+      const header = Result.mapOr('')((headerImage: Medium): string =>
+        headerImage.getUrl(),
+      )(headerRes);
+      headerAvatarImages.set(id, [header, avatar]);
+
+      const followCountRes = await this.fetchFollowService.fetchFollowCount(id);
+      const followingCount = Result.mapOr(0)(
+        (v: AccountFollowCount) => v.following,
+      )(followCountRes);
+      const followersCount = Result.mapOr(0)(
+        (v: AccountFollowCount) => v.followers,
+      )(followCountRes);
+
+      followCounts.set(id, {
+        followers: followersCount,
+        following: followingCount,
+      });
     }
 
     return Result.ok(
-      Result.unwrap(accounts).map((v) => {
+      accounts.map((v) => {
+        const [header, avatar] = headerAvatarImages.get(v.getID()) ?? ['', ''];
+        const { following, followers } = followCounts.get(v.getID()) ?? {
+          followers: 0,
+          following: 0,
+        };
         return {
           id: v.getID(),
           email: v.getMail(),
           name: v.getName(),
           nickname: v.getNickname(),
           bio: v.getBio(),
-          // ToDo: fill the following fields
-          avatar: '',
-          header: '',
-          followed_count: 0,
-          following_count: 0,
+          avatar,
+          header,
+          followed_count: followers,
+          following_count: following,
+          // ToDo: fill note_count
           note_count: 0,
           created_at: v.getCreatedAt(),
           role: v.getRole(),
@@ -465,28 +520,62 @@ export class AccountController {
       return followers;
     }
 
-    const accounts = await this.fetchService.fetchManyAccountsByID(
+    const accountsRes = await this.fetchService.fetchManyAccountsByID(
       Result.unwrap(followers),
     );
+    if (Result.isErr(accountsRes)) {
+      return accountsRes;
+    }
+    const accounts = Result.unwrap(accountsRes);
+    // Note: remove duplicated accounts
+    const accountIDs = new Set(accounts.map((v) => v.getID()));
+    // [header,avatar]
+    const headerAvatarImages = new Map<AccountID, [string, string]>();
+    const followCounts = new Map<AccountID, AccountFollowCount>();
 
-    if (Result.isErr(accounts)) {
-      return accounts;
+    for (const id of accountIDs) {
+      const avatarRes = await this.avatarService.fetchByAccountID(id);
+      const avatar = Result.mapOr('')((avatarImage: Medium): string =>
+        avatarImage.getUrl(),
+      )(avatarRes);
+      const headerRes = await this.headerService.fetchByAccountID(id);
+      const header = Result.mapOr('')((headerImage: Medium): string =>
+        headerImage.getUrl(),
+      )(headerRes);
+      headerAvatarImages.set(id, [header, avatar]);
+
+      const followCountRes = await this.fetchFollowService.fetchFollowCount(id);
+      const followingCount = Result.mapOr(0)(
+        (v: AccountFollowCount) => v.following,
+      )(followCountRes);
+      const followersCount = Result.mapOr(0)(
+        (v: AccountFollowCount) => v.followers,
+      )(followCountRes);
+
+      followCounts.set(id, {
+        followers: followersCount,
+        following: followingCount,
+      });
     }
 
     return Result.ok(
-      Result.unwrap(accounts).map((v) => {
-        // ToDo: make optional some fields
+      accounts.map((v) => {
+        const [header, avatar] = headerAvatarImages.get(v.getID()) ?? ['', ''];
+        const { following, followers } = followCounts.get(v.getID()) ?? {
+          followers: 0,
+          following: 0,
+        };
         return {
           id: v.getID(),
           email: v.getMail(),
           name: v.getName(),
           nickname: v.getNickname(),
           bio: v.getBio(),
-          // ToDo: fill the following fields
-          avatar: '',
-          header: '',
-          followed_count: 0,
-          following_count: 0,
+          avatar,
+          header,
+          followed_count: followers,
+          following_count: following,
+          // ToDo: fill note_count
           note_count: 0,
           created_at: v.getCreatedAt(),
           role: v.getRole(),
