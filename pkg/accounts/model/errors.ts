@@ -183,6 +183,28 @@ export class AccountMailAddressVerificationTokenInvalidError extends Error {
 }
 
 /**
+ * Authentication token is invalid
+ */
+export class AccountAuthenticationTokenInvalidError extends Error {
+  constructor(message: string, options: { cause: unknown }) {
+    super(message);
+    this.name = 'AccountAuthenticationTokenInvalidError';
+    this.cause = options.cause;
+  }
+}
+
+/**
+ * Authentication token is expired
+ */
+export class AccountAuthenticationTokenExpiredError extends Error {
+  constructor(message: string, options: { cause: unknown }) {
+    super(message);
+    this.name = 'AccountAuthenticationTokenExpiredError';
+    this.cause = options.cause;
+  }
+}
+
+/**
  * Refresh token is invalid
  */
 export class AccountRefreshTokenInvalidError extends Error {

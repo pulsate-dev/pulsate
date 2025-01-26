@@ -5,6 +5,10 @@ import type { Medium, MediumID } from '../../../drive/model/medium.js';
 import type { AccountID, AccountName } from '../../model/account.js';
 import type { AccountFollow } from '../../model/follow.js';
 import type { AuthenticateService } from '../../service/authenticate.js';
+import type {
+  AuthenticationToken,
+  AuthenticationTokenService,
+} from '../../service/authenticationTokenService.js';
 import type { AccountAvatarService } from '../../service/avatar.js';
 import type { EditService } from '../../service/edit.js';
 import type { FetchService } from '../../service/fetch.js';
@@ -23,6 +27,7 @@ import type {
   GetAccountFollowingSchema,
   GetAccountResponseSchema,
   LoginResponseSchema,
+  RefreshResponseSchema,
   UpdateAccountResponseSchema,
 } from '../validator/schema.js';
 
@@ -40,6 +45,7 @@ export class AccountController {
   private readonly resendTokenService: ResendVerifyTokenService;
   private readonly headerService: AccountHeaderService;
   private readonly avatarService: AccountAvatarService;
+  private readonly authenticationTokenService: AuthenticationTokenService;
 
   constructor(args: {
     registerService: RegisterService;
@@ -55,6 +61,7 @@ export class AccountController {
     resendTokenService: ResendVerifyTokenService;
     headerService: AccountHeaderService;
     avatarService: AccountAvatarService;
+    authenticationTokenService: AuthenticationTokenService;
   }) {
     this.registerService = args.registerService;
     this.editService = args.editService;
@@ -69,6 +76,7 @@ export class AccountController {
     this.resendTokenService = args.resendTokenService;
     this.headerService = args.headerService;
     this.avatarService = args.avatarService;
+    this.authenticationTokenService = args.authenticationTokenService;
   }
 
   async createAccount(
@@ -315,6 +323,21 @@ export class AccountController {
     });
   }
 
+  async refresh(
+    token: string,
+  ): Promise<Result.Result<Error, z.infer<typeof RefreshResponseSchema>>> {
+    const res = await this.authenticationTokenService.renewAuthToken(
+      token as AuthenticationToken,
+    );
+    if (Result.isErr(res)) {
+      return res;
+    }
+
+    return Result.ok({
+      authorization_token: Result.unwrap(res),
+    });
+  }
+
   async silenceAccount(
     targetName: string,
     actorName: string,
@@ -549,5 +572,9 @@ export class AccountController {
       account.getID(),
       actorID as AccountID,
     );
+  }
+
+  async verifyAuthToken(token: string): Promise<Result.Result<Error, void>> {
+    return this.authenticationTokenService.verify(token);
   }
 }

@@ -3,7 +3,7 @@ import { Cat, Ether, Option, Promise, Result } from '@mikuroxina/mini-fn';
 
 import {
   type AuthMiddlewareVariable,
-  authenticateMiddleware,
+  AuthenticateMiddlewareService,
 } from '../adaptors/authenticateMiddleware.js';
 import { prismaClient } from '../adaptors/prisma.js';
 import { MediaNotFoundError } from '../drive/model/errors.js';
@@ -31,6 +31,8 @@ import {
   AccountAlreadyFollowingError,
   AccountAlreadyFrozenError,
   AccountAuthenticationFailedError,
+  AccountAuthenticationTokenExpiredError,
+  AccountAuthenticationTokenInvalidError,
   AccountCaptchaTokenInvalidError,
   AccountFollowingBlockedError,
   AccountInsufficientPermissionError,
@@ -45,6 +47,8 @@ import {
   AccountNotFollowingError,
   AccountNotFoundError,
   AccountPassphraseRequirementsNotMetError,
+  AccountRefreshTokenExpiredError,
+  AccountRefreshTokenInvalidError,
 } from './model/errors.js';
 import { accountRepoSymbol } from './model/repository.js';
 import {
@@ -69,7 +73,10 @@ import {
   VerifyEmailRoute,
 } from './router.js';
 import { authenticate } from './service/authenticate.js';
-import { authenticateToken } from './service/authenticationTokenService.js';
+import {
+  authenticateToken,
+  authenticateTokenSymbol,
+} from './service/authenticationTokenService.js';
 import { accountAvatar } from './service/avatar.js';
 import { edit } from './service/edit.js';
 import { etag } from './service/etagService.js';
@@ -129,9 +136,13 @@ const verifyAccountTokenService = Cat.cat(verifyAccountToken)
 const composer = Ether.composeT(Promise.monad);
 const liftOverPromise = Ether.liftEther(Promise.monad);
 
-const authToken = Cat.cat(authenticateToken).feed(
-  composer(liftOverPromise(clock)),
-).value;
+const authTokenObj = Ether.runEtherT(
+  Cat.cat(authenticateToken).feed(composer(liftOverPromise(clock))).value,
+);
+const authToken = Ether.newEtherT<Promise.PromiseHkt>()(
+  authenticateTokenSymbol,
+  () => authTokenObj,
+);
 
 export const controller = new AccountController({
   authenticateService: await Ether.runEtherT(
@@ -195,6 +206,7 @@ export const controller = new AccountController({
       .feed(Ether.compose(accountAvatarRepository))
       .feed(Ether.compose(mediaModuleFacadeEther)).value,
   ),
+  authenticationTokenService: await Ether.runEtherT(authToken),
 });
 
 // ToDo: load secret from config file
@@ -203,10 +215,7 @@ const CaptchaMiddleware = Ether.runEther(
     newTurnstileCaptchaValidator(process.env.TURNSTILE_SECRET ?? ''),
   )(captchaMiddleware),
 );
-const AuthMiddleware = await Ether.runEtherT(
-  Cat.cat(liftOverPromise(authenticateMiddleware)).feed(composer(authToken))
-    .value,
-);
+const AuthMiddleware = new AuthenticateMiddlewareService();
 
 accounts.openAPIRegistry.registerComponent('securitySchemes', 'Bearer', {
   type: 'http',
@@ -457,8 +466,31 @@ accounts.openapi(LoginRoute, async (c) => {
   return c.json(res[1], 200);
 });
 
-accounts.openapi(RefreshRoute, () => {
-  throw new Error('Not implemented');
+accounts.openapi(RefreshRoute, async (c) => {
+  const token = c.req.header('Authorization');
+  if (!token) return c.json({ error: 'INVALID_TOKEN' as const }, 400);
+
+  const res = await controller.refresh(token);
+  if (Result.isErr(res)) {
+    const error = Result.unwrapErr(res);
+    accountModuleLogger.warn(error);
+    if (error instanceof AccountAuthenticationTokenInvalidError) {
+      return c.json({ error: 'INVALID_TOKEN' as const }, 400);
+    }
+    if (error instanceof AccountRefreshTokenInvalidError) {
+      return c.json({ error: 'INVALID_TOKEN' as const }, 400);
+    }
+    if (error instanceof AccountRefreshTokenExpiredError) {
+      return c.json({ error: 'EXPIRED_TOKEN' as const }, 400);
+    }
+    if (error instanceof AccountAuthenticationTokenExpiredError) {
+      return c.json({ error: 'EXPIRED_TOKEN' as const }, 400);
+    }
+    accountModuleLogger.error('Uncaught error', error);
+    return c.json({ error: 'INTERNAL_ERROR' as const }, 500);
+  }
+
+  return c.json(Result.unwrap(res), 200);
 });
 
 accounts[SilenceAccountRoute.method](

@@ -31,7 +31,7 @@ import {
   GetAccountResponseSchema,
   LoginRequestSchema,
   LoginResponseSchema,
-  RefreshRequestSchema,
+  RefreshResponseSchema,
   ResendVerificationEmailRequestSchema,
   SetAccountAvatarRequestSchema,
   UpdateAccountRequestSchema,
@@ -536,20 +536,18 @@ export const RefreshRoute = createRoute({
   tags: ['accounts'],
   path: '/refresh',
   request: {
-    body: {
-      content: {
-        'application/json': {
-          schema: RefreshRequestSchema,
-        },
-      },
-    },
+    headers: z.object({
+      Authorization: z.string().openapi({
+        description: 'Bearer token',
+      }),
+    }),
   },
   responses: {
     200: {
       description: 'OK',
       content: {
         'application/json': {
-          schema: UpdateAccountResponseSchema,
+          schema: RefreshResponseSchema,
         },
       },
     },

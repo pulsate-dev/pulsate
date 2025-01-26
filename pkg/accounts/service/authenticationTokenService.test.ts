@@ -1,4 +1,5 @@
-import { Option } from '@mikuroxina/mini-fn';
+import { Option, Result } from '@mikuroxina/mini-fn';
+import * as jose from 'jose';
 import { describe, expect, it } from 'vitest';
 
 import { MockClock } from '../../id/mod.js';
@@ -14,7 +15,7 @@ describe('AuthenticationTokenService', () => {
       return;
     }
 
-    expect(await service.verify(token[1])).toBe(true);
+    expect(Result.isOk(await service.verify(token[1]))).toBe(true);
   });
 
   it('if token expired', async () => {
@@ -22,8 +23,47 @@ describe('AuthenticationTokenService', () => {
       new MockClock(new Date('2022-01-01T00:00:00Z')),
     );
     const expired = await service.generate('', '');
-    if (Option.isNone(expired)) return;
 
-    expect(await service.verify(expired[1])).toBe(false);
+    expect(Result.isOk(await service.verify(Option.unwrap(expired)))).toBe(
+      false,
+    );
+  });
+
+  it('renew: if token is valid, it should return a new token', async () => {
+    const clock = new Date();
+    const service = await AuthenticationTokenService.new(new MockClock(clock));
+    const token = await service.generate('314', '628');
+
+    const { refreshToken: oldRefreshToken, ...oldPayload } = jose.decodeJwt(
+      Option.unwrap(token),
+    );
+
+    clock.setSeconds(clock.getMinutes() + 1);
+    const renewed = await service.renewAuthToken(Option.unwrap(token));
+    try {
+      const { refreshToken: newRefreshToken, ...newPayload } = jose.decodeJwt(
+        Result.unwrap(renewed),
+      );
+
+      // renewed token must be valid token
+      expect(Result.isOk(await service.verify(Result.unwrap(renewed)))).toBe(
+        true,
+      );
+
+      expect(oldPayload).not.toStrictEqual(newPayload);
+      expect(oldRefreshToken).toStrictEqual(newRefreshToken);
+    } catch (e) {
+      expect(e).toBe(null);
+    }
+  });
+
+  it('renew: if authToken is expired, it should return error', async () => {
+    const service = await AuthenticationTokenService.new(
+      new MockClock(new Date('2022-01-01T00:00:00Z')),
+    );
+    const expired = await service.generate('314', '628');
+
+    const result = await service.renewAuthToken(Option.unwrap(expired));
+    expect(Result.isErr(result)).toBe(true);
   });
 });

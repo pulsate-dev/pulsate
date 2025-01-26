@@ -1,11 +1,11 @@
 import { OpenAPIHono } from '@hono/zod-openapi';
-import { Cat, Ether, Option, Promise, Result } from '@mikuroxina/mini-fn';
+import { Cat, Ether, Option, Result } from '@mikuroxina/mini-fn';
 
 import { AccountNotFoundError } from '../accounts/model/errors.js';
-import { authenticateToken } from '../accounts/service/authenticationTokenService.js';
+
 import {
   type AuthMiddlewareVariable,
-  authenticateMiddleware,
+  AuthenticateMiddlewareService,
 } from '../adaptors/authenticateMiddleware.js';
 import { prismaClient } from '../adaptors/prisma.js';
 import { valkeyClient } from '../adaptors/valkey.js';
@@ -77,16 +77,7 @@ const listRepository = isProduction
   ? prismaListRepo(prismaClient)
   : inMemoryListRepo();
 
-const liftOverPromise = Ether.liftEther(Promise.monad);
-const composer = Ether.composeT(Promise.monad);
-
-const authToken = Cat.cat(authenticateToken).feed(
-  composer(liftOverPromise(clock)),
-).value;
-const AuthMiddleware = await Ether.runEtherT(
-  Cat.cat(liftOverPromise(authenticateMiddleware)).feed(composer(authToken))
-    .value,
-);
+const AuthMiddleware = new AuthenticateMiddlewareService();
 const noteVisibilityService = Cat.cat(noteVisibility).feed(
   Ether.compose(accountModuleEther),
 ).value;
