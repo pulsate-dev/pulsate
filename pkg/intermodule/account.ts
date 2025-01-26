@@ -1,6 +1,10 @@
 import { Cat, Ether, Result } from '@mikuroxina/mini-fn';
 import { InMemoryAccountRepository } from '../accounts/adaptor/repository/dummy/account.js';
+import { inMemoryAccountAvatarRepo } from '../accounts/adaptor/repository/dummy/avatar.js';
 import { newFollowRepo } from '../accounts/adaptor/repository/dummy/follow.js';
+import { inMemoryAccountHeaderRepo } from '../accounts/adaptor/repository/dummy/header.js';
+import { prismaAccountAvatarRepo } from '../accounts/adaptor/repository/prisma/avatar.js';
+import { prismaAccountHeaderRepo } from '../accounts/adaptor/repository/prisma/header.js';
 import {
   PrismaAccountRepository,
   prismaFollowRepo,
@@ -12,13 +16,23 @@ import type {
 } from '../accounts/model/account.js';
 import type { AccountFollow } from '../accounts/model/follow.js';
 import { accountRepoSymbol } from '../accounts/model/repository.js';
+import {
+  type AccountAvatarService,
+  accountAvatar,
+} from '../accounts/service/avatar.js';
 import type { FetchService } from '../accounts/service/fetch.js';
 import { fetch } from '../accounts/service/fetch.js';
 import type { FetchFollowService } from '../accounts/service/fetchFollow.js';
 import { fetchFollow } from '../accounts/service/fetchFollow.js';
+import {
+  type AccountHeaderService,
+  accountHeader,
+} from '../accounts/service/header.js';
 import { dummyAccounts, dummyfollows } from '../accounts/testData/testData.js';
 import { isProduction } from '../adaptors/env.js';
 import { prismaClient } from '../adaptors/prisma.js';
+import type { Medium } from '../drive/model/medium.js';
+import { mediaModuleFacadeEther } from './media.js';
 
 export type { Account } from '../accounts/model/account.js';
 
@@ -33,6 +47,8 @@ export class AccountModuleFacade {
   constructor(
     private readonly fetchService: FetchService,
     private readonly fetchFollowService: FetchFollowService,
+    private readonly avatarService: AccountAvatarService,
+    private readonly headerService: AccountHeaderService,
   ) {}
 
   async fetchAccount(id: AccountID): Promise<Result.Result<Error, Account>> {
@@ -104,6 +120,32 @@ export class AccountModuleFacade {
         }),
     );
   }
+
+  async fetchAccountAvatar(
+    id: AccountID,
+  ): Promise<Result.Result<Error, string>> {
+    const res = await this.avatarService.fetchByAccountID(id);
+    const avatar = Result.mapOr('')((avatarImage: Medium): string =>
+      avatarImage.getUrl(),
+    )(res);
+    return Result.ok(avatar);
+  }
+
+  async fetchAccountHeader(
+    id: AccountID,
+  ): Promise<Result.Result<Error, string>> {
+    const res = await this.headerService.fetchByAccountID(id);
+    const header = Result.mapOr('')((headerImage: Medium): string =>
+      headerImage.getUrl(),
+    )(res);
+    return Result.ok(header);
+  }
+
+  async fetchFollowCount(
+    id: AccountID,
+  ): Promise<Result.Result<Error, { followers: number; following: number }>> {
+    return await this.fetchFollowService.fetchFollowCount(id);
+  }
 }
 
 export const accountModuleFacadeSymbol =
@@ -121,12 +163,29 @@ const accountFollowRepository = isProduction
   ? prismaFollowRepo(prismaClient)
   : newFollowRepo();
 
+const accountHeaderRepository = isProduction
+  ? prismaAccountHeaderRepo(prismaClient)
+  : inMemoryAccountHeaderRepo([], []);
+const accountAvatarRepository = isProduction
+  ? prismaAccountAvatarRepo(prismaClient)
+  : inMemoryAccountAvatarRepo([], []);
+
 export const accountModule = new AccountModuleFacade(
   Ether.runEther(Cat.cat(fetch).feed(Ether.compose(accountRepository)).value),
   Ether.runEther(
     Cat.cat(fetchFollow)
       .feed(Ether.compose(accountFollowRepository))
       .feed(Ether.compose(accountRepository)).value,
+  ),
+  Ether.runEther(
+    Cat.cat(accountAvatar)
+      .feed(Ether.compose(accountAvatarRepository))
+      .feed(Ether.compose(mediaModuleFacadeEther)).value,
+  ),
+  Ether.runEther(
+    Cat.cat(accountHeader)
+      .feed(Ether.compose(accountHeaderRepository))
+      .feed(Ether.compose(mediaModuleFacadeEther)).value,
   ),
 );
 
@@ -143,6 +202,16 @@ export const dummyAccountModuleFacade = new AccountModuleFacade(
     Cat.cat(fetchFollow)
       .feed(Ether.compose(inMemoryFollowRepository))
       .feed(Ether.compose(inMemoryAccountRepository)).value,
+  ),
+  Ether.runEther(
+    Cat.cat(accountAvatar)
+      .feed(Ether.compose(accountAvatarRepository))
+      .feed(Ether.compose(mediaModuleFacadeEther)).value,
+  ),
+  Ether.runEther(
+    Cat.cat(accountHeader)
+      .feed(Ether.compose(accountHeaderRepository))
+      .feed(Ether.compose(mediaModuleFacadeEther)).value,
   ),
 );
 

@@ -77,6 +77,12 @@ export class TimelineController {
       {
         note: Note;
         author: Account;
+        header: string;
+        avatar: string;
+        followCount: {
+          followed: number;
+          following: number;
+        };
         reactions: Reaction[];
         attachments: Medium[];
       }[]
@@ -92,6 +98,27 @@ export class TimelineController {
     const accountsMap = new Map<AccountID, Account>(
       accounts.map((v) => [v.getID(), v]),
     );
+
+    // [header,avatar]
+    const headerAvatarImages = new Map<AccountID, [string, string]>();
+    const followCounts = new Map<
+      AccountID,
+      { following: number; followers: number }
+    >();
+    for (const id of accountsMap.keys()) {
+      const headerRes = await this.accountModule.fetchAccountHeader(id);
+      const header = Result.unwrapOr('')(headerRes);
+
+      const avatarRes = await this.accountModule.fetchAccountAvatar(id);
+      const avatar = Result.unwrapOr('')(avatarRes);
+      headerAvatarImages.set(id, [header, avatar]);
+
+      const followCountRes = await this.accountModule.fetchFollowCount(id);
+      const followCount = Result.unwrapOr({ following: 0, followers: 0 })(
+        followCountRes,
+      );
+      followCounts.set(id, followCount);
+    }
 
     const attachmentsMap = new Map<NoteID, Medium[]>();
     const reactionsMap = new Map<NoteID, Reaction[]>();
@@ -110,12 +137,26 @@ export class TimelineController {
           const author = accountsMap.get(note.getAuthorID())!;
           const attachments = attachmentsMap.get(note.getID()) ?? [];
           const reactions = reactionsMap.get(note.getID()) ?? [];
+          const [header, avatar] = headerAvatarImages.get(author.getID()) ?? [
+            '',
+            '',
+          ];
+          const followCount = followCounts.get(author.getID()) ?? {
+            following: 0,
+            followers: 0,
+          };
 
           return {
             note,
             author,
             reactions,
             attachments,
+            header,
+            avatar,
+            followCount: {
+              followed: followCount.followers,
+              following: followCount.following,
+            },
           };
         }),
     );
@@ -175,10 +216,10 @@ export class TimelineController {
           name: v.author.getName(),
           display_name: v.author.getNickname(),
           bio: v.author.getBio(),
-          avatar: '',
-          header: '',
-          followed_count: 0,
-          following_count: 0,
+          avatar: v.avatar,
+          header: v.header,
+          followed_count: v.followCount.followed,
+          following_count: v.followCount.following,
         },
       };
     });
@@ -243,10 +284,10 @@ export class TimelineController {
           name: v.author.getName(),
           display_name: v.author.getNickname(),
           bio: v.author.getBio(),
-          avatar: '',
-          header: '',
-          followed_count: 0,
-          following_count: 0,
+          avatar: v.avatar,
+          header: v.header,
+          followed_count: v.followCount.followed,
+          following_count: v.followCount.following,
         },
       };
     });
@@ -265,77 +306,48 @@ export class TimelineController {
       return notesRes;
     }
     const notes = Result.unwrap(notesRes);
-    const attachmentsMap = new Map<NoteID, Medium[]>();
-    const reactionsMap = new Map<NoteID, Reaction[]>();
-    const noteAuthorMap = new Map<AccountID, Account>();
 
-    const noteAuthor = new Set<AccountID>(notes.map((v) => v.getAuthorID()));
-    const noteAuthorRes = await this.accountModule.fetchAccounts([
-      ...noteAuthor,
-    ]);
-    if (Result.isErr(noteAuthorRes)) {
-      return noteAuthorRes;
+    const additionalDataRes = await this.getNoteAdditionalData(notes);
+    if (Result.isErr(additionalDataRes)) {
+      return additionalDataRes;
     }
-    for (const author of Result.unwrap(noteAuthorRes)) {
-      noteAuthorMap.set(author.getID(), author);
-    }
-
-    for (const v of notes) {
-      const attachmentsRes = await this.noteModule.fetchAttachments(v.getID());
-      if (Result.isErr(attachmentsRes)) {
-        return attachmentsRes;
-      }
-      const attachments = Result.unwrap(attachmentsRes);
-      attachmentsMap.set(v.getID(), attachments);
-
-      const reactionsRes = await this.noteModule.fetchReactions(v.getID());
-      if (Result.isErr(reactionsRes)) {
-        return reactionsRes;
-      }
-      const reactions = Result.unwrap(reactionsRes);
-      reactionsMap.set(v.getID(), reactions);
-    }
+    const additionalData = Result.unwrap(additionalDataRes);
 
     return Result.ok(
-      notes.map((v) => {
-        const author = noteAuthorMap.get(v.getAuthorID()) as Account;
-
+      additionalData.map((v) => {
         return {
-          id: v.getID(),
-          content: v.getContent(),
-          contents_warning_comment: v.getCwComment(),
-          visibility: v.getVisibility(),
-          created_at: v.getCreatedAt().toUTCString(),
-          attachment_files:
-            attachmentsMap.get(v.getID())?.map((file) => {
-              return {
-                id: file.getId(),
-                name: file.getName(),
-                author_id: file.getAuthorId(),
-                hash: file.getHash(),
-                mime: file.getMime(),
-                nsfw: file.isNsfw(),
-                url: file.getUrl(),
-                thumbnail: file.getThumbnailUrl(),
-              };
-            }) ?? [],
-          reactions:
-            reactionsMap.get(v.getID())?.map((reaction) => {
-              return {
-                emoji: reaction.getEmoji(),
-                reacted_by: reaction.getAccountID(),
-              };
-            }) ?? [],
+          id: v.note.getID(),
+          content: v.note.getContent(),
+          contents_warning_comment: v.note.getCwComment(),
+          visibility: v.note.getVisibility(),
+          created_at: v.note.getCreatedAt().toUTCString(),
+          attachment_files: v.attachments.map((file) => {
+            return {
+              id: file.getId(),
+              name: file.getName(),
+              author_id: file.getAuthorId(),
+              hash: file.getHash(),
+              mime: file.getMime(),
+              nsfw: file.isNsfw(),
+              url: file.getUrl(),
+              thumbnail: file.getThumbnailUrl(),
+            };
+          }),
+          reactions: v.reactions.map((reaction) => {
+            return {
+              emoji: reaction.getEmoji(),
+              reacted_by: reaction.getAccountID(),
+            };
+          }),
           author: {
-            id: author.getID(),
-            name: author.getName(),
-            display_name: author.getNickname(),
-            bio: author.getBio(),
-            // ToDo: fill avatar, header, followed/following counts
-            avatar: '',
-            header: '',
-            followed_count: 0,
-            following_count: 0,
+            id: v.author.getID(),
+            name: v.author.getName(),
+            display_name: v.author.getNickname(),
+            bio: v.author.getBio(),
+            avatar: v.avatar,
+            header: v.header,
+            followed_count: v.followCount.followed,
+            following_count: v.followCount.following,
           },
         };
       }),
