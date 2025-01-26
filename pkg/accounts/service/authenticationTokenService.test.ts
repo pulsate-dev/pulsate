@@ -5,12 +5,6 @@ import { describe, expect, it } from 'vitest';
 import { MockClock } from '../../id/mod.js';
 import { AuthenticationTokenService } from './authenticationTokenService.js';
 
-class Clock {
-  now() {
-    return BigInt(Date.now());
-  }
-}
-
 describe('AuthenticationTokenService', () => {
   it('verify JWT Token', async () => {
     const service = await AuthenticationTokenService.new(
@@ -36,18 +30,15 @@ describe('AuthenticationTokenService', () => {
   });
 
   it('renew: if token is valid, it should return a new token', async () => {
-    // NOTE: mockClock returns only *static* time, this test using a normal clock
-    const service = await AuthenticationTokenService.new(new Clock());
+    const clock = new Date();
+    const service = await AuthenticationTokenService.new(new MockClock(clock));
     const token = await service.generate('314', '628');
 
     const { refreshToken: oldRefreshToken, ...oldPayload } = jose.decodeJwt(
       Option.unwrap(token),
     );
 
-    await (async (ms) => new Promise((resolve) => setTimeout(resolve, ms)))(
-      1000,
-    );
-
+    clock.setSeconds(clock.getMinutes() + 1);
     const renewed = await service.renewAuthToken(Option.unwrap(token));
     try {
       const { refreshToken: newRefreshToken, ...newPayload } = jose.decodeJwt(
