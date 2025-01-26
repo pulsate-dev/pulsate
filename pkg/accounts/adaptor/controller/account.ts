@@ -4,6 +4,7 @@ import { Option, Result } from '@mikuroxina/mini-fn';
 import type { Medium, MediumID } from '../../../drive/model/medium.js';
 import type { AccountID, AccountName } from '../../model/account.js';
 import type { AccountFollow } from '../../model/follow.js';
+import type { AccountFollowCount } from '../../model/repository.js';
 import type { AuthenticateService } from '../../service/authenticate.js';
 import type {
   AuthenticationToken,
@@ -243,6 +244,15 @@ export class AccountController {
     const header = Result.mapOr('')((headerImage: Medium): string =>
       headerImage.getUrl(),
     )(headerRes);
+    const followCountRes = await this.fetchFollowService.fetchFollowCount(
+      account.getID(),
+    );
+    const followingCount = Result.mapOr(0)(
+      (v: AccountFollowCount) => v.following,
+    )(followCountRes);
+    const followersCount = Result.mapOr(0)(
+      (v: AccountFollowCount) => v.followers,
+    )(followCountRes);
 
     return Result.ok({
       id: account.getID(),
@@ -253,8 +263,8 @@ export class AccountController {
       // ToDo: fill the following fields
       avatar: avatar,
       header: header,
-      followed_count: 0,
-      following_count: 0,
+      followed_count: followersCount,
+      following_count: followingCount,
       note_count: 0,
       created_at: account.getCreatedAt(),
       role: account.getRole(),
@@ -285,6 +295,15 @@ export class AccountController {
     const header = Result.mapOr('')((headerImage: Medium): string =>
       headerImage.getUrl(),
     )(headerRes);
+    const followCountRes = await this.fetchFollowService.fetchFollowCount(
+      account.getID(),
+    );
+    const followingCount = Result.mapOr(0)(
+      (v: AccountFollowCount) => v.following,
+    )(followCountRes);
+    const followersCount = Result.mapOr(0)(
+      (v: AccountFollowCount) => v.followers,
+    )(followCountRes);
 
     return Result.ok({
       id: account.getID(),
@@ -295,8 +314,8 @@ export class AccountController {
       // ToDo: fill the following fields
       avatar: avatar,
       header: header,
-      followed_count: 0,
-      following_count: 0,
+      followed_count: followersCount,
+      following_count: followingCount,
       note_count: 0,
       created_at: account.getCreatedAt(),
       role: account.getRole(),
