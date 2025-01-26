@@ -4,6 +4,7 @@ import type { AccountID, AccountName } from '../model/account.js';
 import { AccountNotFoundError } from '../model/errors.js';
 import type { AccountFollow } from '../model/follow.js';
 import {
+  type AccountFollowCount,
   type AccountFollowRepository,
   type AccountRepository,
   accountRepoSymbol,
@@ -62,6 +63,12 @@ export class FetchFollowService {
     }
 
     return this.fetchFollowersByID(resId[1]);
+  }
+
+  async fetchFollowCount(
+    accountID: AccountID,
+  ): Promise<Result.Result<Error, AccountFollowCount>> {
+    return this.accountFollowRepository.followCount(accountID);
   }
 }
 

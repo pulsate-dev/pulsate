@@ -131,4 +131,13 @@ describe('FetchFollowService', () => {
       }),
     ]);
   });
+
+  it('follow count', async () => {
+    const countRes = await service.fetchFollowCount('1' as AccountID);
+
+    expect(Result.unwrap(countRes)).toStrictEqual({
+      followers: 1,
+      following: 1,
+    });
+  });
 });
