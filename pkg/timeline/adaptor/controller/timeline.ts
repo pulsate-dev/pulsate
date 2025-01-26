@@ -105,18 +105,18 @@ export class TimelineController {
       AccountID,
       { following: number; followers: number }
     >();
-    for (const [id, _] of accountsMap) {
+    for (const id of accountsMap.keys()) {
       const headerRes = await this.accountModule.fetchAccountHeader(id);
-      const header = Result.isOk(headerRes) ? Result.unwrap(headerRes) : '';
+      const header = Result.unwrapOr('')(headerRes);
 
       const avatarRes = await this.accountModule.fetchAccountAvatar(id);
-      const avatar = Result.isOk(avatarRes) ? Result.unwrap(avatarRes) : '';
+      const avatar = Result.unwrapOr('')(avatarRes);
       headerAvatarImages.set(id, [header, avatar]);
 
       const followCountRes = await this.accountModule.fetchFollowCount(id);
-      const followCount = Result.isOk(followCountRes)
-        ? Result.unwrap(followCountRes)
-        : { following: 0, followers: 0 };
+      const followCount = Result.unwrapOr({ following: 0, followers: 0 })(
+        followCountRes,
+      );
       followCounts.set(id, followCount);
     }
 
