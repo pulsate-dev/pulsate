@@ -1,9 +1,6 @@
 import { Cat, Ether, Result } from '@mikuroxina/mini-fn';
 import { InMemoryAccountRepository } from '../accounts/adaptor/repository/dummy/account.js';
-import {
-  InMemoryAccountAvatarRepository,
-  inMemoryAccountAvatarRepo,
-} from '../accounts/adaptor/repository/dummy/avatar.js';
+import { inMemoryAccountAvatarRepo } from '../accounts/adaptor/repository/dummy/avatar.js';
 import { newFollowRepo } from '../accounts/adaptor/repository/dummy/follow.js';
 import { inMemoryAccountHeaderRepo } from '../accounts/adaptor/repository/dummy/header.js';
 import { prismaAccountAvatarRepo } from '../accounts/adaptor/repository/prisma/avatar.js';
