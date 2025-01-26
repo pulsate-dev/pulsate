@@ -450,7 +450,7 @@ export class AccountController {
     const accounts = Result.unwrap(accountsRes);
 
     // Note: remove duplicated accounts
-    const accountIDs = [...new Set(accounts.map((v) => v.getID()))];
+    const accountIDs = new Set(accounts.map((v) => v.getID()));
     // [header,avatar]
     const headerAvatarImages = new Map<AccountID, [string, string]>();
     const followCounts = new Map<AccountID, AccountFollowCount>();
@@ -493,11 +493,11 @@ export class AccountController {
           name: v.getName(),
           nickname: v.getNickname(),
           bio: v.getBio(),
-          // ToDo: fill the following fields
           avatar,
           header,
           followed_count: followers,
           following_count: following,
+          // ToDo: fill note_count
           note_count: 0,
           created_at: v.getCreatedAt(),
           role: v.getRole(),
@@ -528,7 +528,7 @@ export class AccountController {
     }
     const accounts = Result.unwrap(accountsRes);
     // Note: remove duplicated accounts
-    const accountIDs = [...new Set(accounts.map((v) => v.getID()))];
+    const accountIDs = new Set(accounts.map((v) => v.getID()));
     // [header,avatar]
     const headerAvatarImages = new Map<AccountID, [string, string]>();
     const followCounts = new Map<AccountID, AccountFollowCount>();

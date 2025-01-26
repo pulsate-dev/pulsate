@@ -82,13 +82,21 @@ export class InMemoryAccountFollowRepository
   async followCount(
     accountID: AccountID,
   ): Promise<Result.Result<Error, AccountFollowCount>> {
-    const followers = [...this.data].filter(
-      (f) => f.getTargetID() === accountID,
-    ).length;
-    const following = [...this.data].filter(
-      (f) => f.getFromID() === accountID,
-    ).length;
-    return Result.ok({ followers, following });
+    const count: AccountFollowCount = {
+      followers: 0,
+      following: 0,
+    };
+
+    for (const v of this.data) {
+      if (v.getTargetID() === accountID) {
+        count.followers += 1;
+      }
+      if (v.getFromID() === accountID) {
+        count.following += 1;
+      }
+    }
+
+    return Result.ok(count);
   }
 }
 
