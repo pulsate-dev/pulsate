@@ -39,7 +39,7 @@
     "@scalar/hono-api-reference": "^0.5.0",
     "argon2": "^0.41.0",
     "blurhash": "^2.0.5",
-    "file-type": "^19.0.0",
+    "file-type": "^20.0.0",
     "hono": "^4.0.0",
     "ioredis": "^5.4.1",
     "jose": "^5.2.1",
@@ -52,12 +52,12 @@
     "@biomejs/biome": "^1.8.3",
     "@ls-lint/ls-lint": "^2.2.3",
     "@types/node": "^22.0.0",
-    "@vitest/coverage-v8": "^2.0.0",
+    "@vitest/coverage-v8": "^3.0.0",
     "esbuild": "^0.24.0",
     "glob": "^11.0.0",
     "ignore": "^7.0.0",
     "kleur": "^4.1.5",
     "lefthook": "^1.6.1",
-    "vitest": "^2.0.0"
+    "vitest": "^3.0.0"
   }
 }
