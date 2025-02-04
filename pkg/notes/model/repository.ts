@@ -4,7 +4,7 @@ import type { AccountID } from '../../accounts/model/account.js';
 import type { Medium, MediumID } from '../../drive/model/medium.js';
 import type { Bookmark } from './bookmark.js';
 import type { Note, NoteID } from './note.js';
-import type { Reaction } from './reaction.js';
+import type { Reaction, ReactionID } from './reaction.js';
 
 export interface NoteRepository {
   create(note: Note): Promise<Result.Result<Error, void>>;
@@ -54,22 +54,14 @@ export const noteAttachmentRepoSymbol =
   Ether.newEtherSymbol<NoteAttachmentRepository>();
 
 export interface ReactionRepository {
-  create(
-    id: {
-      noteID: NoteID;
-      accountID: AccountID;
-    },
-    body: string,
-  ): Promise<Result.Result<Error, void>>;
-  findByID(id: {
+  create(reaction: Reaction): Promise<Result.Result<Error, void>>;
+  findByID(id: ReactionID): Promise<Result.Result<Error, Reaction>>;
+  findByCompositeID(id: {
     noteID: NoteID;
     accountID: AccountID;
-  }): Promise<Option.Option<Reaction>>;
+  }): Promise<Result.Result<Error, Reaction>>;
   reactionsByAccount(id: AccountID): Promise<Result.Result<Error, Reaction[]>>;
   findByNoteID(id: NoteID): Promise<Result.Result<Error, Reaction[]>>;
-  deleteByID(id: {
-    noteID: NoteID;
-    accountID: AccountID;
-  }): Promise<Result.Result<Error, void>>;
+  deleteByID(id: ReactionID): Promise<Result.Result<Error, void>>;
 }
 export const reactionRepoSymbol = Ether.newEtherSymbol<ReactionRepository>();

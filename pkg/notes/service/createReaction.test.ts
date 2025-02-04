@@ -1,6 +1,7 @@
 import { Option, Result } from '@mikuroxina/mini-fn';
 import { afterEach, describe, expect, it } from 'vitest';
 import type { AccountID } from '../../accounts/model/account.js';
+import { MockClock, SnowflakeIDGenerator } from '../../id/mod.js';
 import {
   InMemoryNoteRepository,
   InMemoryReactionRepository,
@@ -8,6 +9,7 @@ import {
 import { Note, type NoteID } from '../model/note.js';
 import { CreateReactionService } from './createReaction.js';
 
+const idGenerator = new SnowflakeIDGenerator(1, new MockClock(new Date()));
 let reactionRepository = new InMemoryReactionRepository();
 let noteRepository = new InMemoryNoteRepository([
   Note.new({
@@ -22,7 +24,11 @@ let noteRepository = new InMemoryNoteRepository([
     sendTo: Option.none(),
   }),
 ]);
-let service = new CreateReactionService(reactionRepository, noteRepository);
+let service = new CreateReactionService(
+  idGenerator,
+  reactionRepository,
+  noteRepository,
+);
 
 describe('CreateReactionService', () => {
   afterEach(() => {
@@ -40,15 +46,19 @@ describe('CreateReactionService', () => {
         sendTo: Option.none(),
       }),
     ]);
-    service = new CreateReactionService(reactionRepository, noteRepository);
+    service = new CreateReactionService(
+      idGenerator,
+      reactionRepository,
+      noteRepository,
+    );
   });
   it('add reaction', async () => {
     const res = await service.handle('1' as NoteID, '3' as AccountID, '👍');
 
     expect(Result.isOk(res)).toBe(true);
     expect(
-      Option.isSome(
-        await reactionRepository.findByID({
+      Result.isOk(
+        await reactionRepository.findByCompositeID({
           noteID: '1' as NoteID,
           accountID: '3' as AccountID,
         }),
@@ -59,14 +69,14 @@ describe('CreateReactionService', () => {
   it('error when already reacted', async () => {
     await service.handle('1' as NoteID, '3' as AccountID, '👍');
     const res = await service.handle('1' as NoteID, '3' as AccountID, '👌');
-    const reaction = await reactionRepository.findByID({
+    const reaction = await reactionRepository.findByCompositeID({
       noteID: '1' as NoteID,
       accountID: '3' as AccountID,
     });
 
     expect(Result.isErr(res)).toBe(true);
-    expect(Option.isSome(reaction)).toBe(true);
-    expect(Option.unwrap(reaction).getEmoji()).toBe('👍');
+    expect(Result.isOk(reaction)).toBe(true);
+    expect(Result.unwrap(reaction).getEmoji()).toBe('👍');
   });
 
   it('error when note not found', async () => {

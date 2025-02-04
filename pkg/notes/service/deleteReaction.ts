@@ -1,4 +1,4 @@
-import { Ether, type Result } from '@mikuroxina/mini-fn';
+import { Ether, Result } from '@mikuroxina/mini-fn';
 import type { AccountID } from '../../accounts/model/account.js';
 import type { NoteID } from '../model/note.js';
 import {
@@ -13,7 +13,17 @@ export class DeleteReactionService {
     noteID: NoteID,
     accountID: AccountID,
   ): Promise<Result.Result<Error, void>> {
-    return await this.reactionRepository.deleteByID({ noteID, accountID });
+    const reactionRes = await this.reactionRepository.findByCompositeID({
+      noteID,
+      accountID,
+    });
+    if (Result.isErr(reactionRes)) {
+      return reactionRes;
+    }
+
+    return await this.reactionRepository.deleteByID(
+      Result.unwrap(reactionRes).getID(),
+    );
   }
 }
 export const deleteReactionSymbol =

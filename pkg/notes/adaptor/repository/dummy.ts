@@ -5,7 +5,7 @@ import type { Medium, MediumID } from '../../../drive/model/medium.js';
 import { Bookmark } from '../../model/bookmark.js';
 import { NoteNotReactedYetError } from '../../model/errors.js';
 import type { Note, NoteID } from '../../model/note.js';
-import { Reaction } from '../../model/reaction.js';
+import type { Reaction, ReactionID } from '../../model/reaction.js';
 import {
   type BookmarkRepository,
   type NoteAttachmentRepository,
@@ -199,97 +199,80 @@ export const inMemoryNoteAttachmentRepo = (
     () => new InMemoryNoteAttachmentRepository(medium, attachments),
   );
 
-type CompositeKey = `${NoteID}_${AccountID}`;
 export class InMemoryReactionRepository implements ReactionRepository {
-  private readonly reactions: Map<CompositeKey, Reaction>;
+  private readonly reactions: Map<ReactionID, Reaction>;
 
   constructor(reactions: Reaction[] = []) {
     this.reactions = new Map(
-      reactions.map((r) => [
-        this.compositeID({
-          noteID: r.getNoteID(),
-          accountID: r.getAccountID(),
-        }),
-        r,
-      ]),
+      reactions.map((reaction) => [reaction.getID(), reaction]),
     );
   }
 
-  private compositeID(id: {
-    noteID: NoteID;
-    accountID: AccountID;
-  }): CompositeKey {
-    return `${id.noteID}_${id.accountID}`;
-  }
-
-  private disassembleID(id: CompositeKey): {
-    noteID: NoteID;
-    accountID: AccountID;
-  } {
-    const [noteID, accountID] = id.split('_');
-    if (!noteID || !accountID) throw new Error('Composite ID type invalid');
-    return {
-      noteID: noteID as NoteID,
-      accountID: accountID as AccountID,
-    };
-  }
-
-  async create(
-    id: { noteID: NoteID; accountID: AccountID },
-    body: string,
-  ): Promise<Result.Result<Error, void>> {
-    const reaction = Reaction.new({
-      accountID: id.accountID,
-      noteID: id.noteID,
-      body,
-    });
-
+  async create(reaction: Reaction): Promise<Result.Result<Error, void>> {
     if (
-      Option.isSome(
-        await this.findByID({ noteID: id.noteID, accountID: id.accountID }),
+      Result.isErr(
+        await this.findByCompositeID({
+          noteID: reaction.getNoteID(),
+          accountID: reaction.getAccountID(),
+        }),
       )
     ) {
       return Result.err(new Error('already reacted'));
     }
 
-    this.reactions.set(this.compositeID(id), reaction);
+    this.reactions.set(reaction.getID(), reaction);
     return Result.ok(undefined);
   }
-  findByID(id: { accountID: AccountID; noteID: NoteID }): Promise<
-    Option.Option<Reaction>
-  > {
-    const reaction = Array.from(this.reactions.entries()).find(
-      (v) => v[0] === this.compositeID(id),
-    );
 
-    return reaction
-      ? Promise.resolve(Option.some(reaction[1]))
-      : Promise.resolve(Option.none());
+  async findByCompositeID(id: {
+    accountID: AccountID;
+    noteID: NoteID;
+  }): Promise<Result.Result<Error, Reaction>> {
+    const reaction = Array.from(this.reactions.entries()).find(
+      (v) =>
+        v[1].getAccountID() === id.accountID && v[1].getNoteID() === id.noteID,
+    );
+    if (!reaction) {
+      return Result.err(
+        new NoteNotReactedYetError('reaction not found', { cause: null }),
+      );
+    }
+
+    return Result.ok(reaction[1]);
   }
+
+  async findByID(id: ReactionID): Promise<Result.Result<Error, Reaction>> {
+    const reaction = this.reactions.get(id);
+    if (!reaction) {
+      return Result.err(
+        new NoteNotReactedYetError('reaction not found', { cause: null }),
+      );
+    }
+    return Result.ok(reaction);
+  }
+
   async reactionsByAccount(
     id: AccountID,
   ): Promise<Result.Result<Error, Reaction[]>> {
     const reactions = Array.from(this.reactions.entries())
-      .filter((v) => this.disassembleID(v[0]).accountID === id)
+      .filter((v) => v[1].getAccountID() === id)
       .map((v) => v[1]);
 
     return Result.ok(reactions);
   }
   async findByNoteID(id: NoteID): Promise<Result.Result<Error, Reaction[]>> {
     const reactions = [...this.reactions.entries()]
-      .filter((v) => this.disassembleID(v[0]).noteID === id)
+      .filter((v) => v[1].getNoteID() === id)
       .map((v) => v[1]);
     return Result.ok(reactions);
   }
-  async deleteByID(id: { accountID: AccountID; noteID: NoteID }): Promise<
-    Result.Result<Error, void>
-  > {
-    if (!this.reactions.has(this.compositeID(id)))
+  async deleteByID(id: ReactionID): Promise<Result.Result<Error, void>> {
+    if (!this.reactions.has(id))
       return Result.err(
         new NoteNotReactedYetError('reaction not found', { cause: null }),
       );
 
-    this.reactions.delete(this.compositeID(id));
+    this.reactions.delete(id);
 
     return Result.ok(undefined);
   }

@@ -79,6 +79,7 @@ model Note {
 }
 
 model Reaction {
+  reactionId  String  @id
   reactedById String  @map("reacted_by_id")
   reactedBy   Account @relation(fields: [reactedById], references: [id])
   reactedToId String  @map("reacted_to_id")
@@ -88,7 +89,7 @@ model Reaction {
   createdAt DateTime  @default(now()) @map("created_at")
   deletedAt DateTime? @map("deleted_at")
 
-  @@id([reactedById, reactedToId])
+  @@unique([reactedById, reactedToId])
   @@map("reaction")
 }
 

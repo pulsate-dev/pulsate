@@ -4,12 +4,13 @@ import type { AccountID } from '../../accounts/model/account.js';
 import { InMemoryReactionRepository } from '../adaptor/repository/dummy.js';
 import { NoteNotReactedYetError } from '../model/errors.js';
 import type { NoteID } from '../model/note.js';
-import { Reaction } from '../model/reaction.js';
+import { Reaction, type ReactionID } from '../model/reaction.js';
 import { DeleteReactionService } from './deleteReaction.js';
 
 describe('DeleteReactionService', () => {
   const reactionRepo = new InMemoryReactionRepository([
     Reaction.new({
+      id: '100' as ReactionID,
       noteID: '1' as NoteID,
       accountID: '2' as AccountID,
       body: '👍',
