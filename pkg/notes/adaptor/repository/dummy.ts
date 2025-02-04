@@ -210,7 +210,7 @@ export class InMemoryReactionRepository implements ReactionRepository {
 
   async create(reaction: Reaction): Promise<Result.Result<Error, void>> {
     if (
-      Result.isErr(
+      Result.isOk(
         await this.findByCompositeID({
           noteID: reaction.getNoteID(),
           accountID: reaction.getAccountID(),

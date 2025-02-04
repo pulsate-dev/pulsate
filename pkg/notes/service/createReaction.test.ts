@@ -52,6 +52,7 @@ describe('CreateReactionService', () => {
       noteRepository,
     );
   });
+
   it('add reaction', async () => {
     const res = await service.handle('1' as NoteID, '3' as AccountID, '👍');
 
@@ -69,6 +70,7 @@ describe('CreateReactionService', () => {
   it('error when already reacted', async () => {
     await service.handle('1' as NoteID, '3' as AccountID, '👍');
     const res = await service.handle('1' as NoteID, '3' as AccountID, '👌');
+
     const reaction = await reactionRepository.findByCompositeID({
       noteID: '1' as NoteID,
       accountID: '3' as AccountID,

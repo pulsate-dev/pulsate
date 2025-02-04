@@ -46,8 +46,11 @@ export class CreateReactionService {
     });
 
     const res = await this.reactionRepository.create(reaction);
+    if (Result.isErr(res)) {
+      return res;
+    }
 
-    return Result.map(() => Option.unwrap(note))(res);
+    return Result.ok(Option.unwrap(note));
   }
 }
 export const createReactionServiceSymbol =
