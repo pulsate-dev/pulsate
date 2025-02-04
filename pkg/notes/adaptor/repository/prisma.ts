@@ -6,7 +6,7 @@ import type { prismaClient } from '../../../adaptors/prisma.js';
 import { Medium, type MediumID } from '../../../drive/model/medium.js';
 import { Bookmark } from '../../model/bookmark.js';
 import { Note, type NoteID, type NoteVisibility } from '../../model/note.js';
-import { Reaction } from '../../model/reaction.js';
+import { Reaction, type ReactionID } from '../../model/reaction.js';
 import {
   type BookmarkRepository,
   type NoteAttachmentRepository,
@@ -356,22 +356,21 @@ export class PrismaReactionRepository implements ReactionRepository {
     }
 
     return Reaction.new({
+      id: data.reactionId as ReactionID,
       noteID: data.reactedToId as NoteID,
       accountID: data.reactedById as AccountID,
       body: data.body,
     });
   }
 
-  async create(
-    id: { noteID: NoteID; accountID: AccountID },
-    body: string,
-  ): Promise<Result.Result<Error, void>> {
+  async create(reaction: Reaction): Promise<Result.Result<Error, void>> {
     try {
       await this.client.reaction.create({
         data: {
-          reactedToId: id.noteID,
-          reactedById: id.accountID,
-          body,
+          reactionId: reaction.getID(),
+          reactedToId: reaction.getNoteID(),
+          reactedById: reaction.getAccountID(),
+          body: reaction.getEmoji(),
         },
       });
 
@@ -381,9 +380,24 @@ export class PrismaReactionRepository implements ReactionRepository {
     }
   }
 
-  async findByID(id: { noteID: NoteID; accountID: AccountID }): Promise<
-    Option.Option<Reaction>
-  > {
+  async findByID(id: ReactionID): Promise<Result.Result<Error, Reaction>> {
+    try {
+      const res = await this.client.reaction.findUnique({
+        where: {
+          reactionId: id,
+        },
+      });
+
+      return Result.ok(this.deserialize(res));
+    } catch (e) {
+      return Result.err(e as Error);
+    }
+  }
+
+  async findByCompositeID(id: {
+    noteID: NoteID;
+    accountID: AccountID;
+  }): Promise<Result.Result<Error, Reaction>> {
     try {
       const res = await this.client.reaction.findUnique({
         where: {
@@ -395,10 +409,9 @@ export class PrismaReactionRepository implements ReactionRepository {
         },
       });
 
-      return Option.some(this.deserialize(res));
+      return Result.ok(this.deserialize(res));
     } catch (e) {
-      console.log(e);
-      return Option.none();
+      return Result.err(e as Error);
     }
   }
 
@@ -434,16 +447,11 @@ export class PrismaReactionRepository implements ReactionRepository {
     }
   }
 
-  async deleteByID(id: { noteID: NoteID; accountID: AccountID }): Promise<
-    Result.Result<Error, void>
-  > {
+  async deleteByID(id: ReactionID): Promise<Result.Result<Error, void>> {
     try {
       await this.client.reaction.delete({
         where: {
-          reactedById_reactedToId: {
-            reactedById: id.accountID,
-            reactedToId: id.noteID,
-          },
+          reactionId: id,
         },
       });
       return Result.ok(undefined);

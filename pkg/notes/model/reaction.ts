@@ -1,5 +1,6 @@
 import { z } from '@hono/zod-openapi';
 import type { AccountID } from '../../accounts/model/account.js';
+import type { ID } from '../../id/type.js';
 import type { NoteID } from './note.js';
 
 export const UnicodeEmojiSchema = z
@@ -14,17 +15,21 @@ export const EmojiSchema = z.union([UnicodeEmojiSchema, CustomEmojiSchema]);
 
 type Emoji = z.infer<typeof EmojiSchema>;
 
+export type ReactionID = ID<Reaction>;
+
 export interface CreateReactionArgs {
+  id: ReactionID;
   accountID: AccountID;
   noteID: NoteID;
   body: string;
 }
 
 export class Reaction {
-  private constructor(arg: CreateReactionArgs) {
-    this.accountID = arg.accountID;
-    this.noteID = arg.noteID;
-    this.emoji = arg.body;
+  private constructor(args: CreateReactionArgs) {
+    this.id = args.id;
+    this.accountID = args.accountID;
+    this.noteID = args.noteID;
+    this.emoji = args.body;
   }
 
   static new(arg: CreateReactionArgs): Reaction {
@@ -33,6 +38,11 @@ export class Reaction {
       return new Reaction(arg);
     }
     throw new Error('Emoji type is invalid');
+  }
+
+  private readonly id: ReactionID;
+  getID(): ReactionID {
+    return this.id;
   }
 
   private readonly accountID: AccountID;

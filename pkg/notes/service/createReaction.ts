@@ -1,7 +1,12 @@
 import { Ether, Option, Result } from '@mikuroxina/mini-fn';
 import type { AccountID } from '../../accounts/model/account.js';
+import {
+  type SnowflakeIDGenerator,
+  snowflakeIDGeneratorSymbol,
+} from '../../id/mod.js';
 import { NoteNotFoundError } from '../model/errors.js';
 import type { Note, NoteID } from '../model/note.js';
+import { Reaction } from '../model/reaction.js';
 import {
   type NoteRepository,
   type ReactionRepository,
@@ -11,6 +16,7 @@ import {
 
 export class CreateReactionService {
   constructor(
+    private readonly idGenerator: SnowflakeIDGenerator,
     private readonly reactionRepository: ReactionRepository,
     private readonly noteRepository: NoteRepository,
   ) {}
@@ -27,21 +33,34 @@ export class CreateReactionService {
       );
     }
 
-    const reaction = await this.reactionRepository.create(
-      { noteID, accountID },
-      body,
-    );
+    const id = this.idGenerator.generate<Reaction>();
+    if (Result.isErr(id)) {
+      return id;
+    }
 
-    return Result.map(() => Option.unwrap(note))(reaction);
+    const reaction = Reaction.new({
+      id: Result.unwrap(id),
+      noteID,
+      accountID,
+      body,
+    });
+
+    const res = await this.reactionRepository.create(reaction);
+    if (Result.isErr(res)) {
+      return res;
+    }
+
+    return Result.ok(Option.unwrap(note));
   }
 }
 export const createReactionServiceSymbol =
   Ether.newEtherSymbol<CreateReactionService>();
 export const createReactionService = Ether.newEther(
   createReactionServiceSymbol,
-  ({ reactionRepository, noteRepository }) =>
-    new CreateReactionService(reactionRepository, noteRepository),
+  ({ idGenerator, reactionRepository, noteRepository }) =>
+    new CreateReactionService(idGenerator, reactionRepository, noteRepository),
   {
+    idGenerator: snowflakeIDGeneratorSymbol,
     reactionRepository: reactionRepoSymbol,
     noteRepository: noteRepoSymbol,
   },

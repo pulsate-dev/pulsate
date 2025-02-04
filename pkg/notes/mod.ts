@@ -140,6 +140,7 @@ const bookmarkController = new BookmarkController(
 // Reaction
 const createReactionServiceObj = Ether.runEther(
   Cat.cat(createReactionService)
+    .feed(Ether.compose(idGenerator))
     .feed(Ether.compose(reactionRepository))
     .feed(Ether.compose(noteRepository)).value,
 );
