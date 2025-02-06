@@ -4,23 +4,25 @@ import type { AccountID } from '../../../../accounts/model/account.js';
 import type { NoteID } from '../../../../notes/model/note.js';
 import type { ReactionID } from '../../../../notes/model/reaction.js';
 import {
-  Notification,
-  type NotificationID,
+  FollowRequestedNotification,
+  FollowedNotification,
+  MentionedNotification,
+  ReactedNotification,
+  RenotedNotification,
 } from '../../../model/notification.js';
+import type { NotificationID } from '../../../model/notificationBase.js';
 import { InMemoryNotificationRepository } from './notification.js';
 
 describe('InMemoryNotificationRepository', () => {
-  const dummyNotification1 = Notification.new({
+  const dummyNotification1 = FollowedNotification.new({
     id: '1' as NotificationID,
     recipientID: '10' as AccountID,
     notificationType: 'followed',
     actorType: 'account',
     actorID: '11' as AccountID,
     createdAt: new Date('2023-09-10T00:00:00Z'),
-    sourceID: null,
-    activityID: null,
   });
-  const dummyNotification2 = Notification.new({
+  const dummyNotification2 = ReactedNotification.new({
     id: '2' as NotificationID,
     recipientID: '10' as AccountID,
     notificationType: 'reacted',
@@ -30,17 +32,16 @@ describe('InMemoryNotificationRepository', () => {
     sourceID: '12' as NoteID,
     activityID: '13' as ReactionID,
   });
-  const dummyNotification3 = Notification.new({
+  const dummyNotification3 = MentionedNotification.new({
     id: '3' as NotificationID,
     recipientID: '10' as AccountID,
     notificationType: 'mentioned',
     actorType: 'account',
     actorID: '11' as AccountID,
     createdAt: new Date('2023-09-12T00:00:00Z'),
-    sourceID: null,
     activityID: '14' as NoteID,
   });
-  const dummyNotification4 = Notification.new({
+  const dummyNotification4 = RenotedNotification.new({
     id: '4' as NotificationID,
     recipientID: '10' as AccountID,
     notificationType: 'renoted',
@@ -50,15 +51,13 @@ describe('InMemoryNotificationRepository', () => {
     sourceID: '15' as NoteID,
     activityID: '16' as NoteID,
   });
-  const dummyNotification5 = Notification.new({
+  const dummyNotification5 = FollowRequestedNotification.new({
     id: '5' as NotificationID,
     recipientID: '10' as AccountID,
     notificationType: 'followRequested',
     actorType: 'account',
     actorID: '11' as AccountID,
     createdAt: new Date('2023-09-14T00:00:00Z'),
-    sourceID: null,
-    activityID: null,
   });
 
   const repository = new InMemoryNotificationRepository([

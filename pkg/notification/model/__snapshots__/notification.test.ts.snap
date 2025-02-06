@@ -1,8 +1,35 @@
 // Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
 
-exports[`Notification > should create new instance 1`] = `
-Notification {
-  "activityID": null,
+exports[`FollowAccepted > should create new instance 1`] = `
+FollowedNotification {
+  "actorID": "20",
+  "actorType": "account",
+  "createdAt": 2023-09-10T00:00:00.000Z,
+  "id": "1",
+  "notificationType": "followAccepted",
+  "readAt": [
+    Symbol(OptionNone),
+  ],
+  "recipientID": "10",
+}
+`;
+
+exports[`FollowRequested > should create new instance 1`] = `
+FollowedNotification {
+  "actorID": "20",
+  "actorType": "account",
+  "createdAt": 2023-09-10T00:00:00.000Z,
+  "id": "1",
+  "notificationType": "followRequested",
+  "readAt": [
+    Symbol(OptionNone),
+  ],
+  "recipientID": "10",
+}
+`;
+
+exports[`Followed > should create new instance 1`] = `
+FollowedNotification {
   "actorID": "20",
   "actorType": "account",
   "createdAt": 2023-09-10T00:00:00.000Z,
@@ -12,6 +39,50 @@ Notification {
     Symbol(OptionNone),
   ],
   "recipientID": "10",
-  "sourceID": null,
+}
+`;
+
+exports[`Mentioned > should create new instance 1`] = `
+MentionedNotification {
+  "activityID": "1001",
+  "actorID": "20",
+  "actorType": "account",
+  "createdAt": 2023-09-10T00:00:00.000Z,
+  "id": "1",
+  "notificationType": "mentioned",
+  "readAt": [
+    Symbol(OptionNone),
+  ],
+  "recipientID": "10",
+}
+`;
+
+exports[`Reacted > should create new instance 1`] = `
+ReactedNotification {
+  "activityID": "1001",
+  "actorID": "20",
+  "actorType": "account",
+  "createdAt": 2023-09-10T00:00:00.000Z,
+  "id": "1",
+  "notificationType": "reacted",
+  "readAt": [
+    Symbol(OptionNone),
+  ],
+  "recipientID": "10",
+  "sourceID": "1000",
+}
+`;
+
+exports[`Renoted > should create new instance 1`] = `
+FollowedNotification {
+  "actorID": "20",
+  "actorType": "account",
+  "createdAt": 2023-09-10T00:00:00.000Z,
+  "id": "1",
+  "notificationType": "renoted",
+  "readAt": [
+    Symbol(OptionNone),
+  ],
+  "recipientID": "10",
 }
 `;

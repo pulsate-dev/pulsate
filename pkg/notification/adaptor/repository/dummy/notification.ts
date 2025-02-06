@@ -1,8 +1,8 @@
 import { Ether, Option, Result } from '@mikuroxina/mini-fn';
 import type {
-  Notification,
+  NotificationBase,
   NotificationID,
-} from '../../../model/notification.js';
+} from '../../../model/notificationBase.js';
 import {
   NOTIFICATION_DEFAULT_LIMIT,
   NOTIFICATION_MAX_LIMIT,
@@ -12,16 +12,16 @@ import {
 } from '../../../model/repository/notification.js';
 
 export class InMemoryNotificationRepository implements NotificationRepository {
-  private readonly data: Map<NotificationID, Notification>;
+  private readonly data: Map<NotificationID, NotificationBase>;
 
-  constructor(data: Notification[] = []) {
+  constructor(data: NotificationBase[] = []) {
     this.data = new Map(
       data.map((notification) => [notification.getID(), notification]),
     );
   }
 
   async create(
-    notification: Notification,
+    notification: NotificationBase,
   ): Promise<Result.Result<Error, void>> {
     this.data.set(notification.getID(), notification);
     return Result.ok(undefined);
@@ -29,7 +29,7 @@ export class InMemoryNotificationRepository implements NotificationRepository {
 
   async findByID(
     id: NotificationID,
-  ): Promise<Result.Result<Error, Notification>> {
+  ): Promise<Result.Result<Error, NotificationBase>> {
     const res = this.data.get(id);
     if (!res) {
       return Result.err(new Error('notification not found'));
@@ -40,7 +40,7 @@ export class InMemoryNotificationRepository implements NotificationRepository {
   async findByRecipientID(
     recipientID: string,
     filter: NotificationFilter,
-  ): Promise<Result.Result<Error, Notification[]>> {
+  ): Promise<Result.Result<Error, NotificationBase[]>> {
     const res = [...this.data.values()].filter(
       (notification) => notification.getRecipientID() === recipientID,
     );
@@ -79,7 +79,7 @@ export class InMemoryNotificationRepository implements NotificationRepository {
   }
 
   async updateReadAt(
-    notification: Notification,
+    notification: NotificationBase,
   ): Promise<Result.Result<Error, void>> {
     const target = this.data.get(notification.getID());
     if (!target) {
@@ -97,7 +97,7 @@ export class InMemoryNotificationRepository implements NotificationRepository {
     return Result.ok(undefined);
   }
 }
-export const inMemoryNotificationRepo = (data?: Notification[]) =>
+export const inMemoryNotificationRepo = (data?: NotificationBase[]) =>
   Ether.newEther(
     notificationRepoSymbol,
     () => new InMemoryNotificationRepository(data),

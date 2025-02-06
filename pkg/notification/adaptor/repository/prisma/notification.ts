@@ -1,13 +1,22 @@
 import { Ether, Option, Result } from '@mikuroxina/mini-fn';
 import type { Prisma, PrismaClient } from '@prisma/client';
 import type { AccountID } from '../../../../accounts/model/account.js';
+import type { NoteID } from '../../../../notes/model/note.js';
+import type { ReactionID } from '../../../../notes/model/reaction.js';
 import {
-  Notification,
-  type NotificationActorType,
-  type NotificationID,
-  type NotificationType,
-  type NotificationTypeMap,
+  FollowAcceptedNotification,
+  FollowRequestedNotification,
+  FollowedNotification,
+  MentionedNotification,
+  ReactedNotification,
+  RenotedNotification,
 } from '../../../model/notification.js';
+import type {
+  NotificationActorType,
+  NotificationBase,
+  NotificationID,
+  NotificationType,
+} from '../../../model/notificationBase.js';
 import {
   NOTIFICATION_DEFAULT_LIMIT,
   NOTIFICATION_MAX_LIMIT,
@@ -25,6 +34,9 @@ import {
  * - mentioned -> 4
  * - renoted ->  5
  * - reacted ->  6
+ *
+ * NOTE: **DO NOT CHANGE THIS TYPE MAP!\
+ * CHANGING THIS MAP MAY BRAKE THE CONVERSION BETWEEN THE DATABASE AND THE MODEL!**
  */
 const NOTIFICATION_TYPE_MAP = {
   followed: 1,
@@ -51,7 +63,7 @@ export class PrismaNotificationRepository implements NotificationRepository {
   }
 
   private serialize(
-    notification: Notification,
+    notification: NotificationBase,
   ): Prisma.NotificationCreateInput {
     return {
       id: notification.getID(),
@@ -68,8 +80,26 @@ export class PrismaNotificationRepository implements NotificationRepository {
           id: notification.getActorID(),
         },
       },
-      sourceID: notification.getSourceID() ?? '',
-      activityID: notification.getActivityID() ?? '',
+      sourceID: ((): string => {
+        if (!('sourceID' in notification)) return '';
+
+        return (
+          notification as unknown as NotificationBase & {
+            getSourceID(): string;
+          }
+        ).getSourceID();
+      })(),
+      activityID: ((): string => {
+        if (!('activityID' in notification)) {
+          return '';
+        }
+
+        return (
+          notification as unknown as NotificationBase & {
+            getActivityID(): string;
+          }
+        ).getActivityID();
+      })(),
       createdAt: notification.getCreatedAt(),
       readAt: null,
     };
@@ -128,7 +158,7 @@ export class PrismaNotificationRepository implements NotificationRepository {
     notification: Prisma.PromiseReturnType<
       typeof this.prisma.notification.findUnique
     >,
-  ): Result.Result<Error, Notification> {
+  ): Result.Result<Error, NotificationBase> {
     if (!notification) {
       // ToDo: Define NotificationNotFoundError
       return Result.err(new Error('Notification not found'));
@@ -139,31 +169,73 @@ export class PrismaNotificationRepository implements NotificationRepository {
       return Result.err(new Error('Invalid notification type'));
     }
 
-    return Result.ok(
-      Notification.reconstruct({
-        id: notification.id as NotificationID,
-        recipientID: notification.recipientID as AccountID,
-        notificationType,
-        actorType: notification.actorType as NotificationActorType,
-        actorID: notification.actorID as AccountID,
-        createdAt: notification.createdAt,
-        readAt: notification.readAt
-          ? Option.some(notification.readAt)
-          : Option.none(),
-        sourceID:
-          notification.sourceID === ''
-            ? null
-            : (notification.sourceID as NotificationTypeMap[typeof notificationType]['source']),
-        activityID:
-          notification.activityID === ''
-            ? null
-            : (notification.activityID as NotificationTypeMap[typeof notificationType]['activity']),
-      }),
-    );
+    const baseArgs = {
+      id: notification.id as NotificationID,
+      recipientID: notification.recipientID as AccountID,
+      notificationType,
+      actorType: notification.actorType as NotificationActorType,
+      actorID: notification.actorID as AccountID,
+      createdAt: notification.createdAt,
+      readAt: notification.readAt
+        ? Option.some(notification.readAt)
+        : Option.none(),
+    };
+
+    switch (notificationType) {
+      case 'followAccepted':
+        return Result.ok(
+          FollowAcceptedNotification.reconstruct({
+            ...baseArgs,
+            notificationType: 'followAccepted',
+          }),
+        );
+      case 'followed':
+        return Result.ok(
+          FollowedNotification.reconstruct({
+            ...baseArgs,
+            notificationType: 'followed',
+          }),
+        );
+      case 'followRequested':
+        return Result.ok(
+          FollowRequestedNotification.reconstruct({
+            ...baseArgs,
+            notificationType: 'followRequested',
+          }),
+        );
+      case 'mentioned':
+        return Result.ok(
+          MentionedNotification.reconstruct({
+            ...baseArgs,
+            notificationType: 'mentioned',
+            activityID: notification.activityID as NoteID,
+          }),
+        );
+      case 'renoted':
+        return Result.ok(
+          RenotedNotification.reconstruct({
+            ...baseArgs,
+            notificationType: 'renoted',
+            activityID: notification.activityID as NoteID,
+            sourceID: notification.sourceID as NoteID,
+          }),
+        );
+      case 'reacted':
+        return Result.ok(
+          ReactedNotification.reconstruct({
+            ...baseArgs,
+            notificationType: 'reacted',
+            activityID: notification.activityID as ReactionID,
+            sourceID: notification.sourceID as NoteID,
+          }),
+        );
+      default:
+        return Result.err(new Error('Failed to deserialize data.'));
+    }
   }
 
   async create(
-    notification: Notification,
+    notification: NotificationBase,
   ): Promise<Result.Result<Error, void>> {
     try {
       await this.prisma.notification.create({
@@ -177,7 +249,7 @@ export class PrismaNotificationRepository implements NotificationRepository {
 
   async findByID(
     id: NotificationID,
-  ): Promise<Result.Result<Error, Notification>> {
+  ): Promise<Result.Result<Error, NotificationBase>> {
     try {
       const res = await this.prisma.notification.findUnique({
         where: {
@@ -192,7 +264,7 @@ export class PrismaNotificationRepository implements NotificationRepository {
   async findByRecipientID(
     recipientID: string,
     filter: NotificationFilter,
-  ): Promise<Result.Result<Error, Notification[]>> {
+  ): Promise<Result.Result<Error, NotificationBase[]>> {
     try {
       if (Option.isSome(filter.limit)) {
         if (Option.unwrap(filter.limit) > NOTIFICATION_MAX_LIMIT) {
@@ -224,7 +296,7 @@ export class PrismaNotificationRepository implements NotificationRepository {
   }
 
   async updateReadAt(
-    notification: Notification,
+    notification: NotificationBase,
   ): Promise<Result.Result<Error, void>> {
     try {
       if (Option.isNone(notification.getReadAt())) {
