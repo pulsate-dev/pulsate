@@ -1,162 +1,183 @@
 import { Option } from '@mikuroxina/mini-fn';
-import type { AccountID } from '../../accounts/model/account.js';
-import type { ID } from '../../id/type.js';
+import type { NoteID } from '../../notes/model/note.js';
+import type { ReactionID } from '../../notes/model/reaction.js';
+import {
+  type CreateNotificationBaseArgs,
+  NotificationBase,
+} from './notificationBase.js';
 
-export type NotificationID = ID<Notification>;
-export type NotificationType =
-  | 'followed'
-  | 'followRequested'
-  | 'followAccepted'
-  | 'mentioned'
-  | 'renoted'
-  | 'reacted';
-export type NotificationActorType = 'account' | 'system';
-
-export interface CreateNotificationArgs {
-  /**
-   * Notification ID
-   */
-  id: NotificationID;
-  /**
-   * Recipient account ID
-   */
-  recipientID: AccountID;
-  /**
-   * Notification Type
-   * @description
-   * - followed: Followed
-   * - followRequested: Follow requested
-   * - followAccepted: Follow accepted
-   * - mentioned: Mentioned
-   * - renoted: Renoted
-   * - reacted: Reacted
-   */
-  notificationType: NotificationType;
-  /**
-   * Actor(who did the notified action) Type
-   * @description
-   * - account: Account
-   * - system: System
-   */
-  actorType: NotificationActorType;
-  /**
-   * Actor account ID
-   */
-  actorID: AccountID;
-  /**
-   * Created At
-   */
-  createdAt: Date;
-  /**
-   * Read At
-   */
-  readAt: Option.Option<Date>;
+export interface CreateFollowedNotificationArgs
+  extends CreateNotificationBaseArgs {
+  notificationType: 'followed';
+}
+export class FollowedNotification extends NotificationBase {
+  static new(args: Omit<CreateFollowedNotificationArgs, 'isRead' | 'readAt'>) {
+    return new FollowedNotification({ ...args, readAt: Option.none() });
+  }
+  static reconstruct(args: CreateFollowedNotificationArgs) {
+    return new FollowedNotification(args);
+  }
 }
 
-export class Notification {
-  private readonly id: NotificationID;
-  private readonly notificationType: NotificationType;
-  private readonly recipientID: AccountID;
-  private readonly createdAt: Date;
-  private readonly actorType: NotificationActorType;
-  private readonly actorID: AccountID;
+export interface CreateFollowRequestedNotificationArgs
+  extends CreateNotificationBaseArgs {
+  notificationType: 'followRequested';
+}
+export class FollowRequestedNotification extends NotificationBase {
+  static new(
+    args: Omit<CreateFollowRequestedNotificationArgs, 'isRead' | 'readAt'>,
+  ) {
+    return new FollowedNotification({ ...args, readAt: Option.none() });
+  }
+  static reconstruct(args: CreateFollowRequestedNotificationArgs) {
+    return new FollowedNotification(args);
+  }
+}
 
-  private readAt: Option.Option<Date>;
+export interface CreateFollowAcceptedNotificationArgs
+  extends CreateNotificationBaseArgs {
+  notificationType: 'followAccepted';
+}
+export class FollowAcceptedNotification extends NotificationBase {
+  static new(
+    args: Omit<CreateFollowAcceptedNotificationArgs, 'isRead' | 'readAt'>,
+  ) {
+    return new FollowedNotification({ ...args, readAt: Option.none() });
+  }
+  static reconstruct(args: CreateFollowAcceptedNotificationArgs) {
+    return new FollowedNotification(args);
+  }
+}
 
-  private constructor(args: CreateNotificationArgs) {
-    this.id = args.id;
-    this.recipientID = args.recipientID;
-    this.notificationType = args.notificationType;
-    this.actorType = args.actorType;
-    this.actorID = args.actorID;
-    this.createdAt = args.createdAt;
-    this.readAt = args.readAt;
+export interface CreateMentionedNotificationArgs
+  extends CreateNotificationBaseArgs {
+  notificationType: 'mentioned';
+  activityID: NoteID;
+}
+export class MentionedNotification extends NotificationBase {
+  private readonly activityID: NoteID;
+
+  private constructor(args: CreateMentionedNotificationArgs) {
+    super(args);
+    this.activityID = args.activityID;
   }
 
-  static new(args: Omit<CreateNotificationArgs, 'isRead' | 'readAt'>) {
-    return new Notification({
-      ...args,
-      readAt: Option.none(),
-    });
+  static new(args: Omit<CreateMentionedNotificationArgs, 'isRead' | 'readAt'>) {
+    return new MentionedNotification({ ...args, readAt: Option.none() });
   }
-
-  static reconstruct(args: CreateNotificationArgs) {
-    return new Notification(args);
+  static reconstruct(args: CreateMentionedNotificationArgs) {
+    return new MentionedNotification(args);
   }
 
   /**
-   * Get Notification ID
-   * @example
-   * ```
-   * "349875930483"
-   * ```
-   */
-  getID(): NotificationID {
-    return this.id;
-  }
-
-  /**
-   * Get recipient account ID
-   */
-  getRecipientID(): AccountID {
-    return this.recipientID;
-  }
-
-  /**
-   * Get Notification Type
+   * Get Activity ID
    * @description
-   * - followed: Followed
-   * - followRequested: Follow requested
-   * - followAccepted: Follow accepted
-   * - mentioned: Mentioned
-   * - renoted: Renoted
-   * - reacted: Reacted
-   */
-  getNotificationType(): NotificationType {
-    return this.notificationType;
-  }
-
-  getCreatedAt(): Date {
-    return this.createdAt;
-  }
-
-  /**
-   * Get Actor(who did the notified action) Type
-   * @description
-   * - account: Account
-   * - system: System
-   */
-  getActorType(): NotificationActorType {
-    return this.actorType;
-  }
-
-  /**
-   * Get Actor account ID
-   */
-  getActorID(): AccountID {
-    return this.actorID;
-  }
-
-  /**
-   * Get Read Status
-   */
-  getIsRead(): boolean {
-    return Option.isSome(this.readAt);
-  }
-
-  /**
-   * Set time when message read
+   * ActivityID is the object resulting from the operation on Source.
    *
-   * NOTE: Once a message has been read, it cannot be marked as unread.
+   * e.g.
+   * - notification type  "followed", ActivityID is null (no objects are generated when followed)
+   * - notification type  "reacted", ActivityID is ReactionID (Reaction is the object generated by the operation)
    */
-  setRead(date: Date) {
-    this.readAt = Option.some(date);
+  getActivityID(): NoteID {
+    return this.activityID;
+  }
+}
+
+export interface CreateRenotedNotificationArgs
+  extends CreateNotificationBaseArgs {
+  notificationType: 'renoted';
+  sourceID: NoteID;
+  activityID: NoteID;
+}
+export class RenotedNotification extends NotificationBase {
+  private readonly activityID: NoteID;
+  private readonly sourceID: NoteID;
+
+  private constructor(args: CreateRenotedNotificationArgs) {
+    super(args);
+    this.activityID = args.activityID;
+    this.sourceID = args.sourceID;
+  }
+  static new(args: Omit<CreateRenotedNotificationArgs, 'isRead' | 'readAt'>) {
+    return new FollowedNotification({ ...args, readAt: Option.none() });
+  }
+  static reconstruct(args: CreateRenotedNotificationArgs) {
+    return new FollowedNotification(args);
   }
 
   /**
-   * Get date when the notification was read
+   * Get Source ID
+   * @description
+   * SourceID is the target of the Activity
+   *
+   * e.g.
+   * - notification type is "followed", SourceID is null (Source is Account, but it's already known by recipient)
+   * - notification type is "reacted", SourceID is NoteID
    */
-  getReadAt(): Option.Option<Date> {
-    return this.readAt;
+  getSourceID(): NoteID {
+    return this.sourceID;
+  }
+
+  /**
+   * Get Activity ID
+   * @description
+   * ActivityID is the object resulting from the operation on Source.
+   *
+   * e.g.
+   * - notification type  "followed", ActivityID is null (no objects are generated when followed)
+   * - notification type  "reacted", ActivityID is ReactionID (Reaction is the object generated by the operation)
+   */
+  getActivityID(): NoteID {
+    return this.activityID;
+  }
+}
+
+export interface CreateReactedNotificationArgs
+  extends CreateNotificationBaseArgs {
+  notificationType: 'reacted';
+  sourceID: NoteID;
+  activityID: ReactionID;
+}
+export class ReactedNotification extends NotificationBase {
+  private readonly activityID: ReactionID;
+  private readonly sourceID: NoteID;
+
+  private constructor(args: CreateReactedNotificationArgs) {
+    super(args);
+    this.activityID = args.activityID;
+    this.sourceID = args.sourceID;
+  }
+
+  static new(args: Omit<CreateReactedNotificationArgs, 'isRead' | 'readAt'>) {
+    return new ReactedNotification({ ...args, readAt: Option.none() });
+  }
+  static reconstruct(args: CreateReactedNotificationArgs) {
+    return new ReactedNotification(args);
+  }
+
+  /**
+   * Get Source ID
+   * @description
+   * SourceID is the target of the Activity
+   *
+   * e.g.
+   * - notification type is "followed", SourceID is null (Source is Account, but it's already known by recipient)
+   * - notification type is "reacted", SourceID is NoteID
+   */
+  getSourceID(): NoteID {
+    return this.sourceID;
+  }
+
+  /**
+   * Get Activity ID
+   * @description
+   * ActivityID is the object resulting from the operation on Source.
+   *
+   * e.g.
+   * - notification type  "followed", ActivityID is null (no objects are generated when followed)
+   * - notification type  "reacted", ActivityID is ReactionID (Reaction is the object generated by the operation)
+   */
+  getActivityID(): ReactionID {
+    return this.activityID;
   }
 }
