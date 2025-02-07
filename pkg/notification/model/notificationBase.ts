@@ -55,6 +55,18 @@ export interface CreateNotificationBaseArgs {
   readAt: Option.Option<Date>;
 }
 
+export interface Notification {
+  getID(): NotificationID;
+  getRecipientID(): AccountID;
+  getNotificationType(): NotificationType;
+  getCreatedAt(): Date;
+  getActorType(): NotificationActorType;
+  getActorID(): AccountID;
+  getIsRead(): boolean;
+  setRead(date: Date): void;
+  getReadAt(): Option.Option<Date>;
+}
+
 export class NotificationBase {
   private readonly id: NotificationID;
   private readonly notificationType: NotificationType;
@@ -65,7 +77,7 @@ export class NotificationBase {
 
   private readAt: Option.Option<Date>;
 
-  protected constructor(args: CreateNotificationBaseArgs) {
+  constructor(args: CreateNotificationBaseArgs) {
     this.id = args.id;
     this.recipientID = args.recipientID;
     this.notificationType = args.notificationType;
@@ -74,17 +86,6 @@ export class NotificationBase {
     this.createdAt = args.createdAt;
     this.readAt = args.readAt;
   }
-
-  // static new(args: Omit<CreateNotificationBaseArgs, 'isRead' | 'readAt'>) {
-  //   return new NotificationBase({
-  //     ...args,
-  //     readAt: Option.none(),
-  //   });
-  // }
-
-  // static reconstruct(args: CreateNotificationBaseArgs) {
-  //   return new NotificationBase(args);
-  // }
 
   /**
    * Get Notification ID

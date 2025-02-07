@@ -12,6 +12,7 @@ import {
   RenotedNotification,
 } from '../../../model/notification.js';
 import type {
+  Notification,
   NotificationActorType,
   NotificationBase,
   NotificationID,
@@ -158,7 +159,7 @@ export class PrismaNotificationRepository implements NotificationRepository {
     notification: Prisma.PromiseReturnType<
       typeof this.prisma.notification.findUnique
     >,
-  ): Result.Result<Error, NotificationBase> {
+  ): Result.Result<Error, Notification> {
     if (!notification) {
       // ToDo: Define NotificationNotFoundError
       return Result.err(new Error('Notification not found'));
@@ -249,7 +250,7 @@ export class PrismaNotificationRepository implements NotificationRepository {
 
   async findByID(
     id: NotificationID,
-  ): Promise<Result.Result<Error, NotificationBase>> {
+  ): Promise<Result.Result<Error, Notification>> {
     try {
       const res = await this.prisma.notification.findUnique({
         where: {
@@ -264,7 +265,7 @@ export class PrismaNotificationRepository implements NotificationRepository {
   async findByRecipientID(
     recipientID: string,
     filter: NotificationFilter,
-  ): Promise<Result.Result<Error, NotificationBase[]>> {
+  ): Promise<Result.Result<Error, Notification[]>> {
     try {
       if (Option.isSome(filter.limit)) {
         if (Option.unwrap(filter.limit) > NOTIFICATION_MAX_LIMIT) {
