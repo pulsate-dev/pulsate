@@ -2,7 +2,7 @@ import { Ether, Option, Result } from '@mikuroxina/mini-fn';
 import type {
   Notification,
   NotificationID,
-} from '../../../model/notification.js';
+} from '../../../model/notificationBase.js';
 import {
   NOTIFICATION_DEFAULT_LIMIT,
   NOTIFICATION_MAX_LIMIT,

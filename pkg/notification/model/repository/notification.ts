@@ -1,5 +1,5 @@
 import { Ether, type Option, type Result } from '@mikuroxina/mini-fn';
-import type { Notification, NotificationID } from '../notification.js';
+import type { Notification, NotificationID } from '../notificationBase.js';
 
 export interface NotificationFilter {
   /**
