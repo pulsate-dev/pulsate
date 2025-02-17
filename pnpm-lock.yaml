@@ -25,7 +25,7 @@ importers:
         version: 6.3.1(prisma@6.3.1(typescript@5.7.3))(typescript@5.7.3)
       '@scalar/hono-api-reference':
         specifier: ^0.5.0
-        version: 0.5.172(hono@4.7.0)
+        version: 0.5.173(hono@4.7.0)
       argon2:
         specifier: ^0.41.0
         version: 0.41.1
@@ -773,8 +773,8 @@ packages:
     cpu: [x64]
     os: [win32]
 
-  '@scalar/hono-api-reference@0.5.172':
-    resolution: {integrity: sha512-2fd7PidgQWSzP8IKjApK16aN0lDtcV2muigBO/AIdMUzEowRlDFt6nhqrCDkFerX/6mCqmTewFczo731cL+kHg==}
+  '@scalar/hono-api-reference@0.5.173':
+    resolution: {integrity: sha512-3d92BE7yBba0BXbt+ZWRjd66oSG7yhL04c5BxB8bgQY54bUsCcCAzMdZFt65JbB8zJ6ffWZNB+FZWkGR3KDmdg==}
     engines: {node: '>=18'}
     peerDependencies:
       hono: ^4.0.0
@@ -783,8 +783,8 @@ packages:
     resolution: {integrity: sha512-oOTG3JQifg55U3DhKB7WdNIxFnJzbPJe7rqdyWdio977l8IkxQTVmObftJhdNIMvhV2K+1f/bDoMQGu6yTaD0A==}
     engines: {node: '>=18'}
 
-  '@scalar/types@0.0.31':
-    resolution: {integrity: sha512-xagRDDqqf+tMTtChUggQHIzjMbfHe/3ntiZpF4RDgrU5yA3v/eYFwLjb+OgfcMpU1c02FSUeKa6FN7e7DZcXgg==}
+  '@scalar/types@0.0.32':
+    resolution: {integrity: sha512-WHMkFQw4cu1mrG4pEiTUXVBBs205kHECdLM/5F7ATI0A7Axv6G1GgofkwbyCAayUjNk82uaCXzSOgPojbq4iGQ==}
     engines: {node: '>=18'}
 
   '@tokenizer/inflate@0.2.6':
@@ -800,8 +800,8 @@ packages:
   '@types/node@22.13.1':
     resolution: {integrity: sha512-jK8uzQlrvXqEU91UxiK5J7pKHyzgnI1Qnl0QDHIgVGuolJhRb9EEl28Cj9b3rGR8B2lhFCtvIm5os8lFnO/1Ew==}
 
-  '@unhead/schema@1.11.18':
-    resolution: {integrity: sha512-a3TA/OJCRdfbFhcA3Hq24k1ZU1o9szicESrw8DZcGyQFacHnh84mVgnyqSkMnwgCmfN4kvjSiTBlLEHS6+wATw==}
+  '@unhead/schema@1.11.19':
+    resolution: {integrity: sha512-7VhYHWK7xHgljdv+C01MepCSYZO2v6OhgsfKWPxRQBDDGfUKCUaChox0XMq3tFvXP6u4zSp6yzcDw2yxCfVMwg==}
 
   '@vitest/coverage-v8@3.0.5':
     resolution: {integrity: sha512-zOOWIsj5fHh3jjGwQg+P+J1FW3s4jBu1Zqga0qW60yutsBtqEqNEJKWYh7cYn1yGD+1bdPsPdC/eL4eVK56xMg==}
@@ -1865,17 +1865,17 @@ snapshots:
   '@rollup/rollup-win32-x64-msvc@4.34.2':
     optional: true
 
-  '@scalar/hono-api-reference@0.5.172(hono@4.7.0)':
+  '@scalar/hono-api-reference@0.5.173(hono@4.7.0)':
     dependencies:
-      '@scalar/types': 0.0.31
+      '@scalar/types': 0.0.32
       hono: 4.7.0
 
   '@scalar/openapi-types@0.1.7': {}
 
-  '@scalar/types@0.0.31':
+  '@scalar/types@0.0.32':
     dependencies:
       '@scalar/openapi-types': 0.1.7
-      '@unhead/schema': 1.11.18
+      '@unhead/schema': 1.11.19
 
   '@tokenizer/inflate@0.2.6':
     dependencies:
@@ -1893,7 +1893,7 @@ snapshots:
     dependencies:
       undici-types: 6.20.0
 
-  '@unhead/schema@1.11.18':
+  '@unhead/schema@1.11.19':
     dependencies:
       hookable: 5.5.3
       zhead: 2.2.4
