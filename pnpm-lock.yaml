@@ -16,7 +16,7 @@ importers:
         version: 0.5.1(hono@4.7.2)
       '@hono/zod-openapi':
         specifier: ^0.19.0
-        version: 0.19.2(hono@4.7.2)(zod@3.23.8)
+        version: 0.19.2(hono@4.7.2)(zod@3.24.2)
       '@mikuroxina/mini-fn':
         specifier: ^6.3.1
         version: 6.7.0
@@ -25,7 +25,7 @@ importers:
         version: 6.3.1(prisma@6.3.1(typescript@5.7.3))(typescript@5.7.3)
       '@scalar/hono-api-reference':
         specifier: ^0.5.0
-        version: 0.5.175(hono@4.7.2)
+        version: 0.5.183(hono@4.7.2)
       argon2:
         specifier: ^0.41.0
         version: 0.41.1
@@ -623,18 +623,22 @@ packages:
     cpu: [x64]
     os: [win32]
 
-  '@scalar/hono-api-reference@0.5.175':
-    resolution: {integrity: sha512-jSY/qYFHitFFFsLgvmspDN/Fd3V3nC5Q17XJW/qhLtXX/M4pZUGVZOTLU2GsAueh10J5m7VLPZo+HQL6HC35bg==}
+  '@scalar/core@0.1.0':
+    resolution: {integrity: sha512-LnszTA7JmdtmEX1qqhkIKTKFQiFstRYiDs0NrXdYtMk/WB55Bnoz0Lk8BWw1qC1NhMpP5It+PRYZke727Gxrbw==}
+    engines: {node: '>=18'}
+
+  '@scalar/hono-api-reference@0.5.183':
+    resolution: {integrity: sha512-rzWxFDjBW2VvMRAPqcwgkC+7ZMmBZZVIMFUejwjF+618jKvQ09ooVyBb9hUnW4KaUElUqx/iIFflLKf0A95iLA==}
     engines: {node: '>=18'}
     peerDependencies:
       hono: ^4.0.0
 
-  '@scalar/openapi-types@0.1.8':
-    resolution: {integrity: sha512-iufA5/6hPCmRIVD2eh7qGpoKvoA08Gw/qUb2JECifBtAwA93fo7+1k9uHK440f2LMJsbxIzA+nv7RS0BmfiO/g==}
+  '@scalar/openapi-types@0.1.9':
+    resolution: {integrity: sha512-HQQudOSQBU7ewzfnBW9LhDmBE2XOJgSfwrh5PlUB7zJup/kaRkBGNgV2wMjNz9Af/uztiU/xNrO179FysmUT+g==}
     engines: {node: '>=18'}
 
-  '@scalar/types@0.0.34':
-    resolution: {integrity: sha512-q01ctijmHArM5KOny2zU+sHfhpsgOAENrDENecK2TsQNn5FYLmFZouMKeW2M6F7KFLPZnFxUiL/rT88b6Rp/Kg==}
+  '@scalar/types@0.0.39':
+    resolution: {integrity: sha512-oAMBWC5B0I8IViCuaV1ydoUAm7KJSwHZfCuLMea15tSKh0/wj9H1KQvDJF8gE/cUVwjQvj4q94GB22kBT4XGNQ==}
     engines: {node: '>=18'}
 
   '@tokenizer/inflate@0.2.6':
@@ -1277,8 +1281,8 @@ packages:
   zhead@2.2.4:
     resolution: {integrity: sha512-8F0OI5dpWIA5IGG5NHUg9staDwz/ZPxZtvGVf01j7vHqSyZ0raHY+78atOVxRqb73AotX22uV1pXt3gYSstGag==}
 
-  zod@3.23.8:
-    resolution: {integrity: sha512-XBx9AXhXktjUqnepgTiE5flcKIYWi/rme0Eaj+5Y0lftuGBq+jyRu/md4WnuxqgP1ubdpNCsYEYPxrzVHD8d6g==}
+  zod@3.24.2:
+    resolution: {integrity: sha512-lY7CDW43ECgW9u1TcT3IoXHflywfVqDYze4waEz812jR/bZ8FHDsl7pFQoSZTz5N+2NqRXs8GBwnAwo3ZNxqhQ==}
 
 snapshots:
 
@@ -1287,10 +1291,10 @@ snapshots:
       '@jridgewell/gen-mapping': 0.3.8
       '@jridgewell/trace-mapping': 0.3.25
 
-  '@asteasolutions/zod-to-openapi@7.3.0(zod@3.23.8)':
+  '@asteasolutions/zod-to-openapi@7.3.0(zod@3.24.2)':
     dependencies:
       openapi3-ts: 4.4.0
-      zod: 3.23.8
+      zod: 3.24.2
 
   '@babel/helper-string-parser@7.25.9': {}
 
@@ -1430,17 +1434,17 @@ snapshots:
     dependencies:
       hono: 4.7.2
 
-  '@hono/zod-openapi@0.19.2(hono@4.7.2)(zod@3.23.8)':
+  '@hono/zod-openapi@0.19.2(hono@4.7.2)(zod@3.24.2)':
     dependencies:
-      '@asteasolutions/zod-to-openapi': 7.3.0(zod@3.23.8)
-      '@hono/zod-validator': 0.4.2(hono@4.7.2)(zod@3.23.8)
+      '@asteasolutions/zod-to-openapi': 7.3.0(zod@3.24.2)
+      '@hono/zod-validator': 0.4.2(hono@4.7.2)(zod@3.24.2)
       hono: 4.7.2
-      zod: 3.23.8
+      zod: 3.24.2
 
-  '@hono/zod-validator@0.4.2(hono@4.7.2)(zod@3.23.8)':
+  '@hono/zod-validator@0.4.2(hono@4.7.2)(zod@3.24.2)':
     dependencies:
       hono: 4.7.2
-      zod: 3.23.8
+      zod: 3.24.2
 
   '@img/sharp-darwin-arm64@0.33.5':
     optionalDependencies:
@@ -1639,17 +1643,22 @@ snapshots:
   '@rollup/rollup-win32-x64-msvc@4.35.0':
     optional: true
 
-  '@scalar/hono-api-reference@0.5.175(hono@4.7.2)':
+  '@scalar/core@0.1.0':
     dependencies:
-      '@scalar/types': 0.0.34
+      '@scalar/types': 0.0.39
+
+  '@scalar/hono-api-reference@0.5.183(hono@4.7.2)':
+    dependencies:
+      '@scalar/core': 0.1.0
       hono: 4.7.2
 
-  '@scalar/openapi-types@0.1.8': {}
+  '@scalar/openapi-types@0.1.9': {}
 
-  '@scalar/types@0.0.34':
+  '@scalar/types@0.0.39':
     dependencies:
-      '@scalar/openapi-types': 0.1.8
+      '@scalar/openapi-types': 0.1.9
       '@unhead/schema': 1.11.20
+      zod: 3.24.2
 
   '@tokenizer/inflate@0.2.6':
     dependencies:
@@ -2315,4 +2324,4 @@ snapshots:
 
   zhead@2.2.4: {}
 
-  zod@3.23.8: {}
+  zod@3.24.2: {}
