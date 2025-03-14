@@ -19,7 +19,7 @@ importers:
         version: 0.19.2(hono@4.7.4)(zod@3.24.2)
       '@mikuroxina/mini-fn':
         specifier: ^6.3.1
-        version: 6.7.0
+        version: 6.8.0
       '@prisma/client':
         specifier: 6.3.1
         version: 6.3.1(prisma@6.3.1(typescript@5.7.3))(typescript@5.7.3)
@@ -490,8 +490,8 @@ packages:
     os: [darwin, linux, win32]
     hasBin: true
 
-  '@mikuroxina/mini-fn@6.7.0':
-    resolution: {integrity: sha512-MHXlDpiJYIomov57vgCSAdTZbNMVGHoNTbEeZJtShDrWmohuqsIQ2ZBu0GXZ6Co/fowQw16hMti/PM0vXiFDTQ==}
+  '@mikuroxina/mini-fn@6.8.0':
+    resolution: {integrity: sha512-F2zCVBwIKERxuEyQGjxlzQjmrQ2oHOQSdnYJP2LKfcZivGq5n0IziJUiBHipduItSbsYH59cKexVBwSl//O6gQ==}
 
   '@phc/format@1.0.0':
     resolution: {integrity: sha512-m7X9U6BG2+J+R1lSOdCiITLLrxm+cWlNI3HUFA92oLO77ObGNzaKdh8pMLqdZcshtkKuV84olNNXDfMc4FezBQ==}
@@ -1553,7 +1553,7 @@ snapshots:
 
   '@ls-lint/ls-lint@2.2.3': {}
 
-  '@mikuroxina/mini-fn@6.7.0': {}
+  '@mikuroxina/mini-fn@6.8.0': {}
 
   '@phc/format@1.0.0': {}
 
