@@ -4,7 +4,9 @@ import type { Account, AccountID } from '../../accounts/model/account.js';
 import { AccountNotFoundError } from '../../accounts/model/errors.js';
 import type { MediumID } from '../../drive/model/medium.js';
 import {
+  type Clock,
   type SnowflakeIDGenerator,
+  clockSymbol,
   snowflakeIDGeneratorSymbol,
 } from '../../id/mod.js';
 import {
@@ -28,10 +30,13 @@ import {
 
 export class RenoteService {
   constructor(
-    private readonly noteRepository: NoteRepository,
-    private readonly idGenerator: SnowflakeIDGenerator,
-    private readonly noteAttachmentRepository: NoteAttachmentRepository,
-    private readonly accountModule: AccountModuleFacade,
+    private readonly deps: {
+      noteRepository: NoteRepository;
+      idGenerator: SnowflakeIDGenerator;
+      noteAttachmentRepository: NoteAttachmentRepository;
+      accountModule: AccountModuleFacade;
+      clock: Clock;
+    },
   ) {}
 
   /**
@@ -46,7 +51,7 @@ export class RenoteService {
     attachmentFileID: MediumID[],
     visibility: NoteVisibility,
   ): Promise<Result.Result<Error, Note>> {
-    const actorRes = await this.accountModule.fetchAccount(authorID);
+    const actorRes = await this.deps.accountModule.fetchAccount(authorID);
     if (Result.isErr(actorRes)) {
       return Result.err(
         new AccountNotFoundError('Account not found', { cause: null }),
@@ -78,7 +83,8 @@ export class RenoteService {
       );
     }
 
-    const originalNoteRes = await this.noteRepository.findByID(originalNoteID);
+    const originalNoteRes =
+      await this.deps.noteRepository.findByID(originalNoteID);
     if (Option.isNone(originalNoteRes)) {
       return Result.err(
         new NoteNotFoundError('Original note not found', { cause: null }),
@@ -110,17 +116,18 @@ export class RenoteService {
         );
     }
 
-    const id = this.idGenerator.generate<Note>();
+    const id = this.deps.idGenerator.generate<Note>();
     if (Result.isErr(id)) {
       return id;
     }
 
+    const now = this.deps.clock.now();
     const renote = Note.new({
       id: Result.unwrap(id) as NoteID,
       authorID: authorID,
       content: content,
       contentsWarningComment: contentsWarningComment,
-      createdAt: new Date(),
+      createdAt: new Date(Number(now)),
       originalNoteID: Option.some(originalNoteID),
       attachmentFileID: attachmentFileID,
       // NOTE: Direct note is can not renote
@@ -128,13 +135,13 @@ export class RenoteService {
       visibility: visibility,
     });
 
-    const res = await this.noteRepository.create(renote);
+    const res = await this.deps.noteRepository.create(renote);
     if (Result.isErr(res)) {
       return res;
     }
 
     if (attachmentFileID.length !== 0) {
-      const attachmentRes = await this.noteAttachmentRepository.create(
+      const attachmentRes = await this.deps.noteAttachmentRepository.create(
         renote.getID(),
         renote.getAttachmentFileID(),
       );
@@ -168,17 +175,12 @@ export class RenoteService {
 export const renoteSymbol = Ether.newEtherSymbol<RenoteService>();
 export const renote = Ether.newEther(
   renoteSymbol,
-  ({ noteRepository, idGenerator, noteAttachmentRepository, accountModule }) =>
-    new RenoteService(
-      noteRepository,
-      idGenerator,
-      noteAttachmentRepository,
-      accountModule,
-    ),
+  (deps) => new RenoteService(deps),
   {
     noteRepository: noteRepoSymbol,
     idGenerator: snowflakeIDGeneratorSymbol,
     noteAttachmentRepository: noteAttachmentRepoSymbol,
     accountModule: accountModuleFacadeSymbol,
+    clock: clockSymbol,
   },
 );

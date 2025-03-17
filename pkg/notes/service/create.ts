@@ -3,7 +3,9 @@ import { Ether, Option, Result } from '@mikuroxina/mini-fn';
 import type { AccountID } from '../../accounts/model/account.js';
 import type { MediumID } from '../../drive/model/medium.js';
 import {
+  type Clock,
   type SnowflakeIDGenerator,
+  clockSymbol,
   snowflakeIDGeneratorSymbol,
 } from '../../id/mod.js';
 import {
@@ -40,7 +42,7 @@ export class CreateService {
         }),
       );
     }
-    const id = this.idGenerator.generate<Note>();
+    const id = this.deps.idGenerator.generate<Note>();
     if (Result.isErr(id)) {
       return Result.err(
         new NoteInternalError('id generation failed', {
@@ -48,25 +50,26 @@ export class CreateService {
         }),
       );
     }
+    const now = this.deps.clock.now();
     try {
       const note = Note.new({
         id: id[1] as NoteID,
         content: content,
         contentsWarningComment: contentsWarningComment,
-        createdAt: new Date(),
+        createdAt: new Date(Number(now)),
         sendTo: sendTo,
         originalNoteID: Option.none(),
         attachmentFileID: attachmentFileID,
         visibility: visibility,
         authorID: authorID,
       });
-      const res = await this.noteRepository.create(note);
+      const res = await this.deps.noteRepository.create(note);
       if (Result.isErr(res)) {
         return res;
       }
 
       if (attachmentFileID.length !== 0) {
-        const attachmentRes = await this.noteAttachmentRepository.create(
+        const attachmentRes = await this.deps.noteAttachmentRepository.create(
           note.getID(),
           note.getAttachmentFileID(),
         );
@@ -77,7 +80,7 @@ export class CreateService {
 
       // ToDo: Even if the note cannot be pushed to the timeline, the note is created successfully, so there is no error here.
       // ToDo: use job queue to push note to timeline
-      await this.timelineModule.pushNoteToTimeline(note);
+      await this.deps.timelineModule.pushNoteToTimeline(note);
 
       return Result.ok(note);
     } catch (e) {
@@ -92,26 +95,24 @@ export class CreateService {
   }
 
   constructor(
-    private readonly noteRepository: NoteRepository,
-    private readonly idGenerator: SnowflakeIDGenerator,
-    private readonly noteAttachmentRepository: NoteAttachmentRepository,
-    private readonly timelineModule: TimelineModuleFacade,
+    private readonly deps: {
+      noteRepository: NoteRepository;
+      idGenerator: SnowflakeIDGenerator;
+      noteAttachmentRepository: NoteAttachmentRepository;
+      timelineModule: TimelineModuleFacade;
+      clock: Clock;
+    },
   ) {}
 }
 export const createServiceSymbol = Ether.newEtherSymbol<CreateService>();
 export const createService = Ether.newEther(
   createServiceSymbol,
-  ({ noteRepository, idGenerator, noteAttachmentRepository, timelineModule }) =>
-    new CreateService(
-      noteRepository,
-      idGenerator,
-      noteAttachmentRepository,
-      timelineModule,
-    ),
+  (deps) => new CreateService(deps),
   {
     noteRepository: noteRepoSymbol,
     idGenerator: snowflakeIDGeneratorSymbol,
     noteAttachmentRepository: noteAttachmentRepoSymbol,
     timelineModule: timelineModuleFacadeSymbol,
+    clock: clockSymbol,
   },
 );
