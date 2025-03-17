@@ -1,7 +1,9 @@
 import { Ether, Option, Result } from '@mikuroxina/mini-fn';
 
 import {
+  type Clock,
   type SnowflakeIDGenerator,
+  clockSymbol,
   snowflakeIDGeneratorSymbol,
 } from '../../id/mod.js';
 import {
@@ -40,6 +42,7 @@ export class RegisterService {
   private readonly passwordEncoder: PasswordEncoder;
   private readonly sendNotificationService: SendNotificationService;
   private readonly verifyAccountTokenService: VerifyAccountTokenService;
+  private readonly clock: Clock;
 
   constructor(arg: {
     repository: AccountRepository;
@@ -47,12 +50,14 @@ export class RegisterService {
     passwordEncoder: PasswordEncoder;
     sendNotification: SendNotificationService;
     verifyAccountTokenService: VerifyAccountTokenService;
+    clock: Clock;
   }) {
     this.accountRepository = arg.repository;
     this.snowflakeIDGenerator = arg.idGenerator;
     this.passwordEncoder = arg.passwordEncoder;
     this.sendNotificationService = arg.sendNotification;
     this.verifyAccountTokenService = arg.verifyAccountTokenService;
+    this.clock = arg.clock;
   }
 
   public async handle(
@@ -74,6 +79,7 @@ export class RegisterService {
     if (Result.isErr(generatedID)) {
       return Result.err(generatedID[1]);
     }
+    const now = this.clock.now();
     const account = Account.new({
       id: generatedID[1],
       name: name,
@@ -85,7 +91,7 @@ export class RegisterService {
       frozen: 'normal',
       silenced: 'normal',
       status: 'notActivated',
-      createdAt: new Date(),
+      createdAt: new Date(Number(now)),
     });
     const res = await this.accountRepository.create(account);
     if (Result.isErr(res)) {
@@ -128,5 +134,6 @@ export const register = Ether.newEther(
     passwordEncoder: passwordEncoderSymbol,
     sendNotification: sendNotificationSymbol,
     verifyAccountTokenService: verifyAccountTokenSymbol,
+    clock: clockSymbol,
   },
 );

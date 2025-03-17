@@ -1,5 +1,6 @@
 import { Ether, Option, Result } from '@mikuroxina/mini-fn';
 
+import { type Clock, clockSymbol } from '../../id/mod.js';
 import type { AccountName } from '../model/account.js';
 import { AccountNotFoundError } from '../model/errors.js';
 import { AccountFollow } from '../model/follow.js';
@@ -14,6 +15,7 @@ export class FollowService {
   constructor(
     private readonly followRepository: AccountFollowRepository,
     private readonly accountRepository: AccountRepository,
+    private readonly clock: Clock,
   ) {}
 
   async handle(
@@ -33,10 +35,11 @@ export class FollowService {
       );
     }
 
+    const now = this.clock.now();
     const follow = AccountFollow.new({
       fromID: fromAccount[1].getID(),
       targetID: targetAccount[1].getID(),
-      createdAt: new Date(),
+      createdAt: new Date(Number(now)),
     });
 
     const res = await this.followRepository.follow(follow);
@@ -51,7 +54,11 @@ export class FollowService {
 export const followSymbol = Ether.newEtherSymbol<FollowService>();
 export const follow = Ether.newEther(
   followSymbol,
-  ({ followRepository, accountRepository }) =>
-    new FollowService(followRepository, accountRepository),
-  { followRepository: followRepoSymbol, accountRepository: accountRepoSymbol },
+  ({ followRepository, accountRepository, clock }) =>
+    new FollowService(followRepository, accountRepository, clock),
+  {
+    followRepository: followRepoSymbol,
+    accountRepository: accountRepoSymbol,
+    clock: clockSymbol,
+  },
 );
