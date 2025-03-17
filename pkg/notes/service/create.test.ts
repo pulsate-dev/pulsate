@@ -3,7 +3,7 @@ import { describe, expect, it } from 'vitest';
 
 import type { AccountID } from '../../accounts/model/account.js';
 import { Medium, type MediumID } from '../../drive/model/medium.js';
-import { SnowflakeIDGenerator } from '../../id/mod.js';
+import { MockClock, SnowflakeIDGenerator } from '../../id/mod.js';
 import { dummyTimelineModuleFacade } from '../../intermodule/timeline.js';
 import { InMemoryTimelineCacheRepository } from '../../timeline/adaptor/repository/dummyCache.js';
 import {
@@ -34,14 +34,15 @@ const timelineCacheRepository = new InMemoryTimelineCacheRepository([
   ['102' as AccountID, []],
   ['103' as AccountID, []],
 ]);
-const createService = new CreateService(
+const createService = new CreateService({
   noteRepository,
-  new SnowflakeIDGenerator(0, {
+  idGenerator: new SnowflakeIDGenerator(0, {
     now: () => BigInt(Date.UTC(2023, 9, 10, 0, 0)),
   }),
-  attachmentRepository,
-  dummyTimelineModuleFacade(timelineCacheRepository),
-);
+  noteAttachmentRepository: attachmentRepository,
+  timelineModule: dummyTimelineModuleFacade(timelineCacheRepository),
+  clock: new MockClock(new Date('2023-09-10T00:00:00Z')),
+});
 
 describe('CreateService', () => {
   it('should create a note', async () => {

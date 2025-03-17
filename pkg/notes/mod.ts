@@ -89,6 +89,7 @@ const AuthMiddleware = new AuthenticateMiddlewareService();
 
 const createServiceObj = Ether.runEther(
   Cat.cat(createService)
+    .feed(Ether.compose(clock))
     .feed(Ether.compose(noteRepository))
     .feed(Ether.compose(idGenerator))
     .feed(Ether.compose(attachmentRepository))
@@ -105,6 +106,7 @@ const fetchServiceObj = Ether.runEther(
 
 const renoteServiceObj = Ether.runEther(
   Cat.cat(renote)
+    .feed(Ether.compose(clock))
     .feed(Ether.compose(noteRepository))
     .feed(Ether.compose(idGenerator))
     .feed(Ether.compose(attachmentRepository))
