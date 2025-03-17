@@ -19,8 +19,5 @@ Instance {
   "softwareName": "Pulsate",
   "softwareVersion": "0.1.0",
   "state": "normal",
-  "updated": [
-    Symbol(OptionNone),
-  ],
 }
 `;
