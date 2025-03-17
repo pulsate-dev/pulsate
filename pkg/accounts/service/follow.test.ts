@@ -46,7 +46,7 @@ const repository = new InMemoryAccountFollowRepository();
 const service = new FollowService(
   repository,
   accountRepository,
-  new MockClock(new Date('2020-02-02')),
+  new MockClock(new Date('2023-09-10T00:00:00Z')),
 );
 
 describe('FollowService', () => {
