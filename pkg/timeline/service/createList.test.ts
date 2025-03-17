@@ -2,7 +2,7 @@ import { Result } from '@mikuroxina/mini-fn';
 import { describe, expect, it } from 'vitest';
 
 import type { AccountID } from '../../accounts/model/account.js';
-import { SnowflakeIDGenerator } from '../../id/mod.js';
+import { MockClock, SnowflakeIDGenerator } from '../../id/mod.js';
 import { InMemoryListRepository } from '../adaptor/repository/dummy.js';
 import { CreateListService } from './createList.js';
 
@@ -13,6 +13,7 @@ describe('CreateListService', () => {
       now: () => BigInt(Date.UTC(2023, 9, 10, 0, 0)),
     }),
     repository,
+    new MockClock(new Date('2023-09-10T00:00:00Z')),
   );
 
   it('should create a list', async () => {
