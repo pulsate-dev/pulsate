@@ -162,6 +162,7 @@ export const controller = new AccountController({
   ),
   followService: Ether.runEther(
     Cat.cat(follow)
+      .feed(Ether.compose(clock))
       .feed(Ether.compose(accountRepository))
       .feed(Ether.compose(accountFollowRepository)).value,
   ),
@@ -170,6 +171,7 @@ export const controller = new AccountController({
   ),
   registerService: Ether.runEther(
     Cat.cat(register)
+      .feed(Ether.compose(clock))
       .feed(Ether.compose(accountRepository))
       .feed(Ether.compose(idGenerator))
       .feed(Ether.compose(argon2idPasswordEncoder))
