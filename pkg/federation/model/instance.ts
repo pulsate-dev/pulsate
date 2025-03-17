@@ -118,10 +118,6 @@ export class Instance {
    * Instance first contact date
    */
   private readonly firstContact: Date;
-  /**
-   * Instance data updated date
-   */
-  private updated: Option.Option<Date>;
 
   /**
    * Instance ID
@@ -145,7 +141,6 @@ export class Instance {
    */
   setName(name: string) {
     this.name = name;
-    this.setUpdated();
   }
 
   /**
@@ -162,7 +157,6 @@ export class Instance {
    */
   setDescription(description: string) {
     this.description = description;
-    this.setUpdated();
   }
 
   /**
@@ -197,7 +191,6 @@ export class Instance {
    */
   setSoftwareVersion(version: string) {
     this.softwareVersion = version;
-    this.setUpdated();
   }
 
   /**
@@ -214,7 +207,6 @@ export class Instance {
    */
   setExtentions(extentions: string[]) {
     this.extentions = extentions;
-    this.setUpdated();
   }
 
   /**
@@ -231,7 +223,6 @@ export class Instance {
    */
   setAdminName(name: string) {
     this.adminName = name;
-    this.setUpdated();
   }
 
   /**
@@ -248,7 +239,6 @@ export class Instance {
    */
   setAdminContact(contact: string) {
     this.adminContact = contact;
-    this.setUpdated();
   }
 
   isBlocking(): boolean {
@@ -260,7 +250,6 @@ export class Instance {
    */
   setInstanceState(state: InstanceBlocking) {
     this.state = state;
-    this.setUpdated();
   }
 
   isSilenced(): boolean {
@@ -272,7 +261,6 @@ export class Instance {
    */
   setSilencedState(silenced: InstanceSilenced) {
     this.silenced = silenced;
-    this.setUpdated();
   }
 
   isDeliverStopped(): boolean {
@@ -284,7 +272,6 @@ export class Instance {
    */
   setDeliverState(state: InstanceDelivering) {
     this.deliverState = state;
-    this.setUpdated();
   }
 
   isLocalInstance(): boolean {
@@ -297,18 +284,6 @@ export class Instance {
    */
   getFirstContact(): Date {
     return this.firstContact;
-  }
-
-  /**
-   * Instance data updated date
-   * @returns Instance data updated date
-   */
-  getUpdated(): Option.Option<Date> {
-    return this.updated;
-  }
-
-  private setUpdated() {
-    this.updated = Option.some(new Date());
   }
 
   private constructor(arg: CreateInstanceArgs) {
@@ -326,7 +301,6 @@ export class Instance {
     this.state = arg.blocking;
     this.silenced = arg.silenced;
     this.deliverState = arg.delivering;
-    this.updated = arg.updated;
   }
 
   public static new(
