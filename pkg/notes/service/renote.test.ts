@@ -3,7 +3,7 @@ import { describe, expect, it, vi } from 'vitest';
 
 import type { AccountID } from '../../accounts/model/account.js';
 import { Medium, type MediumID } from '../../drive/model/medium.js';
-import { SnowflakeIDGenerator } from '../../id/mod.js';
+import { MockClock, SnowflakeIDGenerator } from '../../id/mod.js';
 import { dummyAccountModuleFacade } from '../../intermodule/account.js';
 import {
   InMemoryNoteAttachmentRepository,
@@ -45,14 +45,15 @@ const attachmentRepository = new InMemoryNoteAttachmentRepository(
   }),
   [],
 );
-const service = new RenoteService(
-  repository,
-  new SnowflakeIDGenerator(0, {
+const service = new RenoteService({
+  noteRepository: repository,
+  idGenerator: new SnowflakeIDGenerator(0, {
     now: () => BigInt(Date.UTC(2023, 9, 10, 0, 0)),
   }),
-  attachmentRepository,
-  dummyAccountModuleFacade,
-);
+  noteAttachmentRepository: attachmentRepository,
+  accountModule: dummyAccountModuleFacade,
+  clock: new MockClock(new Date('2023-09-10T00:00:00Z')),
+});
 
 describe('RenoteService', () => {
   it('should create renote', async () => {
@@ -236,14 +237,15 @@ describe('RenoteService', () => {
   });
 
   it('if id generation failed', async () => {
-    const dummyService = new RenoteService(
-      repository,
-      new SnowflakeIDGenerator(0, {
-        now: () => BigInt(Date.UTC(0, 0, 0, 0)),
+    const dummyService = new RenoteService({
+      noteRepository: repository,
+      idGenerator: new SnowflakeIDGenerator(0, {
+        now: () => BigInt(Date.UTC(0, 0, 0, 0, 0)),
       }),
-      attachmentRepository,
-      dummyAccountModuleFacade,
-    );
+      noteAttachmentRepository: attachmentRepository,
+      accountModule: dummyAccountModuleFacade,
+      clock: new MockClock(new Date('2023-09-10T00:00:00Z')),
+    });
 
     const res = await dummyService.handle(
       '3' as NoteID,
