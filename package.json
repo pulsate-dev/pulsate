@@ -6,7 +6,7 @@
   "main": "./build/main.js",
   "license": "Apache-2.0",
   "keywords": [],
-  "packageManager": "pnpm@10.6.2",
+  "packageManager": "pnpm@10.6.3",
   "author": {
     "name": "pulsate-dev",
     "email": "info@pulsate.dev"
