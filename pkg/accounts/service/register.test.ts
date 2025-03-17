@@ -24,6 +24,7 @@ const registerService: RegisterService = new RegisterService({
     repository,
     mockClock,
   ),
+  clock: new MockClock(new Date('2020-02-02')),
 });
 
 const exampleInput = {

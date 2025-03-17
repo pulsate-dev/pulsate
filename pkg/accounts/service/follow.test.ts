@@ -1,6 +1,7 @@
 import { Option, Result } from '@mikuroxina/mini-fn';
 import { describe, expect, it } from 'vitest';
 
+import { MockClock } from '../../id/mod.js';
 import { InMemoryAccountRepository } from '../adaptor/repository/dummy/account.js';
 import { InMemoryAccountFollowRepository } from '../adaptor/repository/dummy/follow.js';
 import { Account, type AccountID } from '../model/account.js';
@@ -42,7 +43,11 @@ await accountRepository.create(
   }),
 );
 const repository = new InMemoryAccountFollowRepository();
-const service = new FollowService(repository, accountRepository);
+const service = new FollowService(
+  repository,
+  accountRepository,
+  new MockClock(new Date('2020-02-02')),
+);
 
 describe('FollowService', () => {
   it('should follow', async () => {
