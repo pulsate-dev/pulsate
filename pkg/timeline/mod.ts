@@ -94,6 +94,7 @@ const controller = new TimelineController({
   ),
   createListService: Ether.runEther(
     Cat.cat(createList)
+      .feed(Ether.compose(clock))
       .feed(Ether.compose(idGenerator))
       .feed(Ether.compose(listRepository)).value,
   ),
