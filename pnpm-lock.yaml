@@ -18,8 +18,8 @@ importers:
         specifier: ^0.19.0
         version: 0.19.2(hono@4.7.5)(zod@3.24.2)
       '@mikuroxina/mini-fn':
-        specifier: ^6.3.1
-        version: 6.8.0
+        specifier: ^7.0.0
+        version: 7.0.0
       '@prisma/client':
         specifier: 6.5.0
         version: 6.5.0(prisma@6.5.0(typescript@5.8.2))(typescript@5.8.2)
@@ -42,8 +42,8 @@ importers:
         specifier: ^5.4.1
         version: 5.6.0
       jose:
-        specifier: ^5.2.1
-        version: 5.10.0
+        specifier: ^6.0.0
+        version: 6.0.10
       prisma:
         specifier: ^6.0.0
         version: 6.5.0(typescript@5.8.2)
@@ -490,8 +490,8 @@ packages:
     os: [darwin, linux, win32]
     hasBin: true
 
-  '@mikuroxina/mini-fn@6.8.0':
-    resolution: {integrity: sha512-F2zCVBwIKERxuEyQGjxlzQjmrQ2oHOQSdnYJP2LKfcZivGq5n0IziJUiBHipduItSbsYH59cKexVBwSl//O6gQ==}
+  '@mikuroxina/mini-fn@7.0.0':
+    resolution: {integrity: sha512-31RvUgwmaiLqw5BXAJ7aB5NU2t99A+/OAVY3G49eymoeXywUEtnl06UQjCQUBxGxDVq9P6+jqQbPeSJzAU513Q==}
 
   '@phc/format@1.0.0':
     resolution: {integrity: sha512-m7X9U6BG2+J+R1lSOdCiITLLrxm+cWlNI3HUFA92oLO77ObGNzaKdh8pMLqdZcshtkKuV84olNNXDfMc4FezBQ==}
@@ -902,8 +902,8 @@ packages:
     resolution: {integrity: sha512-bZsjR/iRjl1Nk1UkjGpAzLNfQtzuijhn2g+pbZb98HQ1Gk8vM9hfbxeMBP+M2/UUdwj0RqGG3mlvk2MsAqwvEw==}
     engines: {node: 20 || >=22}
 
-  jose@5.10.0:
-    resolution: {integrity: sha512-s+3Al/p9g32Iq+oqXxkW//7jk2Vig6FF1CFqzVXoTUXt2qz89YWbL+OwS17NFYEvxC35n0FKeGO2LGYSxeM2Gg==}
+  jose@6.0.10:
+    resolution: {integrity: sha512-skIAxZqcMkOrSwjJvplIPYrlXGpxTPnro2/QWTDCxAdWQrSTV5/KqspMWmi5WAx5+ULswASJiZ0a+1B/Lxt9cw==}
 
   kleur@4.1.5:
     resolution: {integrity: sha512-o+NO+8WrRiQEE4/7nwRJhN1HWpVmJm511pBHUxPLtp0BUISzlBplORYSmTclCnJvQq2tKu/sgl3xVpkc7ZWuQQ==}
@@ -1561,7 +1561,7 @@ snapshots:
 
   '@ls-lint/ls-lint@2.2.3': {}
 
-  '@mikuroxina/mini-fn@6.8.0': {}
+  '@mikuroxina/mini-fn@7.0.0': {}
 
   '@phc/format@1.0.0': {}
 
@@ -1980,7 +1980,7 @@ snapshots:
     dependencies:
       '@isaacs/cliui': 8.0.2
 
-  jose@5.10.0: {}
+  jose@6.0.10: {}
 
   kleur@4.1.5: {}
 
