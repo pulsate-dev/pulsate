@@ -62,7 +62,7 @@ importers:
         version: 1.9.4
       '@ls-lint/ls-lint':
         specifier: ^2.2.3
-        version: 2.2.3
+        version: 2.3.0
       '@types/node':
         specifier: ^22.0.0
         version: 22.13.13
@@ -484,9 +484,9 @@ packages:
   '@jridgewell/trace-mapping@0.3.25':
     resolution: {integrity: sha512-vNk6aEwybGtawWmy/PzwnGDOjCkLWSD2wqvjGGAgOAwCGWySYXfYoxt00IJkTF+8Lb57DwOb3Aa0o9CApepiYQ==}
 
-  '@ls-lint/ls-lint@2.2.3':
-    resolution: {integrity: sha512-ekM12jNm/7O2I/hsRv9HvYkRdfrHpiV1epVuI2NP+eTIcEgdIdKkKCs9KgQydu/8R5YXTov9aHdOgplmCHLupw==}
-    cpu: [x64, arm64, s390x]
+  '@ls-lint/ls-lint@2.3.0':
+    resolution: {integrity: sha512-lsT5/7SxtImOIjpefC9wcoXt2lkikKhCjd6U+Q9Z6X5h2HBU/71ggt+XStdodZ0HkJGO333zDUeec7JROMCPFw==}
+    cpu: [x64, arm64, s390x, ppc64le]
     os: [darwin, linux, win32]
     hasBin: true
 
@@ -1559,7 +1559,7 @@ snapshots:
       '@jridgewell/resolve-uri': 3.1.2
       '@jridgewell/sourcemap-codec': 1.5.0
 
-  '@ls-lint/ls-lint@2.2.3': {}
+  '@ls-lint/ls-lint@2.3.0': {}
 
   '@mikuroxina/mini-fn@7.0.0': {}
 
