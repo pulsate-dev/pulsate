@@ -28,7 +28,7 @@ import {
 export const CreateNoteRoute = createRoute({
   method: 'post',
   tags: ['notes'],
-  path: '/notes',
+  path: '/v0/notes',
   security: [
     {
       bearer: [],
@@ -119,7 +119,7 @@ export const CreateNoteRoute = createRoute({
 export const GetNoteRoute = createRoute({
   method: 'get',
   tags: ['notes'],
-  path: '/notes/:id',
+  path: '/v0/notes/:id',
   request: {
     params: z.object({
       id: z.string().openapi({
@@ -171,7 +171,7 @@ export const GetNoteRoute = createRoute({
 export const RenoteRoute = createRoute({
   method: 'post',
   tags: ['notes'],
-  path: '/notes/:id/renote',
+  path: '/v0/notes/:id/renote',
   security: [
     {
       bearer: [],
@@ -268,7 +268,7 @@ export const RenoteRoute = createRoute({
 export const CreateReactionRoute = createRoute({
   method: 'post',
   tags: ['reaction'],
-  path: '/notes/:id/reaction',
+  path: '/v0/notes/:id/reaction',
   security: [
     {
       bearer: [],
@@ -341,7 +341,7 @@ export const CreateReactionRoute = createRoute({
 export const DeleteReactionRoute = createRoute({
   method: 'delete',
   tags: ['reaction'],
-  path: '/notes/:id/reaction',
+  path: '/v0/notes/:id/reaction',
   security: [
     {
       bearer: [],
@@ -389,7 +389,7 @@ export const DeleteReactionRoute = createRoute({
 export const CreateBookmarkRoute = createRoute({
   method: 'post',
   tags: ['bookmark'],
-  path: '/notes/:id/bookmark',
+  path: '/v0/notes/:id/bookmark',
   security: [
     {
       bearer: [],
@@ -446,7 +446,7 @@ export const CreateBookmarkRoute = createRoute({
 export const DeleteBookmarkRoute = createRoute({
   method: 'delete',
   tags: ['bookmark'],
-  path: '/notes/:id/bookmark',
+  path: '/v0/notes/:id/bookmark',
   security: [
     {
       bearer: [],

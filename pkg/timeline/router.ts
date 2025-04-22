@@ -58,7 +58,7 @@ const timelineFilterQuerySchema = z
 export const GetHomeTimelineRoute = createRoute({
   method: 'get',
   tags: ['timeline'],
-  path: '/timeline/home',
+  path: '/v0/timeline/home',
   request: {
     query: timelineFilterQuerySchema,
   },
@@ -97,7 +97,7 @@ export const GetHomeTimelineRoute = createRoute({
 export const GetAccountTimelineRoute = createRoute({
   method: 'get',
   tags: ['timeline'],
-  path: '/timeline/accounts/:id',
+  path: '/v0/timeline/accounts/:id',
   request: {
     params: z.object({
       id: z.string().openapi('Account ID'),
@@ -160,7 +160,7 @@ export const GetAccountTimelineRoute = createRoute({
 export const GetListTimelineRoute = createRoute({
   method: 'get',
   tags: ['timeline'],
-  path: '/lists/:id/notes',
+  path: '/v0/lists/:id/notes',
   request: {
     params: z.object({
       id: z.string().openapi('List ID'),
@@ -209,7 +209,7 @@ export const GetListTimelineRoute = createRoute({
 export const CreateListRoute = createRoute({
   method: 'post',
   tags: ['timeline'],
-  path: '/lists',
+  path: '/v0/lists',
   security: [
     {
       bearer: [],
@@ -263,7 +263,7 @@ export const CreateListRoute = createRoute({
 export const EditListRoute = createRoute({
   method: 'patch',
   tags: ['timeline'],
-  path: '/lists/:id',
+  path: '/v0/lists/:id',
   security: [
     {
       bearer: [],
@@ -330,7 +330,7 @@ export const EditListRoute = createRoute({
 export const FetchListRoute = createRoute({
   method: 'get',
   tags: ['timeline'],
-  path: '/lists/:id',
+  path: '/v0/lists/:id',
   security: [
     {
       bearer: [],
@@ -384,7 +384,7 @@ export const FetchListRoute = createRoute({
 export const DeleteListRoute = createRoute({
   method: 'delete',
   tags: ['timeline'],
-  path: '/lists',
+  path: '/v0/lists',
   security: [
     {
       bearer: [],
@@ -433,7 +433,7 @@ export const DeleteListRoute = createRoute({
 export const GetListMemberRoute = createRoute({
   method: 'get',
   tags: ['timeline'],
-  path: '/lists/:id/members',
+  path: '/v0/lists/:id/members',
   responses: {
     200: {
       description: 'OK',
@@ -477,7 +477,7 @@ export const GetListMemberRoute = createRoute({
 export const AppendListMemberRoute = createRoute({
   method: 'post',
   tags: ['timeline'],
-  path: '/lists/:id/members',
+  path: '/v0/lists/:id/members',
   security: [
     {
       bearer: [],
@@ -537,7 +537,7 @@ export const AppendListMemberRoute = createRoute({
 export const DeleteListMemberRoute = createRoute({
   method: 'delete',
   tags: ['timeline'],
-  path: '/lists/:id/members',
+  path: '/v0/lists/:id/members',
   security: [
     {
       bearer: [],

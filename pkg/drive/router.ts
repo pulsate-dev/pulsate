@@ -5,7 +5,7 @@ import { GetDriveMediaResponseSchema } from './adaptor/validator/schema.js';
 
 export const GetMediaRoute = createRoute({
   method: 'get',
-  path: '/drive',
+  path: '/v0/drive',
   tags: ['drive'],
   summary: 'Get uploaded media',
   security: [

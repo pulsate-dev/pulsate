@@ -28,7 +28,7 @@ export const app = new Hono().get('/doc', async (c) => {
     },
     servers: [
       {
-        url: 'http://localhost:3000',
+        url: 'http://localhost:3000/',
         description: 'Local server',
       },
     ],
@@ -76,7 +76,7 @@ app.use(
 /*
 All routes must be "/"
 (The "/" account cannot be written in the library specification.
- */
+*/
 app.route('/', noteHandlers);
 app.route('/', accounts);
 app.route('/', drive);
