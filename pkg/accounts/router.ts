@@ -48,7 +48,7 @@ const InternalErrorResponseSchema = z
 export const CreateAccountRoute = createRoute({
   method: 'post',
   tags: ['accounts'],
-  path: '/accounts',
+  path: '/v0/accounts',
   request: {
     body: {
       content: {
@@ -109,7 +109,7 @@ export const CreateAccountRoute = createRoute({
 export const UpdateAccountRoute = createRoute({
   method: 'patch',
   tags: ['accounts'],
-  path: '/accounts/:name',
+  path: '/v0/accounts/:name',
   security: [
     {
       bearer: [],
@@ -203,7 +203,7 @@ export const UpdateAccountRoute = createRoute({
 export const FreezeAccountRoute = createRoute({
   method: 'put',
   tags: ['accounts'],
-  path: '/accounts/:name/freeze',
+  path: '/v0/accounts/:name/freeze',
   security: [
     {
       bearer: [],
@@ -278,7 +278,7 @@ export const FreezeAccountRoute = createRoute({
 export const UnFreezeAccountRoute = createRoute({
   method: 'delete',
   tags: ['accounts'],
-  path: '/accounts/:name/freeze',
+  path: '/v0/accounts/:name/freeze',
   security: [
     {
       bearer: [],
@@ -339,7 +339,7 @@ export const UnFreezeAccountRoute = createRoute({
 export const ResendVerificationEmailRoute = createRoute({
   method: 'post',
   tags: ['accounts'],
-  path: '/accounts/:name/resend_verify_email',
+  path: '/v0/accounts/:name/resend_verify_email',
   request: {
     params: z.object({
       name: z.string().min(3).max(64).openapi({
@@ -412,7 +412,7 @@ export const ResendVerificationEmailRoute = createRoute({
 export const VerifyEmailRoute = createRoute({
   method: 'post',
   tags: ['accounts'],
-  path: '/accounts/:name/verify_email',
+  path: '/v0/accounts/:name/verify_email',
   request: {
     params: z.object({
       name: z.string().min(3).max(64).openapi({
@@ -473,7 +473,7 @@ export const VerifyEmailRoute = createRoute({
 export const LoginRoute = createRoute({
   method: 'post',
   tags: ['accounts'],
-  path: '/login',
+  path: '/v0/login',
   request: {
     body: {
       content: {
@@ -534,7 +534,7 @@ export const LoginRoute = createRoute({
 export const RefreshRoute = createRoute({
   method: 'post',
   tags: ['accounts'],
-  path: '/refresh',
+  path: '/v0/refresh',
   request: {
     headers: z.object({
       Authorization: z.string().openapi({
@@ -578,7 +578,7 @@ export const RefreshRoute = createRoute({
 export const GetAccountRoute = createRoute({
   method: 'get',
   tags: ['accounts'],
-  path: '/accounts/:identifier',
+  path: '/v0/accounts/:identifier',
   request: {
     params: z.object({
       identifier: z
@@ -635,7 +635,7 @@ export const GetAccountRoute = createRoute({
 export const SilenceAccountRoute = createRoute({
   method: 'put',
   tags: ['accounts'],
-  path: '/accounts/:name/silence',
+  path: '/v0/accounts/:name/silence',
   security: [
     {
       bearer: [],
@@ -704,7 +704,7 @@ export const SilenceAccountRoute = createRoute({
 export const UnSilenceAccountRoute = createRoute({
   method: 'delete',
   tags: ['accounts'],
-  path: '/accounts/:name/silence',
+  path: '/v0/accounts/:name/silence',
   security: [
     {
       bearer: [],
@@ -773,7 +773,7 @@ export const UnSilenceAccountRoute = createRoute({
 export const FollowAccountRoute = createRoute({
   method: 'post',
   tags: ['accounts'],
-  path: '/accounts/:name/follow',
+  path: '/v0/accounts/:name/follow',
   security: [
     {
       bearer: [],
@@ -842,7 +842,7 @@ export const FollowAccountRoute = createRoute({
 export const UnFollowAccountRoute = createRoute({
   method: 'delete',
   tags: ['accounts'],
-  path: '/accounts/:name/follow',
+  path: '/v0/accounts/:name/follow',
   security: [
     {
       bearer: [],
@@ -911,7 +911,7 @@ export const UnFollowAccountRoute = createRoute({
 export const GetAccountFollowingRoute = createRoute({
   method: 'get',
   tags: ['accounts'],
-  path: '/accounts/:id/following',
+  path: '/v0/accounts/:id/following',
   request: {
     params: z.object({
       id: z.string().min(3).max(64).openapi({
@@ -957,7 +957,7 @@ export const GetAccountFollowingRoute = createRoute({
 export const GetAccountFollowerRoute = createRoute({
   method: 'get',
   tags: ['accounts'],
-  path: '/accounts/:id/follower',
+  path: '/v0/accounts/:id/follower',
   request: {
     params: z.object({
       id: z.string().min(3).max(64).openapi({
@@ -1004,7 +1004,7 @@ export const GetAccountFollowerRoute = createRoute({
 export const SetAccountAvatarRoute = createRoute({
   method: 'post',
   tags: ['accounts'],
-  path: '/accounts/:name/avatar',
+  path: '/v0/accounts/:name/avatar',
   security: [
     {
       bearer: [],
@@ -1072,7 +1072,7 @@ export const SetAccountAvatarRoute = createRoute({
 export const UnsetAccountAvatarRoute = createRoute({
   method: 'delete',
   tags: ['accounts'],
-  path: '/accounts/:name/avatar',
+  path: '/v0/accounts/:name/avatar',
   security: [
     {
       bearer: [],
@@ -1133,7 +1133,7 @@ export const UnsetAccountAvatarRoute = createRoute({
 export const SetAccountHeaderRoute = createRoute({
   method: 'post',
   tags: ['accounts'],
-  path: '/accounts/:name/header',
+  path: '/v0/accounts/:name/header',
   security: [
     {
       bearer: [],
@@ -1201,7 +1201,7 @@ export const SetAccountHeaderRoute = createRoute({
 export const UnsetAccountHeaderRoute = createRoute({
   method: 'delete',
   tags: ['accounts'],
-  path: '/accounts/:name/head',
+  path: '/v0/accounts/:name/head',
   security: [
     {
       bearer: [],
