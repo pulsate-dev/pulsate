@@ -1,6 +1,7 @@
 import { Ether, type Result } from '@mikuroxina/mini-fn';
 
 import type { AccountID } from '../../accounts/model/account.js';
+import type { Bookmark } from '../../notes/model/bookmark.js';
 import type { Note, NoteID } from '../../notes/model/note.js';
 import type { List, ListID } from './list.js';
 
@@ -135,3 +136,14 @@ export interface ListRepository {
   edit(list: List): Promise<Result.Result<Error, void>>;
 }
 export const listRepoSymbol = Ether.newEtherSymbol<ListRepository>();
+
+export type BookmarkTimelineFilter = Omit<FetchAccountTimelineFilter, 'id'>;
+
+export interface BookmarkTimelineRepository {
+  findByAccountID(
+    id: AccountID,
+    filter: BookmarkTimelineFilter,
+  ): Promise<Result.Result<Error, Bookmark[]>>;
+}
+export const bookmarkTimelineRepoSymbol =
+  Ether.newEtherSymbol<BookmarkTimelineRepository>();
