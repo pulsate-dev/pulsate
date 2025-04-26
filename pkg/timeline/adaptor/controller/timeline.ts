@@ -500,7 +500,6 @@ export class TimelineController {
   ): Promise<
     Result.Result<Error, z.infer<typeof GetAccountTimelineResponseSchema>>
   > {
-    // ToDo: 戻り値の型を定義しておく(多分そこまで複雑なことをする必要はないはず)
     const res =
       await this.fetchBookmarkTimelineService.fetchBookmarkByAccountID(
         accountID as AccountID,
