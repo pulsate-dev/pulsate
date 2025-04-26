@@ -7,7 +7,7 @@
   },
   "servers": [
     {
-      "url": "http://localhost:3000",
+      "url": "http://localhost:3000/",
       "description": "Local server"
     }
   ],
@@ -888,7 +888,7 @@
     "parameters": {}
   },
   "paths": {
-    "/accounts": {
+    "/v0/accounts": {
       "post": {
         "tags": [
           "accounts"
@@ -1003,7 +1003,7 @@
         }
       }
     },
-    "/accounts/:name": {
+    "/v0/accounts/:name": {
       "patch": {
         "tags": [
           "accounts"
@@ -1150,7 +1150,7 @@
         }
       }
     },
-    "/accounts/:name/freeze": {
+    "/v0/accounts/:name/freeze": {
       "put": {
         "tags": [
           "accounts"
@@ -1345,7 +1345,7 @@
         }
       }
     },
-    "/accounts/:name/verify_email": {
+    "/v0/accounts/:name/verify_email": {
       "post": {
         "tags": [
           "accounts"
@@ -1436,7 +1436,7 @@
         }
       }
     },
-    "/accounts/:identifier": {
+    "/v0/accounts/:identifier": {
       "get": {
         "tags": [
           "accounts"
@@ -1511,7 +1511,7 @@
         }
       }
     },
-    "/login": {
+    "/v0/login": {
       "post": {
         "tags": [
           "accounts"
@@ -1595,7 +1595,7 @@
         }
       }
     },
-    "/refresh": {
+    "/v0/refresh": {
       "post": {
         "tags": [
           "accounts"
@@ -1670,7 +1670,7 @@
         }
       }
     },
-    "/accounts/:name/silence": {
+    "/v0/accounts/:name/silence": {
       "put": {
         "tags": [
           "accounts"
@@ -1856,7 +1856,7 @@
         }
       }
     },
-    "/accounts/:name/follow": {
+    "/v0/accounts/:name/follow": {
       "post": {
         "tags": [
           "accounts"
@@ -2053,7 +2053,7 @@
         }
       }
     },
-    "/accounts/:name/resend_verify_email": {
+    "/v0/accounts/:name/resend_verify_email": {
       "post": {
         "tags": [
           "accounts"
@@ -2167,7 +2167,7 @@
         }
       }
     },
-    "/accounts/:id/following": {
+    "/v0/accounts/:id/following": {
       "get": {
         "tags": [
           "accounts"
@@ -2233,7 +2233,7 @@
         }
       }
     },
-    "/accounts/:id/follower": {
+    "/v0/accounts/:id/follower": {
       "get": {
         "tags": [
           "accounts"
@@ -2299,7 +2299,7 @@
         }
       }
     },
-    "/accounts/:name/avatar": {
+    "/v0/accounts/:name/avatar": {
       "post": {
         "tags": [
           "accounts"
@@ -2501,7 +2501,7 @@
         }
       }
     },
-    "/accounts/:name/header": {
+    "/v0/accounts/:name/header": {
       "post": {
         "tags": [
           "accounts"
@@ -2618,7 +2618,7 @@
         }
       }
     },
-    "/accounts/:name/head": {
+    "/v0/accounts/:name/head": {
       "delete": {
         "tags": [
           "accounts"
@@ -2705,7 +2705,7 @@
         }
       }
     },
-    "/notes": {
+    "/v0/notes": {
       "post": {
         "tags": [
           "notes"
@@ -3022,7 +3022,7 @@
         }
       }
     },
-    "/notes/:id": {
+    "/v0/notes/:id": {
       "get": {
         "tags": [
           "notes"
@@ -3277,7 +3277,7 @@
         }
       }
     },
-    "/notes/:id/renote": {
+    "/v0/notes/:id/renote": {
       "post": {
         "tags": [
           "notes"
@@ -3620,7 +3620,7 @@
         }
       }
     },
-    "/notes/:id/reaction": {
+    "/v0/notes/:id/reaction": {
       "post": {
         "tags": [
           "reaction"
@@ -3929,7 +3929,7 @@
         }
       }
     },
-    "/notes/:id/bookmark": {
+    "/v0/notes/:id/bookmark": {
       "post": {
         "tags": [
           "bookmark"
@@ -4185,7 +4185,7 @@
         }
       }
     },
-    "/drive": {
+    "/v0/drive": {
       "get": {
         "tags": [
           "drive"
@@ -4313,7 +4313,7 @@
         }
       }
     },
-    "/timeline/home": {
+    "/v0/timeline/home": {
       "get": {
         "tags": [
           "timeline"
@@ -4590,7 +4590,7 @@
         }
       }
     },
-    "/timeline/accounts/:id": {
+    "/v0/timeline/accounts/:id": {
       "get": {
         "tags": [
           "timeline"
@@ -4736,7 +4736,7 @@
         }
       }
     },
-    "/lists/:id/notes": {
+    "/v0/lists/:id/notes": {
       "get": {
         "tags": [
           "timeline"
@@ -4859,7 +4859,7 @@
         }
       }
     },
-    "/lists": {
+    "/v0/lists": {
       "post": {
         "tags": [
           "timeline"
@@ -5009,7 +5009,7 @@
         }
       }
     },
-    "/lists/:id": {
+    "/v0/lists/:id": {
       "patch": {
         "tags": [
           "timeline"
@@ -5198,7 +5198,7 @@
         }
       }
     },
-    "/lists/:id/members": {
+    "/v0/lists/:id/members": {
       "get": {
         "tags": [
           "timeline"
