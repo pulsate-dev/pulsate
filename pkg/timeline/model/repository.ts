@@ -1,7 +1,6 @@
 import { Ether, type Result } from '@mikuroxina/mini-fn';
 
 import type { AccountID } from '../../accounts/model/account.js';
-import type { Bookmark } from '../../notes/model/bookmark.js';
 import type { Note, NoteID } from '../../notes/model/note.js';
 import type { List, ListID } from './list.js';
 
@@ -143,7 +142,7 @@ export interface BookmarkTimelineRepository {
   findByAccountID(
     id: AccountID,
     filter: BookmarkTimelineFilter,
-  ): Promise<Result.Result<Error, Bookmark[]>>;
+  ): Promise<Result.Result<Error, NoteID[]>>;
 }
 export const bookmarkTimelineRepoSymbol =
   Ether.newEtherSymbol<BookmarkTimelineRepository>();

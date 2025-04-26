@@ -267,7 +267,7 @@ export class InMemoryBookmarkTimelineRepository
   async findByAccountID(
     id: AccountID,
     filter: BookmarkTimelineFilter,
-  ): Promise<Result.Result<Error, Bookmark[]>> {
+  ): Promise<Result.Result<Error, NoteID[]>> {
     if (filter.afterID && filter.beforeId) {
       return Result.err(
         new TimelineInvalidFilterRangeError(
@@ -293,7 +293,7 @@ export class InMemoryBookmarkTimelineRepository
         accountNotes
           .slice(afterIndex)
           .reverse()
-          .map((v) => v[1]),
+          .map((v) => v[1].getNoteID()),
       );
     }
 
@@ -302,10 +302,12 @@ export class InMemoryBookmarkTimelineRepository
         (bookmark) => bookmark[1].getNoteID() === filter.beforeId,
       );
 
-      return Result.ok(accountNotes.slice(beforeIndex + 1).map((v) => v[1]));
+      return Result.ok(
+        accountNotes.slice(beforeIndex + 1).map((v) => v[1].getNoteID()),
+      );
     }
 
-    return Result.ok(accountNotes.slice(0, 20).map((v) => v[1]));
+    return Result.ok(accountNotes.slice(0, 20).map((v) => v[1].getNoteID()));
   }
 }
 export const inMemoryBookmarkTimelineRepo = (data?: Bookmark[]) =>

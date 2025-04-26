@@ -3,7 +3,6 @@ import { Prisma, type PrismaClient } from '@prisma/client';
 
 import type { AccountID } from '../../../accounts/model/account.js';
 import type { prismaClient } from '../../../adaptors/prisma.js';
-import { Bookmark } from '../../../notes/model/bookmark.js';
 import {
   Note,
   type NoteID,
@@ -412,19 +411,14 @@ export class PrismaBookmarkTimelinRepository
   private readonly TIMELINE_NOTE_LIMIT = 20;
   constructor(private readonly prisma: PrismaClient) {}
 
-  private deserialize(data: DeserializeBookmarkArgs): Bookmark[] {
-    return data.map((v) =>
-      Bookmark.new({
-        noteID: v.noteId as NoteID,
-        accountID: v.accountId as AccountID,
-      }),
-    );
+  private deserialize(data: DeserializeBookmarkArgs): NoteID[] {
+    return data.map((v) => v.noteId as NoteID);
   }
 
   async findByAccountID(
     id: AccountID,
     filter: BookmarkTimelineFilter,
-  ): Promise<Result.Result<Error, Bookmark[]>> {
+  ): Promise<Result.Result<Error, NoteID[]>> {
     if (filter.afterID && filter.beforeId) {
       return Result.err(
         new TimelineInvalidFilterRangeError(

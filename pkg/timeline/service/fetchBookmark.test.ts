@@ -41,7 +41,10 @@ describe('FetchBookmarkService', () => {
     });
 
     expect(Result.isOk(res)).toBe(true);
-    expect(Result.unwrap(res)).toStrictEqual([bookmarks[1], bookmarks[0]]);
+    expect(Result.unwrap(res)).toStrictEqual([
+      bookmarks[1]?.getNoteID(),
+      bookmarks[0]?.getNoteID(),
+    ]);
     expect(res).toHaveLength(2);
   });
 
@@ -53,7 +56,10 @@ describe('FetchBookmarkService', () => {
     });
 
     expect(Result.isOk(res)).toBe(true);
-    expect(Result.unwrap(res)).toStrictEqual([bookmarks[3], bookmarks[2]]);
+    expect(Result.unwrap(res)).toStrictEqual([
+      bookmarks[3]?.getNoteID(),
+      bookmarks[2]?.getNoteID(),
+    ]);
     expect(res).toHaveLength(2);
   });
 });

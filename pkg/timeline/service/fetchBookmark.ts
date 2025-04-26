@@ -1,7 +1,7 @@
 import { Ether, type Result } from '@mikuroxina/mini-fn';
 
 import type { AccountID } from '../../accounts/model/account.js';
-import type { Bookmark } from '../../notes/model/bookmark.js';
+import type { NoteID } from '../../notes/model/note.js';
 import {
   type BookmarkTimelineFilter,
   type BookmarkTimelineRepository,
@@ -16,7 +16,7 @@ export class FetchBookmarkService {
   async fetchBookmarkByAccountID(
     accountID: AccountID,
     filter: BookmarkTimelineFilter,
-  ): Promise<Result.Result<Error, Bookmark[]>> {
+  ): Promise<Result.Result<Error, NoteID[]>> {
     const bookmarks = await this.bookmarkRepository.findByAccountID(
       accountID,
       filter,
