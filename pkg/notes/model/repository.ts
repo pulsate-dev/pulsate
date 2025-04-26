@@ -35,7 +35,6 @@ export interface BookmarkRepository {
     noteID: NoteID;
     accountID: AccountID;
   }): Promise<Option.Option<Bookmark>>;
-  findByAccountID(id: AccountID): Promise<Option.Option<Bookmark[]>>;
   deleteByID(id: {
     noteID: NoteID;
     accountID: AccountID;

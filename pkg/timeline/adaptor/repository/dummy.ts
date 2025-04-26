@@ -2,6 +2,7 @@ import { Ether, Result } from '@mikuroxina/mini-fn';
 
 import type { AccountID } from '../../../accounts/model/account.js';
 import { AccountNotFoundError } from '../../../accounts/model/errors.js';
+import type { Bookmark } from '../../../notes/model/bookmark.js';
 import type { Note, NoteID } from '../../../notes/model/note.js';
 import {
   ListInternalError,
@@ -10,9 +11,12 @@ import {
 } from '../../model/errors.js';
 import type { List, ListID } from '../../model/list.js';
 import {
+  type BookmarkTimelineFilter,
+  type BookmarkTimelineRepository,
   type FetchAccountTimelineFilter,
   type ListRepository,
   type TimelineRepository,
+  bookmarkTimelineRepoSymbol,
   listRepoSymbol,
   timelineRepoSymbol,
 } from '../../model/repository.js';
@@ -248,3 +252,66 @@ export class InMemoryListRepository implements ListRepository {
 }
 export const inMemoryListRepo = (data?: List[], notes?: Note[]) =>
   Ether.newEther(listRepoSymbol, () => new InMemoryListRepository(data, notes));
+
+export class InMemoryBookmarkTimelineRepository
+  implements BookmarkTimelineRepository
+{
+  private data: Map<`${AccountID}_${NoteID}`, Bookmark>;
+
+  constructor(data: readonly Bookmark[] = []) {
+    this.data = new Map(
+      data.map((v) => [`${v.getAccountID()}_${v.getNoteID()}`, v]),
+    );
+  }
+
+  async findByAccountID(
+    id: AccountID,
+    filter: BookmarkTimelineFilter,
+  ): Promise<Result.Result<Error, NoteID[]>> {
+    if (filter.afterID && filter.beforeId) {
+      return Result.err(
+        new TimelineInvalidFilterRangeError(
+          'beforeID and afterID cannot be specified at the same time',
+          { cause: null },
+        ),
+      );
+    }
+
+    const accountNotes = [...this.data].filter(
+      ([_, note]) => note.getAccountID() === id,
+    );
+
+    // NOTE: sort by NoteID
+    accountNotes.sort((a, b) => (b[1].getNoteID() > a[1].getNoteID() ? 1 : -1));
+
+    if (filter.afterID) {
+      const afterIndex = accountNotes
+        .reverse()
+        .findIndex((bookmark) => bookmark[1].getNoteID() === filter.afterID);
+
+      return Result.ok(
+        accountNotes
+          .slice(afterIndex)
+          .reverse()
+          .map((v) => v[1].getNoteID()),
+      );
+    }
+
+    if (filter.beforeId) {
+      const beforeIndex = accountNotes.findIndex(
+        (bookmark) => bookmark[1].getNoteID() === filter.beforeId,
+      );
+
+      return Result.ok(
+        accountNotes.slice(beforeIndex + 1).map((v) => v[1].getNoteID()),
+      );
+    }
+
+    return Result.ok(accountNotes.slice(0, 20).map((v) => v[1].getNoteID()));
+  }
+}
+export const inMemoryBookmarkTimelineRepo = (data?: Bookmark[]) =>
+  Ether.newEther(
+    bookmarkTimelineRepoSymbol,
+    () => new InMemoryBookmarkTimelineRepository(data),
+  );

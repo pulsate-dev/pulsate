@@ -135,3 +135,14 @@ export interface ListRepository {
   edit(list: List): Promise<Result.Result<Error, void>>;
 }
 export const listRepoSymbol = Ether.newEtherSymbol<ListRepository>();
+
+export type BookmarkTimelineFilter = Omit<FetchAccountTimelineFilter, 'id'>;
+
+export interface BookmarkTimelineRepository {
+  findByAccountID(
+    id: AccountID,
+    filter: BookmarkTimelineFilter,
+  ): Promise<Result.Result<Error, NoteID[]>>;
+}
+export const bookmarkTimelineRepoSymbol =
+  Ether.newEtherSymbol<BookmarkTimelineRepository>();

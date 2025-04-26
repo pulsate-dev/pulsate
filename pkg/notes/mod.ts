@@ -57,7 +57,6 @@ import { createReactionService } from './service/createReaction.js';
 import { deleteBookmarkService } from './service/deleteBookmark.js';
 import { deleteReaction } from './service/deleteReaction.js';
 import { fetch } from './service/fetch.js';
-import { fetchBookmarkService } from './service/fetchBookmark.js';
 import { renote } from './service/renote.js';
 
 const isProduction = process.env.NODE_ENV === 'production';
@@ -126,12 +125,8 @@ const createBookmarkServiceObj = Ether.runEther(
     .feed(Ether.compose(noteRepository))
     .feed(Ether.compose(bookmarkRepository)).value,
 );
-const fetchBookmarkServiceObj = Ether.runEther(
-  Cat.cat(fetchBookmarkService).feed(Ether.compose(bookmarkRepository)).value,
-);
 const bookmarkController = new BookmarkController(
   createBookmarkServiceObj,
-  fetchBookmarkServiceObj,
   Ether.runEther(
     Cat.cat(deleteBookmarkService).feed(Ether.compose(bookmarkRepository))
       .value,

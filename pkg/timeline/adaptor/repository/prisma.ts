@@ -15,6 +15,8 @@ import {
 } from '../../model/errors.js';
 import { List, type ListID } from '../../model/list.js';
 import {
+  type BookmarkTimelineFilter,
+  type BookmarkTimelineRepository,
   type FetchAccountTimelineFilter,
   type ListRepository,
   type TimelineRepository,
@@ -398,3 +400,67 @@ export class PrismaListRepository implements ListRepository {
 }
 export const prismaListRepo = (client: PrismaClient) =>
   Ether.newEther(listRepoSymbol, () => new PrismaListRepository(client));
+
+type DeserializeBookmarkArgs = Prisma.PromiseReturnType<
+  typeof prismaClient.bookmark.findMany
+>;
+
+export class PrismaBookmarkTimelinRepository
+  implements BookmarkTimelineRepository
+{
+  private readonly TIMELINE_NOTE_LIMIT = 20;
+  constructor(private readonly prisma: PrismaClient) {}
+
+  private deserialize(data: DeserializeBookmarkArgs): NoteID[] {
+    return data.map((v) => v.noteId as NoteID);
+  }
+
+  async findByAccountID(
+    id: AccountID,
+    filter: BookmarkTimelineFilter,
+  ): Promise<Result.Result<Error, NoteID[]>> {
+    if (filter.afterID && filter.beforeId) {
+      return Result.err(
+        new TimelineInvalidFilterRangeError(
+          'beforeID and afterID cannot be specified at the same time',
+          { cause: null },
+        ),
+      );
+    }
+
+    const bookmarks = await this.prisma.bookmark.findMany({
+      where: {
+        accountId: id,
+      },
+      orderBy: {
+        createdAt: filter.afterID ? 'asc' : 'desc',
+      },
+      ...(filter.beforeId
+        ? {
+            cursor: {
+              noteId_accountId: {
+                noteId: filter.beforeId,
+                accountId: id,
+              },
+            },
+            // NOTE: Not include specified record
+            skip: 1,
+          }
+        : {}),
+      ...(filter.afterID
+        ? {
+            cursor: {
+              noteId_accountId: {
+                noteId: filter.afterID,
+                accountId: id,
+              },
+            },
+            skip: 1,
+          }
+        : {}),
+      take: this.TIMELINE_NOTE_LIMIT,
+    });
+
+    return Result.ok(this.deserialize(bookmarks));
+  }
+}
