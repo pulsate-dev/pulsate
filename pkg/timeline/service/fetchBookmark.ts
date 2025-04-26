@@ -1,36 +1,42 @@
 import { Ether, type Result } from '@mikuroxina/mini-fn';
 
 import type { AccountID } from '../../accounts/model/account.js';
-import type { NoteID } from '../../notes/model/note.js';
+import type { Note, NoteID } from '../../notes/model/note.js';
 import {
   type BookmarkTimelineFilter,
   type BookmarkTimelineRepository,
+  type TimelineRepository,
   bookmarkTimelineRepoSymbol,
+  timelineRepoSymbol,
 } from '../model/repository.js';
 
 export class FetchBookmarkService {
   constructor(
     private readonly bookmarkRepository: BookmarkTimelineRepository,
+    private readonly timelineRepository: TimelineRepository,
   ) {}
 
   async fetchBookmarkByAccountID(
     accountID: AccountID,
     filter: BookmarkTimelineFilter,
   ): Promise<Result.Result<Error, NoteID[]>> {
-    const bookmarks = await this.bookmarkRepository.findByAccountID(
-      accountID,
-      filter,
-    );
+    return await this.bookmarkRepository.findByAccountID(accountID, filter);
+  }
 
-    return bookmarks;
+  async fetchBookmarkNotes(
+    noteIDs: NoteID[],
+  ): Promise<Result.Result<Error, Note[]>> {
+    return await this.timelineRepository.getHomeTimeline(noteIDs);
   }
 }
 export const fetchBookmarkServiceSymbol =
   Ether.newEtherSymbol<FetchBookmarkService>();
-export const fetchBookmarkService = Ether.newEther(
+export const fetchBookmark = Ether.newEther(
   fetchBookmarkServiceSymbol,
-  ({ bookmarkRepository }) => new FetchBookmarkService(bookmarkRepository),
+  ({ bookmarkRepository, timelineRepository }) =>
+    new FetchBookmarkService(bookmarkRepository, timelineRepository),
   {
     bookmarkRepository: bookmarkTimelineRepoSymbol,
+    timelineRepository: timelineRepoSymbol,
   },
 );

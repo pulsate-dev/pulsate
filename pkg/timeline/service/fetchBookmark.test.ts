@@ -4,7 +4,10 @@ import { describe, expect, it } from 'vitest';
 import type { AccountID } from '../../accounts/model/account.js';
 import { Bookmark } from '../../notes/model/bookmark.js';
 import type { NoteID } from '../../notes/model/note.js';
-import { InMemoryBookmarkTimelineRepository } from '../adaptor/repository/dummy.js';
+import {
+  InMemoryBookmarkTimelineRepository,
+  InMemoryTimelineRepository,
+} from '../adaptor/repository/dummy.js';
 import { FetchBookmarkService } from './fetchBookmark.js';
 
 const bookmarks = [
@@ -32,9 +35,10 @@ const bookmarks = [
 
 describe('FetchBookmarkService', () => {
   const repo = new InMemoryBookmarkTimelineRepository(bookmarks);
-  const service = new FetchBookmarkService(repo);
+  const timelineRepo = new InMemoryTimelineRepository();
+  const service = new FetchBookmarkService(repo, timelineRepo);
 
-  it('should fetch bookmarks by accoutID', async () => {
+  it('should fetch bookmarks by accountID', async () => {
     const res = await service.fetchBookmarkByAccountID('10' as AccountID, {
       hasAttachment: false,
       noNsfw: false,

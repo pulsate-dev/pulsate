@@ -13,6 +13,7 @@ import type { AppendListMemberService } from '../../service/appendMember.js';
 import type { CreateListService } from '../../service/createList.js';
 import type { DeleteListService } from '../../service/deleteList.js';
 import type { EditListService } from '../../service/editList.js';
+import type { FetchBookmarkService } from '../../service/fetchBookmark.js';
 import type { FetchListService } from '../../service/fetchList.js';
 import type { FetchListMemberService } from '../../service/fetchMember.js';
 import type { HomeTimelineService } from '../../service/home.js';
@@ -42,6 +43,7 @@ export class TimelineController {
   private readonly homeTimeline: HomeTimelineService;
   private readonly appendListMemberService: AppendListMemberService;
   private readonly removeListMemberService: RemoveListMemberService;
+  private readonly fetchBookmarkTimelineService: FetchBookmarkService;
 
   constructor(args: {
     accountTimelineService: AccountTimelineService;
@@ -56,6 +58,7 @@ export class TimelineController {
     homeTimeline: HomeTimelineService;
     appendListMemberService: AppendListMemberService;
     removeListMemberService: RemoveListMemberService;
+    fetchBookmarkTimelineService: FetchBookmarkService;
   }) {
     this.accountTimelineService = args.accountTimelineService;
     this.accountModule = args.accountModule;
@@ -69,6 +72,7 @@ export class TimelineController {
     this.homeTimeline = args.homeTimeline;
     this.appendListMemberService = args.appendListMemberService;
     this.removeListMemberService = args.removeListMemberService;
+    this.fetchBookmarkTimelineService = args.fetchBookmarkTimelineService;
   }
 
   private async getNoteAdditionalData(notes: readonly Note[]): Promise<
@@ -485,5 +489,77 @@ export class TimelineController {
       memberID as AccountID,
       actorID as AccountID,
     );
+  }
+
+  async getBookmarkTimeline(
+    accountID: string,
+    hasAttachment: boolean,
+    noNsfw: boolean,
+    beforeId?: string,
+    afterId?: string,
+  ): Promise<
+    Result.Result<Error, z.infer<typeof GetAccountTimelineResponseSchema>>
+  > {
+    // ToDo: 戻り値の型を定義しておく(多分そこまで複雑なことをする必要はないはず)
+    const res =
+      await this.fetchBookmarkTimelineService.fetchBookmarkByAccountID(
+        accountID as AccountID,
+        {
+          hasAttachment,
+          noNsfw,
+          beforeId: beforeId as NoteID,
+          afterID: afterId as NoteID,
+        },
+      );
+    if (Result.isErr(res)) {
+      return res;
+    }
+
+    const noteIDs = Result.unwrap(res);
+
+    const notesRes =
+      await this.fetchBookmarkTimelineService.fetchBookmarkNotes(noteIDs);
+    if (Result.isErr(notesRes)) {
+      return notesRes;
+    }
+
+    const noteAdditionalDataRes = await this.getNoteAdditionalData(
+      Result.unwrap(notesRes),
+    );
+    const noteAdditionalData = Result.unwrap(noteAdditionalDataRes);
+
+    const result = noteAdditionalData.map((v) => ({
+      id: v.note.getID(),
+      content: v.note.getContent(),
+      contents_warning_comment: v.note.getCwComment(),
+      visibility: v.note.getVisibility(),
+      created_at: v.note.getCreatedAt().toUTCString(),
+      reactions: v.reactions.map((reaction) => ({
+        emoji: reaction.getEmoji(),
+        reacted_by: reaction.getAccountID(),
+      })),
+      attachment_files: v.attachments.map((file) => ({
+        id: file.getId(),
+        name: file.getName(),
+        author_id: file.getAuthorId(),
+        hash: file.getHash(),
+        mime: file.getMime(),
+        nsfw: file.isNsfw(),
+        url: file.getUrl(),
+        thumbnail: file.getThumbnailUrl(),
+      })),
+      author: {
+        id: v.author.getID(),
+        name: v.author.getName(),
+        display_name: v.author.getNickname(),
+        bio: v.author.getBio(),
+        avatar: v.avatar,
+        header: v.header,
+        followed_count: v.followCount.followed,
+        following_count: v.followCount.following,
+      },
+    }));
+
+    return Result.ok(result);
   }
 }
