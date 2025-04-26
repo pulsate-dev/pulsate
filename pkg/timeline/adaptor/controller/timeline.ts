@@ -526,6 +526,9 @@ export class TimelineController {
     const noteAdditionalDataRes = await this.getNoteAdditionalData(
       Result.unwrap(notesRes),
     );
+    if (Result.isErr(noteAdditionalDataRes)) {
+      return noteAdditionalDataRes;
+    }
     const noteAdditionalData = Result.unwrap(noteAdditionalDataRes);
 
     const result = noteAdditionalData.map((v) => ({
