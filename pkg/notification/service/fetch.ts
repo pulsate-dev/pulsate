@@ -26,7 +26,7 @@ export class FetchNotificationService {
       return Result.err(new Error('not allowed'));
     }
 
-    return Result.ok(Result.unwrap(res));
+    return res;
   }
 
   async fetchByRecipientID(
@@ -47,7 +47,7 @@ export class FetchNotificationService {
       }
     }
 
-    return Result.ok(Result.unwrap(res));
+    return res;
   }
 
   private isAllowed(notification: Notification, actorID: AccountID): boolean {
