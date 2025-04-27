@@ -1,4 +1,5 @@
 import { Ether, type Option, type Result } from '@mikuroxina/mini-fn';
+import type { AccountID } from '../../../accounts/model/account.js';
 import type { Notification, NotificationID } from '../notificationBase.js';
 
 export interface NotificationFilter {
@@ -66,7 +67,7 @@ export interface NotificationRepository {
    * @param filter {@link NotificationFilter}
    */
   findByRecipientID(
-    recipientID: string,
+    recipientID: AccountID,
     filter: NotificationFilter,
   ): Promise<Result.Result<Error, Notification[]>>;
   /**

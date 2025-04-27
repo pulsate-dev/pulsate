@@ -263,7 +263,7 @@ export class PrismaNotificationRepository implements NotificationRepository {
     }
   }
   async findByRecipientID(
-    recipientID: string,
+    recipientID: AccountID,
     filter: NotificationFilter,
   ): Promise<Result.Result<Error, Notification[]>> {
     try {
