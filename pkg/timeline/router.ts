@@ -583,3 +583,42 @@ export const DeleteListMemberRoute = createRoute({
     },
   },
 });
+
+export const GetBookmarkTimelineRoute = createRoute({
+  method: 'get',
+  tags: ['timeline'],
+  path: '/v0/timeline/bookmarks',
+  request: {
+    query: timelineFilterQuerySchema,
+  },
+  responses: {
+    200: {
+      description: 'OK',
+      content: {
+        'application/json': {
+          schema: GetHomeTimelineResponseSchema,
+        },
+      },
+    },
+    404: {
+      description: 'Nothing left',
+      content: {
+        'application/json': {
+          schema: z.object({
+            error: NothingLeft,
+          }),
+        },
+      },
+    },
+    500: {
+      description: 'Internal error',
+      content: {
+        'application/json': {
+          schema: z.object({
+            error: TimelineInternalError,
+          }),
+        },
+      },
+    },
+  },
+});

@@ -19,11 +19,13 @@ import { noteModule } from '../intermodule/note.js';
 import { TimelineController } from './adaptor/controller/timeline.js';
 import { timelineModuleLogger } from './adaptor/logger.js';
 import {
+  inMemoryBookmarkTimelineRepo,
   inMemoryListRepo,
   inMemoryTimelineRepo,
 } from './adaptor/repository/dummy.js';
 import { inMemoryTimelineCacheRepo } from './adaptor/repository/dummyCache.js';
 import {
+  prismaBookmarkTimelineRepo,
   prismaListRepo,
   prismaTimelineRepo,
 } from './adaptor/repository/prisma.js';
@@ -44,6 +46,7 @@ import {
   EditListRoute,
   FetchListRoute,
   GetAccountTimelineRoute,
+  GetBookmarkTimelineRoute,
   GetHomeTimelineRoute,
   GetListMemberRoute,
   GetListTimelineRoute,
@@ -53,6 +56,7 @@ import { appendListMember } from './service/appendMember.js';
 import { createList } from './service/createList.js';
 import { deleteList } from './service/deleteList.js';
 import { editList } from './service/editList.js';
+import { fetchBookmark } from './service/fetchBookmark.js';
 import { fetchList } from './service/fetchList.js';
 import { fetchListMember } from './service/fetchMember.js';
 import { homeTimeline } from './service/home.js';
@@ -85,6 +89,10 @@ const noteVisibilityService = Cat.cat(noteVisibility).feed(
 const timelineCacheRepository = isProduction
   ? valkeyTimelineCacheRepo(valkeyClient())
   : inMemoryTimelineCacheRepo([]);
+
+const bookmarkTimelineRepository = isProduction
+  ? prismaBookmarkTimelineRepo(prismaClient)
+  : inMemoryBookmarkTimelineRepo();
 
 const controller = new TimelineController({
   accountTimelineService: Ether.runEther(
@@ -129,6 +137,11 @@ const controller = new TimelineController({
   ),
   removeListMemberService: Ether.runEther(
     Cat.cat(removeListMember).feed(Ether.compose(listRepository)).value,
+  ),
+  fetchBookmarkTimelineService: Ether.runEther(
+    Cat.cat(fetchBookmark)
+      .feed(Ether.compose(timelineRepository))
+      .feed(Ether.compose(bookmarkTimelineRepository)).value,
   ),
 });
 
@@ -427,4 +440,33 @@ timeline.openapi(DeleteListMemberRoute, async (c) => {
     return c.json({ error: 'INTERNAL_ERROR' as const }, 500);
   }
   return new Response(undefined, { status: 204 });
+});
+
+timeline[GetBookmarkTimelineRoute.method](
+  GetBookmarkTimelineRoute.path,
+  AuthMiddleware.handle({ forceAuthorized: true }),
+);
+timeline.openapi(GetBookmarkTimelineRoute, async (c) => {
+  const accountID = Option.unwrap(c.get('accountID'));
+  const { has_attachment, no_nsfw, before_id, after_id } = c.req.valid('query');
+  const res = await controller.getBookmarkTimeline(
+    accountID,
+    has_attachment,
+    no_nsfw,
+    before_id,
+    after_id,
+  );
+  if (Result.isErr(res)) {
+    const error = Result.unwrapErr(res);
+    timelineModuleLogger.warn(error);
+
+    if (error instanceof TimelineNoMoreNotesError) {
+      return c.json({ error: 'NOTHING_LEFT' as const }, 404);
+    }
+
+    timelineModuleLogger.error('Uncaught', error);
+    return c.json({ error: 'INTERNAL_ERROR' as const }, 500);
+  }
+
+  return c.json(res[1], 200);
 });

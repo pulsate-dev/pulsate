@@ -20,6 +20,7 @@ import {
   type FetchAccountTimelineFilter,
   type ListRepository,
   type TimelineRepository,
+  bookmarkTimelineRepoSymbol,
   listRepoSymbol,
   timelineRepoSymbol,
 } from '../../model/repository.js';
@@ -405,7 +406,7 @@ type DeserializeBookmarkArgs = Prisma.PromiseReturnType<
   typeof prismaClient.bookmark.findMany
 >;
 
-export class PrismaBookmarkTimelinRepository
+export class PrismaBookmarkTimelineRepository
   implements BookmarkTimelineRepository
 {
   private readonly TIMELINE_NOTE_LIMIT = 20;
@@ -464,3 +465,8 @@ export class PrismaBookmarkTimelinRepository
     return Result.ok(this.deserialize(bookmarks));
   }
 }
+export const prismaBookmarkTimelineRepo = (client: PrismaClient) =>
+  Ether.newEther(
+    bookmarkTimelineRepoSymbol,
+    () => new PrismaBookmarkTimelineRepository(client),
+  );
