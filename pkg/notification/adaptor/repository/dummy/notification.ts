@@ -1,4 +1,5 @@
 import { Ether, Option, Result } from '@mikuroxina/mini-fn';
+import type { AccountID } from '../../../../accounts/model/account.js';
 import type {
   Notification,
   NotificationID,
@@ -38,7 +39,7 @@ export class InMemoryNotificationRepository implements NotificationRepository {
   }
 
   async findByRecipientID(
-    recipientID: string,
+    recipientID: AccountID,
     filter: NotificationFilter,
   ): Promise<Result.Result<Error, Notification[]>> {
     const res = [...this.data.values()].filter(
