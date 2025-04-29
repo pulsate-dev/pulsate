@@ -146,3 +146,14 @@ export interface BookmarkTimelineRepository {
 }
 export const bookmarkTimelineRepoSymbol =
   Ether.newEtherSymbol<BookmarkTimelineRepository>();
+
+export interface ConversationRepository {
+  /**
+   *  @description
+   *  ダイレクト投稿を送受信したことのあるアカウント(宛先)のアカウントIDを取得します．
+   *  時系列順(新→旧)にソートされます.
+   */
+  findByAccountID(id: AccountID): Promise<Result.Result<Error, AccountID[]>>;
+}
+export const conversationRepoSymbol =
+  Ether.newEtherSymbol<ConversationRepository>();
