@@ -13,10 +13,12 @@ import type { List, ListID } from '../../model/list.js';
 import {
   type BookmarkTimelineFilter,
   type BookmarkTimelineRepository,
+  type ConversationRepository,
   type FetchAccountTimelineFilter,
   type ListRepository,
   type TimelineRepository,
   bookmarkTimelineRepoSymbol,
+  conversationRepoSymbol,
   listRepoSymbol,
   timelineRepoSymbol,
 } from '../../model/repository.js';
@@ -314,4 +316,27 @@ export const inMemoryBookmarkTimelineRepo = (data?: Bookmark[]) =>
   Ether.newEther(
     bookmarkTimelineRepoSymbol,
     () => new InMemoryBookmarkTimelineRepository(data),
+  );
+
+export class InMemoryConversationRepository implements ConversationRepository {
+  private data: Map<AccountID, AccountID[]>;
+
+  constructor(data?: Map<AccountID, AccountID[]>) {
+    this.data = data ?? new Map();
+  }
+
+  async findByAccountID(
+    id: AccountID,
+  ): Promise<Result.Result<Error, AccountID[]>> {
+    const accountIDs = this.data.get(id);
+    if (!accountIDs) {
+      return Result.err(new AccountNotFoundError('Not found', { cause: null }));
+    }
+    return Result.ok(accountIDs);
+  }
+}
+export const inMemoryConversationRepo = (data?: Map<AccountID, AccountID[]>) =>
+  Ether.newEther(
+    conversationRepoSymbol,
+    () => new InMemoryConversationRepository(data),
   );

@@ -30,7 +30,7 @@ model Account {
   followed           Following[]          @relation("followed")
   avatar             AccountAvatar[]      @relation("avatar")
   header             AccountHeader[]      @relation("header")
-  note               Note[]
+  note               Note[]               @relation("author")
   reaction           Reaction[]
   bookmark           Bookmark[]
   listMember         ListMember[]
@@ -40,6 +40,7 @@ model Account {
 
   recievedNotification Notification[] @relation("recipient")
   sentNotification     Notification[] @relation("actor")
+  conversation         Note[]         @relation("conversation")
 
   @@map("account")
 }
@@ -60,13 +61,15 @@ model Following {
 }
 
 model Note {
-  id         String  @id
-  text       String  @db.Text
-  visibility Int     @default(0)
-  author     Account @relation(fields: [authorId], references: [id])
-  authorId   String  @map("author_id")
-  renoteId   String? @map("renote_id")
-  renote     Note?   @relation("renote", fields: [renoteId], references: [id])
+  id         String   @id
+  text       String   @db.Text
+  visibility Int      @default(0)
+  author     Account  @relation("author", fields: [authorId], references: [id])
+  authorId   String   @map("author_id")
+  renoteId   String?  @map("renote_id")
+  renote     Note?    @relation("renote", fields: [renoteId], references: [id])
+  sendTo     Account? @relation("conversation", fields: [sendToId], references: [id])
+  sendToId   String?  @map("send_to_id")
 
   createdAt      DateTime         @default(now()) @map("created_at")
   deletedAt      DateTime?        @map("deleted_at")
@@ -206,6 +209,6 @@ model Notification {
   createdAt        DateTime  @map("created_at")
   readAt           DateTime? @map("read_at")
 
-  sourceID String @map("source_id")
+  sourceID   String @map("source_id")
   activityID String @map("activity_id")
 }
