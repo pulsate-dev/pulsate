@@ -91,7 +91,9 @@ export interface AccountAvatarRepository {
     mediumID: MediumID,
   ): Promise<Result.Result<Error, void>>;
   findByID(accountID: AccountID): Promise<Result.Result<Error, Medium>>;
-  findByIDs(accountIDs: AccountID[]): Promise<Result.Result<Error, Medium[]>>;
+  findByIDs(
+    accountIDs: readonly AccountID[],
+  ): Promise<Result.Result<Error, Medium[]>>;
   delete(accountID: AccountID): Promise<Result.Result<Error, void>>;
 }
 export const accountAvatarRepoSymbol =
@@ -109,7 +111,9 @@ export interface AccountHeaderRepository {
     mediumID: MediumID,
   ): Promise<Result.Result<Error, void>>;
   findByID(accountID: AccountID): Promise<Result.Result<Error, Medium>>;
-  findByIDs(accountIDs: AccountID[]): Promise<Result.Result<Error, Medium[]>>;
+  findByIDs(
+    accountIDs: readonly AccountID[],
+  ): Promise<Result.Result<Error, Medium[]>>;
   delete(accountID: AccountID): Promise<Result.Result<Error, void>>;
 }
 export const accountHeaderRepoSymbol =

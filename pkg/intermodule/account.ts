@@ -142,40 +142,44 @@ export class AccountModuleFacade {
   }
 
   async fetchAccountAvatarHeaders(
-    ids: AccountID[],
+    ids: readonly AccountID[],
   ): Promise<
     Result.Result<
       Error,
       Map<AccountID, { avatarURL: string; headerURL: string }>
     >
   > {
-    const avatarRes = await this.avatarService.fetchByAccountIDs(ids);
+    const avatarRes = await this.avatarService.fetchByAccountIDs(
+      ids as AccountID[],
+    );
     if (Result.isErr(avatarRes)) {
       return avatarRes;
     }
     const avatar = Result.unwrap(avatarRes);
 
-    const headerRes = await this.headerService.fetchByAccountIDs(ids);
+    const headerRes = await this.headerService.fetchByAccountIDs(
+      ids as AccountID[],
+    );
     if (Result.isErr(headerRes)) {
       return headerRes;
     }
     const header = Result.unwrap(headerRes);
     const res = new Map<AccountID, { avatarURL: string; headerURL: string }>();
 
-    avatar.map((v) =>
-      res.set(v.getAuthorId(), { avatarURL: v.getUrl(), headerURL: '' }),
-    );
-    header.map((v) => {
+    for (const v of avatar) {
+      res.set(v.getAuthorId(), { avatarURL: v.getUrl(), headerURL: '' });
+    }
+    for (const v of header) {
       const avatarURL = res.get(v.getAuthorId())?.avatarURL;
       if (avatarURL) {
         res.set(v.getAuthorId(), {
           avatarURL,
           headerURL: v.getUrl(),
         });
-      } else {
-        res.set(v.getAuthorId(), { avatarURL: '', headerURL: v.getUrl() });
+        continue;
       }
-    });
+      res.set(v.getAuthorId(), { avatarURL: '', headerURL: v.getUrl() });
+    }
 
     return Result.ok(res);
   }

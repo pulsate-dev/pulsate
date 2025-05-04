@@ -106,7 +106,9 @@ export class AccountAvatarService {
   async fetchByAccountIDs(
     accountIDs: AccountID[],
   ): Promise<Result.Result<Error, Medium[]>> {
-    return await this.avatarRepository.findByIDs(accountIDs);
+    return await this.avatarRepository.findByIDs(
+      accountIDs as readonly AccountID[],
+    );
   }
 
   private isAllowed(
