@@ -64,6 +64,26 @@ export class PrismaAccountHeaderRepository implements AccountHeaderRepository {
     }
   }
 
+  async findByIDs(
+    accountIDs: readonly AccountID[],
+  ): Promise<Result.Result<Error, Medium[]>> {
+    try {
+      const res = await this.prisma.accountAvatar.findMany({
+        where: {
+          accountId: {
+            in: accountIDs as AccountID[],
+          },
+        },
+        include: {
+          medium: true,
+        },
+      });
+      return Result.ok(res.map((v) => this.fromPrismaData([v])));
+    } catch (e) {
+      return Result.err(parsePrismaError(e));
+    }
+  }
+
   fromPrismaData(arg: AccountHeaderData): Medium {
     if (!arg[0]) {
       throw new AccountInternalError('Account Header parsing failed', {

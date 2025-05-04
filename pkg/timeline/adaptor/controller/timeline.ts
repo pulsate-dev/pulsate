@@ -103,20 +103,20 @@ export class TimelineController {
       accounts.map((v) => [v.getID(), v]),
     );
 
-    // [header,avatar]
-    const headerAvatarImages = new Map<AccountID, [string, string]>();
+    const headerAvatarImagesRes =
+      await this.accountModule.fetchAccountAvatarHeaders(
+        accounts.map((v) => v.getID()),
+      );
+    if (Result.isErr(headerAvatarImagesRes)) {
+      return headerAvatarImagesRes;
+    }
+    const headerAvatarImages = Result.unwrap(headerAvatarImagesRes);
+
     const followCounts = new Map<
       AccountID,
       { following: number; followers: number }
     >();
     for (const id of accountsMap.keys()) {
-      const headerRes = await this.accountModule.fetchAccountHeader(id);
-      const header = Result.unwrapOr('')(headerRes);
-
-      const avatarRes = await this.accountModule.fetchAccountAvatar(id);
-      const avatar = Result.unwrapOr('')(avatarRes);
-      headerAvatarImages.set(id, [header, avatar]);
-
       const followCountRes = await this.accountModule.fetchFollowCount(id);
       const followCount = Result.unwrapOr({ following: 0, followers: 0 })(
         followCountRes,
@@ -141,10 +141,12 @@ export class TimelineController {
           const author = accountsMap.get(note.getAuthorID())!;
           const attachments = attachmentsMap.get(note.getID()) ?? [];
           const reactions = reactionsMap.get(note.getID()) ?? [];
-          const [header, avatar] = headerAvatarImages.get(author.getID()) ?? [
-            '',
-            '',
-          ];
+          const { headerURL, avatarURL } = headerAvatarImages.get(
+            author.getID(),
+          ) ?? {
+            avatarURL: '',
+            headerURL: '',
+          };
           const followCount = followCounts.get(author.getID()) ?? {
             following: 0,
             followers: 0,
@@ -155,8 +157,8 @@ export class TimelineController {
             author,
             reactions,
             attachments,
-            header,
-            avatar,
+            avatar: avatarURL,
+            header: headerURL,
             followCount: {
               followed: followCount.followers,
               following: followCount.following,
