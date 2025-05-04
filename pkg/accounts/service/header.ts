@@ -99,6 +99,12 @@ export class AccountHeaderService {
     return await this.headerRepository.findByID(accountID);
   }
 
+  async fetchByAccountIDs(
+    accountIDs: AccountID[],
+  ): Promise<Result.Result<Error, Medium[]>> {
+    return await this.headerRepository.findByIDs(accountIDs);
+  }
+
   private isAllowed(
     action: 'set' | 'unset',
     actor: AccountID,

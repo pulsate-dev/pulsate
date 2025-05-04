@@ -67,6 +67,21 @@ export class InMemoryAccountAvatarRepository
 
     return Result.ok(this.media.get(mediumID) as Medium);
   }
+
+  async findByIDs(
+    accountIDs: AccountID[],
+  ): Promise<Result.Result<Error, Medium[]>> {
+    const media = accountIDs.map((accountID) => this.data.get(accountID));
+    if (media.some((mediumID) => !mediumID)) {
+      return Result.err(
+        new MediaNotFoundError('medium not found', { cause: null }),
+      );
+    }
+
+    return Result.ok(
+      media.map((mediumID) => this.media.get(mediumID as MediumID)) as Medium[],
+    );
+  }
 }
 export const inMemoryAccountAvatarRepo = (
   media: Medium[],

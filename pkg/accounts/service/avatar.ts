@@ -99,6 +99,16 @@ export class AccountAvatarService {
     return await this.avatarRepository.findByID(accountID);
   }
 
+  /**
+   * @description Fetch account avatar image metadata.
+   * @param accountIDs
+   */
+  async fetchByAccountIDs(
+    accountIDs: AccountID[],
+  ): Promise<Result.Result<Error, Medium[]>> {
+    return await this.avatarRepository.findByIDs(accountIDs);
+  }
+
   private isAllowed(
     action: 'set' | 'unset',
     actor: AccountID,
