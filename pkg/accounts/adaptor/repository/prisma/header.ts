@@ -65,13 +65,13 @@ export class PrismaAccountHeaderRepository implements AccountHeaderRepository {
   }
 
   async findByIDs(
-    accountIDs: AccountID[],
+    accountIDs: readonly AccountID[],
   ): Promise<Result.Result<Error, Medium[]>> {
     try {
       const res = await this.prisma.accountAvatar.findMany({
         where: {
           accountId: {
-            in: accountIDs,
+            in: accountIDs as AccountID[],
           },
         },
         include: {

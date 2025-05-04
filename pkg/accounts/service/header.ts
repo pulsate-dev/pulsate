@@ -100,7 +100,7 @@ export class AccountHeaderService {
   }
 
   async fetchByAccountIDs(
-    accountIDs: AccountID[],
+    accountIDs: readonly AccountID[],
   ): Promise<Result.Result<Error, Medium[]>> {
     return await this.headerRepository.findByIDs(accountIDs);
   }

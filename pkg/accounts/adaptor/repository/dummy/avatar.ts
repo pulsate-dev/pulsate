@@ -69,7 +69,7 @@ export class InMemoryAccountAvatarRepository
   }
 
   async findByIDs(
-    accountIDs: AccountID[],
+    accountIDs: readonly AccountID[],
   ): Promise<Result.Result<Error, Medium[]>> {
     const media = accountIDs.map((accountID) => this.data.get(accountID));
     if (media.some((mediumID) => !mediumID)) {

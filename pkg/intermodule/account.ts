@@ -149,17 +149,13 @@ export class AccountModuleFacade {
       Map<AccountID, { avatarURL: string; headerURL: string }>
     >
   > {
-    const avatarRes = await this.avatarService.fetchByAccountIDs(
-      ids as AccountID[],
-    );
+    const avatarRes = await this.avatarService.fetchByAccountIDs(ids);
     if (Result.isErr(avatarRes)) {
       return avatarRes;
     }
     const avatar = Result.unwrap(avatarRes);
 
-    const headerRes = await this.headerService.fetchByAccountIDs(
-      ids as AccountID[],
-    );
+    const headerRes = await this.headerService.fetchByAccountIDs(ids);
     if (Result.isErr(headerRes)) {
       return headerRes;
     }
