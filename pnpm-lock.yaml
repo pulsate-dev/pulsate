@@ -27,8 +27,8 @@ importers:
         specifier: ^0.8.0
         version: 0.8.8(hono@4.7.8)
       argon2:
-        specifier: ^0.41.0
-        version: 0.41.1
+        specifier: ^0.43.0
+        version: 0.43.0
       blurhash:
         specifier: ^2.0.5
         version: 2.0.5
@@ -721,8 +721,8 @@ packages:
     resolution: {integrity: sha512-bN798gFfQX+viw3R7yrGWRqnrN2oRkEkUjjl4JNn4E8GxxbjtG3FbrEIIY3l8/hrwUwIeCZvi4QuOTP4MErVug==}
     engines: {node: '>=12'}
 
-  argon2@0.41.1:
-    resolution: {integrity: sha512-dqCW8kJXke8Ik+McUcMDltrbuAWETPyU6iq+4AhxqKphWi7pChB/Zgd/Tp/o8xRLbg8ksMj46F/vph9wnxpTzQ==}
+  argon2@0.43.0:
+    resolution: {integrity: sha512-u/HKLcbWShVDhkfwI4hWyiUf3qyX8QhTfaIv2cWE18uqhXCmR5hb6Ed7oqYi2KCQegeAnRhiFzbjzm7i5yl1GA==}
     engines: {node: '>=16.17.0'}
 
   assertion-error@2.0.1:
@@ -1022,12 +1022,12 @@ packages:
     engines: {node: ^18 || >=20}
     hasBin: true
 
-  node-addon-api@8.1.0:
-    resolution: {integrity: sha512-yBY+qqWSv3dWKGODD6OGE6GnTX7Q2r+4+DfpqxHSHh8x0B4EKP9+wVGLS6U/AM1vxSNNmUEuIV5EGhYwPpfOwQ==}
+  node-addon-api@8.3.1:
+    resolution: {integrity: sha512-lytcDEdxKjGJPTLEfW4mYMigRezMlyJY8W4wxJK8zE533Jlb8L8dRuObJFWg2P+AuOIxoCgKF+2Oq4d4Zd0OUA==}
     engines: {node: ^18 || ^20 || >= 21}
 
-  node-gyp-build@4.8.2:
-    resolution: {integrity: sha512-IRUxE4BVsHWXkV/SFOut4qTlagw2aM8T5/vnTsmrHJvVoKueJHRc/JaFND7QDDc61kLYUJ6qlZM3sqTSyx2dTw==}
+  node-gyp-build@4.8.4:
+    resolution: {integrity: sha512-LA4ZjwlnUblHVgq0oBF3Jl/6h/Nvs5fzBLwdEF4nuxnFdsfajde4WfxtJr3CaiH+F6ewcIB/q4jQ4UzPyid+CQ==}
     hasBin: true
 
   openapi3-ts@4.4.0:
@@ -1783,11 +1783,11 @@ snapshots:
 
   ansi-styles@6.2.1: {}
 
-  argon2@0.41.1:
+  argon2@0.43.0:
     dependencies:
       '@phc/format': 1.0.0
-      node-addon-api: 8.1.0
-      node-gyp-build: 4.8.2
+      node-addon-api: 8.3.1
+      node-gyp-build: 4.8.4
 
   assertion-error@2.0.1: {}
 
@@ -2083,9 +2083,9 @@ snapshots:
 
   nanoid@5.1.5: {}
 
-  node-addon-api@8.1.0: {}
+  node-addon-api@8.3.1: {}
 
-  node-gyp-build@4.8.2: {}
+  node-gyp-build@4.8.4: {}
 
   openapi3-ts@4.4.0:
     dependencies:
