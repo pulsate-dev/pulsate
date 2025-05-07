@@ -14,6 +14,7 @@ import type { CreateListService } from '../../service/createList.js';
 import type { DeleteListService } from '../../service/deleteList.js';
 import type { EditListService } from '../../service/editList.js';
 import type { FetchBookmarkService } from '../../service/fetchBookmark.js';
+import type { FetchConversationService } from '../../service/fetchConversation.js';
 import type { FetchListService } from '../../service/fetchList.js';
 import type { FetchListMemberService } from '../../service/fetchMember.js';
 import type { HomeTimelineService } from '../../service/home.js';
@@ -25,6 +26,7 @@ import type {
   EditListResponseSchema,
   FetchListResponseSchema,
   GetAccountTimelineResponseSchema,
+  GetConversationsResponseSchema,
   GetHomeTimelineResponseSchema,
   GetListMemberResponseSchema,
   GetListTimelineResponseSchema,
@@ -44,6 +46,7 @@ export class TimelineController {
   private readonly appendListMemberService: AppendListMemberService;
   private readonly removeListMemberService: RemoveListMemberService;
   private readonly fetchBookmarkTimelineService: FetchBookmarkService;
+  private readonly fetchConversationService: FetchConversationService;
 
   constructor(args: {
     accountTimelineService: AccountTimelineService;
@@ -59,6 +62,7 @@ export class TimelineController {
     appendListMemberService: AppendListMemberService;
     removeListMemberService: RemoveListMemberService;
     fetchBookmarkTimelineService: FetchBookmarkService;
+    fetchConversationService: FetchConversationService;
   }) {
     this.accountTimelineService = args.accountTimelineService;
     this.accountModule = args.accountModule;
@@ -73,6 +77,7 @@ export class TimelineController {
     this.appendListMemberService = args.appendListMemberService;
     this.removeListMemberService = args.removeListMemberService;
     this.fetchBookmarkTimelineService = args.fetchBookmarkTimelineService;
+    this.fetchConversationService = args.fetchConversationService;
   }
 
   private async getNoteAdditionalData(notes: readonly Note[]): Promise<
@@ -565,5 +570,45 @@ export class TimelineController {
     }));
 
     return Result.ok(result);
+  }
+
+  async getConversations(
+    accountID: string,
+  ): Promise<
+    Result.Result<Error, z.infer<typeof GetConversationsResponseSchema>>
+  > {
+    const res = await this.fetchConversationService.fetchConversation(
+      accountID as AccountID,
+    );
+    if (Result.isErr(res)) {
+      return res;
+    }
+    const conversations = Result.unwrap(res);
+
+    const accountRes = await this.accountModule.fetchAccounts(conversations);
+    if (Result.isErr(accountRes)) {
+      return accountRes;
+    }
+    const account = Result.unwrap(accountRes);
+
+    const accountProfileImagesRes =
+      await this.accountModule.fetchAccountAvatarHeaders(conversations);
+    if (Result.isErr(accountProfileImagesRes)) {
+      return accountProfileImagesRes;
+    }
+    const accountProfileImages = Result.unwrap(accountProfileImagesRes);
+
+    return Result.ok(
+      account.map((v) => ({
+        account: {
+          id: v.getID(),
+          name: v.getName(),
+          nickname: v.getNickname(),
+          avatar: accountProfileImages.get(v.getID())?.avatarURL ?? '',
+          header: accountProfileImages.get(v.getID())?.headerURL ?? '',
+        },
+        updatedAt: new Date().toUTCString(),
+      })),
+    );
   }
 }
