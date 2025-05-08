@@ -17,10 +17,14 @@ import {
   EditListResponseSchema,
   FetchListResponseSchema,
   GetAccountTimelineResponseSchema,
+  GetConversationsResponseSchema,
   GetHomeTimelineResponseSchema,
   GetListMemberResponseSchema,
   GetListTimelineResponseSchema,
-} from './adaptor/validator/timeline.js';
+} from './adaptor/validator/timeline.js'; /* NOTE: query params must use z.string() \
+ cf. https://zenn.dev/loglass/articles/c237d89e238d42 (Japanese)\
+ cf. https://github.com/honojs/middleware/issues/200#issuecomment-1773428171 (GitHub Issue)
+*/
 
 /* NOTE: query params must use z.string() \
  cf. https://zenn.dev/loglass/articles/c237d89e238d42 (Japanese)\
@@ -607,6 +611,33 @@ export const GetBookmarkTimelineRoute = createRoute({
           schema: z.object({
             error: NothingLeft,
           }),
+        },
+      },
+    },
+    500: {
+      description: 'Internal error',
+      content: {
+        'application/json': {
+          schema: z.object({
+            error: TimelineInternalError,
+          }),
+        },
+      },
+    },
+  },
+});
+
+export const GetConversationRoute = createRoute({
+  method: 'get',
+  tags: ['timeline'],
+  path: '/v0/timeline/conversations',
+  request: {},
+  responses: {
+    200: {
+      description: 'OK',
+      content: {
+        'application/json': {
+          schema: GetConversationsResponseSchema,
         },
       },
     },

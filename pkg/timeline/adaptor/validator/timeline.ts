@@ -202,3 +202,32 @@ export const GetListMemberResponseSchema = z
     ),
   })
   .openapi('GetListMemberResponseSchema');
+
+export const GetConversationsResponseSchema = z
+  .array(
+    z.object({
+      account: z.object({
+        id: z.string().openapi({
+          example: '30984308495',
+          description: 'Assignee account ID',
+        }),
+        name: z.string().openapi({
+          example: '@john@example.com',
+          description: 'Assignee account name',
+        }),
+        nickname: z.string().openapi({
+          example: 'John Doe',
+          description: 'Assignee nickname',
+        }),
+        avatar: z.string().url().openapi({
+          example: 'https://example.com/avatar.png',
+          description: 'avatar URL',
+        }),
+      }),
+      updatedAt: z.string().datetime().openapi({
+        example: '2023-09-10T00:00:00.000Z',
+        description: 'Last message sent',
+      }),
+    }),
+  )
+  .openapi('GetListConversationsResponse');
