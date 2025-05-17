@@ -1,4 +1,4 @@
-import { Ether, type Result } from '@mikuroxina/mini-fn';
+import { Ether, Result } from '@mikuroxina/mini-fn';
 import type { AccountID } from '../../accounts/model/account.js';
 import {
   type ConversationRecipient,
@@ -11,10 +11,23 @@ export class FetchConversationService {
     private readonly conversationRepository: ConversationRepository,
   ) {}
 
+  /**
+   * @returns {@link ConversationRecipient} - The list of conversation recipients.
+   * NOTE:
+   * - return value is sorted by the {@link ConversationRecipient.lastSentAt} property (latest -> oldest).
+   * - if an account never sent/received direct notes, the return value is an empty array.
+   **/
   async fetchConversation(
     accountID: AccountID,
   ): Promise<Result.Result<Error, ConversationRecipient[]>> {
-    return await this.conversationRepository.findByAccountID(accountID);
+    const res = await this.conversationRepository.findByAccountID(accountID);
+    if (Result.isErr(res)) return res;
+
+    return Result.ok(
+      Result.unwrap(res).toSorted(
+        (a, b) => b.lastSentAt.getTime() - a.lastSentAt.getTime(),
+      ),
+    );
   }
 }
 export const fetchConversationServiceSymbol =

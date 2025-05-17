@@ -24,6 +24,14 @@ describe('FetchConversationService', () => {
       content: '',
     });
 
+  /**
+   * 1 received 2 notes from 2
+   *   1 sent 2 notes to 2
+   * 2 received 2 notes from 1
+   *   2 sent 2 notes to 1
+   *   2 sent 1 note to 4
+   * 4 received 1 note from 2
+   */
   const testMap = [
     // 1-->2
     noteFactory(
@@ -53,6 +61,13 @@ describe('FetchConversationService', () => {
       Option.some('1' as AccountID),
       new Date('2023-09-13T00:00:00Z'),
     ),
+    // 4-->2
+    noteFactory(
+      '400' as NoteID,
+      '4' as AccountID,
+      Option.some('2' as AccountID),
+      new Date('2024-01-01T00:00:00Z'),
+    ),
   ];
   const repo = new InMemoryConversationRepository(testMap);
   const service = new FetchConversationService(repo);
@@ -67,6 +82,27 @@ describe('FetchConversationService', () => {
         lastSentAt: testMap[3]?.getCreatedAt(),
         latestNoteID: testMap[3]?.getID(),
         latestNoteAuthor: testMap[3]?.getAuthorID(),
+      },
+    ]);
+  });
+
+  it('should return sorted by lastSentAt', async () => {
+    const result = await service.fetchConversation('2' as AccountID);
+
+    expect(Result.isOk(result)).toBe(true);
+    const recipients = Result.unwrap(result);
+    expect(recipients).toStrictEqual([
+      {
+        id: testMap[4]?.getAuthorID(),
+        lastSentAt: testMap[4]?.getCreatedAt(),
+        latestNoteID: testMap[4]?.getID(),
+        latestNoteAuthor: testMap[4]?.getAuthorID(),
+      },
+      {
+        id: '1' as AccountID,
+        lastSentAt: new Date('2023-09-13T00:00:00Z'),
+        latestNoteID: '201' as NoteID,
+        latestNoteAuthor: '2' as AccountID,
       },
     ]);
   });

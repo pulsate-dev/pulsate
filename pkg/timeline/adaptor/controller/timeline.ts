@@ -601,10 +601,11 @@ export class TimelineController {
       return accountProfileImagesRes;
     }
     const accountProfileImages = Result.unwrap(accountProfileImagesRes);
+    const accountsMap = new Map(account.map((v) => [v.getID(), v]));
 
     return Result.ok(
       conversations.map((v) => {
-        const recipient = account.find((a) => a.getID() === v.id);
+        const recipient = accountsMap.get(v.id);
         if (!recipient) {
           throw new Error('Account not found');
         }
