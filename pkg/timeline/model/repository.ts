@@ -147,13 +147,27 @@ export interface BookmarkTimelineRepository {
 export const bookmarkTimelineRepoSymbol =
   Ether.newEtherSymbol<BookmarkTimelineRepository>();
 
+export interface ConversationRecipient {
+  id: AccountID;
+  /**
+   * @desc Time the last message was sent
+   */
+  lastSentAt: Date;
+  latestNoteID: NoteID;
+  latestNoteAuthor: AccountID;
+}
 export interface ConversationRepository {
   /**
    *  @description
-   *  ダイレクト投稿を送受信したことのあるアカウント(宛先)のアカウントIDを取得します．
-   *  時系列順(新→旧)にソートされます.
+   *  Returns the list of {@link ConversationRecipient} that have sent and received direct notes.
+   *  The sorting order is chronological (newest to oldest).
+   *  NOTE: If the account has not sent or received any direct notes, an empty array is returned.
+   *
+   *  @returns {@link ConversationRecipient}[]
    */
-  findByAccountID(id: AccountID): Promise<Result.Result<Error, AccountID[]>>;
+  findByAccountID(
+    id: AccountID,
+  ): Promise<Result.Result<Error, ConversationRecipient[]>>;
 }
 export const conversationRepoSymbol =
   Ether.newEtherSymbol<ConversationRepository>();

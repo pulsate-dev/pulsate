@@ -1,4 +1,4 @@
-import { Ether, Result } from '@mikuroxina/mini-fn';
+import { Ether, Option, Result } from '@mikuroxina/mini-fn';
 
 import type { AccountID } from '../../../accounts/model/account.js';
 import { AccountNotFoundError } from '../../../accounts/model/errors.js';
@@ -13,6 +13,7 @@ import type { List, ListID } from '../../model/list.js';
 import {
   type BookmarkTimelineFilter,
   type BookmarkTimelineRepository,
+  type ConversationRecipient,
   type ConversationRepository,
   type FetchAccountTimelineFilter,
   type ListRepository,
@@ -319,23 +320,62 @@ export const inMemoryBookmarkTimelineRepo = (data?: Bookmark[]) =>
   );
 
 export class InMemoryConversationRepository implements ConversationRepository {
-  private data: Map<AccountID, AccountID[]>;
+  private data: Note[];
 
-  constructor(data?: Map<AccountID, AccountID[]>) {
-    this.data = data ?? new Map();
+  constructor(data?: Note[]) {
+    this.data = data ?? [];
   }
 
   async findByAccountID(
     id: AccountID,
-  ): Promise<Result.Result<Error, AccountID[]>> {
-    const accountIDs = this.data.get(id);
-    if (!accountIDs) {
-      return Result.err(new AccountNotFoundError('Not found', { cause: null }));
+  ): Promise<Result.Result<Error, ConversationRecipient[]>> {
+    const notes = this.data.filter(
+      (v) => v.getAuthorID() === id || Option.unwrap(v.getSendTo()) === id,
+    );
+
+    // K: Recipient ID/ V: Conversation Notes
+    const recipientMap = new Map<AccountID, Note[]>();
+    for (const note of notes) {
+      if (note.getAuthorID() === id) {
+        // Sent
+        if (recipientMap.has(Option.unwrap(note.getSendTo()))) {
+          const tmp = recipientMap.get(Option.unwrap(note.getSendTo()));
+          if (!tmp) throw new Error('Note not found');
+          tmp.push(note);
+          recipientMap.set(Option.unwrap(note.getSendTo()), tmp);
+          continue;
+        }
+        recipientMap.set(Option.unwrap(note.getSendTo()), [note]);
+        continue;
+      }
+      // Received
+      if (recipientMap.has(note.getAuthorID())) {
+        const tmp = recipientMap.get(note.getAuthorID());
+        if (!tmp) throw new Error('Note not found');
+        tmp.push(note);
+        recipientMap.set(note.getAuthorID(), tmp);
+        continue;
+      }
+      recipientMap.set(note.getAuthorID(), [note]);
     }
-    return Result.ok(accountIDs);
+
+    const res: ConversationRecipient[] = [...recipientMap].map(([k, v]) => {
+      const latestNote = v.toSorted(
+        (a, b) => b.getCreatedAt().getTime() - a.getCreatedAt().getTime(),
+      )[0];
+      if (!latestNote) throw new Error('Note not found');
+
+      return {
+        id: k,
+        lastSentAt: latestNote.getCreatedAt(),
+        latestNoteID: latestNote.getID(),
+        latestNoteAuthor: latestNote.getAuthorID(),
+      };
+    });
+    return Result.ok(res);
   }
 }
-export const inMemoryConversationRepo = (data?: Map<AccountID, AccountID[]>) =>
+export const inMemoryConversationRepo = (data?: Note[]) =>
   Ether.newEther(
     conversationRepoSymbol,
     () => new InMemoryConversationRepository(data),

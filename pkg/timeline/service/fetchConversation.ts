@@ -1,6 +1,7 @@
 import { Ether, type Result } from '@mikuroxina/mini-fn';
 import type { AccountID } from '../../accounts/model/account.js';
 import {
+  type ConversationRecipient,
   type ConversationRepository,
   conversationRepoSymbol,
 } from '../model/repository.js';
@@ -12,7 +13,7 @@ export class FetchConversationService {
 
   async fetchConversation(
     accountID: AccountID,
-  ): Promise<Result.Result<Error, AccountID[]>> {
+  ): Promise<Result.Result<Error, ConversationRecipient[]>> {
     return await this.conversationRepository.findByAccountID(accountID);
   }
 }

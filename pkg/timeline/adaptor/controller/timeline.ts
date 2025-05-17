@@ -585,30 +585,43 @@ export class TimelineController {
     }
     const conversations = Result.unwrap(res);
 
-    const accountRes = await this.accountModule.fetchAccounts(conversations);
+    const accountRes = await this.accountModule.fetchAccounts(
+      conversations.map((value) => value.id),
+    );
     if (Result.isErr(accountRes)) {
       return accountRes;
     }
     const account = Result.unwrap(accountRes);
 
     const accountProfileImagesRes =
-      await this.accountModule.fetchAccountAvatarHeaders(conversations);
+      await this.accountModule.fetchAccountAvatarHeaders(
+        conversations.map((value) => value.id),
+      );
     if (Result.isErr(accountProfileImagesRes)) {
       return accountProfileImagesRes;
     }
     const accountProfileImages = Result.unwrap(accountProfileImagesRes);
 
     return Result.ok(
-      account.map((v) => ({
-        account: {
-          id: v.getID(),
-          name: v.getName(),
-          nickname: v.getNickname(),
-          avatar: accountProfileImages.get(v.getID())?.avatarURL ?? '',
-          header: accountProfileImages.get(v.getID())?.headerURL ?? '',
-        },
-        updatedAt: new Date().toUTCString(),
-      })),
+      conversations.map((v) => {
+        const recipient = account.find((a) => a.getID() === v.id);
+        if (!recipient) {
+          throw new Error('Account not found');
+        }
+
+        return {
+          updatedAt: v.lastSentAt.toUTCString(),
+          account: {
+            id: recipient.getID(),
+            name: recipient.getName(),
+            nickname: recipient.getNickname(),
+            avatar:
+              accountProfileImages.get(recipient.getID())?.avatarURL ?? '',
+            header:
+              accountProfileImages.get(recipient.getID())?.headerURL ?? '',
+          },
+        };
+      }),
     );
   }
 }

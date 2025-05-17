@@ -17,6 +17,7 @@ import { List, type ListID } from '../../model/list.js';
 import {
   type BookmarkTimelineFilter,
   type BookmarkTimelineRepository,
+  type ConversationRecipient,
   type ConversationRepository,
   type FetchAccountTimelineFilter,
   type ListRepository,
@@ -478,7 +479,7 @@ export class PrismaConversationRepository implements ConversationRepository {
 
   async findByAccountID(
     accountId: AccountID,
-  ): Promise<Result.Result<Error, AccountID[]>> {
+  ): Promise<Result.Result<Error, ConversationRecipient[]>> {
     try {
       const conversations = await this.prisma.note.findMany({
         where: {
@@ -489,10 +490,19 @@ export class PrismaConversationRepository implements ConversationRepository {
         orderBy: {
           createdAt: 'desc',
         },
-        distinct: ['authorId'],
+        distinct: ['authorId', 'sendToId'],
       });
 
-      return Result.ok(conversations.map((v) => v.authorId as AccountID));
+      return Result.ok(
+        conversations.map(
+          (v): ConversationRecipient => ({
+            id: accountId,
+            latestNoteAuthor: v.authorId as AccountID,
+            latestNoteID: v.id as NoteID,
+            lastSentAt: v.createdAt,
+          }),
+        ),
+      );
     } catch (e) {
       return Result.err(
         new TimelineInternalError('unknown error', { cause: e }),
