@@ -5,7 +5,11 @@ import type { AccountID } from '../../../accounts/model/account.js';
 import { Note, type NoteID } from '../../../notes/model/note.js';
 import { TimelineInvalidFilterRangeError } from '../../model/errors.js';
 import { List, type ListID } from '../../model/list.js';
-import { InMemoryListRepository, InMemoryTimelineRepository } from './dummy.js';
+import {
+  InMemoryConversationRepository,
+  InMemoryListRepository,
+  InMemoryTimelineRepository,
+} from './dummy.js';
 
 describe('InMemoryTimelineRepository', () => {
   const dummyPublicNote = Note.new({
@@ -267,5 +271,92 @@ describe('InMemoryListRepository', () => {
       '100' as AccountID,
       '101' as AccountID,
     ]);
+  });
+});
+
+describe('InMemoryConversationRepository', () => {
+  const noteFactory = (
+    id: NoteID,
+    authorID: AccountID,
+    sendToID: Option.Option<AccountID>,
+    createdAt: Date,
+  ) =>
+    Note.new({
+      attachmentFileID: [],
+      authorID,
+      contentsWarningComment: '',
+      createdAt,
+      id,
+      originalNoteID: Option.none(),
+      sendTo: sendToID,
+      visibility: 'DIRECT',
+      content: '',
+    });
+
+  const testMap = [
+    // 1-->2
+    noteFactory(
+      '100' as NoteID,
+      '1' as AccountID,
+      Option.some('2' as AccountID),
+      new Date('2023-09-10T00:00:00Z'),
+    ),
+    // 1-->2
+    noteFactory(
+      '101' as NoteID,
+      '1' as AccountID,
+      Option.some('2' as AccountID),
+      new Date('2023-09-11T00:00:00Z'),
+    ),
+    // 2-->1
+    noteFactory(
+      '200' as NoteID,
+      '2' as AccountID,
+      Option.some('1' as AccountID),
+      new Date('2023-09-12T00:00:00Z'),
+    ),
+    // 2-->1
+    noteFactory(
+      '201' as NoteID,
+      '2' as AccountID,
+      Option.some('1' as AccountID),
+      new Date('2023-09-13T00:00:00Z'),
+    ),
+  ];
+  const repo = new InMemoryConversationRepository(testMap);
+
+  it('should return newest note', async () => {
+    const res = await repo.findByAccountID('1' as AccountID);
+
+    expect(Result.isOk(res)).toBe(true);
+    expect(Result.unwrap(res)).toStrictEqual([
+      {
+        id: '2' as AccountID,
+        lastSentAt: new Date('2023-09-13T00:00:00Z'),
+        latestNoteID: '201' as NoteID,
+        latestNoteAuthor: '2' as AccountID,
+      },
+    ]);
+  });
+
+  it('should return newest note: not received yet', async () => {
+    const res = await repo.findByAccountID('2' as AccountID);
+
+    expect(Result.isOk(res)).toBe(true);
+    expect(Result.unwrap(res)).toStrictEqual([
+      {
+        id: '1' as AccountID,
+        lastSentAt: new Date('2023-09-13T00:00:00Z'),
+        latestNoteID: '201' as NoteID,
+        latestNoteAuthor: '2' as AccountID,
+      },
+    ]);
+  });
+
+  it('should return empty array when no notes are found', async () => {
+    const res = await repo.findByAccountID('3' as AccountID);
+
+    expect(Result.isOk(res)).toBe(true);
+    expect(Result.unwrap(res)).toStrictEqual([]);
   });
 });

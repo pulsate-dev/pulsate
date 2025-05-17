@@ -17,10 +17,13 @@ import { List, type ListID } from '../../model/list.js';
 import {
   type BookmarkTimelineFilter,
   type BookmarkTimelineRepository,
+  type ConversationRecipient,
+  type ConversationRepository,
   type FetchAccountTimelineFilter,
   type ListRepository,
   type TimelineRepository,
   bookmarkTimelineRepoSymbol,
+  conversationRepoSymbol,
   listRepoSymbol,
   timelineRepoSymbol,
 } from '../../model/repository.js';
@@ -469,4 +472,46 @@ export const prismaBookmarkTimelineRepo = (client: PrismaClient) =>
   Ether.newEther(
     bookmarkTimelineRepoSymbol,
     () => new PrismaBookmarkTimelineRepository(client),
+  );
+
+export class PrismaConversationRepository implements ConversationRepository {
+  constructor(private readonly prisma: PrismaClient) {}
+
+  async findByAccountID(
+    accountId: AccountID,
+  ): Promise<Result.Result<Error, ConversationRecipient[]>> {
+    try {
+      const conversations = await this.prisma.note.findMany({
+        where: {
+          visibility: 3,
+          deletedAt: null,
+          sendToId: accountId,
+        },
+        orderBy: {
+          createdAt: 'desc',
+        },
+        distinct: ['authorId', 'sendToId'],
+      });
+
+      return Result.ok(
+        conversations.map(
+          (v): ConversationRecipient => ({
+            id: accountId,
+            latestNoteAuthor: v.authorId as AccountID,
+            latestNoteID: v.id as NoteID,
+            lastSentAt: v.createdAt,
+          }),
+        ),
+      );
+    } catch (e) {
+      return Result.err(
+        new TimelineInternalError('unknown error', { cause: e }),
+      );
+    }
+  }
+}
+export const prismaConversationRepo = (client: PrismaClient) =>
+  Ether.newEther(
+    conversationRepoSymbol,
+    () => new PrismaConversationRepository(client),
   );

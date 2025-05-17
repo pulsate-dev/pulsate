@@ -20,12 +20,14 @@ import { TimelineController } from './adaptor/controller/timeline.js';
 import { timelineModuleLogger } from './adaptor/logger.js';
 import {
   inMemoryBookmarkTimelineRepo,
+  inMemoryConversationRepo,
   inMemoryListRepo,
   inMemoryTimelineRepo,
 } from './adaptor/repository/dummy.js';
 import { inMemoryTimelineCacheRepo } from './adaptor/repository/dummyCache.js';
 import {
   prismaBookmarkTimelineRepo,
+  prismaConversationRepo,
   prismaListRepo,
   prismaTimelineRepo,
 } from './adaptor/repository/prisma.js';
@@ -47,6 +49,7 @@ import {
   FetchListRoute,
   GetAccountTimelineRoute,
   GetBookmarkTimelineRoute,
+  GetConversationRoute,
   GetHomeTimelineRoute,
   GetListMemberRoute,
   GetListTimelineRoute,
@@ -57,6 +60,7 @@ import { createList } from './service/createList.js';
 import { deleteList } from './service/deleteList.js';
 import { editList } from './service/editList.js';
 import { fetchBookmark } from './service/fetchBookmark.js';
+import { fetchConversation } from './service/fetchConversation.js';
 import { fetchList } from './service/fetchList.js';
 import { fetchListMember } from './service/fetchMember.js';
 import { homeTimeline } from './service/home.js';
@@ -93,6 +97,10 @@ const timelineCacheRepository = isProduction
 const bookmarkTimelineRepository = isProduction
   ? prismaBookmarkTimelineRepo(prismaClient)
   : inMemoryBookmarkTimelineRepo();
+
+const conversationRepository = isProduction
+  ? prismaConversationRepo(prismaClient)
+  : inMemoryConversationRepo();
 
 const controller = new TimelineController({
   accountTimelineService: Ether.runEther(
@@ -142,6 +150,10 @@ const controller = new TimelineController({
     Cat.cat(fetchBookmark)
       .feed(Ether.compose(timelineRepository))
       .feed(Ether.compose(bookmarkTimelineRepository)).value,
+  ),
+  fetchConversationService: Ether.runEther(
+    Cat.cat(fetchConversation).feed(Ether.compose(conversationRepository))
+      .value,
   ),
 });
 
@@ -463,6 +475,24 @@ timeline.openapi(GetBookmarkTimelineRoute, async (c) => {
     if (error instanceof TimelineNoMoreNotesError) {
       return c.json({ error: 'NOTHING_LEFT' as const }, 404);
     }
+
+    timelineModuleLogger.error('Uncaught', error);
+    return c.json({ error: 'INTERNAL_ERROR' as const }, 500);
+  }
+
+  return c.json(res[1], 200);
+});
+
+timeline[GetConversationRoute.method](
+  GetConversationRoute.path,
+  AuthMiddleware.handle({ forceAuthorized: true }),
+);
+timeline.openapi(GetConversationRoute, async (c) => {
+  const accountID = Option.unwrap(c.get('accountID'));
+  const res = await controller.getConversations(accountID);
+  if (Result.isErr(res)) {
+    const error = Result.unwrapErr(res);
+    timelineModuleLogger.warn(error);
 
     timelineModuleLogger.error('Uncaught', error);
     return c.json({ error: 'INTERNAL_ERROR' as const }, 500);
