@@ -62,6 +62,8 @@ export class AuthenticateMiddlewareService {
         if (options.forceAuthorized) {
           return c.json({ error: 'UNAUTHORIZED' }, { status: 401 });
         }
+        c.set('accountName', Option.none());
+        c.set('accountID', Option.none());
         return await next();
       }
 
