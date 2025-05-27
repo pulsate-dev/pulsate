@@ -1,11 +1,14 @@
-import { Result } from '@mikuroxina/mini-fn';
+import { Ether, Result } from '@mikuroxina/mini-fn';
 import type { AccountID } from '../../accounts/model/account.js';
-import type { Clock } from '../../id/mod.js';
+import { type Clock, clockSymbol } from '../../id/mod.js';
 import type {
   Notification,
   NotificationID,
 } from '../model/notificationBase.js';
-import type { NotificationRepository } from '../model/repository/notification.js';
+import {
+  type NotificationRepository,
+  notificationRepoSymbol,
+} from '../model/repository/notification.js';
 
 export class MarkAsReadNotificationService {
   constructor(
@@ -47,3 +50,14 @@ export class MarkAsReadNotificationService {
     return notification.getRecipientID() === accountID;
   }
 }
+export const markAsReadNotificationSymbol =
+  Ether.newEtherSymbol<MarkAsReadNotificationService>();
+export const markAsReadNotification = Ether.newEther(
+  markAsReadNotificationSymbol,
+  ({ notificationRepository, clock }) =>
+    new MarkAsReadNotificationService(notificationRepository, clock),
+  {
+    notificationRepository: notificationRepoSymbol,
+    clock: clockSymbol,
+  },
+);

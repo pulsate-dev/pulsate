@@ -66,11 +66,6 @@ export const PostMakeAsReadNotificationRoute = createRoute({
   responses: {
     204: {
       description: 'No content',
-      content: {
-        'application/json': {
-          schema: z.object({}),
-        },
-      },
     },
     403: {
       description: 'Forbidden',
@@ -78,6 +73,16 @@ export const PostMakeAsReadNotificationRoute = createRoute({
         'application/json': {
           schema: z.object({
             error: z.literal('NO_PERMISSION'),
+          }),
+        },
+      },
+    },
+    500: {
+      description: 'Internal error',
+      content: {
+        'application/json': {
+          schema: z.object({
+            error: TimelineInternalError,
           }),
         },
       },
