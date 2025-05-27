@@ -17,7 +17,7 @@ const coreLogger = new Logger({
 
 export const app = new Hono().get('/doc', async (c) => {
   // NOTE: If you create a new module, you must add module API doc base path here.
-  const modulePath: string[] = ['accounts', 'notes', 'drive', 'timeline', "notification"];
+  const modulePath: string[] = ['accounts', 'notes', 'drive', 'timeline', 'notification'];
   const basePath = 'http://localhost:3000/';
   const openAPIBase = {
     openapi: '3.1.0',
