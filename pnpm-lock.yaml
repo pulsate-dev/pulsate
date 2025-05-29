@@ -33,8 +33,8 @@ importers:
         specifier: ^2.0.5
         version: 2.0.5
       file-type:
-        specifier: ^20.0.0
-        version: 20.5.0
+        specifier: ^21.0.0
+        version: 21.0.0
       hono:
         specifier: ^4.0.0
         version: 4.7.10
@@ -834,9 +834,9 @@ packages:
   fflate@0.8.2:
     resolution: {integrity: sha512-cPJU47OaAoCbg0pBvzsgpTPhmhqI5eJjh/JIu8tPj5q+T7iLvW/JAYUqmE7KOB4R1ZyEhzBaIQpQpardBF5z8A==}
 
-  file-type@20.5.0:
-    resolution: {integrity: sha512-BfHZtG/l9iMm4Ecianu7P8HRD2tBHLtjXinm4X62XBOYzi7CYA7jyqfJzOvXHqzVrVPYqBo2/GvbARMaaJkKVg==}
-    engines: {node: '>=18'}
+  file-type@21.0.0:
+    resolution: {integrity: sha512-ek5xNX2YBYlXhiUXui3D/BXa3LdqPmoLJ7rqEx2bKJ7EAUEfmXgW0Das7Dc6Nr9MvqaOnIqiPV0mZk/r/UpNAg==}
+    engines: {node: '>=20'}
 
   foreground-child@3.3.1:
     resolution: {integrity: sha512-gIXjKqtFuWEgzFRJA9WCQeSJLZDjgJUOMCMzxtvFq/37KojM1BFGufqsCy0r4qSQmYLsZYMeyRqzIWOMup03sw==}
@@ -1898,7 +1898,7 @@ snapshots:
 
   fflate@0.8.2: {}
 
-  file-type@20.5.0:
+  file-type@21.0.0:
     dependencies:
       '@tokenizer/inflate': 0.2.7
       strtok3: 10.2.2

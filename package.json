@@ -39,7 +39,7 @@
     "@scalar/hono-api-reference": "^0.9.0",
     "argon2": "^0.43.0",
     "blurhash": "^2.0.5",
-    "file-type": "^20.0.0",
+    "file-type": "^21.0.0",
     "hono": "^4.0.0",
     "ioredis": "^5.4.1",
     "jose": "^6.0.0",
