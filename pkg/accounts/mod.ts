@@ -91,6 +91,7 @@ import { dummy } from './service/sendNotification.js';
 import { silence } from './service/silence.js';
 import { unfollow } from './service/unfollow.js';
 import { verifyAccountToken } from './service/verifyToken.js';
+import { dummyAccounts } from './testData/testData.js';
 
 const isProduction = process.env.NODE_ENV === 'production';
 
@@ -100,7 +101,7 @@ export const accounts = new OpenAPIHono<{
 
 const accountRepoObject = isProduction
   ? new PrismaAccountRepository(prismaClient)
-  : new InMemoryAccountRepository([]);
+  : new InMemoryAccountRepository(dummyAccounts);
 const accountRepository = Ether.newEther(
   accountRepoSymbol,
   () => accountRepoObject,
