@@ -30,7 +30,9 @@ export const generateDummyAccount = (args: {
     mail: 'testuser@example.com',
     name: args.name,
     nickname: `test user ${args.id}`,
-    passphraseHash: '029833kjnert945@@sfne',
+    // argon2id hash of "じゃすた・いぐざんぽぅ"
+    passphraseHash:
+      '$argon2id$v=19$m=65536,t=3,p=4$nbT6iNnvk6tC9o4sH15dHw$1UkaTHDAA4EHe9EAyCh22+hUGj2s1obVhDAqwFYMFfo',
     role: args.role,
     silenced: args.silenced,
     status: args.status,
