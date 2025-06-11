@@ -9,6 +9,7 @@ import { noteHandlers } from './pkg/notes/mod.js';
 import { timeline } from './pkg/timeline/mod.js';
 import { Logger } from 'tslog';
 import { isProduction } from './pkg/adaptors/env.js';
+import { notification } from './pkg/notification/mod.js';
 
 const coreLogger = new Logger({
   name: "Pulsate",
@@ -81,6 +82,7 @@ app.route('/', noteHandlers);
 app.route('/', accounts);
 app.route('/', drive);
 app.route('/', timeline);
+app.route('/', notification);
 
 app.get(
   '/reference',
