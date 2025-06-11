@@ -883,6 +883,56 @@
         "required": [
           "assignees"
         ]
+      },
+      "GetListConversationsResponse": {
+        "type": "array",
+        "items": {
+          "type": "object",
+          "properties": {
+            "account": {
+              "type": "object",
+              "properties": {
+                "id": {
+                  "type": "string",
+                  "description": "Assignee account ID",
+                  "example": "30984308495"
+                },
+                "name": {
+                  "type": "string",
+                  "description": "Assignee account name",
+                  "example": "@john@example.com"
+                },
+                "nickname": {
+                  "type": "string",
+                  "description": "Assignee nickname",
+                  "example": "John Doe"
+                },
+                "avatar": {
+                  "type": "string",
+                  "format": "uri",
+                  "description": "avatar URL",
+                  "example": "https://example.com/avatar.png"
+                }
+              },
+              "required": [
+                "id",
+                "name",
+                "nickname",
+                "avatar"
+              ]
+            },
+            "updatedAt": {
+              "type": "string",
+              "format": "date-time",
+              "description": "Last message sent",
+              "example": "2023-09-10T00:00:00.000Z"
+            }
+          },
+          "required": [
+            "account",
+            "updatedAt"
+          ]
+        }
       }
     },
     "parameters": {}
@@ -5744,6 +5794,113 @@
                         "NOTHING_LEFT"
                       ],
                       "description": "No more notes exist"
+                    }
+                  },
+                  "required": [
+                    "error"
+                  ]
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string",
+                      "enum": [
+                        "INTERNAL_ERROR"
+                      ],
+                      "description": "Internal server error"
+                    }
+                  },
+                  "required": [
+                    "error"
+                  ]
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v0/timeline/conversations": {
+      "get": {
+        "tags": [
+          "timeline"
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GetListConversationsResponse"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string",
+                      "enum": [
+                        "INTERNAL_ERROR"
+                      ],
+                      "description": "Internal server error"
+                    }
+                  },
+                  "required": [
+                    "error"
+                  ]
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v0/notifications/:id/read": {
+      "post": {
+        "tags": [
+          "notification"
+        ],
+        "parameters": [
+          {
+            "schema": {
+              "type": "string",
+              "description": "Notification ID"
+            },
+            "required": true,
+            "name": "id",
+            "in": "path"
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "No content"
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string",
+                      "enum": [
+                        "NO_PERMISSION"
+                      ]
                     }
                   },
                   "required": [
