@@ -16,10 +16,7 @@ import {
 export class NotificationModuleFacade {
   constructor(private readonly createService: CreateNotificationService) {}
 
-  async createFollowed(args: {
-    recipientID: AccountID;
-    actorID: AccountID;
-  }) {
+  async createFollowed(args: { recipientID: AccountID; actorID: AccountID }) {
     return await this.createService.createFollowed(args);
   }
 
@@ -30,10 +27,7 @@ export class NotificationModuleFacade {
     return await this.createService.createFollowRequested(args);
   }
 
-  async createAccepted(args: {
-    recipientID: AccountID;
-    actorID: AccountID;
-  }) {
+  async createAccepted(args: { recipientID: AccountID; actorID: AccountID }) {
     return await this.createService.createFollowAccepted(args);
   }
 

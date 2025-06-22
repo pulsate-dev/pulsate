@@ -10,7 +10,7 @@ export class LocalStorage implements Storage {
   async upload(name: string, file: Uint8Array) {
     try {
       await fs.statfs(this.basePath);
-    } catch (e) {
+    } catch {
       await fs.mkdir(this.basePath, { recursive: true });
     }
 

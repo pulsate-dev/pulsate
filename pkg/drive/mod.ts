@@ -4,8 +4,8 @@ import { Cat, Ether, Option, Result } from '@mikuroxina/mini-fn';
 import type { AccountID } from '../accounts/model/account.js';
 
 import {
-  type AuthMiddlewareVariable,
   AuthenticateMiddlewareService,
+  type AuthMiddlewareVariable,
 } from '../adaptors/authenticateMiddleware.js';
 import { isProduction } from '../adaptors/env.js';
 import { prismaClient } from '../adaptors/prisma.js';

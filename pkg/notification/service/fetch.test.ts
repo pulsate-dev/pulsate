@@ -3,8 +3,8 @@ import { describe, expect, it } from 'vitest';
 import type { AccountID } from '../../accounts/model/account.js';
 import { InMemoryNotificationRepository } from '../adaptor/repository/dummy/notification.js';
 import {
-  FollowRequestedNotification,
   FollowedNotification,
+  FollowRequestedNotification,
 } from '../model/notification.js';
 import type { NotificationID } from '../model/notificationBase.js';
 import { FetchNotificationService } from './fetch.js';

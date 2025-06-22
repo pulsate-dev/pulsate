@@ -5,8 +5,8 @@ import { AccountNotFoundError } from '../../accounts/model/errors.js';
 import type { MediumID } from '../../drive/model/medium.js';
 import {
   type Clock,
-  type SnowflakeIDGenerator,
   clockSymbol,
+  type SnowflakeIDGenerator,
   snowflakeIDGeneratorSymbol,
 } from '../../id/mod.js';
 import {

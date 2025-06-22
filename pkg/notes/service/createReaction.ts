@@ -9,8 +9,8 @@ import type { Note, NoteID } from '../model/note.js';
 import { Reaction } from '../model/reaction.js';
 import {
   type NoteRepository,
-  type ReactionRepository,
   noteRepoSymbol,
+  type ReactionRepository,
   reactionRepoSymbol,
 } from '../model/repository.js';
 

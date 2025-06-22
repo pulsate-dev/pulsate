@@ -5,8 +5,8 @@ import type { Note, NoteID } from '../../notes/model/note.js';
 import {
   type BookmarkTimelineFilter,
   type BookmarkTimelineRepository,
-  type TimelineRepository,
   bookmarkTimelineRepoSymbol,
+  type TimelineRepository,
   timelineRepoSymbol,
 } from '../model/repository.js';
 
