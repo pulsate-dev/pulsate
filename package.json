@@ -26,7 +26,7 @@
     "test:coverage": "vitest run --coverage",
     "check:type": "tsc -p .",
     "check:filename": "ls-lint",
-    "check:format": "biome format \"./**/*.{js,ts,md}\"",
+    "check:format": "biome format .",
     "prepare": "pnpm run build:prisma",
     "postinstall": "lefthook install"
   },
