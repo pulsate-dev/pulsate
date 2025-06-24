@@ -8,8 +8,8 @@ import {
 import type { Note, NoteID } from '../model/note.js';
 import {
   type BookmarkRepository,
-  type NoteRepository,
   bookmarkRepoSymbol,
+  type NoteRepository,
   noteRepoSymbol,
 } from '../model/repository.js';
 

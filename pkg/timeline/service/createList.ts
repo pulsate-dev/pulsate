@@ -3,8 +3,8 @@ import { Ether, Result } from '@mikuroxina/mini-fn';
 import type { AccountID } from '../../accounts/model/account.js';
 import {
   type Clock,
-  type SnowflakeIDGenerator,
   clockSymbol,
+  type SnowflakeIDGenerator,
   snowflakeIDGeneratorSymbol,
 } from '../../id/mod.js';
 import { List } from '../model/list.js';

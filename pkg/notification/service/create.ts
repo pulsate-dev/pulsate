@@ -2,16 +2,16 @@ import { Ether, Result } from '@mikuroxina/mini-fn';
 import type { AccountID } from '../../accounts/model/account.js';
 import {
   type Clock,
-  type SnowflakeIDGenerator,
   clockSymbol,
+  type SnowflakeIDGenerator,
   snowflakeIDGeneratorSymbol,
 } from '../../id/mod.js';
 import type { NoteID } from '../../notes/model/note.js';
 import type { ReactionID } from '../../notes/model/reaction.js';
 import {
   FollowAcceptedNotification,
-  FollowRequestedNotification,
   FollowedNotification,
+  FollowRequestedNotification,
   MentionedNotification,
   ReactedNotification,
   RenotedNotification,

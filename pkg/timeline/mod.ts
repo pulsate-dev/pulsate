@@ -4,8 +4,8 @@ import { Cat, Ether, Option, Result } from '@mikuroxina/mini-fn';
 import { AccountNotFoundError } from '../accounts/model/errors.js';
 
 import {
-  type AuthMiddlewareVariable,
   AuthenticateMiddlewareService,
+  type AuthMiddlewareVariable,
 } from '../adaptors/authenticateMiddleware.js';
 import { prismaClient } from '../adaptors/prisma.js';
 import { valkeyClient } from '../adaptors/valkey.js';

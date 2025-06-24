@@ -2,8 +2,8 @@ import { Ether, Option, Result } from '@mikuroxina/mini-fn';
 
 import {
   type Clock,
-  type SnowflakeIDGenerator,
   clockSymbol,
+  type SnowflakeIDGenerator,
   snowflakeIDGeneratorSymbol,
 } from '../../id/mod.js';
 import {

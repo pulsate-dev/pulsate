@@ -10,9 +10,9 @@ import type { Reaction } from '../model/reaction.js';
 import {
   type NoteAttachmentRepository,
   type NoteRepository,
-  type ReactionRepository,
   noteAttachmentRepoSymbol,
   noteRepoSymbol,
+  type ReactionRepository,
   reactionRepoSymbol,
 } from '../model/repository.js';
 

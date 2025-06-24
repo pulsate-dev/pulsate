@@ -2,8 +2,8 @@ import { Option, Result } from '@mikuroxina/mini-fn';
 import { describe, expect, it, vi } from 'vitest';
 
 import { Account, type AccountID } from '../../accounts/model/account.js';
-import { dummyAccountModuleFacade } from '../../intermodule/account.js';
 import type { PartialAccount } from '../../intermodule/account.js';
+import { dummyAccountModuleFacade } from '../../intermodule/account.js';
 import { Note, type NoteID } from '../../notes/model/note.js';
 import { InMemoryTimelineRepository } from '../adaptor/repository/dummy.js';
 import { AccountTimelineService } from './account.js';

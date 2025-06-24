@@ -8,12 +8,12 @@ import type { Note, NoteID } from '../../model/note.js';
 import type { Reaction, ReactionID } from '../../model/reaction.js';
 import {
   type BookmarkRepository,
+  bookmarkRepoSymbol,
   type NoteAttachmentRepository,
   type NoteRepository,
-  type ReactionRepository,
-  bookmarkRepoSymbol,
   noteAttachmentRepoSymbol,
   noteRepoSymbol,
+  type ReactionRepository,
   reactionRepoSymbol,
 } from '../../model/repository.js';
 

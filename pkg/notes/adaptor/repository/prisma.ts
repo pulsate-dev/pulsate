@@ -9,12 +9,12 @@ import { Note, type NoteID, type NoteVisibility } from '../../model/note.js';
 import { Reaction, type ReactionID } from '../../model/reaction.js';
 import {
   type BookmarkRepository,
+  bookmarkRepoSymbol,
   type NoteAttachmentRepository,
   type NoteRepository,
-  type ReactionRepository,
-  bookmarkRepoSymbol,
   noteAttachmentRepoSymbol,
   noteRepoSymbol,
+  type ReactionRepository,
   reactionRepoSymbol,
 } from '../../model/repository.js';
 
