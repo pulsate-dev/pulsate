@@ -1,4 +1,14 @@
 services:
+  pulsate:
+    build: .
+    restart: on-failure
+    container_name: pulsate
+    environment:
+      - DATABASE_URL=postgresql://pulsate:pulsate_db_pass@db:5432/pulsate?schema=public
+      - TURNSTILE_SECRET=1x0000000000000000000000000000000AA
+      - VALKEY_REDIS_HOST=kv
+    ports:
+      - "3000:3000"
   db:
     image: postgres:17
     container_name: db
