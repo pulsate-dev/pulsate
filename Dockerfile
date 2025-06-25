@@ -21,10 +21,6 @@ RUN pnpm run prepare && pnpm run build
 
 # Stage 4: Final slim image
 FROM node:22-slim
-ENV PNPM_HOME=/pnpm
-ENV PATH="${PNPM_HOME}:${PATH}"
-RUN corepack enable
-
 WORKDIR /app
 COPY --from=build /app/node_modules /app/node_modules
 COPY --from=build /app/build /app/build
