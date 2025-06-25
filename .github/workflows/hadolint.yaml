@@ -16,7 +16,7 @@ jobs:
       - uses: "hadolint/hadolint-action@v3.1.0"
         id: run_hadolint
         with:
-          dockerfile: ${{ matrix.dockerfile }}
+          dockerfile: ./Dockerfile
           no-color: false
           no-fail: false
 
