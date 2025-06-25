@@ -9,9 +9,6 @@ jobs:
   lint:
     name: Dockerfile lint by Hadolint Action
     runs-on: ubuntu-latest
-    strategy:
-        matrix:
-          dockerfile: ${{ fromJson(needs.list_dockerfile.outputs.matrix) }}
 
     steps:
       - uses: "actions/checkout@v4"
