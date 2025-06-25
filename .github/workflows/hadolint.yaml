@@ -6,17 +6,7 @@ on:
       - "Dockerfile"
 
 jobs:
-  list_dockerfile:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: "actions/checkout@v4"
-      - uses: "./.github/actions/list_dockerfile"
-        id: set_matrix
-    outputs:
-      matrix: ${{ steps.set_matrix.outputs.matrix }}
-
   lint:
-    needs: list_dockerfile
     name: Dockerfile lint by Hadolint Action
     runs-on: ubuntu-latest
     strategy:
