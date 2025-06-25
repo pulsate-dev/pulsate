@@ -6,22 +6,11 @@ on:
       - "Dockerfile"
 
 jobs:
-  list_dockerfile:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: "actions/checkout@v4"
-      - uses: "./.github/actions/list_dockerfile"
-        id: set_matrix
-    outputs:
-      matrix: ${{ steps.set_matrix.outputs.matrix }}
-
   lint:
-    needs: list_dockerfile
     name: Dockerfile lint by Hadolint Action
     runs-on: ubuntu-latest
-    strategy:
-        matrix:
-          dockerfile: ${{ fromJson(needs.list_dockerfile.outputs.matrix) }}
+    permissions:
+      pull-requests: write
 
     steps:
       - uses: "actions/checkout@v4"
@@ -29,7 +18,7 @@ jobs:
       - uses: "hadolint/hadolint-action@v3.1.0"
         id: run_hadolint
         with:
-          dockerfile: ${{ matrix.dockerfile }}
+          dockerfile: ./Dockerfile
           no-color: false
           no-fail: false
 
