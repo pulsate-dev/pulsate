@@ -7,10 +7,15 @@ import {
 import { isProduction } from '../adaptors/env.js';
 import { prismaClient } from '../adaptors/prisma.js';
 import { clockSymbol } from '../id/mod.js';
+import { accountModuleEther } from '../intermodule/account.js';
 import { NotificationController } from './adaptor/controller/notification.js';
 import { inMemoryNotificationRepo } from './adaptor/repository/dummy/notification.js';
 import { prismaNotificationRepo } from './adaptor/repository/prisma/notification.js';
-import { PostMakeAsReadNotificationRoute } from './routes.js';
+import {
+  GetNotificationsRoute,
+  PostMakeAsReadNotificationRoute,
+} from './routes.js';
+import { fetchNotification } from './service/fetch.js';
 import { markAsReadNotification } from './service/markAsRead.js';
 
 class Clock {
@@ -30,6 +35,11 @@ const controller = new NotificationController({
       .feed(Ether.compose(notificationRepository))
       .feed(Ether.compose(clock)).value,
   ),
+  accountModule: Ether.runEther(Cat.cat(accountModuleEther).value),
+  fetchNotificationService: Ether.runEther(
+    Cat.cat(fetchNotification).feed(Ether.compose(notificationRepository))
+      .value,
+  ),
 });
 
 export const notification = new OpenAPIHono<{
@@ -46,6 +56,28 @@ const AuthMiddleware = new AuthenticateMiddlewareService();
 notification.openAPIRegistry.registerComponent('securitySchemes', 'Bearer', {
   type: 'http',
   scheme: 'bearer',
+});
+
+notification[GetNotificationsRoute.method](
+  GetNotificationsRoute.path,
+  AuthMiddleware.handle({ forceAuthorized: true }),
+);
+notification.openapi(GetNotificationsRoute, async (c) => {
+  const actorID = Option.unwrap(c.get('accountID'));
+  const { limit, after_id } = c.req.valid('query');
+
+  const res = await controller.fetchNotifications(actorID, limit, after_id);
+  if (Result.isErr(res)) {
+    const error = Result.unwrapErr(res);
+
+    if (error.message === 'Nothing left') {
+      return c.json({ error: 'NOTHING_LEFT' as const }, 404);
+    }
+
+    return c.json({ error: 'INTERNAL_ERROR' as const }, 500);
+  }
+
+  return c.json(Result.unwrap(res), 200);
 });
 
 notification[PostMakeAsReadNotificationRoute.method](
