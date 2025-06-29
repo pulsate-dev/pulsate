@@ -42,13 +42,13 @@ export const reactedNotificationSchema = notificationBaseSchema.extend({
   content: z.string(),
 });
 
-export const GetNotificationsResponseSchema = z.array(
-  z.union([
-    followedNotificationSchema,
-    followAcceptedNotificationSchema,
-    followRequestedNotificationSchema,
-    mentionedNotificationSchema,
-    renotedNotificationSchema,
-    reactedNotificationSchema,
-  ]),
-);
+export const notificationSchema = z.union([
+  followedNotificationSchema,
+  followAcceptedNotificationSchema,
+  followRequestedNotificationSchema,
+  mentionedNotificationSchema,
+  renotedNotificationSchema,
+  reactedNotificationSchema,
+]);
+
+export const GetNotificationsResponseSchema = z.array(notificationSchema);
