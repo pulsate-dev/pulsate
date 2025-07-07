@@ -52,13 +52,11 @@ export class NotificationController {
 
   async fetchNotifications(
     actorID: string,
-    limit?: number,
-    afterID?: string,
-    beforeID?: string,
+    options: { limit?: number; afterID?: string; beforeID?: string } = {},
   ): Promise<
     Result.Result<Error, z.infer<typeof GetNotificationsResponseSchema>>
   > {
-    if (!!afterID && !!beforeID) {
+    if (!!options.afterID && !!options.beforeID) {
       return Result.err(
         new Error('Cannot specify both after_id and before_id'),
       );
@@ -68,22 +66,22 @@ export class NotificationController {
       await this.fetchNotificationService.fetchByRecipientID(
         actorID as AccountID,
         {
-          limit: !limit ? Option.none() : Option.some(limit),
+          limit: !options.limit ? Option.none() : Option.some(options.limit),
           cursor: ((): Option.Option<NotificationCursor> => {
-            if (!afterID && !beforeID) {
+            if (!options.afterID && !options.beforeID) {
               return Option.none();
             }
 
-            if (afterID) {
+            if (options.afterID) {
               return Option.some({
                 type: 'after',
-                id: afterID as NotificationID,
+                id: options.afterID as NotificationID,
               });
             }
 
             return Option.some({
               type: 'before',
-              id: beforeID as NotificationID,
+              id: options.beforeID as NotificationID,
             });
           })(),
         },
