@@ -113,4 +113,200 @@ describe('FetchConversationService', () => {
     expect(Result.isOk(result)).toBe(true);
     expect(Result.unwrap(result)).toStrictEqual([]);
   });
+
+  describe('fetchConversationNotes', () => {
+    it('should fetch conversation notes between two accounts', async () => {
+      const result = await service.fetchConversationNotes(
+        '1' as AccountID,
+        '2' as AccountID,
+      );
+
+      expect(Result.isOk(result)).toBe(true);
+      const notes = Result.unwrap(result);
+      expect(notes).toHaveLength(4);
+      expect(notes[0]?.getID()).toBe('201');
+      expect(notes[1]?.getID()).toBe('200');
+      expect(notes[2]?.getID()).toBe('101');
+      expect(notes[3]?.getID()).toBe('100');
+    });
+
+    it('should use default limit of 20', async () => {
+      const result = await service.fetchConversationNotes(
+        '1' as AccountID,
+        '2' as AccountID,
+      );
+
+      expect(Result.isOk(result)).toBe(true);
+      const notes = Result.unwrap(result);
+      expect(notes.length).toBeLessThanOrEqual(20);
+    });
+
+    it('should respect custom limit', async () => {
+      const result = await service.fetchConversationNotes(
+        '1' as AccountID,
+        '2' as AccountID,
+        {
+          limit: Option.some(2),
+          beforeID: Option.none(),
+          afterID: Option.none(),
+        },
+      );
+
+      expect(Result.isOk(result)).toBe(true);
+      const notes = Result.unwrap(result);
+      expect(notes).toHaveLength(2);
+      expect(notes[0]?.getID()).toBe('201');
+      expect(notes[1]?.getID()).toBe('200');
+    });
+
+    it('should fetch notes before specified ID', async () => {
+      const result = await service.fetchConversationNotes(
+        '1' as AccountID,
+        '2' as AccountID,
+        {
+          limit: Option.none(),
+          beforeID: Option.some('201' as NoteID),
+          afterID: Option.none(),
+        },
+      );
+
+      expect(Result.isOk(result)).toBe(true);
+      const notes = Result.unwrap(result);
+      expect(notes).toHaveLength(3);
+      expect(notes[0]?.getID()).toBe('200');
+      expect(notes[1]?.getID()).toBe('101');
+      expect(notes[2]?.getID()).toBe('100');
+    });
+
+    it('should fetch notes after specified ID', async () => {
+      const result = await service.fetchConversationNotes(
+        '1' as AccountID,
+        '2' as AccountID,
+        {
+          limit: Option.none(),
+          beforeID: Option.none(),
+          afterID: Option.some('100' as NoteID),
+        },
+      );
+
+      expect(Result.isOk(result)).toBe(true);
+      const notes = Result.unwrap(result);
+      expect(notes).toHaveLength(3);
+      expect(notes[0]?.getID()).toBe('201');
+      expect(notes[1]?.getID()).toBe('200');
+      expect(notes[2]?.getID()).toBe('101');
+    });
+
+    it('should return empty array when no conversation exists', async () => {
+      const result = await service.fetchConversationNotes(
+        '1' as AccountID,
+        '3' as AccountID,
+      );
+
+      expect(Result.isOk(result)).toBe(true);
+      expect(Result.unwrap(result)).toStrictEqual([]);
+    });
+
+    it('should return empty array when beforeID does not exist', async () => {
+      const result = await service.fetchConversationNotes(
+        '1' as AccountID,
+        '2' as AccountID,
+        {
+          limit: Option.none(),
+          beforeID: Option.some('999' as NoteID),
+          afterID: Option.none(),
+        },
+      );
+
+      expect(Result.isOk(result)).toBe(true);
+      expect(Result.unwrap(result)).toStrictEqual([]);
+    });
+
+    it('should return empty array when afterID does not exist', async () => {
+      const result = await service.fetchConversationNotes(
+        '1' as AccountID,
+        '2' as AccountID,
+        {
+          limit: Option.none(),
+          beforeID: Option.none(),
+          afterID: Option.some('999' as NoteID),
+        },
+      );
+
+      expect(Result.isOk(result)).toBe(true);
+      expect(Result.unwrap(result)).toStrictEqual([]);
+    });
+
+    it('should return error when both beforeID and afterID are specified', async () => {
+      const result = await service.fetchConversationNotes(
+        '1' as AccountID,
+        '2' as AccountID,
+        {
+          limit: Option.none(),
+          beforeID: Option.some('201' as NoteID),
+          afterID: Option.some('100' as NoteID),
+        },
+      );
+
+      expect(Result.isErr(result)).toBe(true);
+      expect(Result.unwrapErr(result).message).toBe(
+        'beforeID and afterID cannot be specified at the same time',
+      );
+    });
+
+    it('should return notes sorted by creation date (newest first)', async () => {
+      const result = await service.fetchConversationNotes(
+        '1' as AccountID,
+        '2' as AccountID,
+      );
+
+      expect(Result.isOk(result)).toBe(true);
+      const notes = Result.unwrap(result);
+      for (let i = 0; i < notes.length - 1; i++) {
+        const currentNote = notes[i];
+        const nextNote = notes[i + 1];
+        if (currentNote && nextNote) {
+          expect(currentNote.getCreatedAt().getTime()).toBeGreaterThanOrEqual(
+            nextNote.getCreatedAt().getTime(),
+          );
+        }
+      }
+    });
+
+    it('should handle pagination with limit and beforeID', async () => {
+      const result = await service.fetchConversationNotes(
+        '1' as AccountID,
+        '2' as AccountID,
+        {
+          limit: Option.some(2),
+          beforeID: Option.some('201' as NoteID),
+          afterID: Option.none(),
+        },
+      );
+
+      expect(Result.isOk(result)).toBe(true);
+      const notes = Result.unwrap(result);
+      expect(notes).toHaveLength(2);
+      expect(notes[0]?.getID()).toBe('200');
+      expect(notes[1]?.getID()).toBe('101');
+    });
+
+    it('should handle pagination with limit and afterID', async () => {
+      const result = await service.fetchConversationNotes(
+        '1' as AccountID,
+        '2' as AccountID,
+        {
+          limit: Option.some(2),
+          beforeID: Option.none(),
+          afterID: Option.some('100' as NoteID),
+        },
+      );
+
+      expect(Result.isOk(result)).toBe(true);
+      const notes = Result.unwrap(result);
+      expect(notes).toHaveLength(2);
+      expect(notes[0]?.getID()).toBe('201');
+      expect(notes[1]?.getID()).toBe('200');
+    });
+  });
 });
