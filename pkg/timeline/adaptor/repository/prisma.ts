@@ -22,6 +22,7 @@ import {
   type ConversationRepository,
   conversationRepoSymbol,
   type FetchAccountTimelineFilter,
+  type FetchConversationNotesFilter,
   type ListRepository,
   listRepoSymbol,
   type TimelineRepository,
@@ -508,6 +509,87 @@ export class PrismaConversationRepository implements ConversationRepository {
         new TimelineInternalError('unknown error', { cause: e }),
       );
     }
+  }
+
+  async fetchConversationNotes(
+    accountID: AccountID,
+    recipientID: AccountID,
+    filter: FetchConversationNotesFilter,
+  ): Promise<Result.Result<Error, Note[]>> {
+    try {
+      const notes = await this.prisma.note.findMany({
+        where: {
+          visibility: 3,
+          deletedAt: null,
+          OR: [
+            {
+              authorId: accountID,
+              sendToId: recipientID,
+            },
+            {
+              authorId: recipientID,
+              sendToId: accountID,
+            },
+          ],
+        },
+        orderBy: {
+          createdAt: filter.cursor?.type === 'after' ? 'asc' : 'desc',
+        },
+        ...(filter.cursor
+          ? {
+              cursor: {
+                id: filter.cursor.id,
+              },
+              skip: 1,
+            }
+          : {}),
+        take: filter.limit,
+      });
+
+      return Result.ok(this.deserialize(notes));
+    } catch (e) {
+      return Result.err(
+        new TimelineInternalError('unknown error', { cause: e }),
+      );
+    }
+  }
+
+  private deserialize(
+    data: Prisma.PromiseReturnType<typeof this.prisma.note.findMany & {}>,
+  ): Note[] {
+    return data.map((v) => {
+      const visibility = (): NoteVisibility => {
+        switch (v.visibility) {
+          case 0:
+            return 'PUBLIC';
+          case 1:
+            return 'HOME';
+          case 2:
+            return 'FOLLOWERS';
+          case 3:
+            return 'DIRECT';
+          default:
+            throw new Error('Invalid Visibility');
+        }
+      };
+      return Note.reconstruct({
+        id: v.id as NoteID,
+        content: v.text,
+        authorID: v.authorId as AccountID,
+        createdAt: v.createdAt,
+        deletedAt: !v.deletedAt ? Option.none() : Option.some(v.deletedAt),
+        contentsWarningComment: '',
+        originalNoteID: !v.renoteId
+          ? Option.some(v.renoteId as NoteID)
+          : Option.none(),
+        attachmentFileID: [],
+        sendTo: v.sendToId
+          ? Option.some(v.sendToId as AccountID)
+          : Option.none(),
+        updatedAt: Option.none(),
+        visibility: visibility() as NoteVisibility,
+      });
+    });
   }
 }
 export const prismaConversationRepo = (client: PrismaClient) =>
