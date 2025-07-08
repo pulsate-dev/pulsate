@@ -156,6 +156,29 @@ export interface ConversationRecipient {
   latestNoteID: NoteID;
   latestNoteAuthor: AccountID;
 }
+
+export interface ConversationCursor {
+  /**
+   * Cursor type
+   */
+  type: 'before' | 'after';
+  id: NoteID;
+}
+
+export interface FetchConversationNotesFilter {
+  /**
+   * @default 20
+   */
+  limit: number;
+  /**
+   * @description Cursor for pagination
+   * - before: Retrieved from notes before this ID
+   * - after: Retrieved from notes after this ID
+   * - undefined: Retrieved from latest notes
+   */
+  cursor?: ConversationCursor;
+}
+
 export interface ConversationRepository {
   /**
    *  @description
@@ -168,6 +191,23 @@ export interface ConversationRepository {
   findByAccountID(
     id: AccountID,
   ): Promise<Result.Result<Error, ConversationRecipient[]>>;
+
+  /**
+   * @description
+   * Fetch conversation notes between two accounts.
+   * Returns direct notes (visibility = DIRECT) between the specified accounts.
+   * The sorting order is chronological (newest to oldest).
+   *
+   * @param accountID The account ID of the current user
+   * @param recipientID The account ID of the conversation partner
+   * @param filter Filter options for pagination
+   * @returns Array of direct notes in the conversation
+   */
+  fetchConversationNotes(
+    accountID: AccountID,
+    recipientID: AccountID,
+    filter: FetchConversationNotesFilter,
+  ): Promise<Result.Result<Error, Note[]>>;
 }
 export const conversationRepoSymbol =
   Ether.newEtherSymbol<ConversationRepository>();
