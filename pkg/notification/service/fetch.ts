@@ -1,12 +1,13 @@
-import { Result } from '@mikuroxina/mini-fn';
+import { Ether, Result } from '@mikuroxina/mini-fn';
 import type { AccountID } from '../../accounts/model/account.js';
 import type {
   Notification,
   NotificationID,
 } from '../model/notificationBase.js';
-import type {
-  NotificationFilter,
-  NotificationRepository,
+import {
+  type NotificationFilter,
+  type NotificationRepository,
+  notificationRepoSymbol,
 } from '../model/repository/notification.js';
 
 export class FetchNotificationService {
@@ -54,3 +55,13 @@ export class FetchNotificationService {
     return notification.getRecipientID() === actorID;
   }
 }
+export const fetchNotificationSymbol =
+  Ether.newEtherSymbol<FetchNotificationService>();
+export const fetchNotification = Ether.newEther(
+  fetchNotificationSymbol,
+  ({ notificationRepository }) =>
+    new FetchNotificationService(notificationRepository),
+  {
+    notificationRepository: notificationRepoSymbol,
+  },
+);
