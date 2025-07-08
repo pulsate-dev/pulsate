@@ -88,14 +88,11 @@ export class FetchConversationService {
       cursor: Option.isSome(cursor) ? Option.unwrap(cursor) : undefined,
     };
 
-    const res = await this.conversationRepository.fetchConversationNotes(
+    return await this.conversationRepository.fetchConversationNotes(
       accountID,
       recipientID,
       filter,
     );
-    if (Result.isErr(res)) return res;
-
-    return Result.ok(Result.unwrap(res));
   }
 }
 export const fetchConversationServiceSymbol =

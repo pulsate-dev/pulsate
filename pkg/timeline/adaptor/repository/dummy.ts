@@ -320,11 +320,23 @@ export const inMemoryBookmarkTimelineRepo = (data?: Bookmark[]) =>
     () => new InMemoryBookmarkTimelineRepository(data),
   );
 
+/**
+ * @description Sort notes by creation date (newest first)
+ * @param a First note
+ * @param b Second note
+ * @returns Comparison result for sorting
+ */
+const sortByCreatedAtDesc = (a: Note, b: Note): number =>
+  b.getCreatedAt().getTime() - a.getCreatedAt().getTime();
+
 export class InMemoryConversationRepository implements ConversationRepository {
   private data: Note[];
 
   constructor(data?: Note[]) {
     this.data = data ?? [];
+    // FIXME: Consider pre-sorting data at construction/insertion time to avoid O(N log N) sorting
+    // on every query, which can be expensive during debugging with large datasets.
+    // This would require maintaining sorted order when inserting new notes.
   }
 
   async findByAccountID(
@@ -361,9 +373,7 @@ export class InMemoryConversationRepository implements ConversationRepository {
     }
 
     const res: ConversationRecipient[] = [...recipientMap].map(([k, v]) => {
-      const latestNote = v.toSorted(
-        (a, b) => b.getCreatedAt().getTime() - a.getCreatedAt().getTime(),
-      )[0];
+      const latestNote = v.toSorted(sortByCreatedAtDesc)[0];
       if (!latestNote) throw new Error('Note not found');
 
       return {
@@ -391,9 +401,7 @@ export class InMemoryConversationRepository implements ConversationRepository {
     );
 
     if (!filter.cursor) {
-      const sortedNotes = notes.toSorted(
-        (a, b) => b.getCreatedAt().getTime() - a.getCreatedAt().getTime(),
-      );
+      const sortedNotes = notes.toSorted(sortByCreatedAtDesc);
       return Result.ok(sortedNotes.slice(0, filter.limit));
     }
 
@@ -406,9 +414,7 @@ export class InMemoryConversationRepository implements ConversationRepository {
       }
       const slicedNotes = notes
         .slice(0, beforeIndex)
-        .toSorted(
-          (a, b) => b.getCreatedAt().getTime() - a.getCreatedAt().getTime(),
-        );
+        .toSorted(sortByCreatedAtDesc);
       return Result.ok(slicedNotes.slice(0, filter.limit));
     }
 
@@ -421,9 +427,7 @@ export class InMemoryConversationRepository implements ConversationRepository {
       }
       const slicedNotes = notes
         .slice(afterIndex + 1)
-        .toSorted(
-          (a, b) => b.getCreatedAt().getTime() - a.getCreatedAt().getTime(),
-        );
+        .toSorted(sortByCreatedAtDesc);
       return Result.ok(slicedNotes.slice(0, filter.limit));
     }
 

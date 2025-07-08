@@ -148,6 +148,7 @@ export class PrismaTimelineRepository implements TimelineRepository {
     return Result.ok(this.deserialize(listNotes));
   }
 }
+
 export const prismaTimelineRepo = (client: PrismaClient) =>
   Ether.newEther(
     timelineRepoSymbol,
@@ -384,6 +385,7 @@ export class PrismaListRepository implements ListRepository {
       return Result.err(this.parsePrismaError(e));
     }
   }
+
   async removeListMember(
     listID: ListID,
     accountID: AccountID,
@@ -403,6 +405,7 @@ export class PrismaListRepository implements ListRepository {
     }
   }
 }
+
 export const prismaListRepo = (client: PrismaClient) =>
   Ether.newEther(listRepoSymbol, () => new PrismaListRepository(client));
 
@@ -414,6 +417,7 @@ export class PrismaBookmarkTimelineRepository
   implements BookmarkTimelineRepository
 {
   private readonly TIMELINE_NOTE_LIMIT = 20;
+
   constructor(private readonly prisma: PrismaClient) {}
 
   private deserialize(data: DeserializeBookmarkArgs): NoteID[] {
@@ -469,6 +473,7 @@ export class PrismaBookmarkTimelineRepository
     return Result.ok(this.deserialize(bookmarks));
   }
 }
+
 export const prismaBookmarkTimelineRepo = (client: PrismaClient) =>
   Ether.newEther(
     bookmarkTimelineRepoSymbol,
@@ -476,6 +481,8 @@ export const prismaBookmarkTimelineRepo = (client: PrismaClient) =>
   );
 
 export class PrismaConversationRepository implements ConversationRepository {
+  private readonly VISIBILITY_DIRECT = 3;
+
   constructor(private readonly prisma: PrismaClient) {}
 
   async findByAccountID(
@@ -484,7 +491,7 @@ export class PrismaConversationRepository implements ConversationRepository {
     try {
       const conversations = await this.prisma.note.findMany({
         where: {
-          visibility: 3,
+          visibility: this.VISIBILITY_DIRECT,
           deletedAt: null,
           sendToId: accountId,
         },
@@ -519,7 +526,7 @@ export class PrismaConversationRepository implements ConversationRepository {
     try {
       const notes = await this.prisma.note.findMany({
         where: {
-          visibility: 3,
+          visibility: this.VISIBILITY_DIRECT,
           deletedAt: null,
           OR: [
             {
@@ -580,18 +587,19 @@ export class PrismaConversationRepository implements ConversationRepository {
         deletedAt: !v.deletedAt ? Option.none() : Option.some(v.deletedAt),
         contentsWarningComment: '',
         originalNoteID: !v.renoteId
-          ? Option.some(v.renoteId as NoteID)
-          : Option.none(),
+          ? Option.none()
+          : Option.some(v.renoteId as NoteID),
         attachmentFileID: [],
-        sendTo: v.sendToId
-          ? Option.some(v.sendToId as AccountID)
-          : Option.none(),
+        sendTo: !v.sendToId
+          ? Option.none()
+          : Option.some(v.sendToId as AccountID),
         updatedAt: Option.none(),
         visibility: visibility() as NoteVisibility,
       });
     });
   }
 }
+
 export const prismaConversationRepo = (client: PrismaClient) =>
   Ether.newEther(
     conversationRepoSymbol,
