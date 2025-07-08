@@ -66,7 +66,10 @@ notification.openapi(GetNotificationsRoute, async (c) => {
   const actorID = Option.unwrap(c.get('accountID'));
   const { limit, after_id } = c.req.valid('query');
 
-  const res = await controller.fetchNotifications(actorID, { limit, after_id });
+  const res = await controller.fetchNotifications(actorID, {
+    limit,
+    afterID: after_id,
+  });
   if (Result.isErr(res)) {
     const error = Result.unwrapErr(res);
 
