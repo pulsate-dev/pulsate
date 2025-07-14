@@ -59,7 +59,14 @@ importers:
     devDependencies:
       '@biomejs/biome':
         specifier: ^2.0.0
+<<<<<<< HEAD
         version: 2.1.2
+=======
+        version: 2.0.6
+      '@faker-js/faker':
+        specifier: ^9.9.0
+        version: 9.9.0
+>>>>>>> 885942f (chore: wip)
       '@ls-lint/ls-lint':
         specifier: ^2.2.3
         version: 2.3.1
@@ -331,6 +338,10 @@ packages:
     engines: {node: '>=18'}
     cpu: [x64]
     os: [win32]
+
+  '@faker-js/faker@9.9.0':
+    resolution: {integrity: sha512-OEl393iCOoo/z8bMezRlJu+GlRGlsKbUAN7jKB6LhnKoqKve5DXRpalbItIIcwnCjs1k/FOPjFzcA6Qn+H+YbA==}
+    engines: {node: '>=18.0.0', npm: '>=9.0.0'}
 
   '@hono/node-server@1.14.4':
     resolution: {integrity: sha512-DnxpshhYewr2q9ZN8ez/M5mmc3sucr8CT1sIgIy1bkeUXut9XWDkqHoFHRhWIQgkYnKpVRxunyhK7WzpJeJ6qQ==}
@@ -1502,7 +1513,13 @@ snapshots:
   '@esbuild/win32-x64@0.25.8':
     optional: true
 
+<<<<<<< HEAD
   '@hono/node-server@1.14.4(hono@4.8.5)':
+=======
+  '@faker-js/faker@9.9.0': {}
+
+  '@hono/node-server@1.14.4(hono@4.8.3)':
+>>>>>>> 885942f (chore: wip)
     dependencies:
       hono: 4.8.5
 
