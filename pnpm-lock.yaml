@@ -28,7 +28,7 @@ importers:
         version: 0.9.11(hono@4.8.4)
       argon2:
         specifier: ^0.43.0
-        version: 0.43.0
+        version: 0.43.1
       blurhash:
         specifier: ^2.0.5
         version: 2.0.5
@@ -753,8 +753,8 @@ packages:
     resolution: {integrity: sha512-bN798gFfQX+viw3R7yrGWRqnrN2oRkEkUjjl4JNn4E8GxxbjtG3FbrEIIY3l8/hrwUwIeCZvi4QuOTP4MErVug==}
     engines: {node: '>=12'}
 
-  argon2@0.43.0:
-    resolution: {integrity: sha512-u/HKLcbWShVDhkfwI4hWyiUf3qyX8QhTfaIv2cWE18uqhXCmR5hb6Ed7oqYi2KCQegeAnRhiFzbjzm7i5yl1GA==}
+  argon2@0.43.1:
+    resolution: {integrity: sha512-TfOzvDWUaQPurCT1hOwIeFNkgrAJDpbBGBGWDgzDsm11nNhImc13WhdGdCU6K7brkp8VpeY07oGtSex0Wmhg8w==}
     engines: {node: '>=16.17.0'}
 
   assertion-error@2.0.1:
@@ -1068,8 +1068,8 @@ packages:
     engines: {node: ^18 || >=20}
     hasBin: true
 
-  node-addon-api@8.3.1:
-    resolution: {integrity: sha512-lytcDEdxKjGJPTLEfW4mYMigRezMlyJY8W4wxJK8zE533Jlb8L8dRuObJFWg2P+AuOIxoCgKF+2Oq4d4Zd0OUA==}
+  node-addon-api@8.5.0:
+    resolution: {integrity: sha512-/bRZty2mXUIFY/xU5HLvveNHlswNJej+RnxBjOMkidWfwZzgTbPG1E3K5TOxRLOR+5hX7bSofy8yf1hZevMS8A==}
     engines: {node: ^18 || ^20 || >= 21}
 
   node-gyp-build@4.8.4:
@@ -1856,10 +1856,10 @@ snapshots:
 
   ansi-styles@6.2.1: {}
 
-  argon2@0.43.0:
+  argon2@0.43.1:
     dependencies:
       '@phc/format': 1.0.0
-      node-addon-api: 8.3.1
+      node-addon-api: 8.5.0
       node-gyp-build: 4.8.4
 
   assertion-error@2.0.1: {}
@@ -2164,7 +2164,7 @@ snapshots:
 
   nanoid@5.1.5: {}
 
-  node-addon-api@8.3.1: {}
+  node-addon-api@8.5.0: {}
 
   node-gyp-build@4.8.4: {}
 
