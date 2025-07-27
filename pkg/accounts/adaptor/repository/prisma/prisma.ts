@@ -22,6 +22,8 @@ import {
   type AccountRepository,
   type AccountVerifyTokenRepository,
   accountRepoSymbol,
+  type FetchFollowerFilter,
+  type FetchFollowingFilter,
   followRepoSymbol,
   verifyTokenRepoSymbol,
 } from '../../../model/repository.js';
@@ -326,7 +328,26 @@ export class PrismaAccountFollowRepository implements AccountFollowRepository {
 
   async fetchAllFollowers(
     accountID: AccountID,
+    filter?: Option.Option<FetchFollowerFilter>,
   ): Promise<Result.Result<Error, AccountFollow[]>> {
+    if (filter && Option.isSome(filter)) {
+      const filterValue = Option.unwrap(filter);
+      const whereConditions: Prisma.FollowingWhereInput = {};
+
+      if (filterValue.onlyFollower) {
+        whereConditions.toId = filterValue.actorID;
+      }
+
+      if (filterValue.onlyFollowing) {
+        whereConditions.fromId = filterValue.actorID;
+      }
+
+      const res = await this.prisma.following.findMany({
+        where: whereConditions,
+      });
+      return Result.ok(res.map((f) => this.fromPrismaArgs(f)));
+    }
+
     const res = await this.prisma.following.findMany({
       where: {
         toId: accountID,
@@ -336,7 +357,26 @@ export class PrismaAccountFollowRepository implements AccountFollowRepository {
   }
   async fetchAllFollowing(
     accountID: AccountID,
+    filter?: Option.Option<FetchFollowingFilter>,
   ): Promise<Result.Result<Error, AccountFollow[]>> {
+    if (filter && Option.isSome(filter)) {
+      const filterValue = filter[1];
+      const whereConditions: Prisma.FollowingWhereInput = {};
+
+      if (filterValue.onlyFollower) {
+        whereConditions.toId = filterValue.actorID;
+      }
+
+      if (filterValue.onlyFollowing) {
+        whereConditions.fromId = filterValue.actorID;
+      }
+
+      const res = await this.prisma.following.findMany({
+        where: whereConditions,
+      });
+      return Result.ok(res.map((f) => this.fromPrismaArgs(f)));
+    }
+
     const res = await this.prisma.following.findMany({
       where: {
         fromId: accountID,

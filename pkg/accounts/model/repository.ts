@@ -53,6 +53,18 @@ export interface AccountFollowCount {
   followers: number;
   following: number;
 }
+
+/**
+ * Base filter for account follow operations
+ */
+export interface AccountFollowBaseFilter {
+  actorID: AccountID;
+  onlyFollower: boolean;
+  onlyFollowing: boolean;
+}
+
+export type FetchFollowingFilter = AccountFollowBaseFilter;
+export type FetchFollowerFilter = AccountFollowBaseFilter;
 export interface AccountFollowRepository {
   follow(follow: AccountFollow): Promise<Result.Result<Error, void>>;
   unfollow(
@@ -61,9 +73,11 @@ export interface AccountFollowRepository {
   ): Promise<Result.Result<Error, void>>;
   fetchAllFollowers(
     accountID: AccountID,
+    filter?: Option.Option<FetchFollowerFilter>,
   ): Promise<Result.Result<Error, AccountFollow[]>>;
   fetchAllFollowing(
     accountID: AccountID,
+    filter?: Option.Option<FetchFollowingFilter>,
   ): Promise<Result.Result<Error, AccountFollow[]>>;
   fetchOrderedFollowers(
     accountID: AccountID,

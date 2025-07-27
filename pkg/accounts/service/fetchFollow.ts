@@ -8,6 +8,8 @@ import {
   type AccountFollowRepository,
   type AccountRepository,
   accountRepoSymbol,
+  type FetchFollowerFilter,
+  type FetchFollowingFilter,
   followRepoSymbol,
 } from '../model/repository.js';
 
@@ -19,12 +21,14 @@ export class FetchFollowService {
 
   async fetchFollowingsByID(
     id: AccountID,
+    filter?: Option.Option<FetchFollowingFilter>,
   ): Promise<Result.Result<Error, AccountFollow[]>> {
-    return this.accountFollowRepository.fetchAllFollowing(id);
+    return this.accountFollowRepository.fetchAllFollowing(id, filter);
   }
 
   async fetchFollowingsByName(
     name: AccountName,
+    filter?: Option.Option<FetchFollowingFilter>,
   ): Promise<Result.Result<Error, AccountFollow[]>> {
     const resId = Cat.cat(await this.accountRepository.findByName(name))
       .feed(
@@ -38,17 +42,19 @@ export class FetchFollowService {
       return resId;
     }
 
-    return this.fetchFollowingsByID(resId[1]);
+    return this.fetchFollowingsByID(Result.unwrap(resId), filter);
   }
 
   async fetchFollowersByID(
     id: AccountID,
+    filter?: Option.Option<FetchFollowerFilter>,
   ): Promise<Result.Result<Error, AccountFollow[]>> {
-    return this.accountFollowRepository.fetchAllFollowers(id);
+    return this.accountFollowRepository.fetchAllFollowers(id, filter);
   }
 
   async fetchFollowersByName(
     name: AccountName,
+    filter?: Option.Option<FetchFollowerFilter>,
   ): Promise<Result.Result<Error, AccountFollow[]>> {
     const resId = Cat.cat(await this.accountRepository.findByName(name))
       .feed(
@@ -62,7 +68,7 @@ export class FetchFollowService {
       return resId;
     }
 
-    return this.fetchFollowersByID(resId[1]);
+    return this.fetchFollowersByID(Result.unwrap(resId), filter);
   }
 
   async fetchFollowCount(
