@@ -31,18 +31,36 @@ export class InMemoryAccountFollowRepository
 
     const filterValue = Option.unwrap(filter);
 
-    let followers: AccountFollow[] = [];
-    if (filterValue.onlyFollower) {
-      const actorFollowers = this.getFollowerIds(filterValue.actorID);
-      followers = res.filter((f) => actorFollowers.includes(f.getFromID()));
+    // NOTE: both filters are false, equivalent to no filter
+    if (!filterValue.onlyFollower && !filterValue.onlyFollowing) {
+      return Result.ok(res);
     }
 
-    let followings: AccountFollow[] = [];
-    if (filterValue.onlyFollowing) {
-      const actorFollowing = this.getFollowingIds(filterValue.actorID);
-      followings = res.filter((f) => actorFollowing.includes(f.getFromID()));
-    }
-    return Result.ok([...followers, ...followings]);
+    const actorFollowers = this.getFollowerIds(filterValue.actorID);
+    const actorFollowing = this.getFollowingIds(filterValue.actorID);
+
+    const filtered = res.filter((f) => {
+      const fromID = f.getFromID();
+
+      if (filterValue.onlyFollower && filterValue.onlyFollowing) {
+        // mutial follows
+        return (
+          actorFollowers.includes(fromID) && actorFollowing.includes(fromID)
+        );
+      }
+
+      if (filterValue.onlyFollower) {
+        return actorFollowers.includes(fromID);
+      }
+
+      if (filterValue.onlyFollowing) {
+        return actorFollowing.includes(fromID);
+      }
+
+      return true;
+    });
+
+    return Result.ok(filtered);
   }
 
   async fetchAllFollowing(
@@ -57,19 +75,36 @@ export class InMemoryAccountFollowRepository
 
     const filterValue = Option.unwrap(filter);
 
-    let followers: AccountFollow[] = [];
-    if (filterValue.onlyFollower) {
-      const actorFollowers = this.getFollowerIds(filterValue.actorID);
-      followers = res.filter((f) => actorFollowers.includes(f.getTargetID()));
+    // NOTE: both filters are false, equivalent to no filter
+    if (!filterValue.onlyFollower && !filterValue.onlyFollowing) {
+      return Result.ok(res);
     }
 
-    let followings: AccountFollow[] = [];
-    if (filterValue.onlyFollowing) {
-      const actorFollowing = this.getFollowingIds(filterValue.actorID);
-      followings = res.filter((f) => actorFollowing.includes(f.getTargetID()));
-    }
+    const actorFollowers = this.getFollowerIds(filterValue.actorID);
+    const actorFollowing = this.getFollowingIds(filterValue.actorID);
 
-    return Result.ok([...followers, ...followings]);
+    const filtered = res.filter((f) => {
+      const targetID = f.getTargetID();
+
+      if (filterValue.onlyFollower && filterValue.onlyFollowing) {
+        // mutual follows
+        return (
+          actorFollowers.includes(targetID) && actorFollowing.includes(targetID)
+        );
+      }
+
+      if (filterValue.onlyFollower) {
+        return actorFollowers.includes(targetID);
+      }
+
+      if (filterValue.onlyFollowing) {
+        return actorFollowing.includes(targetID);
+      }
+
+      return true;
+    });
+
+    return Result.ok(filtered);
   }
 
   async follow(follow: AccountFollow): Promise<Result.Result<Error, void>> {
