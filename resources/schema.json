@@ -5869,6 +5869,514 @@
         }
       }
     },
+    "/v0/notifications": {
+      "get": {
+        "description": "Get notifications",
+        "tags": [
+          "notification"
+        ],
+        "parameters": [
+          {
+            "schema": {
+              "type": "number",
+              "minimum": 1,
+              "maximum": 50,
+              "default": 30
+            },
+            "required": false,
+            "name": "limit",
+            "in": "query"
+          },
+          {
+            "schema": {
+              "type": "string",
+              "description": "Return notes after this notification ID. Specified notification is not included."
+            },
+            "required": false,
+            "name": "after_id",
+            "in": "query"
+          },
+          {
+            "schema": {
+              "type": [
+                "boolean",
+                "null"
+              ],
+              "default": false
+            },
+            "required": false,
+            "name": "include_read",
+            "in": "query"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "anyOf": [
+                      {
+                        "type": "object",
+                        "properties": {
+                          "id": {
+                            "type": "string"
+                          },
+                          "actor": {
+                            "type": "object",
+                            "properties": {
+                              "type": {
+                                "anyOf": [
+                                  {
+                                    "type": "string",
+                                    "enum": [
+                                      "account"
+                                    ]
+                                  },
+                                  {
+                                    "type": "string",
+                                    "enum": [
+                                      "system"
+                                    ]
+                                  }
+                                ]
+                              },
+                              "id": {
+                                "type": "string"
+                              },
+                              "name": {
+                                "type": "string"
+                              },
+                              "nickname": {
+                                "type": "string"
+                              },
+                              "avatar": {
+                                "type": "string",
+                                "format": "uri"
+                              }
+                            },
+                            "required": [
+                              "type",
+                              "id",
+                              "name",
+                              "nickname",
+                              "avatar"
+                            ]
+                          },
+                          "createdAt": {
+                            "type": "string",
+                            "format": "date-time"
+                          },
+                          "type": {
+                            "type": "string",
+                            "enum": [
+                              "followed"
+                            ]
+                          }
+                        },
+                        "required": [
+                          "id",
+                          "actor",
+                          "createdAt",
+                          "type"
+                        ]
+                      },
+                      {
+                        "type": "object",
+                        "properties": {
+                          "id": {
+                            "type": "string"
+                          },
+                          "actor": {
+                            "type": "object",
+                            "properties": {
+                              "type": {
+                                "anyOf": [
+                                  {
+                                    "type": "string",
+                                    "enum": [
+                                      "account"
+                                    ]
+                                  },
+                                  {
+                                    "type": "string",
+                                    "enum": [
+                                      "system"
+                                    ]
+                                  }
+                                ]
+                              },
+                              "id": {
+                                "type": "string"
+                              },
+                              "name": {
+                                "type": "string"
+                              },
+                              "nickname": {
+                                "type": "string"
+                              },
+                              "avatar": {
+                                "type": "string",
+                                "format": "uri"
+                              }
+                            },
+                            "required": [
+                              "type",
+                              "id",
+                              "name",
+                              "nickname",
+                              "avatar"
+                            ]
+                          },
+                          "createdAt": {
+                            "type": "string",
+                            "format": "date-time"
+                          },
+                          "type": {
+                            "type": "string",
+                            "enum": [
+                              "followAccepted"
+                            ]
+                          }
+                        },
+                        "required": [
+                          "id",
+                          "actor",
+                          "createdAt",
+                          "type"
+                        ]
+                      },
+                      {
+                        "type": "object",
+                        "properties": {
+                          "id": {
+                            "type": "string"
+                          },
+                          "actor": {
+                            "type": "object",
+                            "properties": {
+                              "type": {
+                                "anyOf": [
+                                  {
+                                    "type": "string",
+                                    "enum": [
+                                      "account"
+                                    ]
+                                  },
+                                  {
+                                    "type": "string",
+                                    "enum": [
+                                      "system"
+                                    ]
+                                  }
+                                ]
+                              },
+                              "id": {
+                                "type": "string"
+                              },
+                              "name": {
+                                "type": "string"
+                              },
+                              "nickname": {
+                                "type": "string"
+                              },
+                              "avatar": {
+                                "type": "string",
+                                "format": "uri"
+                              }
+                            },
+                            "required": [
+                              "type",
+                              "id",
+                              "name",
+                              "nickname",
+                              "avatar"
+                            ]
+                          },
+                          "createdAt": {
+                            "type": "string",
+                            "format": "date-time"
+                          },
+                          "type": {
+                            "type": "string",
+                            "enum": [
+                              "followRequested"
+                            ]
+                          }
+                        },
+                        "required": [
+                          "id",
+                          "actor",
+                          "createdAt",
+                          "type"
+                        ]
+                      },
+                      {
+                        "type": "object",
+                        "properties": {
+                          "id": {
+                            "type": "string"
+                          },
+                          "actor": {
+                            "type": "object",
+                            "properties": {
+                              "type": {
+                                "anyOf": [
+                                  {
+                                    "type": "string",
+                                    "enum": [
+                                      "account"
+                                    ]
+                                  },
+                                  {
+                                    "type": "string",
+                                    "enum": [
+                                      "system"
+                                    ]
+                                  }
+                                ]
+                              },
+                              "id": {
+                                "type": "string"
+                              },
+                              "name": {
+                                "type": "string"
+                              },
+                              "nickname": {
+                                "type": "string"
+                              },
+                              "avatar": {
+                                "type": "string",
+                                "format": "uri"
+                              }
+                            },
+                            "required": [
+                              "type",
+                              "id",
+                              "name",
+                              "nickname",
+                              "avatar"
+                            ]
+                          },
+                          "createdAt": {
+                            "type": "string",
+                            "format": "date-time"
+                          },
+                          "type": {
+                            "type": "string",
+                            "enum": [
+                              "mentioned"
+                            ]
+                          },
+                          "noteId": {
+                            "type": "string"
+                          }
+                        },
+                        "required": [
+                          "id",
+                          "actor",
+                          "createdAt",
+                          "type",
+                          "noteId"
+                        ]
+                      },
+                      {
+                        "type": "object",
+                        "properties": {
+                          "id": {
+                            "type": "string"
+                          },
+                          "actor": {
+                            "type": "object",
+                            "properties": {
+                              "type": {
+                                "anyOf": [
+                                  {
+                                    "type": "string",
+                                    "enum": [
+                                      "account"
+                                    ]
+                                  },
+                                  {
+                                    "type": "string",
+                                    "enum": [
+                                      "system"
+                                    ]
+                                  }
+                                ]
+                              },
+                              "id": {
+                                "type": "string"
+                              },
+                              "name": {
+                                "type": "string"
+                              },
+                              "nickname": {
+                                "type": "string"
+                              },
+                              "avatar": {
+                                "type": "string",
+                                "format": "uri"
+                              }
+                            },
+                            "required": [
+                              "type",
+                              "id",
+                              "name",
+                              "nickname",
+                              "avatar"
+                            ]
+                          },
+                          "createdAt": {
+                            "type": "string",
+                            "format": "date-time"
+                          },
+                          "type": {
+                            "type": "string",
+                            "enum": [
+                              "renoted"
+                            ]
+                          },
+                          "noteId": {
+                            "type": "string"
+                          }
+                        },
+                        "required": [
+                          "id",
+                          "actor",
+                          "createdAt",
+                          "type",
+                          "noteId"
+                        ]
+                      },
+                      {
+                        "type": "object",
+                        "properties": {
+                          "id": {
+                            "type": "string"
+                          },
+                          "actor": {
+                            "type": "object",
+                            "properties": {
+                              "type": {
+                                "anyOf": [
+                                  {
+                                    "type": "string",
+                                    "enum": [
+                                      "account"
+                                    ]
+                                  },
+                                  {
+                                    "type": "string",
+                                    "enum": [
+                                      "system"
+                                    ]
+                                  }
+                                ]
+                              },
+                              "id": {
+                                "type": "string"
+                              },
+                              "name": {
+                                "type": "string"
+                              },
+                              "nickname": {
+                                "type": "string"
+                              },
+                              "avatar": {
+                                "type": "string",
+                                "format": "uri"
+                              }
+                            },
+                            "required": [
+                              "type",
+                              "id",
+                              "name",
+                              "nickname",
+                              "avatar"
+                            ]
+                          },
+                          "createdAt": {
+                            "type": "string",
+                            "format": "date-time"
+                          },
+                          "type": {
+                            "type": "string",
+                            "enum": [
+                              "reacted"
+                            ]
+                          },
+                          "noteId": {
+                            "type": "string"
+                          },
+                          "content": {
+                            "type": "string"
+                          }
+                        },
+                        "required": [
+                          "id",
+                          "actor",
+                          "createdAt",
+                          "type",
+                          "noteId",
+                          "content"
+                        ]
+                      }
+                    ]
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Nothing left",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string",
+                      "enum": [
+                        "NOTHING_LEFT"
+                      ],
+                      "description": "No more notes exist"
+                    }
+                  },
+                  "required": [
+                    "error"
+                  ]
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string",
+                      "enum": [
+                        "INTERNAL_ERROR"
+                      ],
+                      "description": "Internal server error"
+                    }
+                  },
+                  "required": [
+                    "error"
+                  ]
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/v0/notifications/:id/read": {
       "post": {
         "tags": [
