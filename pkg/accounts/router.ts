@@ -1201,7 +1201,7 @@ export const SetAccountHeaderRoute = createRoute({
 export const UnsetAccountHeaderRoute = createRoute({
   method: 'delete',
   tags: ['accounts'],
-  path: '/v0/accounts/:name/head',
+  path: '/v0/accounts/:name/header',
   security: [
     {
       bearer: [],
