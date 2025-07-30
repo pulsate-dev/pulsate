@@ -26,7 +26,7 @@ import {
   prismaFollowRepo,
   prismaVerifyTokenRepo,
 } from './adaptor/repository/prisma/prisma.js';
-import type { AccountName } from './model/account.js';
+import type { AccountID, AccountName } from './model/account.js';
 import {
   AccountAlreadyFollowingError,
   AccountAlreadyFrozenError,
@@ -619,9 +619,54 @@ accounts.openapi(ResendVerificationEmailRoute, async (c) => {
   return new Response(null, { status: 204 });
 });
 
+accounts[GetAccountFollowingRoute.method](
+  GetAccountFollowingRoute.path,
+  AuthMiddleware.handle({ forceAuthorized: false }),
+);
 accounts.openapi(GetAccountFollowingRoute, async (c) => {
   const id = c.req.param('id');
-  const res = await controller.fetchFollowing(id);
+  const { only_followers, only_following } = c.req.valid('query');
+
+  if (!only_followers && !only_following) {
+    const res = await controller.fetchFollowing(id, Option.none());
+    if (Result.isErr(res)) {
+      const error = Result.unwrapErr(res);
+      accountModuleLogger.warn(error);
+      if (error instanceof AccountNotFoundError) {
+        return c.json({ error: 'ACCOUNT_NOT_FOUND' as const }, 404);
+      }
+      accountModuleLogger.error('Uncaught error', error);
+      return c.json({ error: 'INTERNAL_ERROR' as const }, 500);
+    }
+    const unwrap = Result.unwrap(res);
+    return c.json(
+      unwrap.map((v) => ({
+        id: v.id,
+        name: v.name,
+        nickname: v.nickname,
+        bio: v.bio,
+        avatar: v.avatar,
+        header: v.header,
+        followed_count: v.followed_count,
+        following_count: v.following_count,
+        note_count: v.note_count,
+      })),
+      200,
+    );
+  }
+
+  const accountID = c.get('accountID');
+  if (!accountID || Option.isNone(accountID)) {
+    return c.json({ error: 'NO_PERMISSION' as const }, 403);
+  }
+
+  const filter = Option.some({
+    actorID: Option.unwrap(accountID) as AccountID,
+    onlyFollower: only_followers ?? false,
+    onlyFollowing: only_following ?? false,
+  });
+
+  const res = await controller.fetchFollowing(id, filter);
   if (Result.isErr(res)) {
     const error = Result.unwrapErr(res);
     accountModuleLogger.warn(error);
@@ -633,25 +678,69 @@ accounts.openapi(GetAccountFollowingRoute, async (c) => {
   }
   const unwrap = Result.unwrap(res);
   return c.json(
-    unwrap.map((v) => {
-      return {
-        id: v.id,
-        name: v.name,
-        nickname: v.nickname,
-        bio: v.bio,
-        avatar: v.avatar,
-        header: v.header,
-        followed_count: v.followed_count,
-        following_count: v.following_count,
-        note_count: v.note_count,
-      };
-    }),
+    unwrap.map((v) => ({
+      id: v.id,
+      name: v.name,
+      nickname: v.nickname,
+      bio: v.bio,
+      avatar: v.avatar,
+      header: v.header,
+      followed_count: v.followed_count,
+      following_count: v.following_count,
+      note_count: v.note_count,
+    })),
     200,
   );
 });
+
+accounts[GetAccountFollowerRoute.method](
+  GetAccountFollowerRoute.path,
+  AuthMiddleware.handle({ forceAuthorized: false }),
+);
 accounts.openapi(GetAccountFollowerRoute, async (c) => {
   const id = c.req.param('id');
-  const res = await controller.fetchFollower(id);
+  const { only_followers, only_following } = c.req.valid('query');
+
+  if (!only_followers && !only_following) {
+    const res = await controller.fetchFollower(id, Option.none());
+    if (Result.isErr(res)) {
+      const error = Result.unwrapErr(res);
+      accountModuleLogger.warn(error);
+      if (error instanceof AccountNotFoundError) {
+        return c.json({ error: 'ACCOUNT_NOT_FOUND' as const }, 404);
+      }
+      accountModuleLogger.error('Uncaught error', error);
+      return c.json({ error: 'INTERNAL_ERROR' as const }, 500);
+    }
+    const unwrap = Result.unwrap(res);
+    return c.json(
+      unwrap.map((v) => ({
+        id: v.id,
+        name: v.name,
+        nickname: v.nickname,
+        bio: v.bio,
+        avatar: v.avatar,
+        header: v.header,
+        followed_count: v.followed_count,
+        following_count: v.following_count,
+        note_count: v.note_count,
+      })),
+      200,
+    );
+  }
+
+  const accountID = c.get('accountID');
+  if (!accountID || Option.isNone(accountID)) {
+    return c.json({ error: 'NO_PERMISSION' as const }, 403);
+  }
+
+  const filter = Option.some({
+    actorID: accountID[1] as AccountID,
+    onlyFollower: only_followers ?? false,
+    onlyFollowing: only_following ?? false,
+  });
+
+  const res = await controller.fetchFollower(id, filter);
   if (Result.isErr(res)) {
     const error = Result.unwrapErr(res);
     accountModuleLogger.warn(error);
@@ -663,19 +752,17 @@ accounts.openapi(GetAccountFollowerRoute, async (c) => {
   }
   const unwrap = Result.unwrap(res);
   return c.json(
-    unwrap.map((v) => {
-      return {
-        id: v.id,
-        name: v.name,
-        nickname: v.nickname,
-        bio: v.bio,
-        avatar: v.avatar,
-        header: v.header,
-        followed_count: v.followed_count,
-        following_count: v.following_count,
-        note_count: v.note_count,
-      };
-    }),
+    unwrap.map((v) => ({
+      id: v.id,
+      name: v.name,
+      nickname: v.nickname,
+      bio: v.bio,
+      avatar: v.avatar,
+      header: v.header,
+      followed_count: v.followed_count,
+      following_count: v.following_count,
+      note_count: v.note_count,
+    })),
     200,
   );
 });

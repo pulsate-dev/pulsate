@@ -1,10 +1,12 @@
-import { Ether, Result } from '@mikuroxina/mini-fn';
+import { Ether, Option, Result } from '@mikuroxina/mini-fn';
 import type { AccountID } from '../../../model/account.js';
 import { AccountNotFoundError } from '../../../model/errors.js';
 import type { AccountFollow } from '../../../model/follow.js';
 import {
   type AccountFollowCount,
   type AccountFollowRepository,
+  type FetchFollowerFilter,
+  type FetchFollowingFilter,
   followRepoSymbol,
 } from '../../../model/repository.js';
 
@@ -19,16 +21,90 @@ export class InMemoryAccountFollowRepository
 
   async fetchAllFollowers(
     accountID: AccountID,
+    filter?: Option.Option<FetchFollowerFilter>,
   ): Promise<Result.Result<Error, AccountFollow[]>> {
     const res = [...this.data].filter((f) => f.getTargetID() === accountID);
-    return Result.ok(res);
+
+    if (!filter || Option.isNone(filter)) {
+      return Result.ok(res);
+    }
+
+    const filterValue = Option.unwrap(filter);
+
+    // NOTE: both filters are false, equivalent to no filter
+    if (!filterValue.onlyFollower && !filterValue.onlyFollowing) {
+      return Result.ok(res);
+    }
+
+    const actorFollowers = this.getFollowerIds(filterValue.actorID);
+    const actorFollowing = this.getFollowingIds(filterValue.actorID);
+
+    const filtered = res.filter((f) => {
+      const fromID = f.getFromID();
+
+      if (filterValue.onlyFollower && filterValue.onlyFollowing) {
+        // mutial follows
+        return (
+          actorFollowers.includes(fromID) && actorFollowing.includes(fromID)
+        );
+      }
+
+      if (filterValue.onlyFollower) {
+        return actorFollowers.includes(fromID);
+      }
+
+      if (filterValue.onlyFollowing) {
+        return actorFollowing.includes(fromID);
+      }
+
+      return true;
+    });
+
+    return Result.ok(filtered);
   }
 
   async fetchAllFollowing(
     accountID: AccountID,
+    filter?: Option.Option<FetchFollowingFilter>,
   ): Promise<Result.Result<Error, AccountFollow[]>> {
     const res = [...this.data].filter((f) => f.getFromID() === accountID);
-    return Result.ok(res);
+
+    if (!filter || Option.isNone(filter)) {
+      return Result.ok(res);
+    }
+
+    const filterValue = Option.unwrap(filter);
+
+    // NOTE: both filters are false, equivalent to no filter
+    if (!filterValue.onlyFollower && !filterValue.onlyFollowing) {
+      return Result.ok(res);
+    }
+
+    const actorFollowers = this.getFollowerIds(filterValue.actorID);
+    const actorFollowing = this.getFollowingIds(filterValue.actorID);
+
+    const filtered = res.filter((f) => {
+      const targetID = f.getTargetID();
+
+      if (filterValue.onlyFollower && filterValue.onlyFollowing) {
+        // mutual follows
+        return (
+          actorFollowers.includes(targetID) && actorFollowing.includes(targetID)
+        );
+      }
+
+      if (filterValue.onlyFollower) {
+        return actorFollowers.includes(targetID);
+      }
+
+      if (filterValue.onlyFollowing) {
+        return actorFollowing.includes(targetID);
+      }
+
+      return true;
+    });
+
+    return Result.ok(filtered);
   }
 
   async follow(follow: AccountFollow): Promise<Result.Result<Error, void>> {
@@ -97,6 +173,18 @@ export class InMemoryAccountFollowRepository
     }
 
     return Result.ok(count);
+  }
+
+  private getFollowerIds(actorID: AccountID): AccountID[] {
+    return [...this.data]
+      .filter((f) => f.getTargetID() === actorID)
+      .map((f) => f.getFromID());
+  }
+
+  private getFollowingIds(actorID: AccountID): AccountID[] {
+    return [...this.data]
+      .filter((f) => f.getFromID() === actorID)
+      .map((f) => f.getTargetID());
   }
 }
 

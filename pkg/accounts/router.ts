@@ -920,6 +920,14 @@ export const GetAccountFollowingRoute = createRoute({
           'Characters must be [A-Za-z0-9-.] The first and last characters must be [A-Za-z0-9-.]',
       }),
     }),
+    query: z.object({
+      only_followers: z.optional(z.boolean()).openapi({
+        description: 'Filter to accounts that follow the requesting user',
+      }),
+      only_following: z.optional(z.boolean()).openapi({
+        description: 'Filter to accounts that the requesting user follows',
+      }),
+    }),
   },
   responses: {
     200: {
@@ -927,6 +935,20 @@ export const GetAccountFollowingRoute = createRoute({
       content: {
         'application/json': {
           schema: GetAccountFollowingSchema,
+        },
+      },
+    },
+    403: {
+      description: 'Forbidden',
+      content: {
+        'application/json': {
+          schema: z
+            .object({
+              error: NoPermission,
+            })
+            .openapi({
+              description: 'Authentication required when using filters',
+            }),
         },
       },
     },
@@ -966,6 +988,14 @@ export const GetAccountFollowerRoute = createRoute({
           'Characters must be [A-Za-z0-9-.] The first and last characters must be [A-Za-z0-9-.]',
       }),
     }),
+    query: z.object({
+      only_followers: z.optional(z.boolean()).openapi({
+        description: 'Filter to accounts that follow the requesting user',
+      }),
+      only_following: z.optional(z.boolean()).openapi({
+        description: 'Filter to accounts that the requesting user follows',
+      }),
+    }),
   },
   responses: {
     200: {
@@ -973,6 +1003,20 @@ export const GetAccountFollowerRoute = createRoute({
       content: {
         'application/json': {
           schema: GetAccountFollowingSchema,
+        },
+      },
+    },
+    403: {
+      description: 'Forbidden',
+      content: {
+        'application/json': {
+          schema: z
+            .object({
+              error: NoPermission,
+            })
+            .openapi({
+              description: 'Authentication required when using filters',
+            }),
         },
       },
     },

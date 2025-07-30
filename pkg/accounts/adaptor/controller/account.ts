@@ -4,7 +4,11 @@ import { Option, Result } from '@mikuroxina/mini-fn';
 import type { Medium, MediumID } from '../../../drive/model/medium.js';
 import type { AccountID, AccountName } from '../../model/account.js';
 import type { AccountFollow } from '../../model/follow.js';
-import type { AccountFollowCount } from '../../model/repository.js';
+import type {
+  AccountFollowCount,
+  FetchFollowerFilter,
+  FetchFollowingFilter,
+} from '../../model/repository.js';
 import type { AuthenticateService } from '../../service/authenticate.js';
 import type {
   AuthenticationToken,
@@ -432,10 +436,16 @@ export class AccountController {
 
   async fetchFollowing(
     id: string,
+    filter?: Option.Option<FetchFollowingFilter>,
   ): Promise<Result.Result<Error, z.infer<typeof GetAccountFollowingSchema>>> {
     const followings = Result.map((v: AccountFollow[]) =>
       v.map((v) => v.getTargetID()),
-    )(await this.fetchFollowService.fetchFollowingsByID(id as AccountID));
+    )(
+      await this.fetchFollowService.fetchFollowingsByID(
+        id as AccountID,
+        filter,
+      ),
+    );
 
     if (Result.isErr(followings)) {
       return followings;
@@ -511,10 +521,13 @@ export class AccountController {
 
   async fetchFollower(
     id: string,
+    filter?: Option.Option<FetchFollowerFilter>,
   ): Promise<Result.Result<Error, z.infer<typeof GetAccountFollowerSchema>>> {
     const followers = Result.map((v: AccountFollow[]) =>
       v.map((v) => v.getFromID()),
-    )(await this.fetchFollowService.fetchFollowersByID(id as AccountID));
+    )(
+      await this.fetchFollowService.fetchFollowersByID(id as AccountID, filter),
+    );
 
     if (Result.isErr(followers)) {
       return followers;
