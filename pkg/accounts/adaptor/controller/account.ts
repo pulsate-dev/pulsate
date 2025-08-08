@@ -18,6 +18,7 @@ import type { FollowService } from '../../service/follow.js';
 import type { FreezeService } from '../../service/freeze.js';
 import type { AccountHeaderService } from '../../service/header.js';
 import type { RegisterService } from '../../service/register.js';
+import type { FetchRelationshipService } from '../../service/relationships.js';
 import type { ResendVerifyTokenService } from '../../service/resendToken.js';
 import type { SilenceService } from '../../service/silence.js';
 import type { UnfollowService } from '../../service/unfollow.js';
@@ -26,6 +27,7 @@ import type {
   CreateAccountResponseSchema,
   GetAccountFollowerSchema,
   GetAccountFollowingSchema,
+  GetAccountRelationshipsResponseSchema,
   GetAccountResponseSchema,
   LoginResponseSchema,
   RefreshResponseSchema,
@@ -47,6 +49,7 @@ export class AccountController {
   private readonly headerService: AccountHeaderService;
   private readonly avatarService: AccountAvatarService;
   private readonly authenticationTokenService: AuthenticationTokenService;
+  private readonly fetchRelationshipService: FetchRelationshipService;
 
   constructor(args: {
     registerService: RegisterService;
@@ -63,6 +66,7 @@ export class AccountController {
     headerService: AccountHeaderService;
     avatarService: AccountAvatarService;
     authenticationTokenService: AuthenticationTokenService;
+    fetchRelationshipService: FetchRelationshipService;
   }) {
     this.registerService = args.registerService;
     this.editService = args.editService;
@@ -78,6 +82,7 @@ export class AccountController {
     this.headerService = args.headerService;
     this.avatarService = args.avatarService;
     this.authenticationTokenService = args.authenticationTokenService;
+    this.fetchRelationshipService = args.fetchRelationshipService;
   }
 
   async createAccount(
@@ -665,5 +670,30 @@ export class AccountController {
 
   async verifyAuthToken(token: string): Promise<Result.Result<Error, void>> {
     return this.authenticationTokenService.verify(token);
+  }
+
+  async getAccountRelationships(
+    targetAccountID: string,
+    fromAccountID: string,
+  ): Promise<
+    Result.Result<Error, z.infer<typeof GetAccountRelationshipsResponseSchema>>
+  > {
+    const relationships =
+      await this.fetchRelationshipService.checkRelationships(
+        targetAccountID as AccountID,
+        fromAccountID as AccountID,
+      );
+
+    if (Result.isErr(relationships)) {
+      return relationships;
+    }
+
+    const relationshipsData = Result.unwrap(relationships);
+    return Result.ok({
+      id: relationshipsData.id,
+      is_followed: relationshipsData.isFollowed,
+      is_following: relationshipsData.isFollowing,
+      is_follow_requesting: relationshipsData.isFollowRequesting,
+    });
   }
 }
