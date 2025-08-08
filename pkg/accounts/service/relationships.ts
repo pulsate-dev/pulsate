@@ -11,9 +11,9 @@ import {
 
 export interface AccountRelationships {
   id: AccountID;
-  is_followed: boolean;
-  is_following: boolean;
-  is_follow_requesting: boolean;
+  isFollowed: boolean;
+  isFollowing: boolean;
+  isFollowRequesting: boolean;
 }
 
 export class FetchRelationshipService {
@@ -59,10 +59,10 @@ export class FetchRelationshipService {
 
     return Result.ok({
       id: targetAccountID,
-      is_followed: isFollowed,
-      is_following: isFollowing,
+      isFollowed: isFollowed,
+      isFollowing: isFollowing,
       // ToDo: implement follow request feature
-      is_follow_requesting: false,
+      isFollowRequesting: false,
     });
   }
 }

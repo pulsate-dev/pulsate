@@ -691,9 +691,9 @@ export class AccountController {
     const relationshipsData = Result.unwrap(relationships);
     return Result.ok({
       id: relationshipsData.id,
-      is_followed: relationshipsData.is_followed,
-      is_following: relationshipsData.is_following,
-      is_follow_requesting: relationshipsData.is_follow_requesting,
+      is_followed: relationshipsData.isFollowed,
+      is_following: relationshipsData.isFollowing,
+      is_follow_requesting: relationshipsData.isFollowRequesting,
     });
   }
 }
