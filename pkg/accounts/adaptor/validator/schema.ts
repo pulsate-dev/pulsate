@@ -256,3 +256,25 @@ const SetAccountImageRequestBaseSchema = z.object({
 
 export const SetAccountAvatarRequestSchema = SetAccountImageRequestBaseSchema;
 export const SetAccountHeaderRequestSchema = SetAccountImageRequestBaseSchema;
+
+export const GetAccountRelationshipsResponseSchema = z
+  .object({
+    id: z.string().openapi({
+      description: 'Account ID',
+      example: '31415926535',
+    }),
+    is_followed: z.boolean().openapi({
+      description: 'Whether the account is followed by the target account',
+      example: false,
+    }),
+    is_following: z.boolean().openapi({
+      description: 'Whether the account is following the target account',
+      example: true,
+    }),
+    is_follow_requesting: z.boolean().openapi({
+      description:
+        'Whether a follow request has been sent to the target account',
+      example: false,
+    }),
+  })
+  .openapi('GetAccountRelationshipsResponse');

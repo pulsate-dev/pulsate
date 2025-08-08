@@ -57,6 +57,7 @@ import {
   FreezeAccountRoute,
   GetAccountFollowerRoute,
   GetAccountFollowingRoute,
+  GetAccountRelationshipsRoute,
   GetAccountRoute,
   LoginRoute,
   RefreshRoute,
@@ -86,6 +87,7 @@ import { follow } from './service/follow.js';
 import { freeze } from './service/freeze.js';
 import { accountHeader } from './service/header.js';
 import { register } from './service/register.js';
+import { fetchRelationship } from './service/relationships.js';
 import { resendToken } from './service/resendToken.js';
 import { dummy } from './service/sendNotification.js';
 import { silence } from './service/silence.js';
@@ -210,6 +212,11 @@ export const controller = new AccountController({
       .feed(Ether.compose(mediaModuleFacadeEther)).value,
   ),
   authenticationTokenService: await Ether.runEtherT(authToken),
+  fetchRelationshipService: Ether.runEther(
+    Cat.cat(fetchRelationship)
+      .feed(Ether.compose(accountRepository))
+      .feed(Ether.compose(accountFollowRepository)).value,
+  ),
 });
 
 // ToDo: load secret from config file
@@ -785,4 +792,29 @@ accounts.openapi(UnsetAccountHeaderRoute, async (c) => {
   }
 
   return new Response(null, { status: 204 });
+});
+
+accounts[GetAccountRelationshipsRoute.method](
+  GetAccountRelationshipsRoute.path,
+  AuthMiddleware.handle({ forceAuthorized: true }),
+);
+accounts.openapi(GetAccountRelationshipsRoute, async (c) => {
+  const targetAccountID = c.req.param('id');
+  const fromAccountID = Option.unwrap(c.get('accountID'));
+
+  const res = await controller.getAccountRelationships(
+    targetAccountID,
+    fromAccountID,
+  );
+  if (Result.isErr(res)) {
+    const error = Result.unwrapErr(res);
+    accountModuleLogger.warn(error);
+    if (error instanceof AccountNotFoundError) {
+      return c.json({ error: 'ACCOUNT_NOT_FOUND' as const }, 404);
+    }
+    accountModuleLogger.error('Uncaught error', error);
+    return c.json({ error: 'INTERNAL_ERROR' as const }, 500);
+  }
+
+  return c.json(Result.unwrap(res), 200);
 });

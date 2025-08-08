@@ -28,6 +28,7 @@ import {
   CreateAccountRequestSchema,
   CreateAccountResponseSchema,
   GetAccountFollowingSchema,
+  GetAccountRelationshipsResponseSchema,
   GetAccountResponseSchema,
   LoginRequestSchema,
   LoginResponseSchema,
@@ -1231,6 +1232,57 @@ export const UnsetAccountHeaderRoute = createRoute({
             .openapi({
               description: 'You can not do this action.',
             }),
+        },
+      },
+    },
+    404: {
+      description: 'Not Found',
+      content: {
+        'application/json': {
+          schema: z
+            .object({
+              error: AccountNotFound,
+            })
+            .openapi({
+              description: 'account not found',
+            }),
+        },
+      },
+    },
+    500: {
+      description: 'Internal Server Error',
+      content: {
+        'application/json': {
+          schema: InternalErrorResponseSchema,
+        },
+      },
+    },
+  },
+});
+
+export const GetAccountRelationshipsRoute = createRoute({
+  method: 'get',
+  tags: ['accounts'],
+  path: '/v0/accounts/:id/relationships',
+  security: [
+    {
+      bearer: [],
+    },
+  ],
+  request: {
+    params: z.object({
+      id: z.string().openapi({
+        example: '31415926535',
+        description: 'Account ID',
+      }),
+    }),
+  },
+  responses: {
+    200: {
+      description: 'OK',
+      content: {
+        'application/json': {
+          schema: GetAccountRelationshipsResponseSchema,
         },
       },
     },
