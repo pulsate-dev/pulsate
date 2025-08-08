@@ -65,9 +65,9 @@ describe('FetchRelationshipService', () => {
         const relationships = Result.unwrap(result);
         expect(relationships).toEqual({
           id: '2',
-          is_followed: true,
-          is_following: true,
-          is_follow_requesting: false,
+          isFollowed: true,
+          isFollowing: true,
+          isFollowRequesting: false,
         });
       });
 
@@ -89,9 +89,9 @@ describe('FetchRelationshipService', () => {
         const relationships = Result.unwrap(result);
         expect(relationships).toEqual({
           id: '2',
-          is_followed: false,
-          is_following: true,
-          is_follow_requesting: false,
+          isFollowed: false,
+          isFollowing: true,
+          isFollowRequesting: false,
         });
       });
 
@@ -111,9 +111,9 @@ describe('FetchRelationshipService', () => {
         const relationships = Result.unwrap(result);
         expect(relationships).toEqual({
           id: '2',
-          is_followed: false,
-          is_following: false,
-          is_follow_requesting: false,
+          isFollowed: false,
+          isFollowing: false,
+          isFollowRequesting: false,
         });
       });
     });
