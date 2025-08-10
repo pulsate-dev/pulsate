@@ -32,22 +32,14 @@ import {
 */
 const timelineFilterQuerySchema = z
   .object({
-    has_attachment: z
-      .string()
-      .optional()
-      .pipe(z.coerce.boolean().default(false))
-      .openapi({
-        type: 'boolean',
-        description: 'If true, only return notes with attachment',
-      }),
-    no_nsfw: z
-      .string()
-      .optional()
-      .pipe(z.coerce.boolean().default(false))
-      .openapi({
-        type: 'boolean',
-        description: 'If true, only return notes without sensitive content',
-      }),
+    has_attachment: z.coerce.boolean().optional().default(false).openapi({
+      type: 'boolean',
+      description: 'If true, only return notes with attachment',
+    }),
+    no_nsfw: z.coerce.boolean().optional().default(false).openapi({
+      type: 'boolean',
+      description: 'If true, only return notes without sensitive content',
+    }),
     before_id: z.string().optional().openapi({
       description:
         'Return notes before this note ID. specified note ID is not included. NOTE: after_id and before_id are exclusive.',

@@ -98,7 +98,7 @@ export const CreateListRequestSchema = z
       example: 'Pulsate developers',
       description: 'List title (1-100 characters)',
     }),
-    public: z.boolean().pipe(z.coerce.boolean().default(false)).openapi({
+    public: z.coerce.boolean().default(false).openapi({
       type: 'boolean',
       example: false,
       description: 'If true, list is public',
@@ -115,7 +115,7 @@ export const CreateListResponseSchema = z
       example: 'Pulsate developers',
       description: 'List title',
     }),
-    public: z.boolean().pipe(z.coerce.boolean().default(false)).openapi({
+    public: z.coerce.boolean().default(false).openapi({
       type: 'boolean',
       example: false,
       description: 'If true, list is public',
@@ -152,7 +152,7 @@ export const EditListResponseSchema = z
       example: 'Pulsate developers',
       description: 'List title',
     }),
-    public: z.boolean().pipe(z.coerce.boolean().default(false)).openapi({
+    public: z.coerce.boolean().default(false).openapi({
       type: 'boolean',
       example: false,
       description: 'If true, list is public',
@@ -170,7 +170,7 @@ export const FetchListResponseSchema = z
       example: 'Pulsate developers',
       description: 'List title',
     }),
-    public: z.boolean().pipe(z.coerce.boolean().default(false)).openapi({
+    public: z.coerce.boolean().default(false).openapi({
       type: 'boolean',
       example: false,
       description: 'If true, list is public',
