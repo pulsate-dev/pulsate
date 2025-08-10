@@ -48,6 +48,9 @@
     "tslog": "^4.9.3",
     "typescript": "^5.3.3"
   },
+  "peerDependencies": {
+    "zod": "^4.0.0"
+  },
   "devDependencies": {
     "@biomejs/biome": "^2.0.0",
     "@ls-lint/ls-lint": "^2.2.3",
