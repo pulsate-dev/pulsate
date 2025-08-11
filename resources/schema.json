@@ -24,19 +24,19 @@
         "properties": {
           "id": {
             "type": "string",
-            "description": "Account ID",
-            "example": "38477395"
+            "example": "38477395",
+            "description": "Account ID"
           },
           "name": {
             "type": "string",
-            "description": "account name",
-            "example": "@example_man@example.com"
+            "example": "@example_man@example.com",
+            "description": "account name"
           },
           "email": {
             "type": "string",
             "format": "email",
-            "description": "account email address",
-            "example": "foo@example.com"
+            "example": "foo@example.com",
+            "description": "account email address"
           }
         },
         "required": [
@@ -67,8 +67,8 @@
             "type": "string",
             "minLength": 1,
             "maxLength": 64,
-            "description": "Characters must be [A-Za-z0-9-.] The first and last characters must be [A-Za-z0-9-.]",
-            "example": "@example_man@example.com"
+            "example": "@example_man@example.com",
+            "description": "Characters must be [A-Za-z0-9-.] The first and last characters must be [A-Za-z0-9-.]"
           },
           "email": {
             "type": "string",
@@ -79,8 +79,8 @@
             "type": "string",
             "minLength": 8,
             "maxLength": 512,
-            "description": "Passphrase must be a UTF-8 string excluding spaces, tabs, full-width spaces, newlines, and null characters.",
-            "example": "じゃすた・いぐざんぽぅ"
+            "example": "じゃすた・いぐざんぽぅ",
+            "description": "Passphrase must be a UTF-8 string excluding spaces, tabs, full-width spaces, newlines, and null characters."
           },
           "captcha_token": {
             "type": "string",
@@ -99,18 +99,18 @@
         "properties": {
           "id": {
             "type": "string",
-            "description": "Account ID",
-            "example": "38477395"
+            "example": "38477395",
+            "description": "Account ID"
           },
           "name": {
             "type": "string",
-            "description": "account name",
-            "example": "@example_man@example.com"
+            "example": "@example_man@example.com",
+            "description": "account name"
           },
           "nickname": {
             "type": "string",
-            "description": "account nickname",
-            "example": "John Doe"
+            "example": "John Doe",
+            "description": "account nickname"
           },
           "bio": {
             "type": "string",
@@ -126,8 +126,8 @@
           "email": {
             "type": "string",
             "format": "email",
-            "description": "account email address",
-            "example": "foo@example.com"
+            "example": "foo@example.com",
+            "description": "account email address"
           }
         },
         "required": [
@@ -280,6 +280,7 @@
           },
           "created_at": {
             "type": "string",
+            "format": "date",
             "description": "account created at (only when logged in to an account with viewing privileges)",
             "example": "2021-01-01T00:00:00Z"
           }
@@ -368,6 +369,37 @@
           "$ref": "#/components/schemas/GetAccountResponse"
         }
       },
+      "GetAccountRelationshipsResponse": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "Account ID",
+            "example": "31415926535"
+          },
+          "is_followed": {
+            "type": "boolean",
+            "description": "Whether the account is followed by the target account",
+            "example": false
+          },
+          "is_following": {
+            "type": "boolean",
+            "description": "Whether the account is following the target account",
+            "example": true
+          },
+          "is_follow_requesting": {
+            "type": "boolean",
+            "description": "Whether a follow request has been sent to the target account",
+            "example": false
+          }
+        },
+        "required": [
+          "id",
+          "is_followed",
+          "is_following",
+          "is_follow_requesting"
+        ]
+      },
       "GetAccountTimelineResponse": {
         "type": "array",
         "items": {
@@ -375,29 +407,29 @@
           "properties": {
             "id": {
               "type": "string",
-              "description": "Note ID",
-              "example": "38477395"
+              "example": "38477395",
+              "description": "Note ID"
             },
             "content": {
               "type": "string",
-              "description": "Note content",
-              "example": "hello world!"
+              "example": "hello world!",
+              "description": "Note content"
             },
             "contents_warning_comment": {
               "type": "string",
-              "description": "Contents warning comment",
-              "example": "(if length not 0) This note contains sensitive content"
+              "example": "(if length not 0) This note contains sensitive content",
+              "description": "Contents warning comment"
             },
             "visibility": {
               "type": "string",
-              "description": "Note visibility (PUBLIC/HOME/FOLLOWERS/DIRECT)",
-              "example": "PUBLIC"
+              "example": "PUBLIC",
+              "description": "Note visibility (PUBLIC/HOME/FOLLOWERS/DIRECT)"
             },
             "created_at": {
               "type": "string",
               "format": "date-time",
-              "description": "Note created date",
-              "example": "2021-01-01T00:00:00Z"
+              "example": "2021-01-01T00:00:00Z",
+              "description": "Note created date"
             },
             "reactions": {
               "type": "array",
@@ -423,8 +455,8 @@
                   },
                   "reacted_by": {
                     "type": "string",
-                    "description": "Reacted account ID",
-                    "example": "38477395"
+                    "example": "38477395",
+                    "description": "Reacted account ID"
                   }
                 },
                 "required": [
@@ -441,28 +473,28 @@
                 "properties": {
                   "id": {
                     "type": "string",
-                    "description": "attachment Medium id",
-                    "example": "39783475"
+                    "example": "39783475",
+                    "description": "attachment Medium id"
                   },
                   "name": {
                     "type": "string",
-                    "description": "attachment filename",
-                    "example": "image.jpg"
+                    "example": "image.jpg",
+                    "description": "attachment filename"
                   },
                   "author_id": {
                     "type": "string",
-                    "description": "attachment author account id",
-                    "example": "309823457"
+                    "example": "309823457",
+                    "description": "attachment author account id"
                   },
                   "hash": {
                     "type": "string",
-                    "description": "attachment medium blurhash",
-                    "example": "e9f*5oin{dn"
+                    "example": "e9f*5oin{dn",
+                    "description": "attachment medium blurhash"
                   },
                   "mime": {
                     "type": "string",
-                    "description": "attachment medium mime type",
-                    "example": "image/jpeg"
+                    "example": "image/jpeg",
+                    "description": "attachment medium mime type"
                   },
                   "nsfw": {
                     "type": "boolean",
@@ -472,13 +504,13 @@
                   "url": {
                     "type": "string",
                     "format": "uri",
-                    "description": "attachment medium url",
-                    "example": "https://images.example.com/image.webp"
+                    "example": "https://images.example.com/image.webp",
+                    "description": "attachment medium url"
                   },
                   "thumbnail": {
                     "type": "string",
-                    "description": "attachment thumbnail url",
-                    "example": "https://images.example.com/image_thumbnail.webp"
+                    "example": "https://images.example.com/image_thumbnail.webp",
+                    "description": "attachment thumbnail url"
                   }
                 },
                 "required": [
@@ -557,29 +589,29 @@
           "properties": {
             "id": {
               "type": "string",
-              "description": "Note ID",
-              "example": "38477395"
+              "example": "38477395",
+              "description": "Note ID"
             },
             "content": {
               "type": "string",
-              "description": "Note content",
-              "example": "hello world!"
+              "example": "hello world!",
+              "description": "Note content"
             },
             "contents_warning_comment": {
               "type": "string",
-              "description": "Contents warning comment",
-              "example": "(if length not 0) This note contains sensitive content"
+              "example": "(if length not 0) This note contains sensitive content",
+              "description": "Contents warning comment"
             },
             "visibility": {
               "type": "string",
-              "description": "Note visibility (PUBLIC/HOME/FOLLOWERS/DIRECT)",
-              "example": "PUBLIC"
+              "example": "PUBLIC",
+              "description": "Note visibility (PUBLIC/HOME/FOLLOWERS/DIRECT)"
             },
             "created_at": {
               "type": "string",
               "format": "date-time",
-              "description": "Note created date",
-              "example": "2021-01-01T00:00:00Z"
+              "example": "2021-01-01T00:00:00Z",
+              "description": "Note created date"
             },
             "author": {
               "type": "object",
@@ -644,8 +676,8 @@
                   },
                   "reacted_by": {
                     "type": "string",
-                    "description": "Reacted account ID",
-                    "example": "38477395"
+                    "example": "38477395",
+                    "description": "Reacted account ID"
                   }
                 },
                 "required": [
@@ -662,28 +694,28 @@
                 "properties": {
                   "id": {
                     "type": "string",
-                    "description": "attachment Medium id",
-                    "example": "39783475"
+                    "example": "39783475",
+                    "description": "attachment Medium id"
                   },
                   "name": {
                     "type": "string",
-                    "description": "attachment filename",
-                    "example": "image.jpg"
+                    "example": "image.jpg",
+                    "description": "attachment filename"
                   },
                   "author_id": {
                     "type": "string",
-                    "description": "attachment author account id",
-                    "example": "309823457"
+                    "example": "309823457",
+                    "description": "attachment author account id"
                   },
                   "hash": {
                     "type": "string",
-                    "description": "attachment medium blurhash",
-                    "example": "e9f*5oin{dn"
+                    "example": "e9f*5oin{dn",
+                    "description": "attachment medium blurhash"
                   },
                   "mime": {
                     "type": "string",
-                    "description": "attachment medium mime type",
-                    "example": "image/jpeg"
+                    "example": "image/jpeg",
+                    "description": "attachment medium mime type"
                   },
                   "nsfw": {
                     "type": "boolean",
@@ -693,13 +725,13 @@
                   "url": {
                     "type": "string",
                     "format": "uri",
-                    "description": "attachment medium url",
-                    "example": "https://images.example.com/image.webp"
+                    "example": "https://images.example.com/image.webp",
+                    "description": "attachment medium url"
                   },
                   "thumbnail": {
                     "type": "string",
-                    "description": "attachment thumbnail url",
-                    "example": "https://images.example.com/image_thumbnail.webp"
+                    "example": "https://images.example.com/image_thumbnail.webp",
+                    "description": "attachment thumbnail url"
                   }
                 },
                 "required": [
@@ -737,18 +769,18 @@
         "properties": {
           "id": {
             "type": "string",
-            "description": "List ID",
-            "example": "38477395"
+            "example": "38477395",
+            "description": "List ID"
           },
           "title": {
             "type": "string",
-            "description": "List title",
-            "example": "Pulsate developers"
+            "example": "Pulsate developers",
+            "description": "List title"
           },
           "public": {
             "type": "boolean",
-            "description": "If true, list is public",
-            "example": false
+            "example": false,
+            "description": "If true, list is public"
           }
         },
         "required": [
@@ -762,13 +794,13 @@
         "properties": {
           "title": {
             "type": "string",
-            "description": "List title (1-100 characters)",
-            "example": "Pulsate developers"
+            "example": "Pulsate developers",
+            "description": "List title (1-100 characters)"
           },
           "public": {
             "type": "boolean",
-            "description": "If true, list is public",
-            "example": false
+            "example": false,
+            "description": "If true, list is public"
           }
         },
         "required": [
@@ -781,18 +813,18 @@
         "properties": {
           "id": {
             "type": "string",
-            "description": "List ID",
-            "example": "38477395"
+            "example": "38477395",
+            "description": "List ID"
           },
           "title": {
             "type": "string",
-            "description": "List title",
-            "example": "Pulsate developers"
+            "example": "Pulsate developers",
+            "description": "List title"
           },
           "public": {
             "type": "boolean",
-            "description": "If true, list is public",
-            "example": false
+            "example": false,
+            "description": "If true, list is public"
           }
         },
         "required": [
@@ -806,13 +838,13 @@
         "properties": {
           "title": {
             "type": "string",
-            "description": "List title",
-            "example": "Pulsate developers"
+            "example": "Pulsate developers",
+            "description": "List title"
           },
           "public": {
             "type": "boolean",
-            "description": "If true, list is public",
-            "example": false
+            "example": false,
+            "description": "If true, list is public"
           }
         }
       },
@@ -821,18 +853,18 @@
         "properties": {
           "id": {
             "type": "string",
-            "description": "List ID",
-            "example": "38477395"
+            "example": "38477395",
+            "description": "List ID"
           },
           "title": {
             "type": "string",
-            "description": "List title",
-            "example": "Pulsate developers"
+            "example": "Pulsate developers",
+            "description": "List title"
           },
           "public": {
             "type": "boolean",
-            "description": "If true, list is public",
-            "example": false
+            "example": false,
+            "description": "If true, list is public"
           }
         },
         "required": [
@@ -851,24 +883,24 @@
               "properties": {
                 "id": {
                   "type": "string",
-                  "description": "Assignee account ID",
-                  "example": "30984308495"
+                  "example": "30984308495",
+                  "description": "Assignee account ID"
                 },
                 "name": {
                   "type": "string",
-                  "description": "Assignee account name",
-                  "example": "@john@example.com"
+                  "example": "@john@example.com",
+                  "description": "Assignee account name"
                 },
                 "nickname": {
                   "type": "string",
-                  "description": "Assignee nickname",
-                  "example": "John Doe"
+                  "example": "John Doe",
+                  "description": "Assignee nickname"
                 },
                 "avatar": {
                   "type": "string",
                   "format": "uri",
-                  "description": "avatar URL",
-                  "example": "https://example.com/avatar.png"
+                  "example": "https://example.com/avatar.png",
+                  "description": "avatar URL"
                 }
               },
               "required": [
@@ -894,24 +926,24 @@
               "properties": {
                 "id": {
                   "type": "string",
-                  "description": "Assignee account ID",
-                  "example": "30984308495"
+                  "example": "30984308495",
+                  "description": "Assignee account ID"
                 },
                 "name": {
                   "type": "string",
-                  "description": "Assignee account name",
-                  "example": "@john@example.com"
+                  "example": "@john@example.com",
+                  "description": "Assignee account name"
                 },
                 "nickname": {
                   "type": "string",
-                  "description": "Assignee nickname",
-                  "example": "John Doe"
+                  "example": "John Doe",
+                  "description": "Assignee nickname"
                 },
                 "avatar": {
                   "type": "string",
                   "format": "uri",
-                  "description": "avatar URL",
-                  "example": "https://example.com/avatar.png"
+                  "example": "https://example.com/avatar.png",
+                  "description": "avatar URL"
                 }
               },
               "required": [
@@ -924,8 +956,8 @@
             "updatedAt": {
               "type": "string",
               "format": "date-time",
-              "description": "Last message sent",
-              "example": "2023-09-10T00:00:00.000Z"
+              "example": "2023-09-10T00:00:00.000Z",
+              "description": "Last message sent"
             }
           },
           "required": [
@@ -994,8 +1026,8 @@
                           "description": "CAPTCHA verification failed."
                         }
                       ],
-                      "description": "Error codes",
-                      "example": "INVALID_ACCOUNT_NAME"
+                      "example": "INVALID_ACCOUNT_NAME",
+                      "description": "Error codes"
                     }
                   },
                   "required": [
@@ -1029,8 +1061,8 @@
                           "description": "Account name is already in use."
                         }
                       ],
-                      "description": "Error codes",
-                      "example": "ACCOUNT_NAME_IN_USE"
+                      "example": "ACCOUNT_NAME_IN_USE",
+                      "description": "Error codes"
                     }
                   },
                   "required": [
@@ -1069,10 +1101,11 @@
               "type": "string",
               "minLength": 3,
               "maxLength": 64,
-              "description": "Characters must be [A-Za-z0-9-.] The first and last characters must be [A-Za-z0-9-.]",
-              "example": "example_man"
+              "example": "example_man",
+              "description": "Characters must be [A-Za-z0-9-.] The first and last characters must be [A-Za-z0-9-.]"
             },
             "required": true,
+            "description": "Characters must be [A-Za-z0-9-.] The first and last characters must be [A-Za-z0-9-.]",
             "name": "name",
             "in": "path"
           }
@@ -1216,10 +1249,11 @@
               "type": "string",
               "minLength": 3,
               "maxLength": 64,
-              "description": "Characters must be [A-Za-z0-9-.] The first and last characters must be [A-Za-z0-9-.]",
-              "example": "example_man"
+              "example": "example_man",
+              "description": "Characters must be [A-Za-z0-9-.] The first and last characters must be [A-Za-z0-9-.]"
             },
             "required": true,
+            "description": "Characters must be [A-Za-z0-9-.] The first and last characters must be [A-Za-z0-9-.]",
             "name": "name",
             "in": "path"
           }
@@ -1324,10 +1358,11 @@
               "type": "string",
               "minLength": 3,
               "maxLength": 64,
-              "description": "Characters must be [A-Za-z0-9-.] The first and last characters must be [A-Za-z0-9-.]",
-              "example": "example_man"
+              "example": "example_man",
+              "description": "Characters must be [A-Za-z0-9-.] The first and last characters must be [A-Za-z0-9-.]"
             },
             "required": true,
+            "description": "Characters must be [A-Za-z0-9-.] The first and last characters must be [A-Za-z0-9-.]",
             "name": "name",
             "in": "path"
           }
@@ -1406,10 +1441,11 @@
               "type": "string",
               "minLength": 3,
               "maxLength": 64,
-              "description": "Characters must be [A-Za-z0-9-.] The first and last characters must be [A-Za-z0-9-.]",
-              "example": "example_man"
+              "example": "example_man",
+              "description": "Characters must be [A-Za-z0-9-.] The first and last characters must be [A-Za-z0-9-.]"
             },
             "required": true,
+            "description": "Characters must be [A-Za-z0-9-.] The first and last characters must be [A-Za-z0-9-.]",
             "name": "name",
             "in": "path"
           }
@@ -1497,19 +1533,20 @@
               "anyOf": [
                 {
                   "type": "string",
-                  "description": "account name",
-                  "example": "@johndoe@example.com"
+                  "example": "@johndoe@example.com",
+                  "description": "account name"
                 },
                 {
                   "type": "string",
-                  "description": "account id",
-                  "example": "31644833000002"
+                  "example": "31644833000002",
+                  "description": "account id"
                 }
               ],
-              "description": "account name or id",
-              "example": "@johndoe@example.com"
+              "example": "@johndoe@example.com",
+              "description": "account name or id"
             },
             "required": true,
+            "description": "account name or id",
             "name": "identifier",
             "in": "path"
           }
@@ -1657,6 +1694,7 @@
               "description": "Bearer token"
             },
             "required": true,
+            "description": "Bearer token",
             "name": "Authorization",
             "in": "header"
           }
@@ -1736,10 +1774,11 @@
               "type": "string",
               "minLength": 3,
               "maxLength": 64,
-              "description": "Characters must be [A-Za-z0-9-.] The first and last characters must be [A-Za-z0-9-.]",
-              "example": "example_man"
+              "example": "example_man",
+              "description": "Characters must be [A-Za-z0-9-.] The first and last characters must be [A-Za-z0-9-.]"
             },
             "required": true,
+            "description": "Characters must be [A-Za-z0-9-.] The first and last characters must be [A-Za-z0-9-.]",
             "name": "name",
             "in": "path"
           }
@@ -1828,10 +1867,11 @@
               "type": "string",
               "minLength": 3,
               "maxLength": 64,
-              "description": "Characters must be [A-Za-z0-9-.] The first and last characters must be [A-Za-z0-9-.]",
-              "example": "example_man"
+              "example": "example_man",
+              "description": "Characters must be [A-Za-z0-9-.] The first and last characters must be [A-Za-z0-9-.]"
             },
             "required": true,
+            "description": "Characters must be [A-Za-z0-9-.] The first and last characters must be [A-Za-z0-9-.]",
             "name": "name",
             "in": "path"
           }
@@ -1922,10 +1962,11 @@
               "type": "string",
               "minLength": 3,
               "maxLength": 64,
-              "description": "Characters must be [A-Za-z0-9-.] The first and last characters must be [A-Za-z0-9-.]",
-              "example": "example_man"
+              "example": "example_man",
+              "description": "Characters must be [A-Za-z0-9-.] The first and last characters must be [A-Za-z0-9-.]"
             },
             "required": true,
+            "description": "Characters must be [A-Za-z0-9-.] The first and last characters must be [A-Za-z0-9-.]",
             "name": "name",
             "in": "path"
           }
@@ -2025,10 +2066,11 @@
               "type": "string",
               "minLength": 3,
               "maxLength": 64,
-              "description": "Characters must be [A-Za-z0-9-.] The first and last characters must be [A-Za-z0-9-.]",
-              "example": "example_man"
+              "example": "example_man",
+              "description": "Characters must be [A-Za-z0-9-.] The first and last characters must be [A-Za-z0-9-.]"
             },
             "required": true,
+            "description": "Characters must be [A-Za-z0-9-.] The first and last characters must be [A-Za-z0-9-.]",
             "name": "name",
             "in": "path"
           }
@@ -2114,10 +2156,11 @@
               "type": "string",
               "minLength": 3,
               "maxLength": 64,
-              "description": "Characters must be [A-Za-z0-9-.] The first and last characters must be [A-Za-z0-9-.]",
-              "example": "example_man"
+              "example": "example_man",
+              "description": "Characters must be [A-Za-z0-9-.] The first and last characters must be [A-Za-z0-9-.]"
             },
             "required": true,
+            "description": "Characters must be [A-Za-z0-9-.] The first and last characters must be [A-Za-z0-9-.]",
             "name": "name",
             "in": "path"
           }
@@ -2228,10 +2271,11 @@
               "type": "string",
               "minLength": 3,
               "maxLength": 64,
-              "description": "Characters must be [A-Za-z0-9-.] The first and last characters must be [A-Za-z0-9-.]",
-              "example": "example_man"
+              "example": "example_man",
+              "description": "Characters must be [A-Za-z0-9-.] The first and last characters must be [A-Za-z0-9-.]"
             },
             "required": true,
+            "description": "Characters must be [A-Za-z0-9-.] The first and last characters must be [A-Za-z0-9-.]",
             "name": "id",
             "in": "path"
           }
@@ -2294,10 +2338,11 @@
               "type": "string",
               "minLength": 3,
               "maxLength": 64,
-              "description": "Characters must be [A-Za-z0-9-.] The first and last characters must be [A-Za-z0-9-.]",
-              "example": "example_man"
+              "example": "example_man",
+              "description": "Characters must be [A-Za-z0-9-.] The first and last characters must be [A-Za-z0-9-.]"
             },
             "required": true,
+            "description": "Characters must be [A-Za-z0-9-.] The first and last characters must be [A-Za-z0-9-.]",
             "name": "id",
             "in": "path"
           }
@@ -2365,10 +2410,11 @@
               "type": "string",
               "minLength": 3,
               "maxLength": 64,
-              "description": "Characters must be [A-Za-z0-9-.] The first and last characters must be [A-Za-z0-9-.]",
-              "example": "example_man"
+              "example": "example_man",
+              "description": "Characters must be [A-Za-z0-9-.] The first and last characters must be [A-Za-z0-9-.]"
             },
             "required": true,
+            "description": "Characters must be [A-Za-z0-9-.] The first and last characters must be [A-Za-z0-9-.]",
             "name": "name",
             "in": "path"
           }
@@ -2480,10 +2526,11 @@
               "type": "string",
               "minLength": 3,
               "maxLength": 64,
-              "description": "Characters must be [A-Za-z0-9-.] The first and last characters must be [A-Za-z0-9-.]",
-              "example": "example_man"
+              "example": "example_man",
+              "description": "Characters must be [A-Za-z0-9-.] The first and last characters must be [A-Za-z0-9-.]"
             },
             "required": true,
+            "description": "Characters must be [A-Za-z0-9-.] The first and last characters must be [A-Za-z0-9-.]",
             "name": "name",
             "in": "path"
           }
@@ -2567,10 +2614,11 @@
               "type": "string",
               "minLength": 3,
               "maxLength": 64,
-              "description": "Characters must be [A-Za-z0-9-.] The first and last characters must be [A-Za-z0-9-.]",
-              "example": "example_man"
+              "example": "example_man",
+              "description": "Characters must be [A-Za-z0-9-.] The first and last characters must be [A-Za-z0-9-.]"
             },
             "required": true,
+            "description": "Characters must be [A-Za-z0-9-.] The first and last characters must be [A-Za-z0-9-.]",
             "name": "name",
             "in": "path"
           }
@@ -2666,9 +2714,7 @@
             }
           }
         }
-      }
-    },
-    "/v0/accounts/:name/head": {
+      },
       "delete": {
         "tags": [
           "accounts"
@@ -2684,10 +2730,11 @@
               "type": "string",
               "minLength": 3,
               "maxLength": 64,
-              "description": "Characters must be [A-Za-z0-9-.] The first and last characters must be [A-Za-z0-9-.]",
-              "example": "example_man"
+              "example": "example_man",
+              "description": "Characters must be [A-Za-z0-9-.] The first and last characters must be [A-Za-z0-9-.]"
             },
             "required": true,
+            "description": "Characters must be [A-Za-z0-9-.] The first and last characters must be [A-Za-z0-9-.]",
             "name": "name",
             "in": "path"
           }
@@ -2755,6 +2802,76 @@
         }
       }
     },
+    "/v0/accounts/:id/relationships": {
+      "get": {
+        "tags": [
+          "accounts"
+        ],
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "schema": {
+              "type": "string",
+              "example": "31415926535",
+              "description": "Account ID"
+            },
+            "required": true,
+            "description": "Account ID",
+            "name": "id",
+            "in": "path"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GetAccountRelationshipsResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string",
+                      "enum": [
+                        "ACCOUNT_NOT_FOUND"
+                      ],
+                      "description": "Account not found."
+                    }
+                  },
+                  "required": [
+                    "error"
+                  ],
+                  "description": "account not found"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/InternalErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/v0/notes": {
       "post": {
         "tags": [
@@ -2775,14 +2892,14 @@
                     "type": "string",
                     "maxLength": 3000,
                     "default": "",
-                    "description": "Note content (max 3000 characters/if attachment file exists, allow 0 character)",
-                    "example": "hello world!"
+                    "example": "hello world!",
+                    "description": "Note content (max 3000 characters/if attachment file exists, allow 0 character)"
                   },
                   "visibility": {
                     "type": "string",
                     "default": "PUBLIC",
-                    "description": "Note visibility (PUBLIC/HOME/FOLLOWERS/DIRECT)",
-                    "example": "PUBLIC"
+                    "example": "PUBLIC",
+                    "description": "Note visibility (PUBLIC/HOME/FOLLOWERS/DIRECT)"
                   },
                   "attachment_file_ids": {
                     "type": "array",
@@ -2791,24 +2908,24 @@
                     },
                     "maxItems": 16,
                     "default": [],
-                    "description": "Attachment file IDs (max 16 files)",
                     "example": [
                       "38477395",
                       "38477396"
-                    ]
+                    ],
+                    "description": "Attachment file IDs (max 16 files)"
                   },
                   "contents_warning_comment": {
                     "type": "string",
                     "maxLength": 256,
                     "default": "",
-                    "description": "Contents warning comment (max 256 characters)",
-                    "example": "This note contains sensitive content"
+                    "example": "This note contains sensitive content",
+                    "description": "Contents warning comment (max 256 characters)"
                   },
                   "send_to": {
                     "type": "string",
                     "default": "",
-                    "description": "Send to account ID (if visibility is DIRECT)",
-                    "example": "38477395"
+                    "example": "38477395",
+                    "description": "Send to account ID (if visibility is DIRECT)"
                   }
                 },
                 "required": [
@@ -2831,38 +2948,38 @@
                   "properties": {
                     "id": {
                       "type": "string",
-                      "description": "Note ID",
-                      "example": "38477395"
+                      "example": "38477395",
+                      "description": "Note ID"
                     },
                     "content": {
                       "type": "string",
-                      "description": "Note content",
-                      "example": "hello world!"
+                      "example": "hello world!",
+                      "description": "Note content"
                     },
                     "visibility": {
                       "type": "string",
-                      "description": "Note visibility",
-                      "example": "PUBLIC"
+                      "example": "PUBLIC",
+                      "description": "Note visibility"
                     },
                     "contents_warning_comment": {
                       "type": "string",
-                      "description": "Contents warning comment",
-                      "example": "This note contains sensitive content"
+                      "example": "This note contains sensitive content",
+                      "description": "Contents warning comment"
                     },
                     "send_to": {
                       "type": "string",
-                      "description": "Send to account ID",
-                      "example": "38477395"
+                      "example": "38477395",
+                      "description": "Send to account ID"
                     },
                     "author_id": {
                       "type": "string",
-                      "description": "Author account ID",
-                      "example": "38477395"
+                      "example": "38477395",
+                      "description": "Author account ID"
                     },
                     "created_at": {
                       "type": "string",
-                      "description": "Note created date",
-                      "example": "2021-01-01T00:00:00Z"
+                      "example": "2021-01-01T00:00:00Z",
+                      "description": "Note created date"
                     },
                     "attachment_files": {
                       "type": "array",
@@ -2871,28 +2988,28 @@
                         "properties": {
                           "id": {
                             "type": "string",
-                            "description": "attachment Medium id",
-                            "example": "39783475"
+                            "example": "39783475",
+                            "description": "attachment Medium id"
                           },
                           "name": {
                             "type": "string",
-                            "description": "attachment filename",
-                            "example": "image.jpg"
+                            "example": "image.jpg",
+                            "description": "attachment filename"
                           },
                           "author_id": {
                             "type": "string",
-                            "description": "attachment author account id",
-                            "example": "309823457"
+                            "example": "309823457",
+                            "description": "attachment author account id"
                           },
                           "hash": {
                             "type": "string",
-                            "description": "attachment medium blurhash",
-                            "example": "e9f*5oin{dn"
+                            "example": "e9f*5oin{dn",
+                            "description": "attachment medium blurhash"
                           },
                           "mime": {
                             "type": "string",
-                            "description": "attachment medium mime type",
-                            "example": "image/jpeg"
+                            "example": "image/jpeg",
+                            "description": "attachment medium mime type"
                           },
                           "nsfw": {
                             "type": "boolean",
@@ -2902,13 +3019,13 @@
                           "url": {
                             "type": "string",
                             "format": "uri",
-                            "description": "attachment medium url",
-                            "example": "https://images.example.com/image.webp"
+                            "example": "https://images.example.com/image.webp",
+                            "description": "attachment medium url"
                           },
                           "thumbnail": {
                             "type": "string",
-                            "description": "attachment thumbnail url",
-                            "example": "https://images.example.com/image_thumbnail.webp"
+                            "example": "https://images.example.com/image_thumbnail.webp",
+                            "description": "attachment thumbnail url"
                           }
                         },
                         "required": [
@@ -3085,6 +3202,7 @@
               "example": "1"
             },
             "required": true,
+            "description": "Note ID",
             "name": "id",
             "in": "path"
           }
@@ -3099,34 +3217,34 @@
                   "properties": {
                     "id": {
                       "type": "string",
-                      "description": "Note ID",
-                      "example": "38477395"
+                      "example": "38477395",
+                      "description": "Note ID"
                     },
                     "content": {
                       "type": "string",
-                      "description": "Note content",
-                      "example": "hello world!"
+                      "example": "hello world!",
+                      "description": "Note content"
                     },
                     "contents_warning_comment": {
                       "type": "string",
-                      "description": "Contents warning comment",
-                      "example": "(if length not 0) This note contains sensitive content"
+                      "example": "(if length not 0) This note contains sensitive content",
+                      "description": "Contents warning comment"
                     },
                     "send_to": {
                       "type": "string",
-                      "description": "Send to account ID",
-                      "example": "38477395"
+                      "example": "38477395",
+                      "description": "Send to account ID"
                     },
                     "visibility": {
                       "type": "string",
-                      "description": "Note visibility (PUBLIC/HOME/FOLLOWERS/DIRECT)",
-                      "example": "PUBLIC"
+                      "example": "PUBLIC",
+                      "description": "Note visibility (PUBLIC/HOME/FOLLOWERS/DIRECT)"
                     },
                     "created_at": {
                       "type": "string",
                       "format": "date-time",
-                      "description": "Note created date",
-                      "example": "2021-01-01T00:00:00Z"
+                      "example": "2021-01-01T00:00:00Z",
+                      "description": "Note created date"
                     },
                     "author": {
                       "type": "object",
@@ -3191,8 +3309,8 @@
                           },
                           "reacted_by": {
                             "type": "string",
-                            "description": "Reacted account ID",
-                            "example": "38477395"
+                            "example": "38477395",
+                            "description": "Reacted account ID"
                           }
                         },
                         "required": [
@@ -3209,28 +3327,28 @@
                         "properties": {
                           "id": {
                             "type": "string",
-                            "description": "attachment Medium id",
-                            "example": "39783475"
+                            "example": "39783475",
+                            "description": "attachment Medium id"
                           },
                           "name": {
                             "type": "string",
-                            "description": "attachment filename",
-                            "example": "image.jpg"
+                            "example": "image.jpg",
+                            "description": "attachment filename"
                           },
                           "author_id": {
                             "type": "string",
-                            "description": "attachment author account id",
-                            "example": "309823457"
+                            "example": "309823457",
+                            "description": "attachment author account id"
                           },
                           "hash": {
                             "type": "string",
-                            "description": "attachment medium blurhash",
-                            "example": "e9f*5oin{dn"
+                            "example": "e9f*5oin{dn",
+                            "description": "attachment medium blurhash"
                           },
                           "mime": {
                             "type": "string",
-                            "description": "attachment medium mime type",
-                            "example": "image/jpeg"
+                            "example": "image/jpeg",
+                            "description": "attachment medium mime type"
                           },
                           "nsfw": {
                             "type": "boolean",
@@ -3240,13 +3358,13 @@
                           "url": {
                             "type": "string",
                             "format": "uri",
-                            "description": "attachment medium url",
-                            "example": "https://images.example.com/image.webp"
+                            "example": "https://images.example.com/image.webp",
+                            "description": "attachment medium url"
                           },
                           "thumbnail": {
                             "type": "string",
-                            "description": "attachment thumbnail url",
-                            "example": "https://images.example.com/image_thumbnail.webp"
+                            "example": "https://images.example.com/image_thumbnail.webp",
+                            "description": "attachment thumbnail url"
                           }
                         },
                         "required": [
@@ -3345,6 +3463,7 @@
               "example": "1"
             },
             "required": true,
+            "description": "Note ID",
             "name": "id",
             "in": "path"
           }
@@ -3359,8 +3478,8 @@
                     "type": "string",
                     "maxLength": 3000,
                     "default": "",
-                    "description": "Note content (max 3000 characters/if attachment file exists, allow 0 character)",
-                    "example": "hello world!"
+                    "example": "hello world!",
+                    "description": "Note content (max 3000 characters/if attachment file exists, allow 0 character)"
                   },
                   "visibility": {
                     "anyOf": [
@@ -3384,8 +3503,8 @@
                       }
                     ],
                     "default": "public",
-                    "description": "Note visibility (public/home/followers)",
-                    "example": "public"
+                    "example": "public",
+                    "description": "Note visibility (public/home/followers)"
                   },
                   "attachment_file_ids": {
                     "type": "array",
@@ -3394,18 +3513,18 @@
                     },
                     "maxItems": 16,
                     "default": [],
-                    "description": "Attachment file IDs (max 16 files)",
                     "example": [
                       "38477395",
                       "38477396"
-                    ]
+                    ],
+                    "description": "Attachment file IDs (max 16 files)"
                   },
                   "contents_warning_comment": {
                     "type": "string",
                     "maxLength": 256,
                     "default": "",
-                    "description": "Contents warning comment (max 256 characters)",
-                    "example": "This note contains sensitive content"
+                    "example": "This note contains sensitive content",
+                    "description": "Contents warning comment (max 256 characters)"
                   }
                 },
                 "required": [
@@ -3428,38 +3547,38 @@
                   "properties": {
                     "id": {
                       "type": "string",
-                      "description": "Note ID",
-                      "example": "38477395"
+                      "example": "38477395",
+                      "description": "Note ID"
                     },
                     "content": {
                       "type": "string",
-                      "description": "Note content",
-                      "example": "hello world!"
+                      "example": "hello world!",
+                      "description": "Note content"
                     },
                     "visibility": {
                       "type": "string",
-                      "description": "Note visibility",
-                      "example": "PUBLIC"
+                      "example": "PUBLIC",
+                      "description": "Note visibility"
                     },
                     "original_note_id": {
                       "type": "string",
-                      "description": "Original note ID",
-                      "example": "38477395"
+                      "example": "38477395",
+                      "description": "Original note ID"
                     },
                     "contents_warning_comment": {
                       "type": "string",
-                      "description": "Contents warning comment",
-                      "example": "This note contains sensitive content"
+                      "example": "This note contains sensitive content",
+                      "description": "Contents warning comment"
                     },
                     "author_id": {
                       "type": "string",
-                      "description": "Author account ID",
-                      "example": "38477395"
+                      "example": "38477395",
+                      "description": "Author account ID"
                     },
                     "created_at": {
                       "type": "string",
-                      "description": "Note created date",
-                      "example": "2021-01-01T00:00:00Z"
+                      "example": "2021-01-01T00:00:00Z",
+                      "description": "Note created date"
                     },
                     "attachment_files": {
                       "type": "array",
@@ -3468,28 +3587,28 @@
                         "properties": {
                           "id": {
                             "type": "string",
-                            "description": "attachment Medium id",
-                            "example": "39783475"
+                            "example": "39783475",
+                            "description": "attachment Medium id"
                           },
                           "name": {
                             "type": "string",
-                            "description": "attachment filename",
-                            "example": "image.jpg"
+                            "example": "image.jpg",
+                            "description": "attachment filename"
                           },
                           "author_id": {
                             "type": "string",
-                            "description": "attachment author account id",
-                            "example": "309823457"
+                            "example": "309823457",
+                            "description": "attachment author account id"
                           },
                           "hash": {
                             "type": "string",
-                            "description": "attachment medium blurhash",
-                            "example": "e9f*5oin{dn"
+                            "example": "e9f*5oin{dn",
+                            "description": "attachment medium blurhash"
                           },
                           "mime": {
                             "type": "string",
-                            "description": "attachment medium mime type",
-                            "example": "image/jpeg"
+                            "example": "image/jpeg",
+                            "description": "attachment medium mime type"
                           },
                           "nsfw": {
                             "type": "boolean",
@@ -3499,13 +3618,13 @@
                           "url": {
                             "type": "string",
                             "format": "uri",
-                            "description": "attachment medium url",
-                            "example": "https://images.example.com/image.webp"
+                            "example": "https://images.example.com/image.webp",
+                            "description": "attachment medium url"
                           },
                           "thumbnail": {
                             "type": "string",
-                            "description": "attachment thumbnail url",
-                            "example": "https://images.example.com/image_thumbnail.webp"
+                            "example": "https://images.example.com/image_thumbnail.webp",
+                            "description": "attachment thumbnail url"
                           }
                         },
                         "required": [
@@ -3688,6 +3807,7 @@
               "example": "1"
             },
             "required": true,
+            "description": "Note ID",
             "name": "id",
             "in": "path"
           }
@@ -3700,8 +3820,8 @@
                 "properties": {
                   "emoji": {
                     "type": "string",
-                    "description": "emoji",
-                    "example": "🎉"
+                    "example": "🎉",
+                    "description": "emoji"
                   }
                 },
                 "required": [
@@ -3721,33 +3841,33 @@
                   "properties": {
                     "id": {
                       "type": "string",
-                      "description": "Note ID",
-                      "example": "38477395"
+                      "example": "38477395",
+                      "description": "Note ID"
                     },
                     "content": {
                       "type": "string",
-                      "description": "Note content",
-                      "example": "hello world!"
+                      "example": "hello world!",
+                      "description": "Note content"
                     },
                     "visibility": {
                       "type": "string",
-                      "description": "Note visibility",
-                      "example": "PUBLIC"
+                      "example": "PUBLIC",
+                      "description": "Note visibility"
                     },
                     "contents_warning_comment": {
                       "type": "string",
-                      "description": "Contents warning comment",
-                      "example": "This note contains sensitive content"
+                      "example": "This note contains sensitive content",
+                      "description": "Contents warning comment"
                     },
                     "author_id": {
                       "type": "string",
-                      "description": "Author account ID",
-                      "example": "38477395"
+                      "example": "38477395",
+                      "description": "Author account ID"
                     },
                     "created_at": {
                       "type": "string",
-                      "description": "Note created date",
-                      "example": "2021-01-01T00:00:00Z"
+                      "example": "2021-01-01T00:00:00Z",
+                      "description": "Note created date"
                     },
                     "attachment_files": {
                       "type": "array",
@@ -3756,28 +3876,28 @@
                         "properties": {
                           "id": {
                             "type": "string",
-                            "description": "attachment Medium id",
-                            "example": "39783475"
+                            "example": "39783475",
+                            "description": "attachment Medium id"
                           },
                           "name": {
                             "type": "string",
-                            "description": "attachment filename",
-                            "example": "image.jpg"
+                            "example": "image.jpg",
+                            "description": "attachment filename"
                           },
                           "author_id": {
                             "type": "string",
-                            "description": "attachment author account id",
-                            "example": "309823457"
+                            "example": "309823457",
+                            "description": "attachment author account id"
                           },
                           "hash": {
                             "type": "string",
-                            "description": "attachment medium blurhash",
-                            "example": "e9f*5oin{dn"
+                            "example": "e9f*5oin{dn",
+                            "description": "attachment medium blurhash"
                           },
                           "mime": {
                             "type": "string",
-                            "description": "attachment medium mime type",
-                            "example": "image/jpeg"
+                            "example": "image/jpeg",
+                            "description": "attachment medium mime type"
                           },
                           "nsfw": {
                             "type": "boolean",
@@ -3787,13 +3907,13 @@
                           "url": {
                             "type": "string",
                             "format": "uri",
-                            "description": "attachment medium url",
-                            "example": "https://images.example.com/image.webp"
+                            "example": "https://images.example.com/image.webp",
+                            "description": "attachment medium url"
                           },
                           "thumbnail": {
                             "type": "string",
-                            "description": "attachment thumbnail url",
-                            "example": "https://images.example.com/image_thumbnail.webp"
+                            "example": "https://images.example.com/image_thumbnail.webp",
+                            "description": "attachment thumbnail url"
                           }
                         },
                         "required": [
@@ -3923,6 +4043,7 @@
               "example": "1"
             },
             "required": true,
+            "description": "Note ID",
             "name": "id",
             "in": "path"
           }
@@ -3997,6 +4118,7 @@
               "example": "1"
             },
             "required": true,
+            "description": "Note ID",
             "name": "id",
             "in": "path"
           }
@@ -4011,33 +4133,33 @@
                   "properties": {
                     "id": {
                       "type": "string",
-                      "description": "Note ID",
-                      "example": "38477395"
+                      "example": "38477395",
+                      "description": "Note ID"
                     },
                     "content": {
                       "type": "string",
-                      "description": "Note content",
-                      "example": "hello world!"
+                      "example": "hello world!",
+                      "description": "Note content"
                     },
                     "visibility": {
                       "type": "string",
-                      "description": "Note visibility",
-                      "example": "PUBLIC"
+                      "example": "PUBLIC",
+                      "description": "Note visibility"
                     },
                     "contents_warning_comment": {
                       "type": "string",
-                      "description": "Contents warning comment",
-                      "example": "This note contains sensitive content"
+                      "example": "This note contains sensitive content",
+                      "description": "Contents warning comment"
                     },
                     "author_id": {
                       "type": "string",
-                      "description": "Author account ID",
-                      "example": "38477395"
+                      "example": "38477395",
+                      "description": "Author account ID"
                     },
                     "created_at": {
                       "type": "string",
-                      "description": "Note created date",
-                      "example": "2021-01-01T00:00:00Z"
+                      "example": "2021-01-01T00:00:00Z",
+                      "description": "Note created date"
                     },
                     "attachment_files": {
                       "type": "array",
@@ -4046,28 +4168,28 @@
                         "properties": {
                           "id": {
                             "type": "string",
-                            "description": "attachment Medium id",
-                            "example": "39783475"
+                            "example": "39783475",
+                            "description": "attachment Medium id"
                           },
                           "name": {
                             "type": "string",
-                            "description": "attachment filename",
-                            "example": "image.jpg"
+                            "example": "image.jpg",
+                            "description": "attachment filename"
                           },
                           "author_id": {
                             "type": "string",
-                            "description": "attachment author account id",
-                            "example": "309823457"
+                            "example": "309823457",
+                            "description": "attachment author account id"
                           },
                           "hash": {
                             "type": "string",
-                            "description": "attachment medium blurhash",
-                            "example": "e9f*5oin{dn"
+                            "example": "e9f*5oin{dn",
+                            "description": "attachment medium blurhash"
                           },
                           "mime": {
                             "type": "string",
-                            "description": "attachment medium mime type",
-                            "example": "image/jpeg"
+                            "example": "image/jpeg",
+                            "description": "attachment medium mime type"
                           },
                           "nsfw": {
                             "type": "boolean",
@@ -4077,13 +4199,13 @@
                           "url": {
                             "type": "string",
                             "format": "uri",
-                            "description": "attachment medium url",
-                            "example": "https://images.example.com/image.webp"
+                            "example": "https://images.example.com/image.webp",
+                            "description": "attachment medium url"
                           },
                           "thumbnail": {
                             "type": "string",
-                            "description": "attachment thumbnail url",
-                            "example": "https://images.example.com/image_thumbnail.webp"
+                            "example": "https://images.example.com/image_thumbnail.webp",
+                            "description": "attachment thumbnail url"
                           }
                         },
                         "required": [
@@ -4179,6 +4301,7 @@
               "example": "1"
             },
             "required": true,
+            "description": "Note ID",
             "name": "id",
             "in": "path"
           }
@@ -4375,6 +4498,7 @@
               "description": "If true, only return notes with attachment"
             },
             "required": false,
+            "description": "If true, only return notes with attachment",
             "name": "has_attachment",
             "in": "query"
           },
@@ -4384,6 +4508,7 @@
               "description": "If true, only return notes without sensitive content"
             },
             "required": false,
+            "description": "If true, only return notes without sensitive content",
             "name": "no_nsfw",
             "in": "query"
           },
@@ -4393,6 +4518,7 @@
               "description": "Return notes before this note ID. specified note ID is not included. NOTE: after_id and before_id are exclusive."
             },
             "required": false,
+            "description": "Return notes before this note ID. specified note ID is not included. NOTE: after_id and before_id are exclusive.",
             "name": "before_id",
             "in": "query"
           },
@@ -4402,6 +4528,7 @@
               "description": "Return notes after this note ID. Specified note is not included. NOTE: after_id and before_id are exclusive."
             },
             "required": false,
+            "description": "Return notes after this note ID. Specified note is not included. NOTE: after_id and before_id are exclusive.",
             "name": "after_id",
             "in": "query"
           }
@@ -4418,29 +4545,29 @@
                     "properties": {
                       "id": {
                         "type": "string",
-                        "description": "Note ID",
-                        "example": "38477395"
+                        "example": "38477395",
+                        "description": "Note ID"
                       },
                       "content": {
                         "type": "string",
-                        "description": "Note content",
-                        "example": "hello world!"
+                        "example": "hello world!",
+                        "description": "Note content"
                       },
                       "contents_warning_comment": {
                         "type": "string",
-                        "description": "Contents warning comment",
-                        "example": "(if length not 0) This note contains sensitive content"
+                        "example": "(if length not 0) This note contains sensitive content",
+                        "description": "Contents warning comment"
                       },
                       "visibility": {
                         "type": "string",
-                        "description": "Note visibility (PUBLIC/HOME/FOLLOWERS/DIRECT)",
-                        "example": "PUBLIC"
+                        "example": "PUBLIC",
+                        "description": "Note visibility (PUBLIC/HOME/FOLLOWERS/DIRECT)"
                       },
                       "created_at": {
                         "type": "string",
                         "format": "date-time",
-                        "description": "Note created date",
-                        "example": "2021-01-01T00:00:00Z"
+                        "example": "2021-01-01T00:00:00Z",
+                        "description": "Note created date"
                       },
                       "reactions": {
                         "type": "array",
@@ -4466,8 +4593,8 @@
                             },
                             "reacted_by": {
                               "type": "string",
-                              "description": "Reacted account ID",
-                              "example": "38477395"
+                              "example": "38477395",
+                              "description": "Reacted account ID"
                             }
                           },
                           "required": [
@@ -4484,28 +4611,28 @@
                           "properties": {
                             "id": {
                               "type": "string",
-                              "description": "attachment Medium id",
-                              "example": "39783475"
+                              "example": "39783475",
+                              "description": "attachment Medium id"
                             },
                             "name": {
                               "type": "string",
-                              "description": "attachment filename",
-                              "example": "image.jpg"
+                              "example": "image.jpg",
+                              "description": "attachment filename"
                             },
                             "author_id": {
                               "type": "string",
-                              "description": "attachment author account id",
-                              "example": "309823457"
+                              "example": "309823457",
+                              "description": "attachment author account id"
                             },
                             "hash": {
                               "type": "string",
-                              "description": "attachment medium blurhash",
-                              "example": "e9f*5oin{dn"
+                              "example": "e9f*5oin{dn",
+                              "description": "attachment medium blurhash"
                             },
                             "mime": {
                               "type": "string",
-                              "description": "attachment medium mime type",
-                              "example": "image/jpeg"
+                              "example": "image/jpeg",
+                              "description": "attachment medium mime type"
                             },
                             "nsfw": {
                               "type": "boolean",
@@ -4515,13 +4642,13 @@
                             "url": {
                               "type": "string",
                               "format": "uri",
-                              "description": "attachment medium url",
-                              "example": "https://images.example.com/image.webp"
+                              "example": "https://images.example.com/image.webp",
+                              "description": "attachment medium url"
                             },
                             "thumbnail": {
                               "type": "string",
-                              "description": "attachment thumbnail url",
-                              "example": "https://images.example.com/image_thumbnail.webp"
+                              "example": "https://images.example.com/image_thumbnail.webp",
+                              "description": "attachment thumbnail url"
                             }
                           },
                           "required": [
@@ -4660,6 +4787,7 @@
               "description": "If true, only return notes with attachment"
             },
             "required": false,
+            "description": "If true, only return notes with attachment",
             "name": "has_attachment",
             "in": "query"
           },
@@ -4669,6 +4797,7 @@
               "description": "If true, only return notes without sensitive content"
             },
             "required": false,
+            "description": "If true, only return notes without sensitive content",
             "name": "no_nsfw",
             "in": "query"
           },
@@ -4678,6 +4807,7 @@
               "description": "Return notes before this note ID. specified note ID is not included. NOTE: after_id and before_id are exclusive."
             },
             "required": false,
+            "description": "Return notes before this note ID. specified note ID is not included. NOTE: after_id and before_id are exclusive.",
             "name": "before_id",
             "in": "query"
           },
@@ -4687,6 +4817,7 @@
               "description": "Return notes after this note ID. Specified note is not included. NOTE: after_id and before_id are exclusive."
             },
             "required": false,
+            "description": "Return notes after this note ID. Specified note is not included. NOTE: after_id and before_id are exclusive.",
             "name": "after_id",
             "in": "query"
           }
@@ -4806,6 +4937,7 @@
               "description": "If true, only return notes with attachment"
             },
             "required": false,
+            "description": "If true, only return notes with attachment",
             "name": "has_attachment",
             "in": "query"
           },
@@ -4815,6 +4947,7 @@
               "description": "If true, only return notes without sensitive content"
             },
             "required": false,
+            "description": "If true, only return notes without sensitive content",
             "name": "no_nsfw",
             "in": "query"
           },
@@ -4824,6 +4957,7 @@
               "description": "Return notes before this note ID. specified note ID is not included. NOTE: after_id and before_id are exclusive."
             },
             "required": false,
+            "description": "Return notes before this note ID. specified note ID is not included. NOTE: after_id and before_id are exclusive.",
             "name": "before_id",
             "in": "query"
           },
@@ -4833,6 +4967,7 @@
               "description": "Return notes after this note ID. Specified note is not included. NOTE: after_id and before_id are exclusive."
             },
             "required": false,
+            "description": "Return notes after this note ID. Specified note is not included. NOTE: after_id and before_id are exclusive.",
             "name": "after_id",
             "in": "query"
           }
@@ -5563,6 +5698,7 @@
               "description": "If true, only return notes with attachment"
             },
             "required": false,
+            "description": "If true, only return notes with attachment",
             "name": "has_attachment",
             "in": "query"
           },
@@ -5572,6 +5708,7 @@
               "description": "If true, only return notes without sensitive content"
             },
             "required": false,
+            "description": "If true, only return notes without sensitive content",
             "name": "no_nsfw",
             "in": "query"
           },
@@ -5581,6 +5718,7 @@
               "description": "Return notes before this note ID. specified note ID is not included. NOTE: after_id and before_id are exclusive."
             },
             "required": false,
+            "description": "Return notes before this note ID. specified note ID is not included. NOTE: after_id and before_id are exclusive.",
             "name": "before_id",
             "in": "query"
           },
@@ -5590,6 +5728,7 @@
               "description": "Return notes after this note ID. Specified note is not included. NOTE: after_id and before_id are exclusive."
             },
             "required": false,
+            "description": "Return notes after this note ID. Specified note is not included. NOTE: after_id and before_id are exclusive.",
             "name": "after_id",
             "in": "query"
           }
@@ -5606,29 +5745,29 @@
                     "properties": {
                       "id": {
                         "type": "string",
-                        "description": "Note ID",
-                        "example": "38477395"
+                        "example": "38477395",
+                        "description": "Note ID"
                       },
                       "content": {
                         "type": "string",
-                        "description": "Note content",
-                        "example": "hello world!"
+                        "example": "hello world!",
+                        "description": "Note content"
                       },
                       "contents_warning_comment": {
                         "type": "string",
-                        "description": "Contents warning comment",
-                        "example": "(if length not 0) This note contains sensitive content"
+                        "example": "(if length not 0) This note contains sensitive content",
+                        "description": "Contents warning comment"
                       },
                       "visibility": {
                         "type": "string",
-                        "description": "Note visibility (PUBLIC/HOME/FOLLOWERS/DIRECT)",
-                        "example": "PUBLIC"
+                        "example": "PUBLIC",
+                        "description": "Note visibility (PUBLIC/HOME/FOLLOWERS/DIRECT)"
                       },
                       "created_at": {
                         "type": "string",
                         "format": "date-time",
-                        "description": "Note created date",
-                        "example": "2021-01-01T00:00:00Z"
+                        "example": "2021-01-01T00:00:00Z",
+                        "description": "Note created date"
                       },
                       "reactions": {
                         "type": "array",
@@ -5654,8 +5793,8 @@
                             },
                             "reacted_by": {
                               "type": "string",
-                              "description": "Reacted account ID",
-                              "example": "38477395"
+                              "example": "38477395",
+                              "description": "Reacted account ID"
                             }
                           },
                           "required": [
@@ -5672,28 +5811,28 @@
                           "properties": {
                             "id": {
                               "type": "string",
-                              "description": "attachment Medium id",
-                              "example": "39783475"
+                              "example": "39783475",
+                              "description": "attachment Medium id"
                             },
                             "name": {
                               "type": "string",
-                              "description": "attachment filename",
-                              "example": "image.jpg"
+                              "example": "image.jpg",
+                              "description": "attachment filename"
                             },
                             "author_id": {
                               "type": "string",
-                              "description": "attachment author account id",
-                              "example": "309823457"
+                              "example": "309823457",
+                              "description": "attachment author account id"
                             },
                             "hash": {
                               "type": "string",
-                              "description": "attachment medium blurhash",
-                              "example": "e9f*5oin{dn"
+                              "example": "e9f*5oin{dn",
+                              "description": "attachment medium blurhash"
                             },
                             "mime": {
                               "type": "string",
-                              "description": "attachment medium mime type",
-                              "example": "image/jpeg"
+                              "example": "image/jpeg",
+                              "description": "attachment medium mime type"
                             },
                             "nsfw": {
                               "type": "boolean",
@@ -5703,13 +5842,13 @@
                             "url": {
                               "type": "string",
                               "format": "uri",
-                              "description": "attachment medium url",
-                              "example": "https://images.example.com/image.webp"
+                              "example": "https://images.example.com/image.webp",
+                              "description": "attachment medium url"
                             },
                             "thumbnail": {
                               "type": "string",
-                              "description": "attachment thumbnail url",
-                              "example": "https://images.example.com/image_thumbnail.webp"
+                              "example": "https://images.example.com/image_thumbnail.webp",
+                              "description": "attachment thumbnail url"
                             }
                           },
                           "required": [
@@ -5893,6 +6032,7 @@
               "description": "Return notes after this notification ID. Specified notification is not included."
             },
             "required": false,
+            "description": "Return notes after this notification ID. Specified notification is not included.",
             "name": "after_id",
             "in": "query"
           },
@@ -6389,6 +6529,7 @@
               "description": "Notification ID"
             },
             "required": true,
+            "description": "Notification ID",
             "name": "id",
             "in": "path"
           }
