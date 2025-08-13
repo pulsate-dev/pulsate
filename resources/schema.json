@@ -785,8 +785,7 @@
         },
         "required": [
           "id",
-          "title",
-          "public"
+          "title"
         ]
       },
       "CreateListRequest": {
@@ -804,8 +803,7 @@
           }
         },
         "required": [
-          "title",
-          "public"
+          "title"
         ]
       },
       "EditListResponse": {
@@ -829,8 +827,7 @@
         },
         "required": [
           "id",
-          "title",
-          "public"
+          "title"
         ]
       },
       "EditListRequest": {
@@ -869,8 +866,7 @@
         },
         "required": [
           "id",
-          "title",
-          "public"
+          "title"
         ]
       },
       "GetListMemberResponseSchema": {
@@ -963,6 +959,185 @@
           "required": [
             "account",
             "updatedAt"
+          ]
+        }
+      },
+      "GetPublicTimelineResponse": {
+        "type": "array",
+        "items": {
+          "type": "object",
+          "properties": {
+            "id": {
+              "type": "string",
+              "example": "38477395",
+              "description": "Note ID"
+            },
+            "content": {
+              "type": "string",
+              "example": "hello world!",
+              "description": "Note content"
+            },
+            "contents_warning_comment": {
+              "type": "string",
+              "example": "(if length not 0) This note contains sensitive content",
+              "description": "Contents warning comment"
+            },
+            "visibility": {
+              "type": "string",
+              "example": "PUBLIC",
+              "description": "Note visibility (PUBLIC/HOME/FOLLOWERS/DIRECT)"
+            },
+            "created_at": {
+              "type": "string",
+              "format": "date-time",
+              "example": "2021-01-01T00:00:00Z",
+              "description": "Note created date"
+            },
+            "reactions": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "emoji": {
+                    "anyOf": [
+                      {
+                        "type": "string",
+                        "pattern": "[\\u2700-\\u27BF]|[\\uE000-\\uF8FF]|\\uD83C[\\uDC00-\\uDFFF]|\\uD83D[\\uDC00-\\uDFFF]|[\\u2011-\\u26FF]|\\uD83E[\\uDD10-\\uDDFF]"
+                      },
+                      {
+                        "type": "string",
+                        "pattern": "<:(\\w+):(\\d+)>"
+                      }
+                    ],
+                    "description": "Reaction Emoji (Unicode or Custom Emoji)",
+                    "examples": [
+                      "🎉",
+                      "<:custom_emoji:123456789>"
+                    ]
+                  },
+                  "reacted_by": {
+                    "type": "string",
+                    "example": "38477395",
+                    "description": "Reacted account ID"
+                  }
+                },
+                "required": [
+                  "emoji",
+                  "reacted_by"
+                ]
+              },
+              "description": "Reactions"
+            },
+            "attachment_files": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "id": {
+                    "type": "string",
+                    "example": "39783475",
+                    "description": "attachment Medium id"
+                  },
+                  "name": {
+                    "type": "string",
+                    "example": "image.jpg",
+                    "description": "attachment filename"
+                  },
+                  "author_id": {
+                    "type": "string",
+                    "example": "309823457",
+                    "description": "attachment author account id"
+                  },
+                  "hash": {
+                    "type": "string",
+                    "example": "e9f*5oin{dn",
+                    "description": "attachment medium blurhash"
+                  },
+                  "mime": {
+                    "type": "string",
+                    "example": "image/jpeg",
+                    "description": "attachment medium mime type"
+                  },
+                  "nsfw": {
+                    "type": "boolean",
+                    "default": false,
+                    "description": "if true, attachment is nsfw"
+                  },
+                  "url": {
+                    "type": "string",
+                    "format": "uri",
+                    "example": "https://images.example.com/image.webp",
+                    "description": "attachment medium url"
+                  },
+                  "thumbnail": {
+                    "type": "string",
+                    "example": "https://images.example.com/image_thumbnail.webp",
+                    "description": "attachment thumbnail url"
+                  }
+                },
+                "required": [
+                  "id",
+                  "name",
+                  "author_id",
+                  "hash",
+                  "mime",
+                  "nsfw",
+                  "url",
+                  "thumbnail"
+                ]
+              },
+              "maxItems": 16,
+              "description": "Note Attachment Media"
+            },
+            "author": {
+              "type": "object",
+              "properties": {
+                "id": {
+                  "type": "string"
+                },
+                "name": {
+                  "type": "string"
+                },
+                "display_name": {
+                  "type": "string"
+                },
+                "bio": {
+                  "type": "string"
+                },
+                "avatar": {
+                  "type": "string"
+                },
+                "header": {
+                  "type": "string"
+                },
+                "followed_count": {
+                  "type": "number"
+                },
+                "following_count": {
+                  "type": "number"
+                }
+              },
+              "required": [
+                "id",
+                "name",
+                "display_name",
+                "bio",
+                "avatar",
+                "header",
+                "followed_count",
+                "following_count"
+              ]
+            }
+          },
+          "required": [
+            "id",
+            "content",
+            "contents_warning_comment",
+            "visibility",
+            "created_at",
+            "reactions",
+            "attachment_files",
+            "author"
           ]
         }
       }
@@ -5979,6 +6154,111 @@
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/GetListConversationsResponse"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string",
+                      "enum": [
+                        "INTERNAL_ERROR"
+                      ],
+                      "description": "Internal server error"
+                    }
+                  },
+                  "required": [
+                    "error"
+                  ]
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v0/timeline/public": {
+      "get": {
+        "tags": [
+          "timeline"
+        ],
+        "parameters": [
+          {
+            "schema": {
+              "type": "boolean",
+              "description": "If true, only return notes with attachment"
+            },
+            "required": false,
+            "description": "If true, only return notes with attachment",
+            "name": "has_attachment",
+            "in": "query"
+          },
+          {
+            "schema": {
+              "type": "boolean",
+              "description": "If true, only return notes without sensitive content"
+            },
+            "required": false,
+            "description": "If true, only return notes without sensitive content",
+            "name": "no_nsfw",
+            "in": "query"
+          },
+          {
+            "schema": {
+              "type": "string",
+              "description": "Return notes before this note ID. specified note ID is not included. NOTE: after_id and before_id are exclusive."
+            },
+            "required": false,
+            "description": "Return notes before this note ID. specified note ID is not included. NOTE: after_id and before_id are exclusive.",
+            "name": "before_id",
+            "in": "query"
+          },
+          {
+            "schema": {
+              "type": "string",
+              "description": "Return notes after this note ID. Specified note is not included. NOTE: after_id and before_id are exclusive."
+            },
+            "required": false,
+            "description": "Return notes after this note ID. Specified note is not included. NOTE: after_id and before_id are exclusive.",
+            "name": "after_id",
+            "in": "query"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GetPublicTimelineResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Nothing left",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string",
+                      "enum": [
+                        "NOTHING_LEFT"
+                      ],
+                      "description": "No more notes exist"
+                    }
+                  },
+                  "required": [
+                    "error"
+                  ]
                 }
               }
             }
