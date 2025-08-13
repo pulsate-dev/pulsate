@@ -19,6 +19,7 @@ import {
   conversationRepoSymbol,
   type FetchAccountTimelineFilter,
   type FetchConversationNotesFilter,
+  type FetchHomeTimelineFilter,
   type ListRepository,
   listRepoSymbol,
   type TimelineRepository,
@@ -101,6 +102,43 @@ export class InMemoryTimelineRepository implements TimelineRepository {
     );
 
     return Result.ok(filtered);
+  }
+
+  async getPublicTimeline(
+    filter: FetchHomeTimelineFilter,
+  ): Promise<Result.Result<Error, Note[]>> {
+    if (filter.afterID && filter.beforeId) {
+      return Result.err(
+        new TimelineInvalidFilterRangeError(
+          'beforeID and afterID cannot be specified at the same time',
+          { cause: null },
+        ),
+      );
+    }
+
+    const publicNotes = [...this.data.values()]
+      .filter((note) => note.getVisibility() === 'PUBLIC')
+      .sort((a, b) => b.getCreatedAt().getTime() - a.getCreatedAt().getTime());
+
+    // ToDo: filter hasAttachment, noNSFW
+
+    if (filter.afterID) {
+      const afterIndex = publicNotes
+        .reverse()
+        .findIndex((note) => note.getID() === filter.afterID);
+
+      return Result.ok(publicNotes.slice(afterIndex).reverse().slice(0, 20));
+    }
+
+    if (filter.beforeId) {
+      const beforeIndex = publicNotes.findIndex(
+        (note) => note.getID() === filter.beforeId,
+      );
+
+      return Result.ok(publicNotes.slice(beforeIndex + 1, beforeIndex + 21));
+    }
+
+    return Result.ok(publicNotes.slice(0, 20));
   }
 
   async fetchListTimeline(
