@@ -46,6 +46,15 @@ export interface TimelineRepository {
   ): Promise<Result.Result<Error, Note[]>>;
 
   /**
+   * @description Fetch public timeline
+   * @param filter Filter for fetching notes
+   * @return {@link Note}[] list of public Notes, sorted by CreatedAt descending
+   * */
+  getPublicTimeline(
+    filter: FetchHomeTimelineFilter,
+  ): Promise<Result.Result<Error, Note[]>>;
+
+  /**
    * @description Fetch list timeline
    * @param noteId IDs of the notes to be fetched
    * @return {@link Note}[] list of Notes, sorted by CreatedAt descending
