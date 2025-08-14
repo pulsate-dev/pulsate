@@ -123,11 +123,15 @@ export class InMemoryTimelineRepository implements TimelineRepository {
     // ToDo: filter hasAttachment, noNSFW
 
     if (filter.afterID) {
-      const afterIndex = publicNotes
-        .reverse()
-        .findIndex((note) => note.getID() === filter.afterID);
+      const afterIndex = publicNotes.findIndex(
+        (note) => note.getID() === filter.afterID,
+      );
 
-      return Result.ok(publicNotes.slice(afterIndex).reverse().slice(0, 20));
+      if (afterIndex === -1) {
+        return Result.ok(publicNotes.slice(0, 20));
+      }
+
+      return Result.ok(publicNotes.slice(afterIndex + 1, afterIndex + 21));
     }
 
     if (filter.beforeId) {
