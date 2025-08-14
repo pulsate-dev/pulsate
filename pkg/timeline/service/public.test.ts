@@ -67,6 +67,22 @@ describe('PublicTimelineService', () => {
     }
   });
 
+  it('Successfully get public timeline with afterId filter', async () => {
+    const res = await publicTimelineService.fetchPublicTimeline({
+      hasAttachment: false,
+      noNsfw: false,
+      afterID: dummyPublicNote.getID(),
+    });
+
+    expect(Result.isOk(res)).toBe(true);
+    const notes = Result.unwrap(res);
+
+    expect(notes.length).toBe(1);
+    for (const note of notes) {
+      expect(note.getVisibility()).toBe('PUBLIC');
+    }
+  });
+
   it('Error when both beforeId and afterId are specified', async () => {
     const res = await publicTimelineService.fetchPublicTimeline({
       hasAttachment: false,

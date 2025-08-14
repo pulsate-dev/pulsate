@@ -123,9 +123,9 @@ export class InMemoryTimelineRepository implements TimelineRepository {
     // ToDo: filter hasAttachment, noNSFW
 
     if (filter.afterID) {
-      const afterIndex = publicNotes.findIndex(
-        (note) => note.getID() === filter.afterID,
-      );
+      const afterIndex = publicNotes
+        .toReversed()
+        .findIndex((note) => note.getID() === filter.afterID);
 
       if (afterIndex === -1) {
         return Result.ok(publicNotes.slice(0, 20));
