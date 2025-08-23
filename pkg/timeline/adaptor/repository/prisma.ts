@@ -23,6 +23,7 @@ import {
   conversationRepoSymbol,
   type FetchAccountTimelineFilter,
   type FetchConversationNotesFilter,
+  type FetchHomeTimelineFilter,
   type ListRepository,
   listRepoSymbol,
   type TimelineRepository,
@@ -32,6 +33,34 @@ import {
 export class PrismaTimelineRepository implements TimelineRepository {
   private readonly TIMELINE_NOTE_LIMIT = 20;
   constructor(private readonly prisma: PrismaClient) {}
+
+  private buildCursorFilter(
+    filter: Pick<FetchHomeTimelineFilter, 'beforeId' | 'afterID'>,
+    limit: number = this.TIMELINE_NOTE_LIMIT,
+  ) {
+    return {
+      orderBy: {
+        createdAt: filter.afterID ? 'asc' : 'desc',
+      } as const,
+      ...(filter.beforeId
+        ? {
+            cursor: {
+              id: filter.beforeId,
+            },
+            skip: 1,
+          }
+        : {}),
+      ...(filter.afterID
+        ? {
+            cursor: {
+              id: filter.afterID,
+            },
+            skip: 1,
+          }
+        : {}),
+      take: limit,
+    };
+  }
 
   private deserialize(
     data: Prisma.PromiseReturnType<typeof this.prisma.note.findMany & {}>,
@@ -87,27 +116,7 @@ export class PrismaTimelineRepository implements TimelineRepository {
       where: {
         authorId: accountId,
       },
-      orderBy: {
-        createdAt: filter.afterID ? 'asc' : 'desc',
-      },
-      ...(filter.beforeId
-        ? {
-            cursor: {
-              id: filter.beforeId,
-            },
-            // NOTE: Not include specified record
-            skip: 1,
-          }
-        : {}),
-      ...(filter.afterID
-        ? {
-            cursor: {
-              id: filter.afterID,
-            },
-            skip: 1,
-          }
-        : {}),
-      take: this.TIMELINE_NOTE_LIMIT,
+      ...this.buildCursorFilter(filter),
     });
 
     return Result.ok(this.deserialize(accountNotes));
@@ -128,6 +137,29 @@ export class PrismaTimelineRepository implements TimelineRepository {
       take: this.TIMELINE_NOTE_LIMIT,
     });
     return Result.ok(this.deserialize(homeNotes));
+  }
+
+  async getPublicTimeline(
+    filter: FetchHomeTimelineFilter,
+  ): Promise<Result.Result<Error, Note[]>> {
+    if (filter.afterID && filter.beforeId) {
+      return Result.err(
+        new TimelineInvalidFilterRangeError(
+          'beforeID and afterID cannot be specified at the same time',
+          { cause: null },
+        ),
+      );
+    }
+
+    const publicNotes = await this.prisma.note.findMany({
+      where: {
+        visibility: 0, // NOTE: PUBLIC
+        deletedAt: null,
+      },
+      ...this.buildCursorFilter(filter),
+    });
+
+    return Result.ok(this.deserialize(publicNotes));
   }
 
   async fetchListTimeline(
