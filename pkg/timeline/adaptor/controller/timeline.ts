@@ -19,6 +19,7 @@ import type { FetchListService } from '../../service/fetchList.js';
 import type { FetchListMemberService } from '../../service/fetchMember.js';
 import type { HomeTimelineService } from '../../service/home.js';
 import type { ListTimelineService } from '../../service/list.js';
+import type { PublicTimelineService } from '../../service/public.js';
 import type { RemoveListMemberService } from '../../service/removeMember.js';
 import type {
   CreateListResponseSchema,
@@ -30,6 +31,7 @@ import type {
   GetHomeTimelineResponseSchema,
   GetListMemberResponseSchema,
   GetListTimelineResponseSchema,
+  GetPublicTimelineResponseSchema,
 } from '../validator/timeline.js';
 
 export class TimelineController {
@@ -47,6 +49,7 @@ export class TimelineController {
   private readonly removeListMemberService: RemoveListMemberService;
   private readonly fetchBookmarkTimelineService: FetchBookmarkService;
   private readonly fetchConversationService: FetchConversationService;
+  private readonly publicTimelineService: PublicTimelineService;
 
   constructor(args: {
     accountTimelineService: AccountTimelineService;
@@ -63,6 +66,7 @@ export class TimelineController {
     removeListMemberService: RemoveListMemberService;
     fetchBookmarkTimelineService: FetchBookmarkService;
     fetchConversationService: FetchConversationService;
+    publicTimelineService: PublicTimelineService;
   }) {
     this.accountTimelineService = args.accountTimelineService;
     this.accountModule = args.accountModule;
@@ -78,6 +82,7 @@ export class TimelineController {
     this.removeListMemberService = args.removeListMemberService;
     this.fetchBookmarkTimelineService = args.fetchBookmarkTimelineService;
     this.fetchConversationService = args.fetchConversationService;
+    this.publicTimelineService = args.publicTimelineService;
   }
 
   private async getNoteAdditionalData(notes: readonly Note[]): Promise<
@@ -624,5 +629,67 @@ export class TimelineController {
         };
       }),
     );
+  }
+
+  async getPublicTimeline(
+    hasAttachment: boolean,
+    noNsfw: boolean,
+    beforeId?: string,
+    afterId?: string,
+  ): Promise<
+    Result.Result<Error, z.infer<typeof GetPublicTimelineResponseSchema>>
+  > {
+    const res = await this.publicTimelineService.fetchPublicTimeline({
+      hasAttachment,
+      noNsfw,
+      beforeId: beforeId as NoteID | undefined,
+      afterID: afterId as NoteID | undefined,
+    });
+    if (Result.isErr(res)) {
+      return res;
+    }
+    const publicNotes = Result.unwrap(res);
+
+    const noteAdditionalDataRes = await this.getNoteAdditionalData(publicNotes);
+    if (Result.isErr(noteAdditionalDataRes)) {
+      return noteAdditionalDataRes;
+    }
+    const noteAdditionalData = Result.unwrap(noteAdditionalDataRes);
+
+    const result = noteAdditionalData.map((v) => {
+      return {
+        id: v.note.getID(),
+        content: v.note.getContent(),
+        contents_warning_comment: v.note.getCwComment(),
+        visibility: v.note.getVisibility(),
+        created_at: v.note.getCreatedAt().toUTCString(),
+        reactions: v.reactions.map((reaction) => ({
+          emoji: reaction.getEmoji(),
+          reacted_by: reaction.getAccountID(),
+        })),
+        attachment_files: v.attachments.map((file) => ({
+          id: file.getId(),
+          name: file.getName(),
+          author_id: file.getAuthorId(),
+          hash: file.getHash(),
+          mime: file.getMime(),
+          nsfw: file.isNsfw(),
+          url: file.getUrl(),
+          thumbnail: file.getThumbnailUrl(),
+        })),
+        author: {
+          id: v.author.getID(),
+          name: v.author.getName(),
+          display_name: v.author.getNickname(),
+          bio: v.author.getBio(),
+          avatar: v.avatar,
+          header: v.header,
+          followed_count: v.followCount.followed,
+          following_count: v.followCount.following,
+        },
+      };
+    });
+
+    return Result.ok(result);
   }
 }
