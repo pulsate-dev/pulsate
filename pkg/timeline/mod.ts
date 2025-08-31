@@ -53,6 +53,7 @@ import {
   GetHomeTimelineRoute,
   GetListMemberRoute,
   GetListTimelineRoute,
+  GetPublicTimelineRoute,
 } from './router.js';
 import { accountTimeline } from './service/account.js';
 import { appendListMember } from './service/appendMember.js';
@@ -66,6 +67,7 @@ import { fetchListMember } from './service/fetchMember.js';
 import { homeTimeline } from './service/home.js';
 import { listTimeline } from './service/list.js';
 import { noteVisibility } from './service/noteVisibility.js';
+import { publicTimeline } from './service/public.js';
 import { removeListMember } from './service/removeMember.js';
 
 const isProduction = process.env.NODE_ENV === 'production';
@@ -154,6 +156,9 @@ const controller = new TimelineController({
   fetchConversationService: Ether.runEther(
     Cat.cat(fetchConversation).feed(Ether.compose(conversationRepository))
       .value,
+  ),
+  publicTimelineService: Ether.runEther(
+    Cat.cat(publicTimeline).feed(Ether.compose(timelineRepository)).value,
   ),
 });
 
@@ -499,4 +504,27 @@ timeline.openapi(GetConversationRoute, async (c) => {
   }
 
   return c.json(res[1], 200);
+});
+
+timeline.openapi(GetPublicTimelineRoute, async (c) => {
+  const { has_attachment, no_nsfw, before_id, after_id } = c.req.valid('query');
+  const res = await controller.getPublicTimeline(
+    has_attachment,
+    no_nsfw,
+    before_id,
+    after_id,
+  );
+  if (Result.isErr(res)) {
+    const error = Result.unwrapErr(res);
+    timelineModuleLogger.warn(error);
+
+    if (error instanceof TimelineNoMoreNotesError) {
+      return c.json({ error: 'NOTHING_LEFT' as const }, 404);
+    }
+
+    timelineModuleLogger.error('Uncaught error', error);
+    return c.json({ error: 'INTERNAL_ERROR' as const }, 500);
+  }
+
+  return c.json(Result.unwrap(res), 200);
 });

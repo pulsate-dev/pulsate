@@ -49,6 +49,10 @@ export const GetAccountTimelineResponseSchema = z
 
 export const GetHomeTimelineResponseSchema = z.array(TimelineNoteBaseSchema);
 
+export const GetPublicTimelineResponseSchema = z
+  .array(TimelineNoteBaseSchema)
+  .openapi('GetPublicTimelineResponse');
+
 export const GetListTimelineResponseSchema = z
   .array(
     z.object({
