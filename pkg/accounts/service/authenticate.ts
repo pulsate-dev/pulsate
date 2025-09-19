@@ -4,7 +4,6 @@ import {
   type PasswordEncoder,
   passwordEncoderSymbol,
 } from '../../password/mod.js';
-import type { AccountName } from '../model/account.js';
 import {
   AccountAuthenticationFailedError,
   AccountInternalError,
@@ -36,10 +35,10 @@ export class AuthenticateService {
   }
 
   async handle(
-    name: AccountName,
+    email: string,
     passphrase: string,
   ): Promise<Result.Result<Error, AuthenticationToken>> {
-    const account = await this.accountRepository.findByName(name);
+    const account = await this.accountRepository.findByMail(email);
     if (Option.isNone(account)) {
       return Result.err(
         new AccountNotFoundError('account not found', { cause: null }),

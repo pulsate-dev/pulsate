@@ -127,9 +127,9 @@ export const VerifyEmailRequestSchema = z
 
 export const LoginRequestSchema = z
   .object({
-    name: z.string().min(8).max(512).openapi({
-      description: 'account name',
-      example: '@johndoe@example.com',
+    email: z.string().email().max(512).openapi({
+      description: 'email address',
+      example: 'johndoe@example.com',
     }),
     passphrase: z.string().min(8).max(512).openapi({
       description: 'Passphrase',
