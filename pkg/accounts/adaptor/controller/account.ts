@@ -331,13 +331,10 @@ export class AccountController {
   }
 
   async login(
-    name: string,
+    email: string,
     passphrase: string,
   ): Promise<Result.Result<Error, z.infer<typeof LoginResponseSchema>>> {
-    const res = await this.authenticateService.handle(
-      name as AccountName,
-      passphrase,
-    );
+    const res = await this.authenticateService.handle(email, passphrase);
     if (Result.isErr(res)) {
       return res;
     }
