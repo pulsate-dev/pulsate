@@ -2,7 +2,7 @@ import type { z } from '@hono/zod-openapi';
 import { Option, Result } from '@mikuroxina/mini-fn';
 
 import type { Medium, MediumID } from '../../../drive/model/medium.js';
-import type { AccountID } from '../../model/account.js';
+import type { AccountID, AccountName } from '../../model/account.js';
 import type { AccountFollow } from '../../model/follow.js';
 import type { AccountFollowCount } from '../../model/repository.js';
 import type { AuthenticateService } from '../../service/authenticate.js';
