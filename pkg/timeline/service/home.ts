@@ -28,7 +28,7 @@ export class HomeTimelineService {
     }
     const noteIDs = Result.unwrap(noteIDsRes);
     const beforeIndex = filter.beforeId
-      ? noteIDs.indexOf(filter.beforeId)
+      ? noteIDs.findIndex(id => id === filter.beforeId)
       : noteIDs.length;
 
     return await this.timelineRepository.getHomeTimeline(
