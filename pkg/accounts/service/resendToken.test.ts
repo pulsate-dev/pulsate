@@ -2,7 +2,7 @@ import { Option } from '@mikuroxina/mini-fn';
 import { afterEach, describe, expect, it } from 'vitest';
 
 import { MockClock } from '../../id/mod.js';
-import { DummySendNotificationService } from '../../notification/service/sendEmailNotification.js';
+import { notificationModule } from '../../intermodule/notification.js';
 import { InMemoryAccountRepository } from '../adaptor/repository/dummy/account.js';
 import { InMemoryAccountVerifyTokenRepository } from '../adaptor/repository/dummy/verifyToken.js';
 import { Account, type AccountID } from '../model/account.js';
@@ -52,7 +52,6 @@ const verifyAccountTokenService = new VerifyAccountTokenService(
   accountRepository,
   mockClock,
 );
-const sendNotificationService = new DummySendNotificationService();
 
 describe('ResendVerifyTokenService', () => {
   afterEach(() => repository.reset());
@@ -61,7 +60,7 @@ describe('ResendVerifyTokenService', () => {
     const service = new ResendVerifyTokenService(
       repository,
       verifyAccountTokenService,
-      sendNotificationService,
+      notificationModule,
     );
     const actual = await service.handle('@john@example.com');
     expect(Option.isNone(actual)).toBe(true);
@@ -71,7 +70,7 @@ describe('ResendVerifyTokenService', () => {
     const service = new ResendVerifyTokenService(
       repository,
       verifyAccountTokenService,
-      sendNotificationService,
+      notificationModule,
     );
     const actual = await service.handle('@a@example.com');
 
