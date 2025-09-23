@@ -6,15 +6,15 @@ import {
   emailSenderSymbol,
 } from '../../model/emailSender.js';
 
-export interface SMTPConfig {
+export interface SmtpConfig {
   host: string;
   port: number;
   user: string;
   pass: string;
 }
 
-export class SMTPEmailSender implements EmailSender {
-  constructor(private readonly smtpConfig: SMTPConfig) {}
+export class SmtpEmailSender implements EmailSender {
+  constructor(private readonly smtpConfig: SmtpConfig) {}
 
   async send(
     to: string,
@@ -51,5 +51,5 @@ export class SMTPEmailSender implements EmailSender {
   }
 }
 
-export const smtpEmailSender = (config: SMTPConfig) =>
-  Ether.newEther(emailSenderSymbol, () => new SMTPEmailSender(config));
+export const smtpEmailSender = (config: SmtpConfig) =>
+  Ether.newEther(emailSenderSymbol, () => new SmtpEmailSender(config));

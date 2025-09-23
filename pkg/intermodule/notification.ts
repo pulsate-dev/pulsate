@@ -6,7 +6,7 @@ import { clockSymbol, snowflakeIDGenerator } from '../id/mod.js';
 import type { NoteID } from '../notes/model/note.js';
 import type { ReactionID } from '../notes/model/reaction.js';
 import { DummyEmailSender } from '../notification/adaptor/email/dummySender.js';
-import { SMTPEmailSender } from '../notification/adaptor/email/genericSender.js';
+import { SmtpEmailSender } from '../notification/adaptor/email/genericSender.js';
 import { InMemoryNotificationRepository } from '../notification/adaptor/repository/dummy/notification.js';
 import { PrismaNotificationRepository } from '../notification/adaptor/repository/prisma/notification.js';
 import { emailSenderSymbol } from '../notification/model/emailSender.js';
@@ -97,7 +97,7 @@ const notificationRepo = Ether.newEther(
 );
 
 const emailSenderObject = isProduction
-  ? new SMTPEmailSender({ host: '', port: 587, user: '', pass: '' }) // ToDo: make configurable
+  ? new SmtpEmailSender({ host: '', port: 587, user: '', pass: '' }) // ToDo: make configurable
   : new DummyEmailSender();
 const emailSender = Ether.newEther(emailSenderSymbol, () => emailSenderObject);
 
