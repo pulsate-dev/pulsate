@@ -2,7 +2,7 @@ import { Result } from '@mikuroxina/mini-fn';
 import { describe, expect, it } from 'vitest';
 
 import { MockClock, SnowflakeIDGenerator } from '../../id/mod.js';
-import { DummySendNotificationService } from '../../notification/service/sendEmailNotification.js';
+import { notificationModule } from '../../intermodule/notification.js';
 import { Argon2idPasswordEncoder } from '../../password/mod.js';
 import { InMemoryAccountRepository } from '../adaptor/repository/dummy/account.js';
 import { InMemoryAccountVerifyTokenRepository } from '../adaptor/repository/dummy/verifyToken.js';
@@ -18,7 +18,7 @@ const registerService: RegisterService = new RegisterService({
   repository,
   idGenerator: new SnowflakeIDGenerator(1, mockClock),
   passwordEncoder: new Argon2idPasswordEncoder(),
-  sendNotification: new DummySendNotificationService(),
+  notificationModule: notificationModule,
   verifyAccountTokenService: new VerifyAccountTokenService(
     verifyRepository,
     repository,
