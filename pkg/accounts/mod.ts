@@ -9,7 +9,10 @@ import { prismaClient } from '../adaptors/prisma.js';
 import { MediaNotFoundError } from '../drive/model/errors.js';
 import { clockSymbol, snowflakeIDGenerator } from '../id/mod.js';
 import { mediaModuleFacadeEther } from '../intermodule/media.js';
-import { dummy } from '../notification/service/sendEmailNotification.js';
+import {
+  notificationModule,
+  notificationModuleFacadeSymbol,
+} from '../intermodule/notification.js';
 import { argon2idPasswordEncoder } from '../password/mod.js';
 import { newTurnstileCaptchaValidator } from './adaptor/captcha/turnstile.js';
 import { AccountController } from './adaptor/controller/account.js';
@@ -177,7 +180,14 @@ export const controller = new AccountController({
       .feed(Ether.compose(accountRepository))
       .feed(Ether.compose(idGenerator))
       .feed(Ether.compose(argon2idPasswordEncoder))
-      .feed(Ether.compose(dummy))
+      .feed(
+        Ether.compose(
+          Ether.newEther(
+            notificationModuleFacadeSymbol,
+            () => notificationModule,
+          ),
+        ),
+      )
       .feed(Ether.compose(verifyAccountTokenService)).value,
   ),
   silenceService: Ether.runEther(
@@ -193,7 +203,14 @@ export const controller = new AccountController({
     Cat.cat(resendToken)
       .feed(Ether.compose(accountRepository))
       .feed(Ether.compose(verifyAccountTokenService))
-      .feed(Ether.compose(dummy)).value,
+      .feed(
+        Ether.compose(
+          Ether.newEther(
+            notificationModuleFacadeSymbol,
+            () => notificationModule,
+          ),
+        ),
+      ).value,
   ),
   fetchFollowService: Ether.runEther(
     Cat.cat(fetchFollow)

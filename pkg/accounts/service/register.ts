@@ -7,9 +7,9 @@ import {
   snowflakeIDGeneratorSymbol,
 } from '../../id/mod.js';
 import {
-  type SendEmailNotificationService,
-  sendEmailNotificationSymbol,
-} from '../../notification/service/sendEmailNotification.js';
+  type NotificationModuleFacade,
+  notificationModuleFacadeSymbol,
+} from '../../intermodule/notification.js';
 import {
   type PasswordEncoder,
   passwordEncoderSymbol,
@@ -40,7 +40,7 @@ export class RegisterService {
   private readonly accountRepository: AccountRepository;
   private readonly snowflakeIDGenerator: SnowflakeIDGenerator;
   private readonly passwordEncoder: PasswordEncoder;
-  private readonly sendNotificationService: SendEmailNotificationService;
+  private readonly notificationModule: NotificationModuleFacade;
   private readonly verifyAccountTokenService: VerifyAccountTokenService;
   private readonly clock: Clock;
 
@@ -48,14 +48,14 @@ export class RegisterService {
     repository: AccountRepository;
     idGenerator: SnowflakeIDGenerator;
     passwordEncoder: PasswordEncoder;
-    sendNotification: SendEmailNotificationService;
+    notificationModule: NotificationModuleFacade;
     verifyAccountTokenService: VerifyAccountTokenService;
     clock: Clock;
   }) {
     this.accountRepository = arg.repository;
     this.snowflakeIDGenerator = arg.idGenerator;
     this.passwordEncoder = arg.passwordEncoder;
-    this.sendNotificationService = arg.sendNotification;
+    this.notificationModule = arg.notificationModule;
     this.verifyAccountTokenService = arg.verifyAccountTokenService;
     this.clock = arg.clock;
   }
@@ -106,7 +106,11 @@ export class RegisterService {
     }
 
     // ToDo: Notification Body
-    await this.sendNotificationService.send(mail, `token: ${token[1]}`);
+    await this.notificationModule.sendEmailNotification({
+      to: mail,
+      subject: 'Verify your email address',
+      body: `token: ${token[1]}`,
+    });
 
     return Result.ok(account);
   }
@@ -132,7 +136,7 @@ export const register = Ether.newEther(
     repository: accountRepoSymbol,
     idGenerator: snowflakeIDGeneratorSymbol,
     passwordEncoder: passwordEncoderSymbol,
-    sendNotification: sendEmailNotificationSymbol,
+    notificationModule: notificationModuleFacadeSymbol,
     verifyAccountTokenService: verifyAccountTokenSymbol,
     clock: clockSymbol,
   },
