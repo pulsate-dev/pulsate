@@ -1,4 +1,4 @@
-import type { Result } from '@mikuroxina/mini-fn';
+import { Ether, type Result } from '@mikuroxina/mini-fn';
 
 export interface EmailSender {
   send(
@@ -7,3 +7,5 @@ export interface EmailSender {
     body: string,
   ): Promise<Result.Result<Error, void>>;
 }
+
+export const emailSenderSymbol = Ether.newEtherSymbol<EmailSender>();

@@ -7,6 +7,10 @@ import {
   snowflakeIDGeneratorSymbol,
 } from '../../id/mod.js';
 import {
+  type SendEmailNotificationService,
+  sendEmailNotificationSymbol,
+} from '../../notification/service/sendEmailNotification.js';
+import {
   type PasswordEncoder,
   passwordEncoderSymbol,
 } from '../../password/mod.js';
@@ -19,10 +23,6 @@ import {
   type AccountRepository,
   accountRepoSymbol,
 } from '../model/repository.js';
-import {
-  type SendNotificationService,
-  sendNotificationSymbol,
-} from './sendNotification.js';
 import {
   type VerifyAccountTokenService,
   verifyAccountTokenSymbol,
@@ -40,7 +40,7 @@ export class RegisterService {
   private readonly accountRepository: AccountRepository;
   private readonly snowflakeIDGenerator: SnowflakeIDGenerator;
   private readonly passwordEncoder: PasswordEncoder;
-  private readonly sendNotificationService: SendNotificationService;
+  private readonly sendNotificationService: SendEmailNotificationService;
   private readonly verifyAccountTokenService: VerifyAccountTokenService;
   private readonly clock: Clock;
 
@@ -48,7 +48,7 @@ export class RegisterService {
     repository: AccountRepository;
     idGenerator: SnowflakeIDGenerator;
     passwordEncoder: PasswordEncoder;
-    sendNotification: SendNotificationService;
+    sendNotification: SendEmailNotificationService;
     verifyAccountTokenService: VerifyAccountTokenService;
     clock: Clock;
   }) {
@@ -132,7 +132,7 @@ export const register = Ether.newEther(
     repository: accountRepoSymbol,
     idGenerator: snowflakeIDGeneratorSymbol,
     passwordEncoder: passwordEncoderSymbol,
-    sendNotification: sendNotificationSymbol,
+    sendNotification: sendEmailNotificationSymbol,
     verifyAccountTokenService: verifyAccountTokenSymbol,
     clock: clockSymbol,
   },

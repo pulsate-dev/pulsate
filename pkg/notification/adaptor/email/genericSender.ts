@@ -1,15 +1,20 @@
-import { Result } from '@mikuroxina/mini-fn';
+import { Ether, Result } from '@mikuroxina/mini-fn';
 import { createMessage } from '@upyo/core';
 import { SmtpTransport } from '@upyo/smtp';
-import type { EmailSender } from '../../model/emailSender.js';
+import {
+  type EmailSender,
+  emailSenderSymbol,
+} from '../../model/emailSender.js';
+
+export interface SMTPConfig {
+  host: string;
+  port: number;
+  user: string;
+  pass: string;
+}
 
 export class SMTPEmailSender implements EmailSender {
-  constructor(
-    private readonly smtpHost: string,
-    private readonly smtpPort: number,
-    private readonly smtpUser: string,
-    private readonly smtpPass: string,
-  ) {}
+  constructor(private readonly smtpConfig: SMTPConfig) {}
 
   async send(
     to: string,
@@ -27,12 +32,12 @@ export class SMTPEmailSender implements EmailSender {
     });
 
     const res = await new SmtpTransport({
-      host: this.smtpHost,
-      port: this.smtpPort,
+      host: this.smtpConfig.host,
+      port: this.smtpConfig.port,
       secure: true,
       auth: {
-        user: this.smtpUser,
-        pass: this.smtpPass,
+        user: this.smtpConfig.user,
+        pass: this.smtpConfig.pass,
       },
     }).send(message);
 
@@ -45,3 +50,6 @@ export class SMTPEmailSender implements EmailSender {
     return Result.ok(undefined);
   }
 }
+
+export const smtpEmailSender = (config: SMTPConfig) =>
+  Ether.newEther(emailSenderSymbol, () => new SMTPEmailSender(config));

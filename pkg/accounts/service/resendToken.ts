@@ -1,5 +1,8 @@
 import { Ether, Option, Result } from '@mikuroxina/mini-fn';
-
+import {
+  type SendEmailNotificationService,
+  sendEmailNotificationSymbol,
+} from '../../notification/service/sendEmailNotification.js';
 import type { AccountName } from '../model/account.js';
 import {
   AccountMailAddressAlreadyVerifiedError,
@@ -10,10 +13,6 @@ import {
   accountRepoSymbol,
 } from '../model/repository.js';
 import {
-  type SendNotificationService,
-  sendNotificationSymbol,
-} from './sendNotification.js';
-import {
   type VerifyAccountTokenService,
   verifyAccountTokenSymbol,
 } from './verifyToken.js';
@@ -21,12 +20,12 @@ import {
 export class ResendVerifyTokenService {
   private readonly accountRepository: AccountRepository;
   private readonly verifyAccountTokenService: VerifyAccountTokenService;
-  private readonly sendNotificationService: SendNotificationService;
+  private readonly sendNotificationService: SendEmailNotificationService;
 
   constructor(
     accountRepository: AccountRepository,
     verifyAccountTokenService: VerifyAccountTokenService,
-    sendNotificationService: SendNotificationService,
+    sendNotificationService: SendEmailNotificationService,
   ) {
     this.accountRepository = accountRepository;
     this.verifyAccountTokenService = verifyAccountTokenService;
@@ -75,6 +74,6 @@ export const resendToken = Ether.newEther(
   {
     accountRepository: accountRepoSymbol,
     verifyAccountTokenService: verifyAccountTokenSymbol,
-    sendNotificationService: sendNotificationSymbol,
+    sendNotificationService: sendEmailNotificationSymbol,
   },
 );

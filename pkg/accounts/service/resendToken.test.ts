@@ -2,12 +2,12 @@ import { Option } from '@mikuroxina/mini-fn';
 import { afterEach, describe, expect, it } from 'vitest';
 
 import { MockClock } from '../../id/mod.js';
+import { DummySendNotificationService } from '../../notification/service/sendEmailNotification.js';
 import { InMemoryAccountRepository } from '../adaptor/repository/dummy/account.js';
 import { InMemoryAccountVerifyTokenRepository } from '../adaptor/repository/dummy/verifyToken.js';
 import { Account, type AccountID } from '../model/account.js';
 import { AccountNotFoundError } from '../model/errors.js';
 import { ResendVerifyTokenService } from './resendToken.js';
-import { DummySendNotificationService } from './sendNotification.js';
 import { VerifyAccountTokenService } from './verifyToken.js';
 
 const repository = new InMemoryAccountRepository();

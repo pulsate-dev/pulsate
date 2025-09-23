@@ -1,5 +1,8 @@
-import { Result } from '@mikuroxina/mini-fn';
-import type { EmailSender } from '../../model/emailSender.js';
+import { Ether, Result } from '@mikuroxina/mini-fn';
+import {
+  type EmailSender,
+  emailSenderSymbol,
+} from '../../model/emailSender.js';
 
 export class DummyEmailSender implements EmailSender {
   async send(
@@ -13,3 +16,7 @@ export class DummyEmailSender implements EmailSender {
     return Result.ok(undefined);
   }
 }
+export const dummyEmailSender = Ether.newEther(
+  emailSenderSymbol,
+  () => new DummyEmailSender(),
+);
