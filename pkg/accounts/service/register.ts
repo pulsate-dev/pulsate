@@ -75,13 +75,15 @@ export class RegisterService {
     }
     const passphraseHash =
       await this.passwordEncoder.encodePassword(passphrase);
-    const generatedID = this.snowflakeIDGenerator.generate<Account>();
-    if (Result.isErr(generatedID)) {
-      return Result.err(generatedID[1]);
+    const generatedIDRes = this.snowflakeIDGenerator.generate<Account>();
+    if (Result.isErr(generatedIDRes)) {
+      return generatedIDRes;
     }
+    const generatedID = Result.unwrap(generatedIDRes);
+
     const now = this.clock.now();
     const account = Account.new({
-      id: generatedID[1],
+      id: generatedID,
       name: name,
       mail: mail,
       nickname: nickname,
@@ -95,21 +97,22 @@ export class RegisterService {
     });
     const res = await this.accountRepository.create(account);
     if (Result.isErr(res)) {
-      return Result.err(res[1]);
+      return res;
     }
 
-    const token = await this.verifyAccountTokenService.generate(
+    const tokenRes = await this.verifyAccountTokenService.generate(
       account.getName(),
     );
-    if (Result.isErr(token)) {
-      return Result.err(token[1]);
+    if (Result.isErr(tokenRes)) {
+      return tokenRes;
     }
+    const token = Result.unwrap(tokenRes);
 
     // ToDo: Notification Body
     await this.notificationModule.sendEmailNotification({
       to: mail,
       subject: 'Verify your email address',
-      body: `token: ${token[1]}`,
+      body: `token: ${token}`,
     });
 
     return Result.ok(account);
