@@ -17,7 +17,7 @@ export const CreateAccountRequestSchema = z
       description:
         'Characters must be [A-Za-z0-9-.] The first and last characters must be [A-Za-z0-9-.]',
     }),
-    email: z.string().email().openapi({ example: 'foo@example.com' }),
+    email: z.email().openapi({ example: 'foo@example.com' }),
     passphrase: z.string().min(8).max(512).openapi({
       example: 'じゃすた・いぐざんぽぅ',
       description:
@@ -39,7 +39,7 @@ export const CreateAccountResponseSchema = z
       example: '@example_man@example.com',
       description: 'account name',
     }),
-    email: z.string().email().openapi({
+    email: z.email().openapi({
       example: 'foo@example.com',
       description: 'account email address',
     }),
@@ -52,7 +52,7 @@ export const UpdateAccountRequestSchema = z
       description: 'Nickname',
       examples: ['Johndoe<:typescript:3939849792873>', 'ジョン・ドゥ🚉'],
     }),
-    email: z.optional(z.string().email()).openapi({
+    email: z.optional(z.email()).openapi({
       description: 'Email address',
       example: 'john@example.com',
     }),
@@ -101,7 +101,7 @@ export const UpdateAccountResponseSchema = z
           'This is bio hello^~ <:javascript:358409384>',
         ],
       }),
-    email: z.string().email().openapi({
+    email: z.email().openapi({
       example: 'foo@example.com',
       description: 'account email address',
     }),
@@ -127,9 +127,9 @@ export const VerifyEmailRequestSchema = z
 
 export const LoginRequestSchema = z
   .object({
-    name: z.string().min(8).max(512).openapi({
-      description: 'account name',
-      example: '@johndoe@example.com',
+    email: z.email().openapi({
+      description: 'email address',
+      example: 'johndoe@example.com',
     }),
     passphrase: z.string().min(8).max(512).openapi({
       description: 'Passphrase',

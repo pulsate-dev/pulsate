@@ -26,7 +26,6 @@ import {
   prismaFollowRepo,
   prismaVerifyTokenRepo,
 } from './adaptor/repository/prisma/prisma.js';
-import type { AccountName } from './model/account.js';
 import {
   AccountAlreadyFollowingError,
   AccountAlreadyFrozenError,
@@ -454,9 +453,9 @@ accounts.openapi(GetAccountRoute, async (c) => {
 });
 
 accounts.openapi(LoginRoute, async (c) => {
-  const { name, passphrase } = c.req.valid('json');
+  const { email, passphrase } = c.req.valid('json');
 
-  const res = await controller.login(name as AccountName, passphrase);
+  const res = await controller.login(email, passphrase);
   if (Result.isErr(res)) {
     const error = Result.unwrapErr(res);
     accountModuleLogger.warn(error);
