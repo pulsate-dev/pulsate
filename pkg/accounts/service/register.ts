@@ -7,6 +7,10 @@ import {
   snowflakeIDGeneratorSymbol,
 } from '../../id/mod.js';
 import {
+  type NotificationModuleFacade,
+  notificationModuleFacadeSymbol,
+} from '../../intermodule/notification.js';
+import {
   type PasswordEncoder,
   passwordEncoderSymbol,
 } from '../../password/mod.js';
@@ -19,10 +23,6 @@ import {
   type AccountRepository,
   accountRepoSymbol,
 } from '../model/repository.js';
-import {
-  type SendNotificationService,
-  sendNotificationSymbol,
-} from './sendNotification.js';
 import {
   type VerifyAccountTokenService,
   verifyAccountTokenSymbol,
@@ -40,7 +40,7 @@ export class RegisterService {
   private readonly accountRepository: AccountRepository;
   private readonly snowflakeIDGenerator: SnowflakeIDGenerator;
   private readonly passwordEncoder: PasswordEncoder;
-  private readonly sendNotificationService: SendNotificationService;
+  private readonly notificationModule: NotificationModuleFacade;
   private readonly verifyAccountTokenService: VerifyAccountTokenService;
   private readonly clock: Clock;
 
@@ -48,14 +48,14 @@ export class RegisterService {
     repository: AccountRepository;
     idGenerator: SnowflakeIDGenerator;
     passwordEncoder: PasswordEncoder;
-    sendNotification: SendNotificationService;
+    notificationModule: NotificationModuleFacade;
     verifyAccountTokenService: VerifyAccountTokenService;
     clock: Clock;
   }) {
     this.accountRepository = arg.repository;
     this.snowflakeIDGenerator = arg.idGenerator;
     this.passwordEncoder = arg.passwordEncoder;
-    this.sendNotificationService = arg.sendNotification;
+    this.notificationModule = arg.notificationModule;
     this.verifyAccountTokenService = arg.verifyAccountTokenService;
     this.clock = arg.clock;
   }
@@ -75,13 +75,15 @@ export class RegisterService {
     }
     const passphraseHash =
       await this.passwordEncoder.encodePassword(passphrase);
-    const generatedID = this.snowflakeIDGenerator.generate<Account>();
-    if (Result.isErr(generatedID)) {
-      return Result.err(generatedID[1]);
+    const generatedIDRes = this.snowflakeIDGenerator.generate<Account>();
+    if (Result.isErr(generatedIDRes)) {
+      return generatedIDRes;
     }
+    const generatedID = Result.unwrap(generatedIDRes);
+
     const now = this.clock.now();
     const account = Account.new({
-      id: generatedID[1],
+      id: generatedID,
       name: name,
       mail: mail,
       nickname: nickname,
@@ -95,18 +97,23 @@ export class RegisterService {
     });
     const res = await this.accountRepository.create(account);
     if (Result.isErr(res)) {
-      return Result.err(res[1]);
+      return res;
     }
 
-    const token = await this.verifyAccountTokenService.generate(
+    const tokenRes = await this.verifyAccountTokenService.generate(
       account.getName(),
     );
-    if (Result.isErr(token)) {
-      return Result.err(token[1]);
+    if (Result.isErr(tokenRes)) {
+      return tokenRes;
     }
+    const token = Result.unwrap(tokenRes);
 
     // ToDo: Notification Body
-    await this.sendNotificationService.send(mail, `token: ${token[1]}`);
+    await this.notificationModule.sendEmailNotification({
+      to: mail,
+      subject: 'Verify your email address',
+      body: `token: ${token}`,
+    });
 
     return Result.ok(account);
   }
@@ -132,7 +139,7 @@ export const register = Ether.newEther(
     repository: accountRepoSymbol,
     idGenerator: snowflakeIDGeneratorSymbol,
     passwordEncoder: passwordEncoderSymbol,
-    sendNotification: sendNotificationSymbol,
+    notificationModule: notificationModuleFacadeSymbol,
     verifyAccountTokenService: verifyAccountTokenSymbol,
     clock: clockSymbol,
   },

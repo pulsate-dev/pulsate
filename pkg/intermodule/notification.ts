@@ -5,16 +5,26 @@ import { prismaClient } from '../adaptors/prisma.js';
 import { clockSymbol, snowflakeIDGenerator } from '../id/mod.js';
 import type { NoteID } from '../notes/model/note.js';
 import type { ReactionID } from '../notes/model/reaction.js';
+import { DummyEmailSender } from '../notification/adaptor/email/dummySender.js';
+import { SmtpEmailSender } from '../notification/adaptor/email/genericSender.js';
 import { InMemoryNotificationRepository } from '../notification/adaptor/repository/dummy/notification.js';
 import { PrismaNotificationRepository } from '../notification/adaptor/repository/prisma/notification.js';
+import { emailSenderSymbol } from '../notification/model/emailSender.js';
 import { notificationRepoSymbol } from '../notification/model/repository/notification.js';
 import {
   type CreateNotificationService,
   createNotificationService,
 } from '../notification/service/create.js';
+import {
+  type SendEmailNotificationService,
+  sendEmailNotificationService,
+} from '../notification/service/sendEmailNotification.js';
 
 export class NotificationModuleFacade {
-  constructor(private readonly createService: CreateNotificationService) {}
+  constructor(
+    private readonly createService: CreateNotificationService,
+    private readonly sendEmailNotificationService: SendEmailNotificationService,
+  ) {}
 
   async createFollowed(args: { recipientID: AccountID; actorID: AccountID }) {
     return await this.createService.createFollowed(args);
@@ -56,6 +66,18 @@ export class NotificationModuleFacade {
   }) {
     return await this.createService.createRenoted(args);
   }
+
+  async sendEmailNotification(args: {
+    to: string;
+    subject: string;
+    body: string;
+  }) {
+    return await this.sendEmailNotificationService.handle(
+      args.to,
+      args.subject,
+      args.body,
+    );
+  }
 }
 
 class Clock {
@@ -74,6 +96,11 @@ const notificationRepo = Ether.newEther(
   () => notificationRepoObject,
 );
 
+const emailSenderObject = isProduction
+  ? new SmtpEmailSender({ host: '', port: 587, user: '', pass: '' }) // ToDo: make configurable
+  : new DummyEmailSender();
+const emailSender = Ether.newEther(emailSenderSymbol, () => emailSenderObject);
+
 export const notificationModuleFacadeSymbol =
   Ether.newEtherSymbol<NotificationModuleFacade>();
 
@@ -83,5 +110,9 @@ export const notificationModule = new NotificationModuleFacade(
       .feed(Ether.compose(notificationRepo))
       .feed(Ether.compose(idGenerator))
       .feed(Ether.compose(clock)).value,
+  ),
+  Ether.runEther(
+    Cat.cat(sendEmailNotificationService).feed(Ether.compose(emailSender))
+      .value,
   ),
 );

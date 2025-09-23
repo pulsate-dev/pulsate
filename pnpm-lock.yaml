@@ -26,6 +26,12 @@ importers:
       '@scalar/hono-api-reference':
         specifier: ^0.9.0
         version: 0.9.18(hono@4.9.8)
+      '@upyo/core':
+        specifier: ^0.3.0
+        version: 0.3.0
+      '@upyo/smtp':
+        specifier: ^0.3.0
+        version: 0.3.0(@upyo/core@0.3.0)
       argon2:
         specifier: ^0.44.0
         version: 0.44.0
@@ -707,6 +713,16 @@ packages:
 
   '@types/node@22.18.6':
     resolution: {integrity: sha512-r8uszLPpeIWbNKtvWRt/DbVi5zbqZyj1PTmhRMqBMvDnaz1QpmSKujUtJLrqGZeoM8v72MfYggDceY4K1itzWQ==}
+
+  '@upyo/core@0.3.0':
+    resolution: {integrity: sha512-S6M+5Ptp+t8ZA9MxgEcLA5qOidrOcYEwD8/W5pFovAUT0fEItiNnux8xIc0V3KXfVHRRjiyO+rEz+GXo3fEzoA==}
+    engines: {bun: '>=1.2.0', deno: '>=2.3.0', node: '>=20.0.0'}
+
+  '@upyo/smtp@0.3.0':
+    resolution: {integrity: sha512-vKkFg88CCRyVRDMwhamDjowyV1XY8H1+fJu3rkJuiPOQeseNPL95Kfgv3XMNlNK+TcmzesyQCnTSDAXdMCXuNQ==}
+    engines: {bun: '>=1.2.0', deno: '>=2.3.0', node: '>=20.0.0'}
+    peerDependencies:
+      '@upyo/core': 0.3.0
 
   '@vitest/coverage-v8@3.2.4':
     resolution: {integrity: sha512-EyF9SXU6kS5Ku/U82E259WSnvg6c8KTjppUncuNdm5QHpe17mwREHnjDzozC8x9MZ0xfBUFSaLkRv4TMA75ALQ==}
@@ -1882,6 +1898,12 @@ snapshots:
   '@types/node@22.18.6':
     dependencies:
       undici-types: 6.21.0
+
+  '@upyo/core@0.3.0': {}
+
+  '@upyo/smtp@0.3.0(@upyo/core@0.3.0)':
+    dependencies:
+      '@upyo/core': 0.3.0
 
   '@vitest/coverage-v8@3.2.4(vitest@3.2.4(@types/node@22.18.6)(jiti@2.5.1)(yaml@2.8.1))':
     dependencies:
