@@ -27,7 +27,7 @@ export const generateDummyAccount = (args: {
   return Account.reconstruct({
     id: args.id,
     bio: 'this is test user',
-    mail: 'testuser@example.com',
+    mail: `testuser${args.id}@example.com`,
     name: args.name,
     nickname: `test user ${args.id}`,
     // argon2id hash of "じゃすた・いぐざんぽぅ"
