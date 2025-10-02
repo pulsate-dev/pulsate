@@ -10,7 +10,7 @@ importers:
     dependencies:
       '@hono/node-server':
         specifier: ^1.7.0
-        version: 1.19.4(hono@4.9.9)
+        version: 1.19.5(hono@4.9.9)
       '@hono/swagger-ui':
         specifier: ^0.5.0
         version: 0.5.2(hono@4.9.9)
@@ -344,8 +344,8 @@ packages:
     cpu: [x64]
     os: [win32]
 
-  '@hono/node-server@1.19.4':
-    resolution: {integrity: sha512-AWKQZ/YkHUBSHeL/5Ld8FWgUs6wFf4TxGYxqp9wLZxRdFuHBpXmgOq+CuDoL4vllkZLzovCf5HBJnypiy3EtHA==}
+  '@hono/node-server@1.19.5':
+    resolution: {integrity: sha512-iBuhh+uaaggeAuf+TftcjZyWh2GEgZcVGXkNtskLVoWaXhnJtC5HLHrU8W1KHDoucqO1MswwglmkWLFyiDn4WQ==}
     engines: {node: '>=18.14.1'}
     peerDependencies:
       hono: ^4
@@ -1609,7 +1609,7 @@ snapshots:
   '@esbuild/win32-x64@0.25.10':
     optional: true
 
-  '@hono/node-server@1.19.4(hono@4.9.9)':
+  '@hono/node-server@1.19.5(hono@4.9.9)':
     dependencies:
       hono: 4.9.9
 
