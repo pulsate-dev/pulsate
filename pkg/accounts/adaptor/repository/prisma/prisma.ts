@@ -289,8 +289,17 @@ export class PrismaAccountFollowRepository implements AccountFollowRepository {
 
   async follow(follow: AccountFollow): Promise<Result.Result<Error, void>> {
     try {
-      await this.prisma.following.create({
-        data: {
+      await this.prisma.following.upsert({
+        where: {
+          fromId_toId: {
+            fromId: follow.getFromID(),
+            toId: follow.getTargetID(),
+          },
+        },
+        update: {
+          deletedAt: undefined,
+        },
+        create: {
           fromId: follow.getFromID(),
           toId: follow.getTargetID(),
         },
