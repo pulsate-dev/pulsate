@@ -307,12 +307,15 @@ export class PrismaAccountFollowRepository implements AccountFollowRepository {
   ): Promise<Result.Result<Error, void>> {
     try {
       // ToDo: Should replace with a hard delete. It can't follow it back again due to a composite primary key.
-      await this.prisma.following.delete({
+      await this.prisma.following.update({
         where: {
           fromId_toId: {
             fromId: fromID,
             toId: targetID,
           },
+        },
+        data: {
+          deletedAt: new Date(),
         },
       });
       return Result.ok(undefined);
