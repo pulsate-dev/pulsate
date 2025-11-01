@@ -5,16 +5,13 @@ import { Argon2idPasswordEncoder } from '../../password/mod.js';
 import { InMemoryAccountRepository } from '../adaptor/repository/dummy/account.js';
 import { Account, type AccountID } from '../model/account.js';
 import { EditService } from './edit.js';
-import { EtagService } from './etagService.js';
 
 const passwordEncoder = new Argon2idPasswordEncoder();
 const repository = new InMemoryAccountRepository();
-const etagService = new EtagService();
-const editService = new EditService(repository, etagService, passwordEncoder);
+const editService = new EditService(repository, passwordEncoder);
 
 describe('EditService', () => {
   let account: Account;
-  let etag: string;
 
   beforeEach(async () => {
     await repository.create(
@@ -35,7 +32,6 @@ describe('EditService', () => {
     const res = await repository.findByName('@john@example.com');
     if (Option.isNone(res)) return;
 
-    etag = await etagService.generate(res[1]);
     account = res[1];
   });
   afterEach(() => repository.reset());
@@ -58,7 +54,6 @@ describe('EditService', () => {
       'should be success to update $title', //
       async ({ nickname }) => {
         const updateRes = await editService.editNickname(
-          etag,
           '@john@example.com',
           nickname,
           '@john@example.com',
@@ -82,20 +77,14 @@ describe('EditService', () => {
         nickname: 'a'.repeat(257),
       },
       {
-        title: 'etag not match',
-        etag: 'invalid',
-        nickname: 'new nickname',
-      },
-      {
         title: 'account not found',
         name: '@foo@example.com' as const,
         nickname: 'new nickname',
       },
     ])(
       'should be fail to update nickname when $title',
-      async ({ etag: invalid, name, nickname }) => {
+      async ({ name, nickname }) => {
         const updateRes = await editService.editNickname(
-          invalid ?? etag,
           name ?? '@john@example.com',
           nickname,
           name ?? '@john@example.com',
@@ -123,7 +112,6 @@ describe('EditService', () => {
       'should be success to update $title', //
       async ({ passphrase }) => {
         const updateRes = await editService.editPassphrase(
-          etag,
           '@john@example.com',
           passphrase,
           '@john@example.com',
@@ -152,20 +140,14 @@ describe('EditService', () => {
         passphrase: 'a'.repeat(513),
       },
       {
-        title: 'etag not match',
-        etag: 'invalid',
-        passphrase: 'new password',
-      },
-      {
         title: 'account not found',
         name: '@foo@example.com' as const,
         passphrase: 'new password',
       },
     ])(
       'should be failed to update passphrase when $title',
-      async ({ etag: invalid, name, passphrase }) => {
+      async ({ name, passphrase }) => {
         const updateRes = await editService.editPassphrase(
-          invalid ?? etag,
           name ?? '@john@example.com',
           passphrase,
           name ?? '@john@example.com',
@@ -198,7 +180,6 @@ describe('EditService', () => {
       'should be success to update $title', //
       async ({ email }) => {
         const updateRes = await editService.editEmail(
-          etag,
           '@john@example.com',
           email,
           '@john@example.com',
@@ -214,11 +195,6 @@ describe('EditService', () => {
 
     it.each([
       {
-        title: 'etag not match',
-        etag: 'invalid',
-        email: 'pulsate@example.com',
-      },
-      {
         title: 'account not found',
         name: '@foo@example.com' as const,
         email: 'pulsate@example.com',
@@ -229,9 +205,8 @@ describe('EditService', () => {
       },
     ])(
       'should be fail to update email when $title',
-      async ({ etag: invalid, name, email }) => {
+      async ({ name, email }) => {
         const updateRes = await editService.editEmail(
-          invalid ?? etag,
           name ?? '@john@example.com',
           email,
           name ?? '@john@example.com',
@@ -250,7 +225,6 @@ describe('EditService', () => {
       'should be success to update bio', //
       async ({ bio }) => {
         const updateRes = await editService.editBio(
-          etag,
           '@john@example.com',
           bio,
           '@john@example.com',
@@ -267,28 +241,19 @@ describe('EditService', () => {
 
     it.each([
       {
-        title: 'etag not match',
-        etag: 'invalid',
-        bio: 'new bio',
-      },
-      {
         title: 'account not found',
         name: '@foo@example.com' as const,
         bio: 'new bio',
       },
-    ])(
-      'should be fail to update bio when $title',
-      async ({ etag: invalid, name, bio }) => {
-        const updateRes = await editService.editBio(
-          invalid ?? etag,
-          name ?? '@john@example.com',
-          bio,
-          name ?? '@john@example.com',
-        );
+    ])('should be fail to update bio when $title', async ({ name, bio }) => {
+      const updateRes = await editService.editBio(
+        name ?? '@john@example.com',
+        bio,
+        name ?? '@john@example.com',
+      );
 
-        expect(Result.isErr(updateRes)).toBe(true);
-      },
-    );
+      expect(Result.isErr(updateRes)).toBe(true);
+    });
   });
 
   describe('access controll', async () => {
@@ -339,25 +304,21 @@ describe('EditService', () => {
 
     it("can't edit other account data", async () => {
       const nickname = await editService.editNickname(
-        etag,
         account.getName(),
         'new nickname',
         testNormalAccount.getName(),
       );
       const passphrase = await editService.editPassphrase(
-        etag,
         account.getName(),
         'new password',
         testNormalAccount.getName(),
       );
       const email = await editService.editEmail(
-        etag,
         account.getName(),
         'test@example.com',
         testNormalAccount.getName(),
       );
       const bio = await editService.editBio(
-        etag,
         account.getName(),
         'new bio',
         testNormalAccount.getName(),
@@ -375,25 +336,21 @@ describe('EditService', () => {
 
     it("can't edit account data if actor frozen", async () => {
       const nickname = await editService.editNickname(
-        etag,
         testFrozenAccount.getName(),
         'new nickname',
         testFrozenAccount.getName(),
       );
       const passphrase = await editService.editPassphrase(
-        etag,
         testFrozenAccount.getName(),
         'new password',
         testFrozenAccount.getName(),
       );
       const email = await editService.editEmail(
-        etag,
         testFrozenAccount.getName(),
         'test@example.com',
         testFrozenAccount.getName(),
       );
       const bio = await editService.editBio(
-        etag,
         testFrozenAccount.getName(),
         'new bio',
         testFrozenAccount.getName(),
@@ -411,25 +368,21 @@ describe('EditService', () => {
 
     it("can't edit account data if actor not activated", async () => {
       const nickname = await editService.editNickname(
-        etag,
         testNotAcvivatedAccount.getName(),
         'new nickname',
         testNotAcvivatedAccount.getName(),
       );
       const passphrase = await editService.editPassphrase(
-        etag,
         testNotAcvivatedAccount.getName(),
         'new password',
         testNotAcvivatedAccount.getName(),
       );
       const email = await editService.editEmail(
-        etag,
         testNotAcvivatedAccount.getName(),
         'test@example.com',
         testNotAcvivatedAccount.getName(),
       );
       const bio = await editService.editBio(
-        etag,
         testNotAcvivatedAccount.getName(),
         'new bio',
         testNotAcvivatedAccount.getName(),

@@ -120,14 +120,12 @@ export class AccountController {
       passphrase?: string;
       bio: string;
     },
-    etag: string,
     actorName: string,
   ): Promise<
     Result.Result<Error, z.infer<typeof UpdateAccountResponseSchema>>
   > {
     if (args.nickname) {
       const res = await this.editService.editNickname(
-        etag,
         target as AccountName,
         args.nickname,
         actorName as AccountName,
@@ -138,7 +136,6 @@ export class AccountController {
     }
     if (args.passphrase) {
       const res = await this.editService.editPassphrase(
-        etag,
         target as AccountName,
         args.passphrase,
         actorName as AccountName,
@@ -149,7 +146,6 @@ export class AccountController {
     }
     if (args.email) {
       const res = await this.editService.editEmail(
-        etag,
         target as AccountName,
         args.email,
         actorName as AccountName,
@@ -160,7 +156,6 @@ export class AccountController {
     }
 
     const editedBioResp = await this.editService.editBio(
-      etag,
       target as AccountName,
       args.bio,
       actorName as AccountName,

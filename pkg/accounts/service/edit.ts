@@ -12,13 +12,11 @@ import {
   AccountNicknameTooShortError,
   AccountNotFoundError,
   AccountPassphraseRequirementsNotMetError,
-  AccountUpdateETagInvalidError,
 } from '../model/errors.js';
 import {
   type AccountRepository,
   accountRepoSymbol,
 } from '../model/repository.js';
-import { type EtagService, etagSymbol } from './etagService.js';
 
 export class EditService {
   private readonly nicknameShortest = 1;
@@ -28,22 +26,12 @@ export class EditService {
   private readonly emailShortest = 7;
   private readonly emailLongest = 319;
 
-  private accountRepository: AccountRepository;
-  private etagService: EtagService;
-  private passwordEncoder: PasswordEncoder;
-
   constructor(
-    accountRepository: AccountRepository,
-    etagService: EtagService,
-    passwordEncoder: PasswordEncoder,
-  ) {
-    this.accountRepository = accountRepository;
-    this.etagService = etagService;
-    this.passwordEncoder = passwordEncoder;
-  }
+    private accountRepository: AccountRepository,
+    private passwordEncoder: PasswordEncoder,
+  ) {}
 
   async editNickname(
-    etag: string,
     target: AccountName,
     nickname: string,
     actorName: AccountName,
@@ -65,14 +53,6 @@ export class EditService {
 
     if (!this.isAllowed('edit', actor, account)) {
       return Result.err(new Error('not allowed'));
-    }
-
-    const match = await this.etagService.verify(account, etag);
-    if (!match) {
-      // TODO: add a new error type for etag not match
-      return Result.err(
-        new AccountUpdateETagInvalidError('etag not match', { cause: null }),
-      );
     }
 
     if (nickname.length < this.nicknameShortest) {
@@ -102,7 +82,6 @@ export class EditService {
   }
 
   async editPassphrase(
-    etag: string,
     target: AccountName,
     newPassphrase: string,
     actorName: AccountName,
@@ -124,13 +103,6 @@ export class EditService {
 
     if (!this.isAllowed('edit', actor, account)) {
       return Result.err(new Error('not allowed'));
-    }
-
-    const match = await this.etagService.verify(account, etag);
-    if (!match) {
-      return Result.err(
-        new AccountUpdateETagInvalidError('etag not match', { cause: null }),
-      );
     }
 
     if (newPassphrase.length < this.passphraseShortest) {
@@ -167,7 +139,6 @@ export class EditService {
   }
 
   async editEmail(
-    etag: string,
     target: AccountName,
     newEmail: string,
     actorName: AccountName,
@@ -189,13 +160,6 @@ export class EditService {
 
     if (!this.isAllowed('edit', actor, account)) {
       return Result.err(new Error('not allowed'));
-    }
-
-    const match = await this.etagService.verify(account, etag);
-    if (!match) {
-      return Result.err(
-        new AccountUpdateETagInvalidError('etag not match', { cause: null }),
-      );
     }
 
     if (newEmail.length < this.emailShortest) {
@@ -228,7 +192,6 @@ export class EditService {
   }
 
   async editBio(
-    etag: string,
     target: AccountName,
     bio: string,
     actorName: AccountName,
@@ -252,15 +215,7 @@ export class EditService {
       return Result.err(new Error('not allowed'));
     }
 
-    const match = await this.etagService.verify(account, etag);
-    if (!match) {
-      return Result.err(
-        new AccountUpdateETagInvalidError('etag not match', { cause: null }),
-      );
-    }
-
     // ToDo(laminne): bio length check
-
     try {
       account.setBio(bio);
 
@@ -303,11 +258,10 @@ export class EditService {
 export const editSymbol = Ether.newEtherSymbol<EditService>();
 export const edit = Ether.newEther(
   editSymbol,
-  ({ accountRepository, etagService, passwordEncoder }) =>
-    new EditService(accountRepository, etagService, passwordEncoder),
+  ({ accountRepository, passwordEncoder }) =>
+    new EditService(accountRepository, passwordEncoder),
   {
     accountRepository: accountRepoSymbol,
-    etagService: etagSymbol,
     passwordEncoder: passwordEncoderSymbol,
   },
 );
