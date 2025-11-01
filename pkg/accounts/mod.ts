@@ -83,7 +83,6 @@ import {
 } from './service/authenticationTokenService.js';
 import { accountAvatar } from './service/avatar.js';
 import { edit } from './service/edit.js';
-import { etag } from './service/etagService.js';
 import { fetch } from './service/fetch.js';
 import { fetchFollow } from './service/fetchFollow.js';
 import { follow } from './service/follow.js';
@@ -159,7 +158,6 @@ export const controller = new AccountController({
   editService: Ether.runEther(
     Cat.cat(edit)
       .feed(Ether.compose(accountRepository))
-      .feed(Ether.compose(etag))
       .feed(Ether.compose(argon2idPasswordEncoder)).value,
   ),
   fetchService: Ether.runEther(
@@ -294,11 +292,6 @@ accounts.openapi(UpdateAccountRoute, async (c) => {
   const actorName = Option.unwrap(c.get('accountName'));
   const name = c.req.param('name');
   const { email, passphrase, bio, nickname } = c.req.valid('json');
-  const eTag = c.req.header('If-Match');
-
-  if (!eTag) {
-    return c.json({ error: 'INVALID_ETAG' as const }, 412);
-  }
 
   const res = await controller.updateAccount(
     name,
@@ -308,7 +301,6 @@ accounts.openapi(UpdateAccountRoute, async (c) => {
       bio: bio,
       nickname: nickname,
     },
-    eTag,
     actorName,
   );
   if (Result.isErr(res)) {

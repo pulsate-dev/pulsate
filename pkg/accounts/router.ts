@@ -13,7 +13,6 @@ import {
   InternalError,
   InvalidAccountName,
   InvalidEMailVerifyToken,
-  InvalidETag,
   InvalidRefreshToken,
   InvalidSequence,
   NoPermission,
@@ -117,7 +116,6 @@ export const UpdateAccountRoute = createRoute({
     },
   ],
   request: {
-    // ToDo: define ETag in header
     params: z.object({
       name: z.string().min(3).max(64).openapi({
         example: 'example_man',
@@ -172,20 +170,6 @@ export const UpdateAccountRoute = createRoute({
             })
             .openapi({
               description: 'account not found',
-            }),
-        },
-      },
-    },
-    412: {
-      description: 'Precondition Failed',
-      content: {
-        'application/json': {
-          schema: z
-            .object({
-              error: InvalidETag,
-            })
-            .openapi({
-              description: 'etag is invalid',
             }),
         },
       },
