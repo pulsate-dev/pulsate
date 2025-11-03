@@ -10,13 +10,13 @@ importers:
     dependencies:
       '@hono/node-server':
         specifier: ^1.7.0
-        version: 1.19.6(hono@4.10.3)
+        version: 1.19.6(hono@4.10.4)
       '@hono/swagger-ui':
         specifier: ^0.5.0
-        version: 0.5.2(hono@4.10.3)
+        version: 0.5.2(hono@4.10.4)
       '@hono/zod-openapi':
         specifier: ^1.0.0
-        version: 1.1.4(hono@4.10.3)(zod@4.1.11)
+        version: 1.1.4(hono@4.10.4)(zod@4.1.11)
       '@mikuroxina/mini-fn':
         specifier: ^7.0.0
         version: 7.0.0
@@ -25,7 +25,7 @@ importers:
         version: 6.18.0(prisma@6.18.0(magicast@0.3.5)(typescript@5.9.3))(typescript@5.9.3)
       '@scalar/hono-api-reference':
         specifier: ^0.9.0
-        version: 0.9.22(hono@4.10.3)
+        version: 0.9.22(hono@4.10.4)
       '@upyo/core':
         specifier: ^0.3.0
         version: 0.3.0
@@ -43,7 +43,7 @@ importers:
         version: 21.0.0
       hono:
         specifier: ^4.10.3
-        version: 4.10.3
+        version: 4.10.4
       ioredis:
         specifier: ^5.4.1
         version: 5.8.2
@@ -939,8 +939,8 @@ packages:
     resolution: {integrity: sha512-EykJT/Q1KjTWctppgIAgfSO0tKVuZUjhgMr17kqTumMl6Afv3EISleU7qZUzoXDFTAHTDC4NOoG/ZxU3EvlMPQ==}
     engines: {node: '>=8'}
 
-  hono@4.10.3:
-    resolution: {integrity: sha512-2LOYWUbnhdxdL8MNbNg9XZig6k+cZXm5IjHn2Aviv7honhBMOHb+jxrKIeJRZJRmn+htUCKhaicxwXuUDlchRA==}
+  hono@4.10.4:
+    resolution: {integrity: sha512-YG/fo7zlU3KwrBL5vDpWKisLYiM+nVstBQqfr7gCPbSYURnNEP9BDxEMz8KfsDR9JX0lJWDRNc6nXX31v7ZEyg==}
     engines: {node: '>=16.9.0'}
 
   html-escaper@2.0.2:
@@ -1534,25 +1534,25 @@ snapshots:
   '@esbuild/win32-x64@0.25.11':
     optional: true
 
-  '@hono/node-server@1.19.6(hono@4.10.3)':
+  '@hono/node-server@1.19.6(hono@4.10.4)':
     dependencies:
-      hono: 4.10.3
+      hono: 4.10.4
 
-  '@hono/swagger-ui@0.5.2(hono@4.10.3)':
+  '@hono/swagger-ui@0.5.2(hono@4.10.4)':
     dependencies:
-      hono: 4.10.3
+      hono: 4.10.4
 
-  '@hono/zod-openapi@1.1.4(hono@4.10.3)(zod@4.1.11)':
+  '@hono/zod-openapi@1.1.4(hono@4.10.4)(zod@4.1.11)':
     dependencies:
       '@asteasolutions/zod-to-openapi': 8.1.0(zod@4.1.11)
-      '@hono/zod-validator': 0.7.4(hono@4.10.3)(zod@4.1.11)
-      hono: 4.10.3
+      '@hono/zod-validator': 0.7.4(hono@4.10.4)(zod@4.1.11)
+      hono: 4.10.4
       openapi3-ts: 4.5.0
       zod: 4.1.11
 
-  '@hono/zod-validator@0.7.4(hono@4.10.3)(zod@4.1.11)':
+  '@hono/zod-validator@0.7.4(hono@4.10.4)(zod@4.1.11)':
     dependencies:
-      hono: 4.10.3
+      hono: 4.10.4
       zod: 4.1.11
 
   '@img/colour@1.0.0': {}
@@ -1781,10 +1781,10 @@ snapshots:
     dependencies:
       '@scalar/types': 0.3.2
 
-  '@scalar/hono-api-reference@0.9.22(hono@4.10.3)':
+  '@scalar/hono-api-reference@0.9.22(hono@4.10.4)':
     dependencies:
       '@scalar/core': 0.3.20
-      hono: 4.10.3
+      hono: 4.10.4
 
   '@scalar/openapi-types@0.5.0':
     dependencies:
@@ -2077,7 +2077,7 @@ snapshots:
 
   has-flag@4.0.0: {}
 
-  hono@4.10.3: {}
+  hono@4.10.4: {}
 
   html-escaper@2.0.2: {}
 
