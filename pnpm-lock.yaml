@@ -28,10 +28,10 @@ importers:
         version: 0.9.23(hono@4.10.4)
       '@upyo/core':
         specifier: ^0.3.0
-        version: 0.3.0
+        version: 0.3.1
       '@upyo/smtp':
         specifier: ^0.3.0
-        version: 0.3.0(@upyo/core@0.3.0)
+        version: 0.3.0(@upyo/core@0.3.1)
       argon2:
         specifier: ^0.44.0
         version: 0.44.0
@@ -708,8 +708,8 @@ packages:
   '@types/node@24.9.2':
     resolution: {integrity: sha512-uWN8YqxXxqFMX2RqGOrumsKeti4LlmIMIyV0lgut4jx7KQBcBiW6vkDtIBvHnHIquwNfJhk8v2OtmO8zXWHfPA==}
 
-  '@upyo/core@0.3.0':
-    resolution: {integrity: sha512-S6M+5Ptp+t8ZA9MxgEcLA5qOidrOcYEwD8/W5pFovAUT0fEItiNnux8xIc0V3KXfVHRRjiyO+rEz+GXo3fEzoA==}
+  '@upyo/core@0.3.1':
+    resolution: {integrity: sha512-plCDlc5AwF5Vn4VT5JLQSYSk7FPFE6/p2k/BmafM999cOJ5m/cU00X9+VwLnsV34+eK9J8T5EQR5h+BbcOUK9Q==}
     engines: {bun: '>=1.2.0', deno: '>=2.3.0', node: '>=20.0.0'}
 
   '@upyo/smtp@0.3.0':
@@ -1826,11 +1826,11 @@ snapshots:
     dependencies:
       undici-types: 7.16.0
 
-  '@upyo/core@0.3.0': {}
+  '@upyo/core@0.3.1': {}
 
-  '@upyo/smtp@0.3.0(@upyo/core@0.3.0)':
+  '@upyo/smtp@0.3.0(@upyo/core@0.3.1)':
     dependencies:
-      '@upyo/core': 0.3.0
+      '@upyo/core': 0.3.1
 
   '@vitest/coverage-v8@4.0.6(vitest@4.0.6(@types/node@24.9.2)(jiti@2.6.1)(yaml@2.8.1))':
     dependencies:
