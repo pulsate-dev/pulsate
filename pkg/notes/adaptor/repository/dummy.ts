@@ -78,6 +78,21 @@ export class InMemoryNoteRepository implements NoteRepository {
       notes.sort((a, b) => (a.getCreatedAt() < b.getCreatedAt() ? 1 : -1)),
     );
   }
+
+  async fetchRenoteStatus(
+    accountID: AccountID,
+    noteIDs: NoteID[],
+  ): Promise<boolean[]> {
+    // Check if each noteID has been renoted by the accountID
+    return noteIDs.map((noteID) => {
+      return [...this.notes.values()].some(
+        (note) =>
+          note.getAuthorID() === accountID &&
+          Option.isSome(note.getOriginalNoteID()) &&
+          Option.unwrap(note.getOriginalNoteID()) === noteID,
+      );
+    });
+  }
 }
 export const inMemoryNoteRepo = (note: Note[]) =>
   Ether.newEther(noteRepoSymbol, () => new InMemoryNoteRepository(note));
