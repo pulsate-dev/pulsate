@@ -222,7 +222,8 @@ noteHandlers[GetNoteRoute.method](
 );
 noteHandlers.openapi(GetNoteRoute, async (c) => {
   const { id } = c.req.param();
-  const res = await controller.getNoteByID(id);
+  const accountID = c.get('accountID');
+  const res = await controller.getNoteByID(id, accountID);
   if (Result.isErr(res)) {
     const error = Result.unwrapErr(res);
     noteModuleLogger.warn(error);

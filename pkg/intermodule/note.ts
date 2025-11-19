@@ -1,4 +1,5 @@
 import { Cat, Ether, type Result } from '@mikuroxina/mini-fn';
+import type { AccountID } from '../accounts/model/account.js';
 import { isProduction } from '../adaptors/env.js';
 import { prismaClient } from '../adaptors/prisma.js';
 import type { Medium } from '../drive/model/medium.js';
@@ -49,6 +50,19 @@ export class NoteModuleFacade {
     noteID: NoteID,
   ): Promise<Result.Result<Error, Medium[]>> {
     return await this.fetchService.fetchNoteAttachments(noteID);
+  }
+
+  /**
+   * @description Fetch renote status for multiple notes
+   * @param accountID account ID to check
+   * @param noteIDs note IDs to check
+   * @returns boolean array indicating renote status for each note
+   */
+  async fetchRenoteStatus(
+    accountID: AccountID,
+    noteIDs: NoteID[],
+  ): Promise<boolean[]> {
+    return await this.fetchService.fetchRenoteStatus(accountID, noteIDs);
   }
 }
 

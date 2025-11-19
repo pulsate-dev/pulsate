@@ -177,6 +177,38 @@ export class PrismaNoteRepository implements NoteRepository {
       return Option.none();
     }
   }
+
+  async fetchRenoteStatus(
+    accountID: AccountID,
+    noteIDs: NoteID[],
+  ): Promise<boolean[]> {
+    try {
+      const renotes = await this.client.note.findMany({
+        where: {
+          authorId: accountID,
+          renoteId: {
+            in: noteIDs,
+          },
+          deletedAt: undefined,
+        },
+        select: {
+          renoteId: true,
+        },
+      });
+
+      const renotedSet = new Set(
+        renotes
+          .map((r) => r.renoteId)
+          .filter((id): id is string => id !== null),
+      );
+
+      return noteIDs.map((noteID) => renotedSet.has(noteID));
+    } catch {
+      // If query fails, return all false
+      // ToDo: logging here
+      return noteIDs.map(() => false);
+    }
+  }
 }
 export const prismaNoteRepo = (client: PrismaClient) =>
   Ether.newEther(noteRepoSymbol, () => new PrismaNoteRepository(client));

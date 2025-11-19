@@ -1,5 +1,5 @@
 import type { z } from '@hono/zod-openapi';
-import { Result } from '@mikuroxina/mini-fn';
+import { Option, Result } from '@mikuroxina/mini-fn';
 
 import type { Account, AccountID } from '../../../accounts/model/account.js';
 import type { Medium } from '../../../drive/model/medium.js';
@@ -206,7 +206,14 @@ export class TimelineController {
     }
     const noteAdditionalData = Result.unwrap(noteAdditionalDataRes);
 
-    const result = noteAdditionalData.map((v) => {
+    // Check renoted status for all notes
+    const noteIDs = noteAdditionalData.map((v) => v.note.getID());
+    const renotedStatuses = await this.noteModule.fetchRenoteStatus(
+      actorID as AccountID,
+      noteIDs,
+    );
+
+    const result = noteAdditionalData.map((v, i) => {
       return {
         id: v.note.getID(),
         content: v.note.getContent(),
@@ -237,6 +244,7 @@ export class TimelineController {
           followed_count: v.followCount.followed,
           following_count: v.followCount.following,
         },
+        renoted: renotedStatuses[i] || false,
       };
     });
 
@@ -274,7 +282,14 @@ export class TimelineController {
     }
     const noteAdditionalData = Result.unwrap(noteAdditionalDataRes);
 
-    const result = noteAdditionalData.map((v) => {
+    // Check renoted status for all notes
+    const noteIDs = noteAdditionalData.map((v) => v.note.getID());
+    const renotedStatuses = await this.noteModule.fetchRenoteStatus(
+      fromId as AccountID,
+      noteIDs,
+    );
+
+    const result = noteAdditionalData.map((v, i) => {
       return {
         id: v.note.getID(),
         content: v.note.getContent(),
@@ -305,6 +320,7 @@ export class TimelineController {
           followed_count: v.followCount.followed,
           following_count: v.followCount.following,
         },
+        renoted: renotedStatuses[i] || false,
       };
     });
 
@@ -542,7 +558,14 @@ export class TimelineController {
     }
     const noteAdditionalData = Result.unwrap(noteAdditionalDataRes);
 
-    const result = noteAdditionalData.map((v) => ({
+    // Check renoted status for all notes
+    const noteIDsToCheck = noteAdditionalData.map((v) => v.note.getID());
+    const renotedStatuses = await this.noteModule.fetchRenoteStatus(
+      accountID as AccountID,
+      noteIDsToCheck,
+    );
+
+    const result = noteAdditionalData.map((v, i) => ({
       id: v.note.getID(),
       content: v.note.getContent(),
       contents_warning_comment: v.note.getCwComment(),
@@ -572,6 +595,7 @@ export class TimelineController {
         followed_count: v.followCount.followed,
         following_count: v.followCount.following,
       },
+      renoted: renotedStatuses[i] || false,
     }));
 
     return Result.ok(result);
@@ -632,6 +656,7 @@ export class TimelineController {
   }
 
   async getPublicTimeline(
+    accountID: Option.Option<AccountID>,
     hasAttachment: boolean,
     noNsfw: boolean,
     beforeId?: string,
@@ -656,7 +681,17 @@ export class TimelineController {
     }
     const noteAdditionalData = Result.unwrap(noteAdditionalDataRes);
 
-    const result = noteAdditionalData.map((v) => {
+    // Check renoted status if user is logged in
+    let renotedStatuses: boolean[] = [];
+    if (Option.isSome(accountID)) {
+      const noteIDs = noteAdditionalData.map((v) => v.note.getID());
+      renotedStatuses = await this.noteModule.fetchRenoteStatus(
+        Option.unwrap(accountID),
+        noteIDs,
+      );
+    }
+
+    const result = noteAdditionalData.map((v, i) => {
       return {
         id: v.note.getID(),
         content: v.note.getContent(),
@@ -687,6 +722,7 @@ export class TimelineController {
           followed_count: v.followCount.followed,
           following_count: v.followCount.following,
         },
+        renoted: renotedStatuses[i] || false,
       };
     });
 

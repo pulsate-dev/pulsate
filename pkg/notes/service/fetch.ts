@@ -1,5 +1,6 @@
 import { Ether, Option, Result } from '@mikuroxina/mini-fn';
 
+import type { AccountID } from '../../accounts/model/account.js';
 import type { Medium } from '../../drive/model/medium.js';
 import {
   type AccountModuleFacade,
@@ -65,6 +66,13 @@ export class FetchService {
     noteID: NoteID,
   ): Promise<Result.Result<Error, Reaction[]>> {
     return await this.reactionRepository.findByNoteID(noteID);
+  }
+
+  async fetchRenoteStatus(
+    accountID: AccountID,
+    noteIDs: NoteID[],
+  ): Promise<boolean[]> {
+    return await this.noteRepository.fetchRenoteStatus(accountID, noteIDs);
   }
 }
 

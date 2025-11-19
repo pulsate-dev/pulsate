@@ -506,9 +506,15 @@ timeline.openapi(GetConversationRoute, async (c) => {
   return c.json(res[1], 200);
 });
 
+timeline[GetPublicTimelineRoute.method](
+  GetPublicTimelineRoute.path,
+  AuthMiddleware.handle({ forceAuthorized: false }),
+);
 timeline.openapi(GetPublicTimelineRoute, async (c) => {
+  const accountID = c.get('accountID');
   const { has_attachment, no_nsfw, before_id, after_id } = c.req.valid('query');
   const res = await controller.getPublicTimeline(
+    accountID,
     has_attachment,
     no_nsfw,
     before_id,

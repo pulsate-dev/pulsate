@@ -163,6 +163,12 @@ export const GetNoteResponseSchema = z.object({
   attachment_files: z.array(noteAttachmentSchema).max(16).openapi({
     description: 'Note Attachment Media',
   }),
+  renoted: z.boolean().openapi({
+    example: false,
+    description:
+      'Whether the current user has renoted this note (always false if not logged in)',
+    default: false,
+  }),
 });
 
 export const RenoteRequestSchema = z.object({
