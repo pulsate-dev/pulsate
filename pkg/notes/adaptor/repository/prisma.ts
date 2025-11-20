@@ -190,7 +190,7 @@ export class PrismaNoteRepository implements NoteRepository {
           renoteId: {
             in: noteIDs,
           },
-          deletedAt: undefined,
+          deletedAt: null,
         },
         select: {
           renoteId: true,
