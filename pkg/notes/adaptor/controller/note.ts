@@ -110,15 +110,14 @@ export class NoteController {
     }
     const reactions = Result.unwrap(reactionsRes);
 
-    // Check renoted status if user is logged in
-    let renoted = false;
-    if (Option.isSome(accountID)) {
-      const renotedStatus = await this.fetchService.fetchRenoteStatus(
-        Option.unwrap(accountID),
-        [note.getID()],
-      );
-      renoted = renotedStatus[0] || false;
-    }
+    // FIXME: complex 3ternary operator
+    const isRenoted = Option.isSome(accountID)
+      ? (
+          await this.fetchService.fetchRenoteStatus(Option.unwrap(accountID), [
+            note.getID(),
+          ])
+        )[0] || false
+      : false;
 
     return Result.ok({
       id: note.getID(),
@@ -158,7 +157,7 @@ export class NoteController {
         followed_count: 0,
         following_count: 0,
       },
-      renoted,
+      renoted: isRenoted,
     });
   }
 

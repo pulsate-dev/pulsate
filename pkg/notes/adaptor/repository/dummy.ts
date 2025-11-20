@@ -83,7 +83,6 @@ export class InMemoryNoteRepository implements NoteRepository {
     accountID: AccountID,
     noteIDs: NoteID[],
   ): Promise<boolean[]> {
-    // Check if each noteID has been renoted by the accountID
     return noteIDs.map((noteID) => {
       return [...this.notes.values()].some(
         (note) =>
