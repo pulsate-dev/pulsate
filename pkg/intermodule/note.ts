@@ -53,10 +53,10 @@ export class NoteModuleFacade {
   }
 
   /**
-   * @description Fetch renote status for multiple notes
+   * @description Check if the specified account has renoted each of the given notes
    * @param accountID account ID to check
    * @param noteIDs note IDs to check
-   * @returns boolean array indicating renote status for each note
+   * @returns boolean array indicating whether the account has renoted each note (true if renoted, false otherwise)
    */
   async fetchRenoteStatus(
     accountID: AccountID,
