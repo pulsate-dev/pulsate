@@ -682,14 +682,12 @@ export class TimelineController {
     const noteAdditionalData = Result.unwrap(noteAdditionalDataRes);
 
     // Check renoted status if user is logged in
-    let renotedStatuses: boolean[] = [];
-    if (Option.isSome(accountID)) {
-      const noteIDs = noteAdditionalData.map((v) => v.note.getID());
-      renotedStatuses = await this.noteModule.fetchRenoteStatus(
-        Option.unwrap(accountID),
-        noteIDs,
-      );
-    }
+    const renotedStatuses: boolean[] = Option.isSome(accountID)
+      ? await this.noteModule.fetchRenoteStatus(
+          Option.unwrap(accountID),
+          noteAdditionalData.map((v) => v.note.getID()),
+        )
+      : [];
 
     const result = noteAdditionalData.map((v, i) => {
       return {
