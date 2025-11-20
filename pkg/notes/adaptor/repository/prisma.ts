@@ -17,6 +17,7 @@ import {
   type ReactionRepository,
   reactionRepoSymbol,
 } from '../../model/repository.js';
+import { noteModuleLogger } from '../logger.js';
 
 type DeserializeNoteArgs = Prisma.PromiseReturnType<
   typeof prismaClient.note.findUnique
@@ -175,6 +176,41 @@ export class PrismaNoteRepository implements NoteRepository {
       return Option.some(this.deserialize(res));
     } catch {
       return Option.none();
+    }
+  }
+
+  async fetchRenoteStatus(
+    accountID: AccountID,
+    noteIDs: NoteID[],
+  ): Promise<boolean[]> {
+    try {
+      const renotes = await this.client.note.findMany({
+        where: {
+          authorId: accountID,
+          renoteId: {
+            in: noteIDs,
+          },
+          deletedAt: null,
+        },
+        select: {
+          renoteId: true,
+        },
+      });
+
+      const renotedSet = new Set(
+        renotes
+          .map((r) => r.renoteId)
+          .filter((id): id is string => id !== null),
+      );
+
+      return noteIDs.map((noteID) => renotedSet.has(noteID));
+    } catch {
+      noteModuleLogger.warn('Failed to fetch renote status:', {
+        accountID,
+        noteIDs,
+      });
+      // NOTE: If query fails, return all false
+      return noteIDs.map(() => false);
     }
   }
 }

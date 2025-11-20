@@ -23,6 +23,10 @@ export interface NoteRepository {
    */
   findManyByIDs(ids: NoteID[]): Promise<Result.Result<Error, Note[]>>;
   deleteByID(id: NoteID): Promise<Result.Result<Error, void>>;
+  fetchRenoteStatus(
+    accountID: AccountID,
+    noteIDs: NoteID[],
+  ): Promise<boolean[]>;
 }
 export const noteRepoSymbol = Ether.newEtherSymbol<NoteRepository>();
 
