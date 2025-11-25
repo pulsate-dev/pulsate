@@ -3,6 +3,9 @@ name: Check PR title
 on:
   pull_request_target:
     types: [opened, edited, synchronize]
+  merge_group:
+    branches:
+      - main
 
 permissions:
   pull-requests: write
