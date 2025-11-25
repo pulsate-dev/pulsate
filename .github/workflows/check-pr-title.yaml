@@ -18,12 +18,13 @@ jobs:
       - name: Check PR title
         id: check_pr_title
         uses: amannn/action-semantic-pull-request@v6
+        if: github.event_name == 'pull_request_target'
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Comment PR
         uses: thollander/actions-comment-pull-request@v3
-        if: failure() && steps.check_pr_title.outcome == 'failure'
+        if: failure() && github.event_name == 'pull_request_target' && steps.check_pr_title.outcome == 'failure'
         with:
           message: |
             @${{ github.actor }}
