@@ -6,6 +6,8 @@ on:
 permissions:
   contents: read
   packages: write
+  id-token: write
+  attestations: write
 
 jobs:
   docker:
@@ -25,13 +27,22 @@ jobs:
           password: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Build and push
+        id: push
         uses: docker/build-push-action@v6
         with:
           context: .
           platforms: linux/amd64,linux/arm64
           push: true
+          provenance: mode=max
           tags: |
             ghcr.io/pulsate-dev/pulsate:latest
             ghcr.io/pulsate-dev/pulsate:v0.0.1-alpha-${{ github.sha }}
           cache-from: type=gha
           cache-to: type=gha,mode=max
+
+      - name: Attest build provenance
+        uses: actions/attest-build-provenance@v2
+        with:
+          subject-name: ghcr.io/pulsate-dev/pulsate
+          subject-digest: ${{ steps.push.outputs.digest }}
+          push-to-registry: true
