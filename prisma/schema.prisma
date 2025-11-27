@@ -3,7 +3,7 @@
 
 generator client {
   provider = "prisma-client"
-  output   = "../pkg/generated/client"
+  output   = "../pkg/adaptors/prisma"
 }
 
 datasource db {

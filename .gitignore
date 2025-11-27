@@ -11,4 +11,4 @@ node_modules/
 coverage/
 drive/*.jpg
 drive/*.webp
-pkg/generated/
+pkg/adaptors/prisma/

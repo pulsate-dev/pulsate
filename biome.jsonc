@@ -6,7 +6,7 @@
       "**/pkg/**",
       "**/scripts/**",
       "!**/build",
-      "!!**/pkg/generated"
+      "!!**/pkg/adaptors/prisma"
     ]
   },
 
