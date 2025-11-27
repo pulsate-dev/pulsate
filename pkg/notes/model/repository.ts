@@ -5,6 +5,7 @@ import type { Medium, MediumID } from '../../drive/model/medium.js';
 import type { Bookmark } from './bookmark.js';
 import type { Note, NoteID } from './note.js';
 import type { Reaction, ReactionID } from './reaction.js';
+import type { RenoteStatus } from './renoteStatus.js';
 
 export interface NoteRepository {
   create(note: Note): Promise<Result.Result<Error, void>>;
@@ -26,7 +27,7 @@ export interface NoteRepository {
   fetchRenoteStatus(
     accountID: AccountID,
     noteIDs: NoteID[],
-  ): Promise<boolean[]>;
+  ): Promise<RenoteStatus[]>;
 }
 export const noteRepoSymbol = Ether.newEtherSymbol<NoteRepository>();
 

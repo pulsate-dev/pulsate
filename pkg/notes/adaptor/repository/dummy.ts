@@ -6,6 +6,7 @@ import { Bookmark } from '../../model/bookmark.js';
 import { NoteNotReactedYetError } from '../../model/errors.js';
 import type { Note, NoteID } from '../../model/note.js';
 import type { Reaction, ReactionID } from '../../model/reaction.js';
+import { RenoteStatus } from '../../model/renoteStatus.js';
 import {
   type BookmarkRepository,
   bookmarkRepoSymbol,
@@ -82,13 +83,16 @@ export class InMemoryNoteRepository implements NoteRepository {
   async fetchRenoteStatus(
     accountID: AccountID,
     noteIDs: NoteID[],
-  ): Promise<boolean[]> {
+  ): Promise<RenoteStatus[]> {
     return noteIDs.map((noteID) => {
-      return [...this.notes.values()].some(
-        (note) =>
-          note.getAuthorID() === accountID &&
-          Option.isSome(note.getOriginalNoteID()) &&
-          Option.unwrap(note.getOriginalNoteID()) === noteID,
+      return RenoteStatus.new(
+        accountID,
+        [...this.notes.values()].some(
+          (note) =>
+            note.getAuthorID() === accountID &&
+            Option.isSome(note.getOriginalNoteID()) &&
+            Option.unwrap(note.getOriginalNoteID()) === noteID,
+        ),
       );
     });
   }

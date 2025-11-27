@@ -116,7 +116,7 @@ export class NoteController {
           await this.fetchService.fetchRenoteStatus(Option.unwrap(accountID), [
             note.getID(),
           ])
-        )[0] || false
+        )[0]?.getIsRenoted() || false
       : false;
 
     return Result.ok({

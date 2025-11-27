@@ -15,6 +15,7 @@ import {
 } from '../notes/adaptor/repository/prisma.js';
 import type { NoteID } from '../notes/model/note.js';
 import type { Reaction } from '../notes/model/reaction.js';
+import type { RenoteStatus } from '../notes/model/renoteStatus.js';
 import {
   type NoteRepository,
   noteAttachmentRepoSymbol,
@@ -61,7 +62,7 @@ export class NoteModuleFacade {
   async fetchRenoteStatus(
     accountID: AccountID,
     noteIDs: NoteID[],
-  ): Promise<boolean[]> {
+  ): Promise<RenoteStatus[]> {
     return await this.fetchService.fetchRenoteStatus(accountID, noteIDs);
   }
 }

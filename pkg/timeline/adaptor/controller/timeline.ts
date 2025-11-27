@@ -7,6 +7,7 @@ import type { AccountModuleFacade } from '../../../intermodule/account.js';
 import type { NoteModuleFacade } from '../../../intermodule/note.js';
 import type { Note, NoteID } from '../../../notes/model/note.js';
 import type { Reaction } from '../../../notes/model/reaction.js';
+import type { RenoteStatus } from '../../../notes/model/renoteStatus.js';
 import type { ListID } from '../../model/list.js';
 import type { AccountTimelineService } from '../../service/account.js';
 import type { AppendListMemberService } from '../../service/appendMember.js';
@@ -213,7 +214,7 @@ export class TimelineController {
       noteIDs,
     );
 
-    const result = noteAdditionalData.map((v, i) => {
+    const result = noteAdditionalData.map((v) => {
       return {
         id: v.note.getID(),
         content: v.note.getContent(),
@@ -244,7 +245,10 @@ export class TimelineController {
           followed_count: v.followCount.followed,
           following_count: v.followCount.following,
         },
-        renoted: renotedStatuses[i] || false,
+        renoted:
+          renotedStatuses
+            .find((v) => v.getActorID() === actorID)
+            ?.getIsRenoted() || false,
       };
     });
 
@@ -289,7 +293,7 @@ export class TimelineController {
       noteIDs,
     );
 
-    const result = noteAdditionalData.map((v, i) => {
+    const result = noteAdditionalData.map((v) => {
       return {
         id: v.note.getID(),
         content: v.note.getContent(),
@@ -320,7 +324,10 @@ export class TimelineController {
           followed_count: v.followCount.followed,
           following_count: v.followCount.following,
         },
-        renoted: renotedStatuses[i] || false,
+        renoted:
+          renotedStatuses
+            .find((v) => v.getActorID() === fromId)
+            ?.getIsRenoted() || false,
       };
     });
 
@@ -565,7 +572,7 @@ export class TimelineController {
       noteIDsToCheck,
     );
 
-    const result = noteAdditionalData.map((v, i) => ({
+    const result = noteAdditionalData.map((v) => ({
       id: v.note.getID(),
       content: v.note.getContent(),
       contents_warning_comment: v.note.getCwComment(),
@@ -595,7 +602,10 @@ export class TimelineController {
         followed_count: v.followCount.followed,
         following_count: v.followCount.following,
       },
-      renoted: renotedStatuses[i] || false,
+      renoted:
+        renotedStatuses
+          .find((v) => v.getActorID() === accountID)
+          ?.getIsRenoted() || false,
     }));
 
     return Result.ok(result);
@@ -682,14 +692,14 @@ export class TimelineController {
     const noteAdditionalData = Result.unwrap(noteAdditionalDataRes);
 
     // Check renoted status if user is logged in
-    const renotedStatuses: boolean[] = Option.isSome(accountID)
+    const renotedStatuses: RenoteStatus[] = Option.isSome(accountID)
       ? await this.noteModule.fetchRenoteStatus(
           Option.unwrap(accountID),
           noteAdditionalData.map((v) => v.note.getID()),
         )
       : [];
 
-    const result = noteAdditionalData.map((v, i) => {
+    const result = noteAdditionalData.map((v) => {
       return {
         id: v.note.getID(),
         content: v.note.getContent(),
@@ -720,7 +730,11 @@ export class TimelineController {
           followed_count: v.followCount.followed,
           following_count: v.followCount.following,
         },
-        renoted: renotedStatuses[i] || false,
+        renoted: Option.isSome(accountID)
+          ? renotedStatuses
+              .find((v) => v.getActorID() === Option.unwrap(accountID))
+              ?.getIsRenoted() || false
+          : false,
       };
     });
 

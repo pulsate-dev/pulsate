@@ -8,6 +8,7 @@ import {
 } from '../../intermodule/account.js';
 import type { Note, NoteID } from '../model/note.js';
 import type { Reaction } from '../model/reaction.js';
+import type { RenoteStatus } from '../model/renoteStatus.js';
 import {
   type NoteAttachmentRepository,
   type NoteRepository,
@@ -71,7 +72,7 @@ export class FetchService {
   async fetchRenoteStatus(
     accountID: AccountID,
     noteIDs: NoteID[],
-  ): Promise<boolean[]> {
+  ): Promise<RenoteStatus[]> {
     return await this.noteRepository.fetchRenoteStatus(accountID, noteIDs);
   }
 }

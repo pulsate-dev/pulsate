@@ -50,22 +50,20 @@ describe('EditService', () => {
         title: 'when nickname length 1',
         nickname: 'a',
       },
-    ])(
-      'should be success to update $title', //
-      async ({ nickname }) => {
-        const updateRes = await editService.editNickname(
-          '@john@example.com',
-          nickname,
-          '@john@example.com',
-        );
-        expect(Result.isOk(updateRes)).toBe(true);
+    ])('should be success to update $title', async ({ nickname }) => {
+      //
+      const updateRes = await editService.editNickname(
+        '@john@example.com',
+        nickname,
+        '@john@example.com',
+      );
+      expect(Result.isOk(updateRes)).toBe(true);
 
-        expect(account.getNickname()).toBe(nickname);
-        expect((await repository.findByName('@john@example.com'))[1]).toBe(
-          account,
-        );
-      },
-    );
+      expect(account.getNickname()).toBe(nickname);
+      expect((await repository.findByName('@john@example.com'))[1]).toBe(
+        account,
+      );
+    });
 
     it.each([
       {
@@ -81,17 +79,17 @@ describe('EditService', () => {
         name: '@foo@example.com' as const,
         nickname: 'new nickname',
       },
-    ])(
-      'should be fail to update nickname when $title',
-      async ({ name, nickname }) => {
-        const updateRes = await editService.editNickname(
-          name ?? '@john@example.com',
-          nickname,
-          name ?? '@john@example.com',
-        );
-        expect(Result.isErr(updateRes)).toBe(true);
-      },
-    );
+    ])('should be fail to update nickname when $title', async ({
+      name,
+      nickname,
+    }) => {
+      const updateRes = await editService.editNickname(
+        name ?? '@john@example.com',
+        nickname,
+        name ?? '@john@example.com',
+      );
+      expect(Result.isErr(updateRes)).toBe(true);
+    });
   });
 
   describe('passphrase', () => {
@@ -108,27 +106,25 @@ describe('EditService', () => {
         title: 'when passphrase length 512',
         passphrase: 'a'.repeat(512),
       },
-    ])(
-      'should be success to update $title', //
-      async ({ passphrase }) => {
-        const updateRes = await editService.editPassphrase(
-          '@john@example.com',
-          passphrase,
-          '@john@example.com',
-        );
-        expect(Result.isOk(updateRes)).toBe(true);
+    ])('should be success to update $title', async ({ passphrase }) => {
+      //
+      const updateRes = await editService.editPassphrase(
+        '@john@example.com',
+        passphrase,
+        '@john@example.com',
+      );
+      expect(Result.isOk(updateRes)).toBe(true);
 
-        expect(
-          await passwordEncoder.isMatchPassword(
-            passphrase,
-            account.getPassphraseHash() ?? '',
-          ),
-        ).toBe(true);
-        expect((await repository.findByName('@john@example.com'))[1]).toBe(
-          account,
-        );
-      },
-    );
+      expect(
+        await passwordEncoder.isMatchPassword(
+          passphrase,
+          account.getPassphraseHash() ?? '',
+        ),
+      ).toBe(true);
+      expect((await repository.findByName('@john@example.com'))[1]).toBe(
+        account,
+      );
+    });
 
     it.each([
       {
@@ -144,18 +140,18 @@ describe('EditService', () => {
         name: '@foo@example.com' as const,
         passphrase: 'new password',
       },
-    ])(
-      'should be failed to update passphrase when $title',
-      async ({ name, passphrase }) => {
-        const updateRes = await editService.editPassphrase(
-          name ?? '@john@example.com',
-          passphrase,
-          name ?? '@john@example.com',
-        );
+    ])('should be failed to update passphrase when $title', async ({
+      name,
+      passphrase,
+    }) => {
+      const updateRes = await editService.editPassphrase(
+        name ?? '@john@example.com',
+        passphrase,
+        name ?? '@john@example.com',
+      );
 
-        expect(Result.isErr(updateRes)).toBe(true);
-      },
-    );
+      expect(Result.isErr(updateRes)).toBe(true);
+    });
   });
 
   describe('email', () => {
@@ -176,22 +172,20 @@ describe('EditService', () => {
         title: 'when email length 319',
         email: 'a'.repeat(319),
       },
-    ])(
-      'should be success to update $title', //
-      async ({ email }) => {
-        const updateRes = await editService.editEmail(
-          '@john@example.com',
-          email,
-          '@john@example.com',
-        );
-        expect(Result.isOk(updateRes)).toBe(true);
+    ])('should be success to update $title', async ({ email }) => {
+      //
+      const updateRes = await editService.editEmail(
+        '@john@example.com',
+        email,
+        '@john@example.com',
+      );
+      expect(Result.isOk(updateRes)).toBe(true);
 
-        expect(account.getMail()).toBe(email);
-        expect((await repository.findByName('@john@example.com'))[1]).toBe(
-          account,
-        );
-      },
-    );
+      expect(account.getMail()).toBe(email);
+      expect((await repository.findByName('@john@example.com'))[1]).toBe(
+        account,
+      );
+    });
 
     it.each([
       {
@@ -203,17 +197,17 @@ describe('EditService', () => {
         title: 'too long',
         email: 'a'.repeat(320),
       },
-    ])(
-      'should be fail to update email when $title',
-      async ({ name, email }) => {
-        const updateRes = await editService.editEmail(
-          name ?? '@john@example.com',
-          email,
-          name ?? '@john@example.com',
-        );
-        expect(Result.isErr(updateRes)).toBe(true);
-      },
-    );
+    ])('should be fail to update email when $title', async ({
+      name,
+      email,
+    }) => {
+      const updateRes = await editService.editEmail(
+        name ?? '@john@example.com',
+        email,
+        name ?? '@john@example.com',
+      );
+      expect(Result.isErr(updateRes)).toBe(true);
+    });
   });
 
   describe('bio', () => {
@@ -221,23 +215,21 @@ describe('EditService', () => {
       {
         bio: 'new bio',
       },
-    ])(
-      'should be success to update bio', //
-      async ({ bio }) => {
-        const updateRes = await editService.editBio(
-          '@john@example.com',
-          bio,
-          '@john@example.com',
-        );
+    ])('should be success to update bio', async ({ bio }) => {
+      //
+      const updateRes = await editService.editBio(
+        '@john@example.com',
+        bio,
+        '@john@example.com',
+      );
 
-        expect(Result.isOk(updateRes)).toBe(true);
+      expect(Result.isOk(updateRes)).toBe(true);
 
-        expect(account.getBio()).toBe(bio);
-        expect((await repository.findByName('@john@example.com'))[1]).toBe(
-          account,
-        );
-      },
-    );
+      expect(account.getBio()).toBe(bio);
+      expect((await repository.findByName('@john@example.com'))[1]).toBe(
+        account,
+      );
+    });
 
     it.each([
       {
