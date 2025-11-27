@@ -35,6 +35,7 @@
     "@hono/swagger-ui": "^0.5.0",
     "@hono/zod-openapi": "^1.0.0",
     "@mikuroxina/mini-fn": "^7.0.0",
+    "@prisma/adapter-pg": "^7.0.1",
     "@prisma/client": "7.0.0",
     "@scalar/hono-api-reference": "^0.9.0",
     "@upyo/core": "^0.3.0",
@@ -45,10 +46,10 @@
     "hono": "^4.10.3",
     "ioredis": "^5.4.1",
     "jose": "^6.0.0",
+    "pg": "^8.16.3",
     "prisma": "^7.0.0",
     "sharp": "^0.34.0",
-    "tslog": "^4.9.3",
-    "typescript": "^5.3.3"
+    "tslog": "^4.9.3"
   },
   "peerDependencies": {
     "zod": "^4.0.0"
@@ -57,12 +58,14 @@
     "@biomejs/biome": "^2.0.0",
     "@ls-lint/ls-lint": "^2.2.3",
     "@types/node": "^24.0.0",
+    "@types/pg": "^8.15.6",
     "@vitest/coverage-v8": "^4.0.0",
     "esbuild": "^0.27.0",
     "glob": "^13.0.0",
     "ignore": "^7.0.0",
     "kleur": "^4.1.5",
     "lefthook": "^2.0.0",
+    "typescript": "^5.9.3",
     "vitest": "^4.0.0"
   }
 }

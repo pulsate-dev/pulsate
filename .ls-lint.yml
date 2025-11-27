@@ -6,3 +6,4 @@ ignore:
   - coverage
   - build
   - vite.config.ts
+  - pkg/generated

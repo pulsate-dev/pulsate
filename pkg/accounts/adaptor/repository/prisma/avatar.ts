@@ -1,7 +1,7 @@
 import { Ether, Result } from '@mikuroxina/mini-fn';
-import type { Prisma, PrismaClient } from '@prisma/client';
 import type { prismaClient } from '../../../../adaptors/prisma.js';
 import { Medium, type MediumID } from '../../../../drive/model/medium.js';
+import type { PrismaClient } from '../../../../generated/client/client.js';
 import type { AccountID } from '../../../model/account.js';
 import { AccountInternalError } from '../../../model/errors.js';
 import {
@@ -10,8 +10,10 @@ import {
 } from '../../../model/repository.js';
 import { parsePrismaError } from './prisma.js';
 
-type AccountAvatarData = Prisma.PromiseReturnType<
-  typeof prismaClient.accountAvatar.findMany<{ include: { medium: true } }>
+type AccountAvatarData = Awaited<
+  ReturnType<
+    typeof prismaClient.accountAvatar.findMany<{ include: { medium: true } }>
+  >
 >;
 
 export class PrismaAccountAvatarRepository implements AccountAvatarRepository {

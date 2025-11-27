@@ -1,9 +1,8 @@
 import { Ether, Option, Result } from '@mikuroxina/mini-fn';
-import type { Prisma, PrismaClient } from '@prisma/client';
-
 import type { AccountID } from '../../../accounts/model/account.js';
 import type { prismaClient } from '../../../adaptors/prisma.js';
 import { Medium, type MediumID } from '../../../drive/model/medium.js';
+import type { Prisma, PrismaClient } from '../../../generated/client/client.js';
 import { Bookmark } from '../../model/bookmark.js';
 import { Note, type NoteID, type NoteVisibility } from '../../model/note.js';
 import { Reaction, type ReactionID } from '../../model/reaction.js';
@@ -18,8 +17,8 @@ import {
   reactionRepoSymbol,
 } from '../../model/repository.js';
 
-type DeserializeNoteArgs = Prisma.PromiseReturnType<
-  typeof prismaClient.note.findUnique
+type DeserializeNoteArgs = Awaited<
+  ReturnType<typeof prismaClient.note.findUnique>
 >;
 
 export class PrismaNoteRepository implements NoteRepository {
@@ -275,8 +274,10 @@ export const prismaBookmarkRepo = (client: PrismaClient) =>
     () => new PrismaBookmarkRepository(client),
   );
 
-type DeserializeNoteAttachmentArgs = Prisma.PromiseReturnType<
-  typeof prismaClient.noteAttachment.findMany<{ include: { medium: true } }>
+type DeserializeNoteAttachmentArgs = Awaited<
+  ReturnType<
+    typeof prismaClient.noteAttachment.findMany<{ include: { medium: true } }>
+  >
 >;
 
 export class PrismaNoteAttachmentRepository
@@ -344,8 +345,8 @@ export const prismaNoteAttachmentRepo = (client: PrismaClient) =>
     () => new PrismaNoteAttachmentRepository(client),
   );
 
-type DeserializeReactionArgs = Prisma.PromiseReturnType<
-  typeof prismaClient.reaction.findUnique
+type DeserializeReactionArgs = Awaited<
+  ReturnType<typeof prismaClient.reaction.findUnique>
 >;
 export class PrismaReactionRepository implements ReactionRepository {
   constructor(private readonly client: PrismaClient) {}

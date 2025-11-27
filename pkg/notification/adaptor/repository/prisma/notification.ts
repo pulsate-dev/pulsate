@@ -1,6 +1,9 @@
 import { Ether, Option, Result } from '@mikuroxina/mini-fn';
-import type { Prisma, PrismaClient } from '@prisma/client';
 import type { AccountID } from '../../../../accounts/model/account.js';
+import type {
+  Prisma,
+  PrismaClient,
+} from '../../../../generated/client/client.js';
 import type { NoteID } from '../../../../notes/model/note.js';
 import type { ReactionID } from '../../../../notes/model/reaction.js';
 import {
@@ -156,8 +159,8 @@ export class PrismaNotificationRepository implements NotificationRepository {
   }
 
   private deserialize(
-    notification: Prisma.PromiseReturnType<
-      typeof this.prisma.notification.findUnique
+    notification: Awaited<
+      ReturnType<typeof this.prisma.notification.findUnique>
     >,
   ): Result.Result<Error, Notification> {
     if (!notification) {
