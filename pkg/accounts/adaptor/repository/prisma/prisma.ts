@@ -1,6 +1,8 @@
 import { Ether, Option, Result } from '@mikuroxina/mini-fn';
-import { Prisma, type PrismaClient } from '@prisma/client';
-
+import {
+  Prisma,
+  type PrismaClient,
+} from '../../../../adaptors/prisma/client.js';
 import type { prismaClient } from '../../../../adaptors/prisma.js';
 import {
   Account,
@@ -26,8 +28,8 @@ import {
   verifyTokenRepoSymbol,
 } from '../../../model/repository.js';
 
-type AccountPrismaArgs = Prisma.PromiseReturnType<
-  typeof prismaClient.account.findUnique
+type AccountPrismaArgs = Awaited<
+  ReturnType<typeof prismaClient.account.findUnique>
 >;
 
 export class PrismaAccountRepository implements AccountRepository {

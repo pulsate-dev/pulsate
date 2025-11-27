@@ -2,7 +2,12 @@
   "$schema": "https://biomejs.dev/schemas/2.3.7/schema.json",
   // general
   "files": {
-    "includes": ["**/pkg/**", "**/scripts/**", "!**/build"]
+    "includes": [
+      "**/pkg/**",
+      "**/scripts/**",
+      "!**/build",
+      "!!**/pkg/adaptors/prisma"
+    ]
   },
 
   // formatter

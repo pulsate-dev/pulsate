@@ -1,7 +1,6 @@
 import { Ether, Option, Result } from '@mikuroxina/mini-fn';
-import { Prisma, type PrismaClient } from '@prisma/client';
-
 import type { AccountID } from '../../../accounts/model/account.js';
+import { Prisma, type PrismaClient } from '../../../adaptors/prisma/client.js';
 import type { prismaClient } from '../../../adaptors/prisma.js';
 import {
   Note,
@@ -63,7 +62,7 @@ export class PrismaTimelineRepository implements TimelineRepository {
   }
 
   private deserialize(
-    data: Prisma.PromiseReturnType<typeof this.prisma.note.findMany & {}>,
+    data: Awaited<ReturnType<typeof this.prisma.note.findMany & {}>>,
   ): Note[] {
     return data.map((v) => {
       const visibility = (): NoteVisibility => {
@@ -188,7 +187,7 @@ export const prismaTimelineRepo = (client: PrismaClient) =>
   );
 
 type DeserializeListArgs =
-  | (Prisma.PromiseReturnType<typeof prismaClient.list.findUnique> & {
+  | (Awaited<ReturnType<typeof prismaClient.list.findUnique>> & {
       listMember: {
         memberId: string;
       }[];
@@ -441,8 +440,8 @@ export class PrismaListRepository implements ListRepository {
 export const prismaListRepo = (client: PrismaClient) =>
   Ether.newEther(listRepoSymbol, () => new PrismaListRepository(client));
 
-type DeserializeBookmarkArgs = Prisma.PromiseReturnType<
-  typeof prismaClient.bookmark.findMany
+type DeserializeBookmarkArgs = Awaited<
+  ReturnType<typeof prismaClient.bookmark.findMany>
 >;
 
 export class PrismaBookmarkTimelineRepository
@@ -594,7 +593,7 @@ export class PrismaConversationRepository implements ConversationRepository {
   }
 
   private deserialize(
-    data: Prisma.PromiseReturnType<typeof this.prisma.note.findMany & {}>,
+    data: Awaited<ReturnType<typeof this.prisma.note.findMany & {}>>,
   ): Note[] {
     return data.map((v) => {
       const visibility = (): NoteVisibility => {
