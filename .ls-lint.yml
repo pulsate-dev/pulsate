@@ -6,4 +6,4 @@ ignore:
   - coverage
   - build
   - vite.config.ts
-  - pkg/adaptors/prisma/
+  - pkg/adaptors/prisma/**

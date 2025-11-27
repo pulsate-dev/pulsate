@@ -1,9 +1,9 @@
 import { Ether, Option, Result } from '@mikuroxina/mini-fn';
-import type { prismaClient } from '../../../../adaptors/prisma.js';
 import {
   Prisma,
   type PrismaClient,
-} from '../../../../generated/client/client.js';
+} from '../../../../adaptors/prisma/client.js';
+import type { prismaClient } from '../../../../adaptors/prisma.js';
 import {
   Account,
   type AccountFrozen,

@@ -1,7 +1,7 @@
 import { Ether, Option, Result } from '@mikuroxina/mini-fn';
 import type { AccountID } from '../../../accounts/model/account.js';
+import { Prisma, type PrismaClient } from '../../../adaptors/prisma/client.js';
 import type { prismaClient } from '../../../adaptors/prisma.js';
-import { Prisma, type PrismaClient } from '../../../generated/client/client.js';
 import { DriveInternalError, MediaNotFoundError } from '../../model/errors.js';
 import { Medium, type MediumID } from '../../model/medium.js';
 import {

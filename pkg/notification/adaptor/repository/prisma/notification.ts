@@ -3,7 +3,7 @@ import type { AccountID } from '../../../../accounts/model/account.js';
 import type {
   Prisma,
   PrismaClient,
-} from '../../../../generated/client/client.js';
+} from '../../../../adaptors/prisma/client.js';
 import type { NoteID } from '../../../../notes/model/note.js';
 import type { ReactionID } from '../../../../notes/model/reaction.js';
 import {

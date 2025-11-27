@@ -1,8 +1,8 @@
 import { Ether, Option, Result } from '@mikuroxina/mini-fn';
 import type { AccountID } from '../../../accounts/model/account.js';
+import type { Prisma, PrismaClient } from '../../../adaptors/prisma/client.js';
 import type { prismaClient } from '../../../adaptors/prisma.js';
 import { Medium, type MediumID } from '../../../drive/model/medium.js';
-import type { Prisma, PrismaClient } from '../../../generated/client/client.js';
 import { Bookmark } from '../../model/bookmark.js';
 import { Note, type NoteID, type NoteVisibility } from '../../model/note.js';
 import { Reaction, type ReactionID } from '../../model/reaction.js';
