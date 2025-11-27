@@ -26,6 +26,20 @@ jobs:
           username: ${{ github.repository_owner }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
+      - name: Docker metadata
+        id: meta
+        uses: docker/metadata-action@v5
+        with:
+          images: ghcr.io/pulsate-dev/pulsate
+          tags: |
+            type=sha,prefix=sha-,format=short
+            type=raw,value=latest
+          labels: |
+            org.opencontainers.image.title=pulsate
+            org.opencontainers.image.licenses=Apache-2.0
+            dev.pulsate.version=0.0.1
+            dev.pulsate.node-version=24.11.1
+
       - name: Build and push
         id: push
         uses: docker/build-push-action@v6
@@ -34,9 +48,8 @@ jobs:
           platforms: linux/amd64,linux/arm64
           push: true
           provenance: mode=max
-          tags: |
-            ghcr.io/pulsate-dev/pulsate:latest
-            ghcr.io/pulsate-dev/pulsate:v0.0.1-alpha-${{ github.sha }}
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
           cache-from: type=gha
           cache-to: type=gha,mode=max
 
