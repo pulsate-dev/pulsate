@@ -313,12 +313,11 @@
       "LoginRequest": {
         "type": "object",
         "properties": {
-          "name": {
+          "email": {
             "type": "string",
-            "minLength": 8,
-            "maxLength": 512,
-            "description": "account name",
-            "example": "@johndoe@example.com"
+            "format": "email",
+            "description": "email address",
+            "example": "johndoe@example.com"
           },
           "passphrase": {
             "type": "string",
@@ -333,7 +332,7 @@
           }
         },
         "required": [
-          "name",
+          "email",
           "passphrase",
           "captcha_token"
         ]

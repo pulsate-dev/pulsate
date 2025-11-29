@@ -1,4 +1,5 @@
 import { Cat, Ether, type Result } from '@mikuroxina/mini-fn';
+import type { AccountID } from '../accounts/model/account.js';
 import { isProduction } from '../adaptors/env.js';
 import { prismaClient } from '../adaptors/prisma.js';
 import type { Medium } from '../drive/model/medium.js';
@@ -14,6 +15,7 @@ import {
 } from '../notes/adaptor/repository/prisma.js';
 import type { NoteID } from '../notes/model/note.js';
 import type { Reaction } from '../notes/model/reaction.js';
+import type { RenoteStatus } from '../notes/model/renoteStatus.js';
 import {
   type NoteRepository,
   noteAttachmentRepoSymbol,
@@ -49,6 +51,19 @@ export class NoteModuleFacade {
     noteID: NoteID,
   ): Promise<Result.Result<Error, Medium[]>> {
     return await this.fetchService.fetchNoteAttachments(noteID);
+  }
+
+  /**
+   * @description Check if the specified account has renoted each of the given notes
+   * @param accountID account ID to check
+   * @param noteIDs note IDs to check
+   * @returns boolean array indicating whether the account has renoted each note (true if renoted, false otherwise)
+   */
+  async fetchRenoteStatus(
+    accountID: AccountID,
+    noteIDs: NoteID[],
+  ): Promise<RenoteStatus[]> {
+    return await this.fetchService.fetchRenoteStatus(accountID, noteIDs);
   }
 }
 

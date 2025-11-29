@@ -78,6 +78,7 @@ export class NoteController {
 
   async getNoteByID(
     noteID: string,
+    accountID: Option.Option<AccountID>,
   ): Promise<Result.Result<Error, z.infer<typeof GetNoteResponseSchema>>> {
     const noteRes = await this.fetchService.fetchNoteByID(noteID as NoteID);
     if (Option.isNone(noteRes)) {
@@ -108,6 +109,15 @@ export class NoteController {
       return reactionsRes;
     }
     const reactions = Result.unwrap(reactionsRes);
+
+    // FIXME: complex 3ternary operator
+    const isRenoted = Option.isSome(accountID)
+      ? (
+          await this.fetchService.fetchRenoteStatus(Option.unwrap(accountID), [
+            note.getID(),
+          ])
+        )[0]?.getIsRenoted() || false
+      : false;
 
     return Result.ok({
       id: note.getID(),
@@ -147,6 +157,7 @@ export class NoteController {
         followed_count: 0,
         following_count: 0,
       },
+      renoted: isRenoted,
     });
   }
 
