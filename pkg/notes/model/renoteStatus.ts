@@ -24,3 +24,10 @@ export class RenoteStatus {
     return this.isRenoted;
   }
 }
+
+export const findRenoteStatusByNoteID = (
+  renoteStatus: RenoteStatus,
+  noteId: NoteID,
+) => {
+  return renoteStatus.getNoteID() === noteId;
+};

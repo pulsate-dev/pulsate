@@ -7,7 +7,10 @@ import type { AccountModuleFacade } from '../../../intermodule/account.js';
 import type { NoteModuleFacade } from '../../../intermodule/note.js';
 import type { Note, NoteID } from '../../../notes/model/note.js';
 import type { Reaction } from '../../../notes/model/reaction.js';
-import type { RenoteStatus } from '../../../notes/model/renoteStatus.js';
+import {
+  findRenoteStatusByNoteID,
+  type RenoteStatus,
+} from '../../../notes/model/renoteStatus.js';
 import type { ListID } from '../../model/list.js';
 import type { AccountTimelineService } from '../../service/account.js';
 import type { AppendListMemberService } from '../../service/appendMember.js';
@@ -247,7 +250,9 @@ export class TimelineController {
         },
         renoted:
           renotedStatuses
-            .find((v) => v.getActorID() === actorID)
+            .find((renoteStatus) =>
+              findRenoteStatusByNoteID(renoteStatus, v.note.getID()),
+            )
             ?.getIsRenoted() || false,
       };
     });
@@ -326,7 +331,9 @@ export class TimelineController {
         },
         renoted:
           renotedStatuses
-            .find((v) => v.getActorID() === fromId)
+            .find((renoteStatus) =>
+              findRenoteStatusByNoteID(renoteStatus, v.note.getID()),
+            )
             ?.getIsRenoted() || false,
       };
     });
@@ -604,7 +611,9 @@ export class TimelineController {
       },
       renoted:
         renotedStatuses
-          .find((v) => v.getActorID() === accountID)
+          .find((renoteStatus) =>
+            findRenoteStatusByNoteID(renoteStatus, v.note.getID()),
+          )
           ?.getIsRenoted() || false,
     }));
 
@@ -732,7 +741,9 @@ export class TimelineController {
         },
         renoted: Option.isSome(accountID)
           ? renotedStatuses
-              .find((v) => v.getActorID() === Option.unwrap(accountID))
+              .find((renoteStatus) =>
+                findRenoteStatusByNoteID(renoteStatus, v.note.getID()),
+              )
               ?.getIsRenoted() || false
           : false,
       };
