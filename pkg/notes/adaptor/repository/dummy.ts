@@ -87,6 +87,7 @@ export class InMemoryNoteRepository implements NoteRepository {
     return noteIDs.map((noteID) => {
       return RenoteStatus.new(
         accountID,
+        noteID,
         [...this.notes.values()].some(
           (note) =>
             note.getAuthorID() === accountID &&

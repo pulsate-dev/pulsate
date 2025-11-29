@@ -204,7 +204,7 @@ export class PrismaNoteRepository implements NoteRepository {
       );
 
       return noteIDs.map((noteID) =>
-        RenoteStatus.new(accountID, renotedSet.has(noteID)),
+        RenoteStatus.new(accountID, noteID, renotedSet.has(noteID)),
       );
     } catch {
       noteModuleLogger.warn('Failed to fetch renote status:', {
@@ -212,7 +212,9 @@ export class PrismaNoteRepository implements NoteRepository {
         noteIDs,
       });
       // NOTE: If query fails, return all false
-      return noteIDs.map(() => RenoteStatus.new(accountID, false));
+      return noteIDs.map((noteID) =>
+        RenoteStatus.new(accountID, noteID, false),
+      );
     }
   }
 }
