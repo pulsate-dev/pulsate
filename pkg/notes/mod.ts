@@ -223,11 +223,8 @@ noteHandlers[GetNoteRoute.method](
 );
 noteHandlers.openapi(GetNoteRoute, async (c) => {
   const { id } = c.req.param();
-  const rawAccountID = c.get('accountID');
-  const accountID: Option.Option<AccountID> = Option.isSome(rawAccountID)
-    ? Option.some(Option.unwrap(rawAccountID) as AccountID)
-    : Option.none();
-  const res = await controller.getNoteByID(id, accountID);
+  const accountId = c.get('accountID') as Option.Option<AccountID>;
+  const res = await controller.getNoteByID(id, accountId);
   if (Result.isErr(res)) {
     const error = Result.unwrapErr(res);
     noteModuleLogger.warn(error);
