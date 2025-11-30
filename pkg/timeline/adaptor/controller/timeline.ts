@@ -733,11 +733,10 @@ export class TimelineController {
           followed_count: v.followCount.followed,
           following_count: v.followCount.following,
         },
-        renoted: Option.isSome(accountID)
-          ? renotedStatuses
-              .find(findRenoteStatusByNoteID(v.note.getID()))
-              ?.getIsRenoted() || false
-          : false,
+        renoted:
+          renotedStatuses
+            .find(findRenoteStatusByNoteID(v.note.getID()))
+            ?.getIsRenoted() || false,
       };
     });
 
