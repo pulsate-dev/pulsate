@@ -25,7 +25,7 @@ export interface NoteRepository {
   findManyByIDs(ids: NoteID[]): Promise<Result.Result<Error, Note[]>>;
   deleteByID(id: NoteID): Promise<Result.Result<Error, void>>;
   fetchRenoteStatus(
-    accountID: AccountID,
+    accountId: AccountID,
     noteIDs: NoteID[],
   ): Promise<RenoteStatus[]>;
 }

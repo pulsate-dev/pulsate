@@ -8,8 +8,8 @@ export class RenoteStatus {
     private readonly isRenoted: boolean,
   ) {}
 
-  static new(actorID: AccountID, noteID: NoteID, isRenoted: boolean) {
-    return new RenoteStatus(actorID, noteID, isRenoted);
+  static new(actorId: AccountID, noteId: NoteID, isRenoted: boolean) {
+    return new RenoteStatus(actorId, noteId, isRenoted);
   }
 
   getActorID(): AccountID {

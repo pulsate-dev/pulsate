@@ -180,13 +180,13 @@ export class PrismaNoteRepository implements NoteRepository {
   }
 
   async fetchRenoteStatus(
-    accountID: AccountID,
+    accountId: AccountID,
     noteIDs: NoteID[],
   ): Promise<RenoteStatus[]> {
     try {
       const renotes = await this.client.note.findMany({
         where: {
-          authorId: accountID,
+          authorId: accountId,
           renoteId: {
             in: noteIDs,
           },
@@ -204,16 +204,16 @@ export class PrismaNoteRepository implements NoteRepository {
       );
 
       return noteIDs.map((noteID) =>
-        RenoteStatus.new(accountID, noteID, renotedSet.has(noteID)),
+        RenoteStatus.new(accountId, noteID, renotedSet.has(noteID)),
       );
     } catch {
       noteModuleLogger.warn('Failed to fetch renote status:', {
-        accountID,
+        accountID: accountId,
         noteIDs,
       });
       // NOTE: If query fails, return all false
       return noteIDs.map((noteID) =>
-        RenoteStatus.new(accountID, noteID, false),
+        RenoteStatus.new(accountId, noteID, false),
       );
     }
   }

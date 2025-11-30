@@ -512,13 +512,10 @@ timeline[GetPublicTimelineRoute.method](
   AuthMiddleware.handle({ forceAuthorized: false }),
 );
 timeline.openapi(GetPublicTimelineRoute, async (c) => {
-  const rawAccountID = c.get('accountID');
-  const accountID: Option.Option<AccountID> = Option.isSome(rawAccountID)
-    ? Option.some(Option.unwrap(rawAccountID) as AccountID)
-    : Option.none();
+  const accountId = c.get('accountID') as Option.Option<AccountID>;
   const { has_attachment, no_nsfw, before_id, after_id } = c.req.valid('query');
   const res = await controller.getPublicTimeline(
-    accountID,
+    accountId,
     has_attachment,
     no_nsfw,
     before_id,

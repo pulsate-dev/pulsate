@@ -81,16 +81,16 @@ export class InMemoryNoteRepository implements NoteRepository {
   }
 
   async fetchRenoteStatus(
-    accountID: AccountID,
+    accountId: AccountID,
     noteIDs: NoteID[],
   ): Promise<RenoteStatus[]> {
     return noteIDs.map((noteID) => {
       return RenoteStatus.new(
-        accountID,
+        accountId,
         noteID,
         [...this.notes.values()].some(
           (note) =>
-            note.getAuthorID() === accountID &&
+            note.getAuthorID() === accountId &&
             Option.isSome(note.getOriginalNoteID()) &&
             Option.unwrap(note.getOriginalNoteID()) === noteID,
         ),
