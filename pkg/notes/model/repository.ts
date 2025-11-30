@@ -5,6 +5,7 @@ import type { Medium, MediumID } from '../../drive/model/medium.js';
 import type { Bookmark } from './bookmark.js';
 import type { Note, NoteID } from './note.js';
 import type { Reaction, ReactionID } from './reaction.js';
+import type { RenoteStatus } from './renoteStatus.js';
 
 export interface NoteRepository {
   create(note: Note): Promise<Result.Result<Error, void>>;
@@ -23,6 +24,10 @@ export interface NoteRepository {
    */
   findManyByIDs(ids: NoteID[]): Promise<Result.Result<Error, Note[]>>;
   deleteByID(id: NoteID): Promise<Result.Result<Error, void>>;
+  fetchRenoteStatus(
+    accountId: AccountID,
+    noteIDs: NoteID[],
+  ): Promise<RenoteStatus[]>;
 }
 export const noteRepoSymbol = Ether.newEtherSymbol<NoteRepository>();
 

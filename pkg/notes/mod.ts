@@ -1,6 +1,7 @@
 import { OpenAPIHono } from '@hono/zod-openapi';
 import { Cat, Ether, Option, Result } from '@mikuroxina/mini-fn';
 
+import type { AccountID } from '../accounts/model/account.js';
 import { AccountNotFoundError } from '../accounts/model/errors.js';
 import {
   AuthenticateMiddlewareService,
@@ -222,7 +223,8 @@ noteHandlers[GetNoteRoute.method](
 );
 noteHandlers.openapi(GetNoteRoute, async (c) => {
   const { id } = c.req.param();
-  const res = await controller.getNoteByID(id);
+  const accountId = c.get('accountID') as Option.Option<AccountID>;
+  const res = await controller.getNoteByID(id, accountId);
   if (Result.isErr(res)) {
     const error = Result.unwrapErr(res);
     noteModuleLogger.warn(error);

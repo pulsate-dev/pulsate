@@ -1,6 +1,7 @@
 import { OpenAPIHono } from '@hono/zod-openapi';
 import { Cat, Ether, Option, Result } from '@mikuroxina/mini-fn';
 
+import type { AccountID } from '../accounts/model/account.js';
 import { AccountNotFoundError } from '../accounts/model/errors.js';
 
 import {
@@ -506,9 +507,15 @@ timeline.openapi(GetConversationRoute, async (c) => {
   return c.json(res[1], 200);
 });
 
+timeline[GetPublicTimelineRoute.method](
+  GetPublicTimelineRoute.path,
+  AuthMiddleware.handle({ forceAuthorized: false }),
+);
 timeline.openapi(GetPublicTimelineRoute, async (c) => {
+  const accountId = c.get('accountID') as Option.Option<AccountID>;
   const { has_attachment, no_nsfw, before_id, after_id } = c.req.valid('query');
   const res = await controller.getPublicTimeline(
+    accountId,
     has_attachment,
     no_nsfw,
     before_id,

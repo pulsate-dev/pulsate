@@ -1,5 +1,5 @@
 import type { z } from '@hono/zod-openapi';
-import { Result } from '@mikuroxina/mini-fn';
+import { Option, Result } from '@mikuroxina/mini-fn';
 
 import type { Account, AccountID } from '../../../accounts/model/account.js';
 import type { Medium } from '../../../drive/model/medium.js';
@@ -7,6 +7,10 @@ import type { AccountModuleFacade } from '../../../intermodule/account.js';
 import type { NoteModuleFacade } from '../../../intermodule/note.js';
 import type { Note, NoteID } from '../../../notes/model/note.js';
 import type { Reaction } from '../../../notes/model/reaction.js';
+import {
+  findRenoteStatusByNoteID,
+  type RenoteStatus,
+} from '../../../notes/model/renoteStatus.js';
 import type { ListID } from '../../model/list.js';
 import type { AccountTimelineService } from '../../service/account.js';
 import type { AppendListMemberService } from '../../service/appendMember.js';
@@ -206,6 +210,13 @@ export class TimelineController {
     }
     const noteAdditionalData = Result.unwrap(noteAdditionalDataRes);
 
+    // Check renoted status for all notes
+    const noteIDs = noteAdditionalData.map((v) => v.note.getID());
+    const renotedStatuses = await this.noteModule.fetchRenoteStatus(
+      actorID as AccountID,
+      noteIDs,
+    );
+
     const result = noteAdditionalData.map((v) => {
       return {
         id: v.note.getID(),
@@ -237,6 +248,10 @@ export class TimelineController {
           followed_count: v.followCount.followed,
           following_count: v.followCount.following,
         },
+        renoted:
+          renotedStatuses
+            .find(findRenoteStatusByNoteID(v.note.getID()))
+            ?.getIsRenoted() || false,
       };
     });
 
@@ -274,6 +289,13 @@ export class TimelineController {
     }
     const noteAdditionalData = Result.unwrap(noteAdditionalDataRes);
 
+    // Check renoted status for all notes
+    const noteIDs = noteAdditionalData.map((v) => v.note.getID());
+    const renotedStatuses = await this.noteModule.fetchRenoteStatus(
+      fromId as AccountID,
+      noteIDs,
+    );
+
     const result = noteAdditionalData.map((v) => {
       return {
         id: v.note.getID(),
@@ -305,6 +327,10 @@ export class TimelineController {
           followed_count: v.followCount.followed,
           following_count: v.followCount.following,
         },
+        renoted:
+          renotedStatuses
+            .find(findRenoteStatusByNoteID(v.note.getID()))
+            ?.getIsRenoted() || false,
       };
     });
 
@@ -542,6 +568,13 @@ export class TimelineController {
     }
     const noteAdditionalData = Result.unwrap(noteAdditionalDataRes);
 
+    // Check renoted status for all notes
+    const noteIDsToCheck = noteAdditionalData.map((v) => v.note.getID());
+    const renotedStatuses = await this.noteModule.fetchRenoteStatus(
+      accountID as AccountID,
+      noteIDsToCheck,
+    );
+
     const result = noteAdditionalData.map((v) => ({
       id: v.note.getID(),
       content: v.note.getContent(),
@@ -572,6 +605,10 @@ export class TimelineController {
         followed_count: v.followCount.followed,
         following_count: v.followCount.following,
       },
+      renoted:
+        renotedStatuses
+          .find(findRenoteStatusByNoteID(v.note.getID()))
+          ?.getIsRenoted() || false,
     }));
 
     return Result.ok(result);
@@ -632,6 +669,7 @@ export class TimelineController {
   }
 
   async getPublicTimeline(
+    accountID: Option.Option<AccountID>,
     hasAttachment: boolean,
     noNsfw: boolean,
     beforeId?: string,
@@ -655,6 +693,14 @@ export class TimelineController {
       return noteAdditionalDataRes;
     }
     const noteAdditionalData = Result.unwrap(noteAdditionalDataRes);
+
+    // Check renoted status if user is logged in
+    const renotedStatuses: RenoteStatus[] = Option.isSome(accountID)
+      ? await this.noteModule.fetchRenoteStatus(
+          Option.unwrap(accountID),
+          noteAdditionalData.map((v) => v.note.getID()),
+        )
+      : [];
 
     const result = noteAdditionalData.map((v) => {
       return {
@@ -687,6 +733,10 @@ export class TimelineController {
           followed_count: v.followCount.followed,
           following_count: v.followCount.following,
         },
+        renoted:
+          renotedStatuses
+            .find(findRenoteStatusByNoteID(v.note.getID()))
+            ?.getIsRenoted() || false,
       };
     });
 

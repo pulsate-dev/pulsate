@@ -6,6 +6,7 @@ import { Medium, type MediumID } from '../../../drive/model/medium.js';
 import { Bookmark } from '../../model/bookmark.js';
 import { Note, type NoteID, type NoteVisibility } from '../../model/note.js';
 import { Reaction, type ReactionID } from '../../model/reaction.js';
+import { RenoteStatus } from '../../model/renoteStatus.js';
 import {
   type BookmarkRepository,
   bookmarkRepoSymbol,
@@ -16,6 +17,7 @@ import {
   type ReactionRepository,
   reactionRepoSymbol,
 } from '../../model/repository.js';
+import { noteModuleLogger } from '../logger.js';
 
 type DeserializeNoteArgs = Awaited<
   ReturnType<typeof prismaClient.note.findUnique>
@@ -174,6 +176,45 @@ export class PrismaNoteRepository implements NoteRepository {
       return Option.some(this.deserialize(res));
     } catch {
       return Option.none();
+    }
+  }
+
+  async fetchRenoteStatus(
+    accountId: AccountID,
+    noteIDs: NoteID[],
+  ): Promise<RenoteStatus[]> {
+    try {
+      const renotes = await this.client.note.findMany({
+        where: {
+          authorId: accountId,
+          renoteId: {
+            in: noteIDs,
+          },
+          deletedAt: null,
+        },
+        select: {
+          renoteId: true,
+        },
+      });
+
+      const renotedSet = new Set(
+        renotes
+          .map((r) => r.renoteId)
+          .filter((id): id is string => id !== null),
+      );
+
+      return noteIDs.map((noteID) =>
+        RenoteStatus.new(accountId, noteID, renotedSet.has(noteID)),
+      );
+    } catch {
+      noteModuleLogger.warn('Failed to fetch renote status:', {
+        accountID: accountId,
+        noteIDs,
+      });
+      // NOTE: If query fails, return all false
+      return noteIDs.map((noteID) =>
+        RenoteStatus.new(accountId, noteID, false),
+      );
     }
   }
 }

@@ -41,6 +41,12 @@ const TimelineNoteBaseSchema = z.object({
     followed_count: z.number(),
     following_count: z.number(),
   }),
+  renoted: z.boolean().openapi({
+    example: false,
+    description:
+      'Whether the current user has renoted this note (always false if not logged in)',
+    default: false,
+  }),
 });
 
 export const GetAccountTimelineResponseSchema = z
