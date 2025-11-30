@@ -250,9 +250,7 @@ export class TimelineController {
         },
         renoted:
           renotedStatuses
-            .find((renoteStatus) =>
-              findRenoteStatusByNoteID(renoteStatus, v.note.getID()),
-            )
+            .find(findRenoteStatusByNoteID(v.note.getID()))
             ?.getIsRenoted() || false,
       };
     });
@@ -331,9 +329,7 @@ export class TimelineController {
         },
         renoted:
           renotedStatuses
-            .find((renoteStatus) =>
-              findRenoteStatusByNoteID(renoteStatus, v.note.getID()),
-            )
+            .find(findRenoteStatusByNoteID(v.note.getID()))
             ?.getIsRenoted() || false,
       };
     });
@@ -611,9 +607,7 @@ export class TimelineController {
       },
       renoted:
         renotedStatuses
-          .find((renoteStatus) =>
-            findRenoteStatusByNoteID(renoteStatus, v.note.getID()),
-          )
+          .find(findRenoteStatusByNoteID(v.note.getID()))
           ?.getIsRenoted() || false,
     }));
 
@@ -741,9 +735,7 @@ export class TimelineController {
         },
         renoted: Option.isSome(accountID)
           ? renotedStatuses
-              .find((renoteStatus) =>
-                findRenoteStatusByNoteID(renoteStatus, v.note.getID()),
-              )
+              .find(findRenoteStatusByNoteID(v.note.getID()))
               ?.getIsRenoted() || false
           : false,
       };

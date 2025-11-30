@@ -25,9 +25,7 @@ export class RenoteStatus {
   }
 }
 
-export const findRenoteStatusByNoteID = (
-  renoteStatus: RenoteStatus,
-  noteId: NoteID,
-) => {
-  return renoteStatus.getNoteID() === noteId;
-};
+export const findRenoteStatusByNoteID =
+  (noteId: NoteID) =>
+  (renoteStatus: RenoteStatus): boolean =>
+    renoteStatus.getNoteID() === noteId;
