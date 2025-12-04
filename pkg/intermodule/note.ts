@@ -17,8 +17,8 @@ import type { NoteID } from '../notes/model/note.js';
 import type { Reaction } from '../notes/model/reaction.js';
 import type { RenoteStatus } from '../notes/model/renoteStatus.js';
 import {
-  type NoteRepository,
   noteAttachmentRepoSymbol,
+  noteRepoSymbol,
   reactionRepoSymbol,
 } from '../notes/model/repository.js';
 import { type FetchService, fetch } from '../notes/service/fetch.js';
@@ -87,10 +87,7 @@ const reactionRepository = Ether.newEther(
   reactionRepoSymbol,
   () => reactionRepoObject,
 );
-const noteRepository = Ether.newEther(
-  Ether.newEtherSymbol<NoteRepository>(),
-  () => noteRepoObject,
-);
+const noteRepository = Ether.newEther(noteRepoSymbol, () => noteRepoObject);
 export const noteModuleFacadeSymbol = Ether.newEtherSymbol<NoteModuleFacade>();
 
 /**
