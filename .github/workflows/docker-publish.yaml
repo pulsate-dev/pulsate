@@ -32,7 +32,7 @@ jobs:
         with:
           images: ghcr.io/pulsate-dev/pulsate
           tags: |
-            type=sha,prefix=sha-,format=short
+            type=sha,prefix=0.0.1-alpha.,format=short
             type=raw,value=latest
           labels: |
             org.opencontainers.image.title=pulsate
