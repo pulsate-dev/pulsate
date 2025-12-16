@@ -3,7 +3,10 @@ import type { Redis } from 'ioredis';
 
 import type { AccountID } from '../../../accounts/model/account.js';
 import type { Note, NoteID } from '../../../notes/model/note.js';
-import { TimelineInternalError } from '../../model/errors.js';
+import {
+  TimelineCacheNotFoundError,
+  TimelineInternalError,
+} from '../../model/errors.js';
 import type { ListID } from '../../model/list.js';
 import {
   type CacheObjectKey,
@@ -72,11 +75,20 @@ export class ValkeyTimelineCacheRepository
     accountID: AccountID,
   ): Promise<Result.Result<Error, NoteID[]>> {
     try {
-      const fetched = await this.redisClient.zrange(
-        this.generateObjectKey(accountID, 'home'),
-        0,
-        -1,
-      );
+      const objectKey = this.generateObjectKey(accountID, 'home');
+      const isKeyExists = await this.redisClient.exists(objectKey);
+      if (!isKeyExists) {
+        return Result.err(
+          new TimelineCacheNotFoundError('timeline cache not found', {
+            cause: {
+              timelineType: 'home',
+              id: accountID,
+            },
+          }),
+        );
+      }
+
+      const fetched = await this.redisClient.zrange(objectKey, 0, -1);
       return Result.ok(fetched as NoteID[]);
     } catch (e) {
       return Result.err(
@@ -89,6 +101,19 @@ export class ValkeyTimelineCacheRepository
     listID: ListID,
   ): Promise<Result.Result<Error, NoteID[]>> {
     try {
+      const objectKey = this.generateObjectKey(listID, 'list');
+      const isKeyExists = await this.redisClient.exists(objectKey);
+      if (!isKeyExists) {
+        return Result.err(
+          new TimelineCacheNotFoundError('timeline cache not found', {
+            cause: {
+              timelineType: 'list',
+              id: listID,
+            },
+          }),
+        );
+      }
+
       const fetched = await this.redisClient.zrange(
         this.generateObjectKey(listID, 'list'),
         0,

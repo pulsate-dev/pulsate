@@ -2,6 +2,7 @@ import { Ether, Result } from '@mikuroxina/mini-fn';
 
 import type { AccountID } from '../../accounts/model/account.js';
 import type { Note } from '../../notes/model/note.js';
+import { timelineModuleLogger } from '../adaptor/logger.js';
 import {
   type FetchHomeTimelineFilter,
   type TimelineNotesCacheRepository,
@@ -24,7 +25,11 @@ export class HomeTimelineService {
     const noteIDsRes =
       await this.timelineCacheRepository.getHomeTimeline(accountID);
     if (Result.isErr(noteIDsRes)) {
-      return noteIDsRes;
+      timelineModuleLogger.warn(
+        'Failed to get home timeline cache',
+        Result.unwrapErr(noteIDsRes),
+      );
+      return Result.ok([]);
     }
     const noteIDs = Result.unwrap(noteIDsRes);
     const beforeIndex = filter.beforeId
