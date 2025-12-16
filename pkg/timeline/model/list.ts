@@ -56,7 +56,7 @@ export class List {
     return this.ownerId;
   }
 
-  getMemberIds(): readonly AccountID[] {
+  getMemberIds(): AccountID[] {
     return [...this.memberIds];
   }
 

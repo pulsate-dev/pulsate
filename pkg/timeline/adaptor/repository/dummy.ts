@@ -246,7 +246,7 @@ export class InMemoryListRepository implements ListRepository {
     if (!list) {
       return Result.err(new ListNotFoundError('Not found', { cause: null }));
     }
-    return Result.ok(list.getMemberIds() as AccountID[]);
+    return Result.ok(list.getMemberIds());
   }
 
   async appendListMember(
