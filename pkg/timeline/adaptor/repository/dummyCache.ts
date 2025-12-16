@@ -3,6 +3,7 @@ import { Ether, Result } from '@mikuroxina/mini-fn';
 import type { AccountID } from '../../../accounts/model/account.js';
 import { compareID } from '../../../id/mod.js';
 import type { Note, NoteID } from '../../../notes/model/note.js';
+import { TimelineCacheNotFoundError } from '../../model/errors.js';
 import type { ListID } from '../../model/list.js';
 import {
   type CacheObjectKey,
@@ -74,7 +75,11 @@ export class InMemoryTimelineCacheRepository
   ): Promise<Result.Result<Error, NoteID[]>> {
     const fetched = this.data.get(this.generateObjectKey(accountID, 'home'));
     if (!fetched) {
-      return Result.err(new Error('Not found'));
+      return Result.err(
+        new TimelineCacheNotFoundError('timeline cache not found', {
+          cause: { timelineType: 'home', id: accountID },
+        }),
+      );
     }
     return Result.ok(fetched.sort(compareID));
   }
@@ -84,7 +89,11 @@ export class InMemoryTimelineCacheRepository
   ): Promise<Result.Result<Error, NoteID[]>> {
     const fetched = this.data.get(this.generateObjectKey(listID, 'list'));
     if (!fetched) {
-      return Result.err(new Error('Not found'));
+      return Result.err(
+        new TimelineCacheNotFoundError('timeline cache not found', {
+          cause: { timelineType: 'list', id: listID },
+        }),
+      );
     }
     return Result.ok(fetched.sort(compareID));
   }
@@ -112,7 +121,11 @@ export class InMemoryTimelineCacheRepository
     const objectKey = this.generateObjectKey(accountID, 'home');
     const fetched = this.data.get(objectKey);
     if (!fetched) {
-      return Result.err(new Error('Not found'));
+      return Result.err(
+        new TimelineCacheNotFoundError('timeline cache not found', {
+          cause: { timelineType: 'home', id: accountID },
+        }),
+      );
     }
     this.data.set(
       objectKey,
@@ -129,7 +142,11 @@ export class InMemoryTimelineCacheRepository
     const objectKey = this.generateObjectKey(listID, 'list');
     const fetched = this.data.get(objectKey);
     if (!fetched) {
-      return Result.err(new Error('Not found'));
+      return Result.err(
+        new TimelineCacheNotFoundError('timeline cache not found', {
+          cause: { timelineType: 'list', id: listID },
+        }),
+      );
     }
     this.data.set(
       objectKey,

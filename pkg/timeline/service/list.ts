@@ -1,5 +1,6 @@
 import { Ether, Result } from '@mikuroxina/mini-fn';
 import type { Note } from '../../notes/model/note.js';
+import { timelineModuleLogger } from '../adaptor/logger.js';
 import type { ListID } from '../model/list.js';
 import {
   type TimelineNotesCacheRepository,
@@ -24,7 +25,11 @@ export class ListTimelineService {
     const cachedNotesRes =
       await this.timelineCacheRepository.getListTimeline(listID);
     if (Result.isErr(cachedNotesRes)) {
-      return cachedNotesRes;
+      timelineModuleLogger.warn(
+        'Failed to get list timeline cache',
+        Result.unwrapErr(cachedNotesRes),
+      );
+      return Result.ok([]);
     }
     const cachedNotes = Result.unwrap(cachedNotesRes);
 

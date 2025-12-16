@@ -107,3 +107,14 @@ export class TimelineInsufficientPermissionError extends Error {
     this.cause = options.cause;
   }
 }
+
+/**
+ * Timeline cache key not found
+ */
+export class TimelineCacheNotFoundError extends Error {
+  constructor(message: string, options: { cause: unknown }) {
+    super(message);
+    this.name = 'TimelineCacheNotFoundError';
+    this.cause = options.cause;
+  }
+}
