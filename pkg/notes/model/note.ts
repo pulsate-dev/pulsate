@@ -3,7 +3,11 @@ import { Option } from '@mikuroxina/mini-fn';
 import type { AccountID } from '../../accounts/model/account.js';
 import type { MediumID } from '../../drive/model/medium.js';
 import type { ID } from '../../id/type.js';
-import { NoteNoDestinationError, NoteTooLongContentsError } from './errors.js';
+import {
+  NoteContentLengthError,
+  NoteNoDestinationError,
+  NoteTooManyAttachmentsError,
+} from './errors.js';
 
 export type NoteID = ID<Note>;
 export type NoteVisibility = 'PUBLIC' | 'HOME' | 'FOLLOWERS' | 'DIRECT';
@@ -38,9 +42,45 @@ export class Note {
   }
 
   static new(arg: Omit<CreateNoteArgs, 'updatedAt' | 'deletedAt'>) {
+    /*
+    Note must satisfy the following conditions:
+    - content length <= 3k
+    - contentsWarningComment length <= 256
+    - attachmentFileID length <= 16
+    - if (visibility is "DIRECT")  sendTo must be Some
+    - if (content, contentsWarningComment, and attachmentFileID are all empty) throw error
+     */
+
     if ([...arg.content].length > 3000) {
-      throw new NoteTooLongContentsError('Too long contents', { cause: null });
+      throw new NoteContentLengthError('Content too long', {
+        cause: { contentLength: [...arg.content].length },
+      });
     }
+
+    if ([...arg.contentsWarningComment].length > 256) {
+      throw new NoteContentLengthError('ContentsWarningComment too long', {
+        cause: {
+          contentsWarningCommentLength: [...arg.contentsWarningComment].length,
+        },
+      });
+    }
+
+    if (arg.attachmentFileID.length > 16) {
+      throw new NoteTooManyAttachmentsError('Too many attachments', {
+        cause: { attachmentCount: arg.attachmentFileID.length },
+      });
+    }
+
+    if (
+      arg.content === '' &&
+      arg.contentsWarningComment === '' &&
+      arg.attachmentFileID.length === 0
+    ) {
+      throw new NoteContentLengthError('Note must have content', {
+        cause: null,
+      });
+    }
+
     if (arg.visibility === 'DIRECT' && Option.isNone(arg.sendTo)) {
       throw new NoteNoDestinationError('No destination', { cause: null });
     }

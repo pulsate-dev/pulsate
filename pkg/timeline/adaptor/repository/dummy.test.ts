@@ -290,7 +290,7 @@ describe('InMemoryConversationRepository', () => {
       originalNoteID: Option.none(),
       sendTo: sendToID,
       visibility: 'DIRECT',
-      content: '',
+      content: 'this is a test note',
     });
 
   const testMap = [

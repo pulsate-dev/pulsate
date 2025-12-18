@@ -22,10 +22,10 @@ export class NoteTooManyAttachmentsError extends Error {
   }
 }
 
-export class NoteTooLongContentsError extends Error {
+export class NoteContentLengthError extends Error {
   constructor(message: string, options: { cause: unknown }) {
     super(message);
-    this.name = 'NoteTooLongContentsError';
+    this.name = 'NoteContentLengthError';
     this.cause = options.cause;
   }
 }
