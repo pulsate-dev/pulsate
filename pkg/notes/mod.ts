@@ -35,11 +35,11 @@ import {
   NoteAccountSilencedError,
   NoteAlreadyReactedError,
   NoteAttachmentNotFoundError,
+  NoteContentLengthError,
   NoteEmojiNotFoundError,
   NoteNoDestinationError,
   NoteNotFoundError,
   NoteNotReactedYetError,
-  NoteTooLongContentsError,
   NoteTooManyAttachmentsError,
   NoteVisibilityInvalidError,
 } from './model/errors.js';
@@ -191,7 +191,7 @@ noteHandlers.openapi(CreateNoteRoute, async (c) => {
     if (error instanceof NoteTooManyAttachmentsError) {
       return c.json({ error: 'TOO_MANY_ATTACHMENTS' as const }, 400);
     }
-    if (error instanceof NoteTooLongContentsError) {
+    if (error instanceof NoteContentLengthError) {
       return c.json({ error: 'TOO_MANY_CONTENT' as const }, 400);
     }
     if (error instanceof NoteNoDestinationError) {
@@ -264,7 +264,7 @@ noteHandlers.openapi(RenoteRoute, async (c) => {
     if (error instanceof NoteTooManyAttachmentsError) {
       return c.json({ error: 'TOO_MANY_ATTACHMENTS' as const }, 400);
     }
-    if (error instanceof NoteTooLongContentsError) {
+    if (error instanceof NoteContentLengthError) {
       return c.json({ error: 'TOO_MANY_CONTENT' as const }, 400);
     }
     if (error instanceof NoteNoDestinationError) {

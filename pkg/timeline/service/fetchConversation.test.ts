@@ -21,7 +21,7 @@ describe('FetchConversationService', () => {
       originalNoteID: Option.none(),
       sendTo: sendToID,
       visibility: 'DIRECT',
-      content: '',
+      content: 'This is a test note',
     });
 
   /**

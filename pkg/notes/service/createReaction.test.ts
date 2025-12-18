@@ -15,7 +15,7 @@ let noteRepository = new InMemoryNoteRepository([
   Note.new({
     id: '1' as NoteID,
     authorID: '2' as AccountID,
-    content: '',
+    content: 'this is a test note',
     visibility: 'PUBLIC',
     contentsWarningComment: '',
     attachmentFileID: [],
@@ -37,7 +37,7 @@ describe('CreateReactionService', () => {
       Note.new({
         id: '1' as NoteID,
         authorID: '2' as AccountID,
-        content: '',
+        content: 'this is a test note',
         visibility: 'PUBLIC',
         contentsWarningComment: '',
         attachmentFileID: [],

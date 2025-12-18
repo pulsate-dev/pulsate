@@ -13,9 +13,9 @@ import {
   timelineModuleFacadeSymbol,
 } from '../../intermodule/timeline.js';
 import {
+  NoteContentLengthError,
   NoteInternalError,
   NoteNoDestinationError,
-  NoteTooLongContentsError,
   NoteTooManyAttachmentsError,
 } from '../model/errors.js';
 import { Note, type NoteID, type NoteVisibility } from '../model/note.js';
@@ -87,7 +87,7 @@ export class CreateService {
       if (e instanceof NoteNoDestinationError) {
         return Result.err(e);
       }
-      if (e instanceof NoteTooLongContentsError) {
+      if (e instanceof NoteContentLengthError) {
         return Result.err(e);
       }
       return Result.err(new NoteInternalError('unknown error', { cause: e }));
