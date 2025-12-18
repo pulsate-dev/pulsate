@@ -37,7 +37,25 @@ describe('Note', () => {
   it('note content must be less than 3000', () => {
     expect(() =>
       Note.new({ ...exampleInput, content: 'a'.repeat(3001) }),
-    ).toThrow('Too long content');
+    ).toThrowErrorMatchingSnapshot();
+  });
+
+  it('contentsWarningComment must be less than 256 chars', () => {
+    expect(() =>
+      Note.new({ ...exampleInput, contentsWarningComment: 'a'.repeat(257) }),
+    ).toThrowErrorMatchingSnapshot();
+  });
+
+  it('should throw error when attachmentFileID length exceeds 16', () => {
+    expect(() =>
+      Note.new({
+        ...exampleInput,
+        attachmentFileID: Array.from(
+          { length: 17 },
+          (_, i) => (i + 1).toString() as MediumID,
+        ),
+      }),
+    ).toThrowErrorMatchingSnapshot();
   });
 
   it("when visibility is direct, sendTo can't be empty", () => {
@@ -48,5 +66,16 @@ describe('Note', () => {
         sendTo: Option.none(),
       }),
     ).toThrow('No destination');
+  });
+
+  it('should throw error when content, CW comment, and attachments are all empty', () => {
+    expect(() =>
+      Note.new({
+        ...exampleInput,
+        content: '',
+        contentsWarningComment: '',
+        attachmentFileID: [],
+      }),
+    ).toThrowErrorMatchingSnapshot();
   });
 });
