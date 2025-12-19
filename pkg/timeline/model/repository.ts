@@ -24,6 +24,7 @@ export interface FetchAccountTimelineFilter {
   afterID?: NoteID;
 }
 export type FetchHomeTimelineFilter = Omit<FetchAccountTimelineFilter, 'id'>;
+export type FetchListTimelineFilter = Omit<FetchAccountTimelineFilter, 'id'>;
 
 export interface TimelineRepository {
   /**
@@ -57,10 +58,12 @@ export interface TimelineRepository {
   /**
    * @description Fetch list timeline
    * @param noteId IDs of the notes to be fetched
+   * @param filter Filter for fetching notes
    * @return {@link Note}[] list of Notes, sorted by CreatedAt descending
    * */
   fetchListTimeline(
     noteId: readonly NoteID[],
+    filter: FetchListTimelineFilter,
   ): Promise<Result.Result<Error, Note[]>>;
 }
 export const timelineRepoSymbol = Ether.newEtherSymbol<TimelineRepository>();

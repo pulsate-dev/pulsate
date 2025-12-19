@@ -171,15 +171,21 @@ describe('InMemoryTimelineRepository', () => {
   });
 
   it('should fetch list timeline', async () => {
-    const actual = await repository.fetchListTimeline(['1' as NoteID]);
+    const actual = await repository.fetchListTimeline(['1' as NoteID], {
+      hasAttachment: false,
+      noNsfw: false,
+    });
     expect(Result.isOk(actual)).toBe(true);
   });
 
   it('should not return DIRECT notes', async () => {
-    const actual = await repository.fetchListTimeline([
-      '1' as NoteID,
-      '4' as NoteID,
-    ]);
+    const actual = await repository.fetchListTimeline(
+      ['1' as NoteID, '4' as NoteID],
+      {
+        hasAttachment: false,
+        noNsfw: false,
+      },
+    );
     expect(Result.unwrap(actual)).toStrictEqual([dummyPublicNote]);
     expect(Result.unwrap(actual)).not.toStrictEqual([
       dummyPublicNote,

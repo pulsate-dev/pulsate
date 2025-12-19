@@ -23,6 +23,7 @@ import {
   type FetchAccountTimelineFilter,
   type FetchConversationNotesFilter,
   type FetchHomeTimelineFilter,
+  type FetchListTimelineFilter,
   type ListRepository,
   listRepoSymbol,
   type TimelineRepository,
@@ -163,18 +164,43 @@ export class PrismaTimelineRepository implements TimelineRepository {
 
   async fetchListTimeline(
     noteIDs: readonly NoteID[],
+    filter: FetchListTimelineFilter,
   ): Promise<Result.Result<Error, Note[]>> {
-    // ToDo: Add filter
+    if (filter.beforeId && filter.afterID) {
+      return Result.err(
+        new TimelineInvalidFilterRangeError(
+          'beforeID and afterID cannot be specified at the same time',
+          { cause: null },
+        ),
+      );
+    }
+
     const listNotes = await this.prisma.note.findMany({
       where: {
         id: {
           // NOTE: prisma requires non-readonly Array in here
           in: noteIDs as NoteID[],
         },
+        ...(filter.hasAttachment
+          ? {
+              attachmentFiles: {
+                some: {},
+              },
+            }
+          : {}),
+        ...(filter.noNsfw
+          ? {
+              noteAttachment: {
+                every: {
+                  medium: {
+                    nsfw: false,
+                  },
+                },
+              },
+            }
+          : {}),
       },
-      orderBy: {
-        createdAt: 'desc',
-      },
+      ...this.buildCursorFilter(filter),
     });
     return Result.ok(this.deserialize(listNotes));
   }
