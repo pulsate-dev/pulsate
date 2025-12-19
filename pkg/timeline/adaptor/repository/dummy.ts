@@ -20,6 +20,7 @@ import {
   type FetchAccountTimelineFilter,
   type FetchConversationNotesFilter,
   type FetchHomeTimelineFilter,
+  type FetchListTimelineFilter,
   type ListRepository,
   listRepoSymbol,
   type TimelineRepository,
@@ -147,7 +148,16 @@ export class InMemoryTimelineRepository implements TimelineRepository {
 
   async fetchListTimeline(
     noteId: readonly NoteID[],
+    filter: FetchListTimelineFilter,
   ): Promise<Result.Result<Error, Note[]>> {
+    if (filter.beforeId && filter.afterID) {
+      return Result.err(
+        new TimelineInvalidFilterRangeError(
+          'beforeID and afterID cannot be specified at the same time',
+          { cause: null },
+        ),
+      );
+    }
     const notes: Note[] = [];
     for (const noteID of noteId) {
       const n = this.data.get(noteID);
@@ -160,10 +170,21 @@ export class InMemoryTimelineRepository implements TimelineRepository {
 
     // NOTE: filter out DIRECT notes
     // ToDo: Consider whether to filter out when Visibility is ‘FOLLOWERS’.
-    const filtered = notes.filter((note) => note.getVisibility() !== 'DIRECT');
+    const directFiltered = notes.filter(
+      (note) => note.getVisibility() !== 'DIRECT',
+    );
+
+    // Apply filters
+    const hasAttachmentFiltered = filter.hasAttachment
+      ? directFiltered // Note: This dummy implementation doesn't have attachment data, so we'll just keep all notes
+      : directFiltered;
+
+    const nsfwFiltered = filter.noNsfw
+      ? hasAttachmentFiltered // Note: This dummy implementation doesn't filter NSFW notes
+      : hasAttachmentFiltered;
 
     return Result.ok(
-      filtered.sort(
+      nsfwFiltered.sort(
         (a, b) => b.getCreatedAt().getTime() - a.getCreatedAt().getTime(),
       ),
     );

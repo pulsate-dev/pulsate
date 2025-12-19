@@ -23,14 +23,20 @@ describe('ListTimelineService', () => {
   const service = new ListTimelineService(cache, repository);
 
   it('should fetch list timeline notes', async () => {
-    const res = await service.handle('1' as ListID);
+    const res = await service.handle('1' as ListID, {
+      hasAttachment: false,
+      noNsfw: false,
+    });
     expect(Result.isOk(res)).toBe(true);
     expect(Result.unwrap(res)).toHaveLength(2);
     expect(Result.unwrap(res)).toStrictEqual([dummyHomeNote, dummyPublicNote]);
   });
 
   it('should notes sorted by ID, descending', async () => {
-    const res = await service.handle('1' as ListID);
+    const res = await service.handle('1' as ListID, {
+      hasAttachment: false,
+      noNsfw: false,
+    });
     const sorted = [dummyPublicNote, dummyHomeNote].sort((a, b) =>
       Number(BigInt(b.getID()) - BigInt(a.getID())),
     );

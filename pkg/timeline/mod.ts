@@ -251,8 +251,15 @@ timeline[GetListTimelineRoute.method](
 );
 timeline.openapi(GetListTimelineRoute, async (c) => {
   const { id } = c.req.param();
+  const { has_attachment, no_nsfw, before_id, after_id } = c.req.valid('query');
 
-  const res = await controller.getListTimeline(id);
+  const res = await controller.getListTimeline(
+    id,
+    has_attachment,
+    no_nsfw,
+    before_id,
+    after_id,
+  );
   if (Result.isErr(res)) {
     const error = Result.unwrapErr(res);
     timelineModuleLogger.warn(error);

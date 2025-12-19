@@ -3,6 +3,7 @@ import type { Note } from '../../notes/model/note.js';
 import { timelineModuleLogger } from '../adaptor/logger.js';
 import type { ListID } from '../model/list.js';
 import {
+  type FetchListTimelineFilter,
   type TimelineNotesCacheRepository,
   type TimelineRepository,
   timelineNotesCacheRepoSymbol,
@@ -16,12 +17,15 @@ export class ListTimelineService {
   ) {}
 
   /**
-   * @description Fetch list timeline notes\
-   * TODO: add filter, pagination
+   * @description Fetch list timeline notes
    * @param listID ID of the list
+   * @param filter Filter for fetching notes
    * @returns Note[] list of notes, sorted by CreatedAt descending
    */
-  async handle(listID: ListID): Promise<Result.Result<Error, Note[]>> {
+  async handle(
+    listID: ListID,
+    filter: FetchListTimelineFilter,
+  ): Promise<Result.Result<Error, Note[]>> {
     const cachedNotesRes =
       await this.timelineCacheRepository.getListTimeline(listID);
     if (Result.isErr(cachedNotesRes)) {
@@ -33,7 +37,7 @@ export class ListTimelineService {
     }
     const cachedNotes = Result.unwrap(cachedNotesRes);
 
-    return await this.timelineRepository.fetchListTimeline(cachedNotes);
+    return await this.timelineRepository.fetchListTimeline(cachedNotes, filter);
   }
 }
 export const listTimelineSymbol = Ether.newEtherSymbol<ListTimelineService>();

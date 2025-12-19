@@ -337,13 +337,21 @@ export class TimelineController {
     return Result.ok(result);
   }
 
-  // ToDo: add filter,pagination
   async getListTimeline(
     listID: string,
+    hasAttachment: boolean,
+    noNsfw: boolean,
+    beforeId?: string,
+    afterID?: string,
   ): Promise<
     Result.Result<Error, z.infer<typeof GetListTimelineResponseSchema>>
   > {
-    const notesRes = await this.listTimelineService.handle(listID as ListID);
+    const notesRes = await this.listTimelineService.handle(listID as ListID, {
+      hasAttachment,
+      noNsfw,
+      beforeId: beforeId as NoteID,
+      afterID: afterID as NoteID,
+    });
     if (Result.isErr(notesRes)) {
       return notesRes;
     }
@@ -477,8 +485,7 @@ export class TimelineController {
   }
 
   async deleteList(id: string): Promise<Result.Result<Error, void>> {
-    const res = await this.deleteListService.handle(id as ListID);
-    return res;
+    return await this.deleteListService.handle(id as ListID);
   }
 
   async getListMembers(
