@@ -485,8 +485,7 @@ export class TimelineController {
   }
 
   async deleteList(id: string): Promise<Result.Result<Error, void>> {
-    const res = await this.deleteListService.handle(id as ListID);
-    return res;
+    return await this.deleteListService.handle(id as ListID);
   }
 
   async getListMembers(
