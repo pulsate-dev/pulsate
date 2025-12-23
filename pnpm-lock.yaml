@@ -31,10 +31,10 @@ importers:
         version: 0.9.30(hono@4.11.1)
       '@upyo/core':
         specifier: ^0.3.0
-        version: 0.3.3
+        version: 0.3.4
       '@upyo/smtp':
         specifier: ^0.3.0
-        version: 0.3.3(@upyo/core@0.3.3)
+        version: 0.3.3(@upyo/core@0.3.4)
       argon2:
         specifier: ^0.44.0
         version: 0.44.0
@@ -797,8 +797,8 @@ packages:
   '@types/react@19.2.7':
     resolution: {integrity: sha512-MWtvHrGZLFttgeEj28VXHxpmwYbor/ATPYbBfSFZEIRK0ecCFLl2Qo55z52Hss+UV9CRN7trSeq1zbgx7YDWWg==}
 
-  '@upyo/core@0.3.3':
-    resolution: {integrity: sha512-RPN/yEPuvqUGDq7HoHVVKj++3ehKOrfiUHRJeu6xKGaRO2JYVoNJckjKYV6IFNgJPNrcoD91Jgq4gZu1QAxNOQ==}
+  '@upyo/core@0.3.4':
+    resolution: {integrity: sha512-r+AlrVcr6F6CHAbuRLGdRoLd/aL77SYCCXNBs3nWZoVpVc9iB7PE3pQCKEddvB/yid5BLo4tP2NuTLqMCTsePg==}
     engines: {bun: '>=1.2.0', deno: '>=2.3.0', node: '>=20.0.0'}
 
   '@upyo/smtp@0.3.3':
@@ -2116,11 +2116,11 @@ snapshots:
     dependencies:
       csstype: 3.2.3
 
-  '@upyo/core@0.3.3': {}
+  '@upyo/core@0.3.4': {}
 
-  '@upyo/smtp@0.3.3(@upyo/core@0.3.3)':
+  '@upyo/smtp@0.3.3(@upyo/core@0.3.4)':
     dependencies:
-      '@upyo/core': 0.3.3
+      '@upyo/core': 0.3.4
 
   '@vitest/coverage-v8@4.0.16(vitest@4.0.16(@types/node@24.10.4)(jiti@2.6.1)(yaml@2.8.2))':
     dependencies:
