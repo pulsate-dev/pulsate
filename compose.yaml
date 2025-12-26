@@ -15,7 +15,7 @@ services:
     ports:
       - "5432:5432"
     volumes:
-      - db_data:/var/lib/postgresql/data
+      - db_data:/var/lib/postgresql
     environment:
       - POSTGRES_USER=pulsate
       - POSTGRES_PASSWORD=pulsate_db_pass
