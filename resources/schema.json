@@ -564,6 +564,12 @@
                 "followed_count",
                 "following_count"
               ]
+            },
+            "renoted": {
+              "type": "boolean",
+              "default": false,
+              "example": false,
+              "description": "Whether the current user has renoted this note (always false if not logged in)"
             }
           },
           "required": [
@@ -574,7 +580,8 @@
             "created_at",
             "reactions",
             "attachment_files",
-            "author"
+            "author",
+            "renoted"
           ]
         }
       },
@@ -1126,6 +1133,12 @@
                 "followed_count",
                 "following_count"
               ]
+            },
+            "renoted": {
+              "type": "boolean",
+              "default": false,
+              "example": false,
+              "description": "Whether the current user has renoted this note (always false if not logged in)"
             }
           },
           "required": [
@@ -1136,7 +1149,8 @@
             "created_at",
             "reactions",
             "attachment_files",
-            "author"
+            "author",
+            "renoted"
           ]
         }
       }
@@ -1367,29 +1381,6 @@
                     "error"
                   ],
                   "description": "account not found"
-                }
-              }
-            }
-          },
-          "412": {
-            "description": "Precondition Failed",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "properties": {
-                    "error": {
-                      "type": "string",
-                      "enum": [
-                        "INVALID_ETAG"
-                      ],
-                      "description": "ETag is invalid."
-                    }
-                  },
-                  "required": [
-                    "error"
-                  ],
-                  "description": "etag is invalid"
                 }
               }
             }
@@ -3554,6 +3545,12 @@
                       },
                       "maxItems": 16,
                       "description": "Note Attachment Media"
+                    },
+                    "renoted": {
+                      "type": "boolean",
+                      "default": false,
+                      "example": false,
+                      "description": "Whether the current user has renoted this note (always false if not logged in)"
                     }
                   },
                   "required": [
@@ -3564,7 +3561,8 @@
                     "created_at",
                     "author",
                     "reactions",
-                    "attachment_files"
+                    "attachment_files",
+                    "renoted"
                   ]
                 }
               }
@@ -4877,6 +4875,12 @@
                           "followed_count",
                           "following_count"
                         ]
+                      },
+                      "renoted": {
+                        "type": "boolean",
+                        "default": false,
+                        "example": false,
+                        "description": "Whether the current user has renoted this note (always false if not logged in)"
                       }
                     },
                     "required": [
@@ -4887,7 +4891,8 @@
                       "created_at",
                       "reactions",
                       "attachment_files",
-                      "author"
+                      "author",
+                      "renoted"
                     ]
                   }
                 }
@@ -6077,6 +6082,12 @@
                           "followed_count",
                           "following_count"
                         ]
+                      },
+                      "renoted": {
+                        "type": "boolean",
+                        "default": false,
+                        "example": false,
+                        "description": "Whether the current user has renoted this note (always false if not logged in)"
                       }
                     },
                     "required": [
@@ -6087,7 +6098,8 @@
                       "created_at",
                       "reactions",
                       "attachment_files",
-                      "author"
+                      "author",
+                      "renoted"
                     ]
                   }
                 }
