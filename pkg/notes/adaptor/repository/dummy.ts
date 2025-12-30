@@ -3,7 +3,10 @@ import { Ether, Option, Result } from '@mikuroxina/mini-fn';
 import type { AccountID } from '../../../accounts/model/account.js';
 import type { Medium, MediumID } from '../../../drive/model/medium.js';
 import { Bookmark } from '../../model/bookmark.js';
-import { NoteNotReactedYetError } from '../../model/errors.js';
+import {
+  NoteAttachmentNotFoundError,
+  NoteNotReactedYetError,
+} from '../../model/errors.js';
 import type { Note, NoteID } from '../../model/note.js';
 import type { Reaction, ReactionID } from '../../model/reaction.js';
 import { RenoteStatus } from '../../model/renoteStatus.js';
@@ -199,7 +202,11 @@ export class InMemoryNoteAttachmentRepository
   async findByNoteID(noteID: NoteID): Promise<Result.Result<Error, Medium[]>> {
     const attachment = this.attachments.get(noteID);
     if (!attachment) {
-      return Result.err(new Error('attachment not found'));
+      return Result.err(
+        new NoteAttachmentNotFoundError('attachment not recorded', {
+          cause: { noteID },
+        }),
+      );
     }
 
     // ToDo: make filter more safe (may be fix at TypeScript 5.4)
