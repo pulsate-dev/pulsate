@@ -68,14 +68,12 @@ export class CreateService {
         return res;
       }
 
-      if (attachmentFileID.length !== 0) {
-        const attachmentRes = await this.deps.noteAttachmentRepository.create(
-          note.getID(),
-          note.getAttachmentFileID(),
-        );
-        if (Result.isErr(attachmentRes)) {
-          return attachmentRes;
-        }
+      const attachmentRes = await this.deps.noteAttachmentRepository.create(
+        note.getID(),
+        note.getAttachmentFileID(),
+      );
+      if (Result.isErr(attachmentRes)) {
+        return attachmentRes;
       }
 
       // ToDo: Even if the note cannot be pushed to the timeline, the note is created successfully, so there is no error here.
