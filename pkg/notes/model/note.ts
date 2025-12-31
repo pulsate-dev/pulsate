@@ -48,7 +48,7 @@ export class Note {
     - contentsWarningComment length <= 256
     - attachmentFileID length <= 16
     - if (visibility is "DIRECT")  sendTo must be Some
-    - if (content, contentsWarningComment, and attachmentFileID are all empty) throw error
+    - if (not a renote i.e., originalNoteID is None) and (content, contentsWarningComment, and attachmentFileID are all empty) throw error
      */
 
     if ([...arg.content].length > 3000) {
@@ -72,6 +72,7 @@ export class Note {
     }
 
     if (
+      Option.isNone(arg.originalNoteID) &&
       arg.content === '' &&
       arg.contentsWarningComment === '' &&
       arg.attachmentFileID.length === 0
