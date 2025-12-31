@@ -39,7 +39,7 @@
     "@prisma/client": "7.2.0",
     "@scalar/hono-api-reference": "^0.9.0",
     "@upyo/core": "^0.4.0",
-    "@upyo/smtp": "^0.3.0",
+    "@upyo/smtp": "^0.4.0",
     "argon2": "^0.44.0",
     "blurhash": "^2.0.5",
     "file-type": "^21.0.0",
