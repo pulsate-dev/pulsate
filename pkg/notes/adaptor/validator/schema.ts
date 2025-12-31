@@ -179,11 +179,11 @@ export const RenoteRequestSchema = z.object({
     default: '',
   }),
   visibility: z
-    .union([z.literal('public'), z.literal('home'), z.literal('followers')])
+    .union([z.literal('PUBLIC'), z.literal('HOME'), z.literal('FOLLOWERS')])
     .openapi({
-      example: 'public',
-      description: 'Note visibility (public/home/followers)',
-      default: 'public',
+      example: 'PUBLIC',
+      description: 'Note visibility (PUBLIC/HOME/FOLLOWERS)',
+      default: 'PUBLIC',
     }),
   attachment_file_ids: z
     .array(z.string())
