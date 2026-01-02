@@ -88,8 +88,8 @@ export class PrismaTimelineRepository implements TimelineRepository {
         deletedAt: !v.deletedAt ? Option.none() : Option.some(v.deletedAt),
         contentsWarningComment: '',
         originalNoteID: !v.renoteId
-          ? Option.some(v.renoteId as NoteID)
-          : Option.none(),
+          ? Option.none()
+          : Option.some(v.renoteId as NoteID),
         attachmentFileID: [],
         // ToDo: add SendTo field to db schema
         sendTo: Option.none(),
