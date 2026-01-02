@@ -4,7 +4,7 @@ export default defineConfig({
   test: {
     exclude: [...configDefaults.exclude, 'build/**'],
     coverage: {
-      include: ['pkg/**'],
+      include: ['pkg/**/*.ts'],
       exclude: [...configDefaults.exclude, 'build/**'],
       reporter: ['text', 'json', 'html'],
     },

@@ -6,4 +6,4 @@ exports[`Note > note content must be less than 3000 1`] = `[NoteContentLengthErr
 
 exports[`Note > should throw error when attachmentFileID length exceeds 16 1`] = `[NoteTooManyAttachmentsError: Too many attachments]`;
 
-exports[`Note > should throw error when content, CW comment, and attachments are all empty 1`] = `[NoteContentLengthError: Note must have content]`;
+exports[`Note > should throw error when normal note (non-renote) has no content, CW comment, and attachments 1`] = `[NoteContentLengthError: Note must have content]`;

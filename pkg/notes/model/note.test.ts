@@ -68,14 +68,64 @@ describe('Note', () => {
     ).toThrow('No destination');
   });
 
-  it('should throw error when content, CW comment, and attachments are all empty', () => {
+  it('should throw error when normal note (non-renote) has no content, CW comment, and attachments', () => {
     expect(() =>
       Note.new({
         ...exampleInput,
         content: '',
         contentsWarningComment: '',
         attachmentFileID: [],
+        originalNoteID: Option.none(),
       }),
     ).toThrowErrorMatchingSnapshot();
+  });
+
+  it('should allow empty content for renote (originalNoteID is Some)', () => {
+    const renote = Note.new({
+      ...exampleInput,
+      content: '',
+      contentsWarningComment: '',
+      attachmentFileID: [],
+      originalNoteID: Option.some('999' as NoteID),
+    });
+
+    expect(renote.getContent()).toBe('');
+    expect(renote.getCwComment()).toBe('');
+    expect(renote.getAttachmentFileID()).toHaveLength(0);
+    expect(renote.getOriginalNoteID()).toStrictEqual(
+      Option.some('999' as NoteID),
+    );
+  });
+
+  it('should allow empty content in renote with CW comment', () => {
+    const renote = Note.new({
+      ...exampleInput,
+      content: '',
+      contentsWarningComment: 'CW text',
+      attachmentFileID: [],
+      originalNoteID: Option.some('999' as NoteID),
+    });
+
+    expect(renote.getContent()).toBe('');
+    expect(renote.getCwComment()).toBe('CW text');
+    expect(renote.getOriginalNoteID()).toStrictEqual(
+      Option.some('999' as NoteID),
+    );
+  });
+
+  it('should allow empty content in renote with attachments', () => {
+    const renote = Note.new({
+      ...exampleInput,
+      content: '',
+      contentsWarningComment: '',
+      attachmentFileID: ['10' as MediumID, '11' as MediumID],
+      originalNoteID: Option.some('999' as NoteID),
+    });
+
+    expect(renote.getContent()).toBe('');
+    expect(renote.getAttachmentFileID()).toHaveLength(2);
+    expect(renote.getOriginalNoteID()).toStrictEqual(
+      Option.some('999' as NoteID),
+    );
   });
 });
