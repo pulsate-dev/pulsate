@@ -132,7 +132,7 @@ export class InMemoryTimelineRepository implements TimelineRepository {
       if (beforeIndex === -1) {
         return Result.ok([]);
       }
-      Result.ok(filtered.slice(beforeIndex + 1));
+      return Result.ok(filtered.slice(beforeIndex + 1));
     }
 
     return Result.ok(filtered);
