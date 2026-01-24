@@ -35,9 +35,10 @@ export class HomeTimelineService {
     const beforeIndex = filter.beforeId
       ? noteIDs.indexOf(filter.beforeId)
       : noteIDs.length;
+    const afterIndex = filter.afterID ? noteIDs.indexOf(filter.afterID) : -1;
 
     return await this.timelineRepository.getHomeTimeline(
-      noteIDs.slice(0, beforeIndex),
+      noteIDs.slice(afterIndex + 1, beforeIndex),
     );
   }
 }
