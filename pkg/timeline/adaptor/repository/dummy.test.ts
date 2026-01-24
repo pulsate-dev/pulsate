@@ -155,12 +155,13 @@ describe('InMemoryTimelineRepository', () => {
     ).toBe(false);
   });
   it('Home Timeline only returns PUBLIC/HOME/FOLLOWERS notes', async () => {
-    const actual = await repository.getHomeTimeline([
-      '1' as NoteID,
-      '2' as NoteID,
-      '3' as NoteID,
-      '4' as NoteID,
-    ]);
+    const actual = await repository.getHomeTimeline(
+      ['1' as NoteID, '2' as NoteID, '3' as NoteID, '4' as NoteID],
+      {
+        hasAttachment: false,
+        noNsfw: false,
+      },
+    );
     expect(Result.isOk(actual)).toBe(true);
     expect(Result.unwrap(actual).length).toBe(3);
     expect(
@@ -168,6 +169,47 @@ describe('InMemoryTimelineRepository', () => {
         .map((v) => v.getVisibility())
         .includes('DIRECT'),
     ).toBe(false);
+  });
+
+  it('Home Timeline with beforeId cursor', async () => {
+    const actual = await repository.getHomeTimeline(
+      ['1' as NoteID, '2' as NoteID, '3' as NoteID],
+      {
+        hasAttachment: false,
+        noNsfw: false,
+        beforeId: '2' as NoteID,
+      },
+    );
+    expect(Result.isOk(actual)).toBe(true);
+    // beforeId '2' より古いノートのみ返す (createdAt降順で2より後ろ)
+    expect(Result.unwrap(actual).map((v) => v.getID())).toStrictEqual(['1']);
+  });
+
+  it('Home Timeline with afterID cursor', async () => {
+    const actual = await repository.getHomeTimeline(
+      ['1' as NoteID, '2' as NoteID, '3' as NoteID],
+      {
+        hasAttachment: false,
+        noNsfw: false,
+        afterID: '2' as NoteID,
+      },
+    );
+    expect(Result.isOk(actual)).toBe(true);
+    // afterID '2' より新しいノートのみ返す (createdAt降順で2より前)
+    expect(Result.unwrap(actual).map((v) => v.getID())).toStrictEqual(['3']);
+  });
+
+  it('Home Timeline with both beforeId and afterID returns error', async () => {
+    const actual = await repository.getHomeTimeline(
+      ['1' as NoteID, '2' as NoteID, '3' as NoteID],
+      {
+        hasAttachment: false,
+        noNsfw: false,
+        beforeId: '3' as NoteID,
+        afterID: '1' as NoteID,
+      },
+    );
+    expect(Result.isErr(actual)).toBe(true);
   });
 
   it('should fetch list timeline', async () => {

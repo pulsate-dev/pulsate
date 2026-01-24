@@ -83,8 +83,18 @@ export class InMemoryTimelineRepository implements TimelineRepository {
   }
 
   async getHomeTimeline(
-    noteIDs: NoteID[],
+    noteIDs: readonly NoteID[],
+    filter: FetchHomeTimelineFilter,
   ): Promise<Result.Result<Error, Note[]>> {
+    if (filter.beforeId && filter.afterID) {
+      return Result.err(
+        new TimelineInvalidFilterRangeError(
+          'beforeID and afterID cannot be specified at the same time',
+          { cause: null },
+        ),
+      );
+    }
+
     const notes: Note[] = [];
     for (const noteID of noteIDs) {
       const n = this.data.get(noteID);
@@ -96,11 +106,34 @@ export class InMemoryTimelineRepository implements TimelineRepository {
     }
 
     // NOTE: filter DIRECT notes
-    const filtered = notes.filter((note) => note.getVisibility() !== 'DIRECT');
+    let filtered = notes.filter((note) => note.getVisibility() !== 'DIRECT');
     // ToDo: filter hasAttachment, noNSFW
+
+    // Sort by createdAt descending
     filtered.sort(
       (a, b) => b.getCreatedAt().getTime() - a.getCreatedAt().getTime(),
     );
+
+    // Cursor pagination
+    if (filter.afterID) {
+      const afterIndex = filtered.findIndex(
+        (note) => note.getID() === filter.afterID,
+      );
+      if (afterIndex === -1) {
+        return Result.ok([]);
+      }
+      filtered = filtered.slice(0, afterIndex);
+    }
+
+    if (filter.beforeId) {
+      const beforeIndex = filtered.findIndex(
+        (note) => note.getID() === filter.beforeId,
+      );
+      if (beforeIndex === -1) {
+        return Result.ok([]);
+      }
+      filtered = filtered.slice(beforeIndex + 1);
+    }
 
     return Result.ok(filtered);
   }

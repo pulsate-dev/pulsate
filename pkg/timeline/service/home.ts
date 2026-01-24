@@ -32,14 +32,8 @@ export class HomeTimelineService {
       return Result.ok([]);
     }
     const noteIDs = Result.unwrap(noteIDsRes);
-    const beforeIndex = filter.beforeId
-      ? noteIDs.indexOf(filter.beforeId)
-      : noteIDs.length;
-    const afterIndex = filter.afterID ? noteIDs.indexOf(filter.afterID) : -1;
 
-    return await this.timelineRepository.getHomeTimeline(
-      noteIDs.slice(afterIndex + 1, beforeIndex),
-    );
+    return await this.timelineRepository.getHomeTimeline(noteIDs, filter);
   }
 }
 export const homeTimelineSymbol = Ether.newEtherSymbol<HomeTimelineService>();

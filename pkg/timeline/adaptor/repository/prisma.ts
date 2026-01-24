@@ -123,19 +123,28 @@ export class PrismaTimelineRepository implements TimelineRepository {
   }
 
   async getHomeTimeline(
-    noteIDs: NoteID[],
+    noteIDs: readonly NoteID[],
+    filter: FetchHomeTimelineFilter,
   ): Promise<Result.Result<Error, Note[]>> {
+    if (filter.beforeId && filter.afterID) {
+      return Result.err(
+        new TimelineInvalidFilterRangeError(
+          'beforeID and afterID cannot be specified at the same time',
+          { cause: null },
+        ),
+      );
+    }
+
+    // ToDo: filter hasAttachment, noNSFW
     const homeNotes = await this.prisma.note.findMany({
       where: {
         id: {
-          in: noteIDs,
+          in: noteIDs as NoteID[],
         },
       },
-      orderBy: {
-        createdAt: 'desc',
-      },
-      take: this.TIMELINE_NOTE_LIMIT,
+      ...this.buildCursorFilter(filter),
     });
+
     return Result.ok(this.deserialize(homeNotes));
   }
 

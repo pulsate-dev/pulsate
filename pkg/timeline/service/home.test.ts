@@ -54,7 +54,7 @@ describe('HomeTimelineService', () => {
       },
     );
 
-    expect(Result.unwrap(res).map((v) => v.getID())).toStrictEqual(['3']);
+    expect(Result.unwrap(res).map((v) => v.getID())).toStrictEqual(['1']);
   });
 
   it('with afterID cursor', async () => {
@@ -67,7 +67,7 @@ describe('HomeTimelineService', () => {
       },
     );
 
-    expect(Result.unwrap(res).map((v) => v.getID())).toStrictEqual(['1']);
+    expect(Result.unwrap(res).map((v) => v.getID())).toStrictEqual(['3']);
   });
 
   it('with both beforeId and afterID cursor', async () => {
@@ -81,6 +81,6 @@ describe('HomeTimelineService', () => {
       },
     );
 
-    expect(Result.unwrap(res).map((v) => v.getID())).toStrictEqual(['2']);
+    expect(Result.isErr(res)).toBe(true);
   });
 });
