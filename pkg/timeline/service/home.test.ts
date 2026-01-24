@@ -43,4 +43,44 @@ describe('HomeTimelineService', () => {
       '1',
     ]);
   });
+
+  it('with beforeId cursor', async () => {
+    const res = await homeTimelineService.fetchHomeTimeline(
+      '101' as AccountID,
+      {
+        hasAttachment: false,
+        noNsfw: false,
+        beforeId: '2' as NoteID,
+      },
+    );
+
+    expect(Result.unwrap(res).map((v) => v.getID())).toStrictEqual(['3']);
+  });
+
+  it('with afterID cursor', async () => {
+    const res = await homeTimelineService.fetchHomeTimeline(
+      '101' as AccountID,
+      {
+        hasAttachment: false,
+        noNsfw: false,
+        afterID: '2' as NoteID,
+      },
+    );
+
+    expect(Result.unwrap(res).map((v) => v.getID())).toStrictEqual(['1']);
+  });
+
+  it('with both beforeId and afterID cursor', async () => {
+    const res = await homeTimelineService.fetchHomeTimeline(
+      '101' as AccountID,
+      {
+        hasAttachment: false,
+        noNsfw: false,
+        beforeId: '1' as NoteID,
+        afterID: '3' as NoteID,
+      },
+    );
+
+    expect(Result.unwrap(res).map((v) => v.getID())).toStrictEqual(['2']);
+  });
 });
