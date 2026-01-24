@@ -21,7 +21,7 @@ export interface FetchAccountTimelineFilter {
    * @description if undefined, Retrieved from oldest notes\
    * NOTE: Only one of beforeID/afterID can be set.
    */
-  afterID?: NoteID;
+  afterId?: NoteID;
 }
 export type FetchHomeTimelineFilter = Omit<FetchAccountTimelineFilter, 'id'>;
 export type FetchListTimelineFilter = Omit<FetchAccountTimelineFilter, 'id'>;
@@ -40,10 +40,13 @@ export interface TimelineRepository {
   /**
    * @description Fetch home timeline
    * @param noteIDs IDs of the notes to be fetched
+   * @param filter Filter for fetching notes
+   * @return {@link Note}[] list of home timeline Notes, sorted by CreatedAt descending
    * ToDo: Add filter (noNSFW/hasAttachment)
    * */
   getHomeTimeline(
     noteIDs: readonly NoteID[],
+    filter: FetchHomeTimelineFilter,
   ): Promise<Result.Result<Error, Note[]>>;
 
   /**

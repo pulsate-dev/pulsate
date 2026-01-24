@@ -26,7 +26,11 @@ export class FetchBookmarkService {
   async fetchBookmarkNotes(
     noteIDs: NoteID[],
   ): Promise<Result.Result<Error, Note[]>> {
-    return await this.timelineRepository.getHomeTimeline(noteIDs);
+    // NOTE: This function is simply used to fetch multiple posts by retrieving Notes from the IDs obtained in fetchBookmarkByAccountID.
+    return await this.timelineRepository.getHomeTimeline(noteIDs, {
+      hasAttachment: false,
+      noNsfw: false,
+    });
   }
 }
 export const fetchBookmarkServiceSymbol =

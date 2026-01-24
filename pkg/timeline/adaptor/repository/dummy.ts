@@ -38,7 +38,7 @@ export class InMemoryTimelineRepository implements TimelineRepository {
     accountId: AccountID,
     filter: FetchAccountTimelineFilter,
   ): Promise<Result.Result<Error, Note[]>> {
-    if (filter.afterID && filter.beforeId) {
+    if (filter.afterId && filter.beforeId) {
       return Result.err(
         new TimelineInvalidFilterRangeError(
           'beforeID and afterID cannot be specified at the same time',
@@ -61,10 +61,10 @@ export class InMemoryTimelineRepository implements TimelineRepository {
       (a, b) => b.getCreatedAt().getTime() - a.getCreatedAt().getTime(),
     );
 
-    if (filter.afterID) {
+    if (filter.afterId) {
       const afterIndex = filtered
         .reverse()
-        .findIndex((note) => note.getID() === filter.afterID);
+        .findIndex((note) => note.getID() === filter.afterId);
 
       return Result.ok(filtered.slice(afterIndex).reverse());
     }
@@ -83,8 +83,18 @@ export class InMemoryTimelineRepository implements TimelineRepository {
   }
 
   async getHomeTimeline(
-    noteIDs: NoteID[],
+    noteIDs: readonly NoteID[],
+    filter: FetchHomeTimelineFilter,
   ): Promise<Result.Result<Error, Note[]>> {
+    if (filter.beforeId && filter.afterId) {
+      return Result.err(
+        new TimelineInvalidFilterRangeError(
+          'beforeID and afterID cannot be specified at the same time',
+          { cause: null },
+        ),
+      );
+    }
+
     const notes: Note[] = [];
     for (const noteID of noteIDs) {
       const n = this.data.get(noteID);
@@ -98,9 +108,32 @@ export class InMemoryTimelineRepository implements TimelineRepository {
     // NOTE: filter DIRECT notes
     const filtered = notes.filter((note) => note.getVisibility() !== 'DIRECT');
     // ToDo: filter hasAttachment, noNSFW
+
+    // Sort by createdAt descending
     filtered.sort(
       (a, b) => b.getCreatedAt().getTime() - a.getCreatedAt().getTime(),
     );
+
+    // Cursor pagination
+    if (filter.afterId) {
+      const afterIndex = filtered.findIndex(
+        (note) => note.getID() === filter.afterId,
+      );
+      if (afterIndex === -1) {
+        return Result.ok([]);
+      }
+      return Result.ok(filtered.slice(0, afterIndex));
+    }
+
+    if (filter.beforeId) {
+      const beforeIndex = filtered.findIndex(
+        (note) => note.getID() === filter.beforeId,
+      );
+      if (beforeIndex === -1) {
+        return Result.ok([]);
+      }
+      return Result.ok(filtered.slice(beforeIndex + 1));
+    }
 
     return Result.ok(filtered);
   }
@@ -108,7 +141,7 @@ export class InMemoryTimelineRepository implements TimelineRepository {
   async getPublicTimeline(
     filter: FetchHomeTimelineFilter,
   ): Promise<Result.Result<Error, Note[]>> {
-    if (filter.afterID && filter.beforeId) {
+    if (filter.afterId && filter.beforeId) {
       return Result.err(
         new TimelineInvalidFilterRangeError(
           'beforeID and afterID cannot be specified at the same time',
@@ -123,9 +156,9 @@ export class InMemoryTimelineRepository implements TimelineRepository {
 
     // ToDo: filter hasAttachment, noNSFW
 
-    if (filter.afterID) {
+    if (filter.afterId) {
       const afterIndex = publicNotes.findIndex(
-        (note) => note.getID() === filter.afterID,
+        (note) => note.getID() === filter.afterId,
       );
 
       if (afterIndex === -1) {
@@ -150,7 +183,7 @@ export class InMemoryTimelineRepository implements TimelineRepository {
     noteId: readonly NoteID[],
     filter: FetchListTimelineFilter,
   ): Promise<Result.Result<Error, Note[]>> {
-    if (filter.beforeId && filter.afterID) {
+    if (filter.beforeId && filter.afterId) {
       return Result.err(
         new TimelineInvalidFilterRangeError(
           'beforeID and afterID cannot be specified at the same time',
@@ -335,7 +368,7 @@ export class InMemoryBookmarkTimelineRepository
     id: AccountID,
     filter: BookmarkTimelineFilter,
   ): Promise<Result.Result<Error, NoteID[]>> {
-    if (filter.afterID && filter.beforeId) {
+    if (filter.afterId && filter.beforeId) {
       return Result.err(
         new TimelineInvalidFilterRangeError(
           'beforeID and afterID cannot be specified at the same time',
@@ -351,10 +384,10 @@ export class InMemoryBookmarkTimelineRepository
     // NOTE: sort by NoteID
     accountNotes.sort((a, b) => (b[1].getNoteID() > a[1].getNoteID() ? 1 : -1));
 
-    if (filter.afterID) {
+    if (filter.afterId) {
       const afterIndex = accountNotes
         .reverse()
-        .findIndex((bookmark) => bookmark[1].getNoteID() === filter.afterID);
+        .findIndex((bookmark) => bookmark[1].getNoteID() === filter.afterId);
 
       return Result.ok(
         accountNotes

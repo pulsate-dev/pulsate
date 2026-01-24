@@ -187,6 +187,7 @@ export class TimelineController {
     hasAttachment: boolean,
     noNsfw: boolean,
     beforeId?: string,
+    afterId?: string,
   ): Promise<
     Result.Result<Error, z.infer<typeof GetHomeTimelineResponseSchema>>
   > {
@@ -196,6 +197,7 @@ export class TimelineController {
         hasAttachment,
         noNsfw,
         beforeId: beforeId as NoteID | undefined,
+        afterId: afterId as NoteID | undefined,
       },
     );
     if (Result.isErr(res)) {
@@ -275,7 +277,7 @@ export class TimelineController {
         hasAttachment,
         noNsfw,
         beforeId: beforeId as NoteID,
-        afterID: afterID as NoteID,
+        afterId: afterID as NoteID,
       },
     );
     if (Result.isErr(res)) {
@@ -350,7 +352,7 @@ export class TimelineController {
       hasAttachment,
       noNsfw,
       beforeId: beforeId as NoteID,
-      afterID: afterID as NoteID,
+      afterId: afterID as NoteID,
     });
     if (Result.isErr(notesRes)) {
       return notesRes;
@@ -552,7 +554,7 @@ export class TimelineController {
           hasAttachment,
           noNsfw,
           beforeId: beforeId as NoteID,
-          afterID: afterId as NoteID,
+          afterId: afterId as NoteID,
         },
       );
     if (Result.isErr(res)) {
@@ -688,7 +690,7 @@ export class TimelineController {
       hasAttachment,
       noNsfw,
       beforeId: beforeId as NoteID | undefined,
-      afterID: afterId as NoteID | undefined,
+      afterId: afterId as NoteID | undefined,
     });
     if (Result.isErr(res)) {
       return res;

@@ -183,12 +183,13 @@ timeline[GetHomeTimelineRoute.method](
 );
 timeline.openapi(GetHomeTimelineRoute, async (c) => {
   const actorID = Option.unwrap(c.get('accountID'));
-  const { has_attachment, no_nsfw, before_id } = c.req.valid('query');
+  const { has_attachment, no_nsfw, before_id, after_id } = c.req.valid('query');
   const res = await controller.getHomeTimeline(
     actorID,
     has_attachment,
     no_nsfw,
     before_id,
+    after_id,
   );
   if (Result.isErr(res)) {
     const error = Result.unwrapErr(res);

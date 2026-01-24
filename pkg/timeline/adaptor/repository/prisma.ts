@@ -35,12 +35,12 @@ export class PrismaTimelineRepository implements TimelineRepository {
   constructor(private readonly prisma: PrismaClient) {}
 
   private buildCursorFilter(
-    filter: Pick<FetchHomeTimelineFilter, 'beforeId' | 'afterID'>,
+    filter: Pick<FetchHomeTimelineFilter, 'beforeId' | 'afterId'>,
     limit: number = this.TIMELINE_NOTE_LIMIT,
   ) {
     return {
       orderBy: {
-        createdAt: filter.afterID ? 'asc' : 'desc',
+        createdAt: filter.afterId ? 'asc' : 'desc',
       } as const,
       ...(filter.beforeId
         ? {
@@ -50,10 +50,10 @@ export class PrismaTimelineRepository implements TimelineRepository {
             skip: 1,
           }
         : {}),
-      ...(filter.afterID
+      ...(filter.afterId
         ? {
             cursor: {
-              id: filter.afterID,
+              id: filter.afterId,
             },
             skip: 1,
           }
@@ -103,7 +103,7 @@ export class PrismaTimelineRepository implements TimelineRepository {
     accountId: AccountID,
     filter: FetchAccountTimelineFilter,
   ): Promise<Result.Result<Error, Note[]>> {
-    if (filter.afterID && filter.beforeId) {
+    if (filter.afterId && filter.beforeId) {
       return Result.err(
         new TimelineInvalidFilterRangeError(
           'beforeID and afterID cannot be specified at the same time',
@@ -123,26 +123,35 @@ export class PrismaTimelineRepository implements TimelineRepository {
   }
 
   async getHomeTimeline(
-    noteIDs: NoteID[],
+    noteIDs: readonly NoteID[],
+    filter: FetchHomeTimelineFilter,
   ): Promise<Result.Result<Error, Note[]>> {
+    if (filter.beforeId && filter.afterId) {
+      return Result.err(
+        new TimelineInvalidFilterRangeError(
+          'beforeID and afterID cannot be specified at the same time',
+          { cause: null },
+        ),
+      );
+    }
+
+    // ToDo: filter hasAttachment, noNSFW
     const homeNotes = await this.prisma.note.findMany({
       where: {
         id: {
-          in: noteIDs,
+          in: noteIDs as NoteID[],
         },
       },
-      orderBy: {
-        createdAt: 'desc',
-      },
-      take: this.TIMELINE_NOTE_LIMIT,
+      ...this.buildCursorFilter(filter),
     });
+
     return Result.ok(this.deserialize(homeNotes));
   }
 
   async getPublicTimeline(
     filter: FetchHomeTimelineFilter,
   ): Promise<Result.Result<Error, Note[]>> {
-    if (filter.afterID && filter.beforeId) {
+    if (filter.afterId && filter.beforeId) {
       return Result.err(
         new TimelineInvalidFilterRangeError(
           'beforeID and afterID cannot be specified at the same time',
@@ -166,7 +175,7 @@ export class PrismaTimelineRepository implements TimelineRepository {
     noteIDs: readonly NoteID[],
     filter: FetchListTimelineFilter,
   ): Promise<Result.Result<Error, Note[]>> {
-    if (filter.beforeId && filter.afterID) {
+    if (filter.beforeId && filter.afterId) {
       return Result.err(
         new TimelineInvalidFilterRangeError(
           'beforeID and afterID cannot be specified at the same time',
@@ -485,7 +494,7 @@ export class PrismaBookmarkTimelineRepository
     id: AccountID,
     filter: BookmarkTimelineFilter,
   ): Promise<Result.Result<Error, NoteID[]>> {
-    if (filter.afterID && filter.beforeId) {
+    if (filter.afterId && filter.beforeId) {
       return Result.err(
         new TimelineInvalidFilterRangeError(
           'beforeID and afterID cannot be specified at the same time',
@@ -499,7 +508,7 @@ export class PrismaBookmarkTimelineRepository
         accountId: id,
       },
       orderBy: {
-        createdAt: filter.afterID ? 'asc' : 'desc',
+        createdAt: filter.afterId ? 'asc' : 'desc',
       },
       ...(filter.beforeId
         ? {
@@ -513,11 +522,11 @@ export class PrismaBookmarkTimelineRepository
             skip: 1,
           }
         : {}),
-      ...(filter.afterID
+      ...(filter.afterId
         ? {
             cursor: {
               noteId_accountId: {
-                noteId: filter.afterID,
+                noteId: filter.afterId,
                 accountId: id,
               },
             },
