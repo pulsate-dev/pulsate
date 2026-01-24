@@ -105,7 +105,7 @@ describe('InMemoryTimelineRepository', () => {
       id: '100' as AccountID,
       hasAttachment: true,
       noNsfw: false,
-      afterID: '2' as NoteID,
+      afterId: '2' as NoteID,
     });
 
     expect(Result.isOk(actual)).toBe(true);
@@ -131,7 +131,7 @@ describe('InMemoryTimelineRepository', () => {
       id: '100' as AccountID,
       hasAttachment: true,
       noNsfw: false,
-      afterID: '1' as NoteID,
+      afterId: '1' as NoteID,
       beforeId: '1' as NoteID,
     });
     expect(Result.isErr(actual)).toBe(true);
@@ -191,7 +191,7 @@ describe('InMemoryTimelineRepository', () => {
       {
         hasAttachment: false,
         noNsfw: false,
-        afterID: '2' as NoteID,
+        afterId: '2' as NoteID,
       },
     );
     expect(Result.isOk(actual)).toBe(true);
@@ -206,7 +206,7 @@ describe('InMemoryTimelineRepository', () => {
         hasAttachment: false,
         noNsfw: false,
         beforeId: '3' as NoteID,
-        afterID: '1' as NoteID,
+        afterId: '1' as NoteID,
       },
     );
     expect(Result.isErr(actual)).toBe(true);

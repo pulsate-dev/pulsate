@@ -63,7 +63,7 @@ describe('HomeTimelineService', () => {
       {
         hasAttachment: false,
         noNsfw: false,
-        afterID: '2' as NoteID,
+        afterId: '2' as NoteID,
       },
     );
 
@@ -77,7 +77,7 @@ describe('HomeTimelineService', () => {
         hasAttachment: false,
         noNsfw: false,
         beforeId: '1' as NoteID,
-        afterID: '3' as NoteID,
+        afterId: '3' as NoteID,
       },
     );
 

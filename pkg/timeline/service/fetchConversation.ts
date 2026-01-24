@@ -58,7 +58,7 @@ export class FetchConversationService {
     args: FetchConversationNotesArgs = {
       limit: Option.none(),
       beforeID: Option.none(),
-      afterID: Option.none(),
+      afterId: Option.none(),
     },
   ): Promise<Result.Result<Error, Note[]>> {
     if (Option.isSome(args.beforeID) && Option.isSome(args.afterID)) {

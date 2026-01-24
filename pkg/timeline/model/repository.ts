@@ -21,7 +21,7 @@ export interface FetchAccountTimelineFilter {
    * @description if undefined, Retrieved from oldest notes\
    * NOTE: Only one of beforeID/afterID can be set.
    */
-  afterID?: NoteID;
+  afterId?: NoteID;
 }
 export type FetchHomeTimelineFilter = Omit<FetchAccountTimelineFilter, 'id'>;
 export type FetchListTimelineFilter = Omit<FetchAccountTimelineFilter, 'id'>;

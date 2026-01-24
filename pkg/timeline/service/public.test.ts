@@ -71,7 +71,7 @@ describe('PublicTimelineService', () => {
     const res = await publicTimelineService.fetchPublicTimeline({
       hasAttachment: false,
       noNsfw: false,
-      afterID: dummyPublicNote.getID(),
+      afterId: dummyPublicNote.getID(),
     });
 
     expect(Result.isOk(res)).toBe(true);
@@ -88,7 +88,7 @@ describe('PublicTimelineService', () => {
       hasAttachment: false,
       noNsfw: false,
       beforeId: dummyPublicNote.getID(),
-      afterID: dummyPublicNote2.getID(),
+      afterId: dummyPublicNote2.getID(),
     });
 
     expect(Result.isErr(res)).toBe(true);
