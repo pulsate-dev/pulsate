@@ -3,10 +3,7 @@ import { Ether, Option, Result } from '@mikuroxina/mini-fn';
 import type { AccountID } from '../../../accounts/model/account.js';
 import type { Medium, MediumID } from '../../../drive/model/medium.js';
 import { Bookmark } from '../../model/bookmark.js';
-import {
-  NoteAttachmentNotFoundError,
-  NoteNotReactedYetError,
-} from '../../model/errors.js';
+import { NoteNotReactedYetError } from '../../model/errors.js';
 import type { Note, NoteID } from '../../model/note.js';
 import type { Reaction, ReactionID } from '../../model/reaction.js';
 import { RenoteStatus } from '../../model/renoteStatus.js';
