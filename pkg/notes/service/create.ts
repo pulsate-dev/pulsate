@@ -12,6 +12,7 @@ import {
   type TimelineModuleFacade,
   timelineModuleFacadeSymbol,
 } from '../../intermodule/timeline.js';
+import { noteModuleLogger } from '../adaptor/logger.js';
 import {
   NoteContentLengthError,
   NoteInternalError,
@@ -80,6 +81,10 @@ export class CreateService {
       // ToDo: use job queue to push note to timeline
       await this.deps.timelineModule.pushNoteToTimeline(note);
 
+      // NOTE: In dev mode, notify the TimelineRepository about note creation.
+      noteModuleLogger.debug('note created event sent:', note.getID());
+      await this.notifyToSubscribers(note);
+
       return Result.ok(note);
     } catch (e) {
       if (e instanceof NoteNoDestinationError) {
@@ -91,7 +96,6 @@ export class CreateService {
       return Result.err(new NoteInternalError('unknown error', { cause: e }));
     }
   }
-
   constructor(
     private readonly deps: {
       noteRepository: NoteRepository;
@@ -101,6 +105,22 @@ export class CreateService {
       clock: Clock;
     },
   ) {}
+
+  private subscribers: Array<(note: Note) => Promise<void>> = [];
+
+  /**
+   * @description Subscribe to note creation events (for development use only)
+   * @param callBack
+   */
+  subscribeNoteCreated(callBack: (note: Note) => Promise<void>) {
+    noteModuleLogger.debug('Subscribed');
+    this.subscribers.push(callBack);
+  }
+
+  private async notifyToSubscribers(note: Note) {
+    noteModuleLogger.warn('notify...', this.subscribers.toString());
+    await Promise.allSettled(this.subscribers.map((s) => s(note)));
+  }
 }
 export const createServiceSymbol = Ether.newEtherSymbol<CreateService>();
 export const createService = Ether.newEther(

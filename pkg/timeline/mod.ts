@@ -83,7 +83,7 @@ const idGenerator = Ether.compose(clock)(snowflakeIDGenerator(0));
 
 const timelineRepository = isProduction
   ? prismaTimelineRepo(prismaClient)
-  : inMemoryTimelineRepo();
+  : inMemoryTimelineRepo(undefined, noteModule);
 const listRepository = isProduction
   ? prismaListRepo(prismaClient)
   : inMemoryListRepo();

@@ -3,33 +3,34 @@ import type { AccountID } from '../accounts/model/account.js';
 import { isProduction } from '../adaptors/env.js';
 import { prismaClient } from '../adaptors/prisma.js';
 import type { Medium } from '../drive/model/medium.js';
+import { clockSymbol, snowflakeIDGenerator } from '../id/mod.js';
 import {
-  InMemoryNoteAttachmentRepository,
-  InMemoryNoteRepository,
-  InMemoryReactionRepository,
+  inMemoryNoteAttachmentRepo,
+  inMemoryNoteRepo,
+  inMemoryReactionRepo,
 } from '../notes/adaptor/repository/dummy.js';
 import {
-  PrismaNoteAttachmentRepository,
-  PrismaNoteRepository,
-  PrismaReactionRepository,
+  prismaNoteAttachmentRepo,
+  prismaNoteRepo,
+  prismaReactionRepo,
 } from '../notes/adaptor/repository/prisma.js';
-import type { NoteID } from '../notes/model/note.js';
+import type { Note, NoteID } from '../notes/model/note.js';
 import type { Reaction } from '../notes/model/reaction.js';
 import type { RenoteStatus } from '../notes/model/renoteStatus.js';
-import {
-  noteAttachmentRepoSymbol,
-  noteRepoSymbol,
-  reactionRepoSymbol,
-} from '../notes/model/repository.js';
+import { type CreateService, createService } from '../notes/service/create.js';
 import { type FetchService, fetch } from '../notes/service/fetch.js';
 import {
   accountModule,
   accountModuleFacadeSymbol,
   dummyAccountModuleFacade,
 } from './account.js';
+import { timelineModuleFacadeEther } from './timeline.js';
 
 export class NoteModuleFacade {
-  constructor(private readonly fetchService: FetchService) {}
+  constructor(
+    private readonly fetchService: FetchService,
+    private readonly createNoteService: CreateService,
+  ) {}
 
   /**
    * @description Fetch note reactions
@@ -65,30 +66,35 @@ export class NoteModuleFacade {
   ): Promise<RenoteStatus[]> {
     return await this.fetchService.fetchRenoteStatus(accountID, noteIDs);
   }
+
+  // NOTE: The following section is used only in development mode to synchronize Note data between the Note and Timeline modules. Calls from production mode or from modules other than Timeline are prohibited.
+
+  subscribeNoteCreation(callback: (note: Note) => Promise<void>): void {
+    this.createNoteService.subscribeNoteCreated(callback);
+  }
 }
 
-const attachmentRepoObject = isProduction
-  ? new PrismaNoteAttachmentRepository(prismaClient)
-  : new InMemoryNoteAttachmentRepository([], []);
-const reactionRepoObject = isProduction
-  ? new PrismaReactionRepository(prismaClient)
-  : new InMemoryReactionRepository();
-const noteRepoObject = isProduction
-  ? new PrismaNoteRepository(prismaClient)
-  : new InMemoryNoteRepository();
+const attachmentRepo = isProduction
+  ? prismaNoteAttachmentRepo(prismaClient)
+  : inMemoryNoteAttachmentRepo([], []);
+const reactionRepo = isProduction
+  ? prismaReactionRepo(prismaClient)
+  : inMemoryReactionRepo([]);
+const noteRepo = isProduction
+  ? prismaNoteRepo(prismaClient)
+  : inMemoryNoteRepo([]);
 const accountModuleFacade = Ether.newEther(accountModuleFacadeSymbol, () =>
   isProduction ? accountModule : dummyAccountModuleFacade,
 );
-const noteAttachmentRepository = Ether.newEther(
-  noteAttachmentRepoSymbol,
-  () => attachmentRepoObject,
-);
-const reactionRepository = Ether.newEther(
-  reactionRepoSymbol,
-  () => reactionRepoObject,
-);
-const noteRepository = Ether.newEther(noteRepoSymbol, () => noteRepoObject);
 export const noteModuleFacadeSymbol = Ether.newEtherSymbol<NoteModuleFacade>();
+
+class Clock {
+  now() {
+    return BigInt(Date.now());
+  }
+}
+const clock = Ether.newEther(clockSymbol, () => new Clock());
+const idGenerator = Ether.compose(clock)(snowflakeIDGenerator(0));
 
 /**
  *  Dependency Injected NoteModule Object
@@ -97,10 +103,18 @@ export const noteModuleFacadeSymbol = Ether.newEtherSymbol<NoteModuleFacade>();
 export const noteModule = new NoteModuleFacade(
   Ether.runEther(
     Cat.cat(fetch)
-      .feed(Ether.compose(noteRepository))
+      .feed(Ether.compose(noteRepo))
       .feed(Ether.compose(accountModuleFacade))
-      .feed(Ether.compose(noteAttachmentRepository))
-      .feed(Ether.compose(reactionRepository)).value,
+      .feed(Ether.compose(attachmentRepo))
+      .feed(Ether.compose(reactionRepo)).value,
+  ),
+  Ether.runEther(
+    Cat.cat(createService)
+      .feed(Ether.compose(noteRepo))
+      .feed(Ether.compose(clock))
+      .feed(Ether.compose(idGenerator))
+      .feed(Ether.compose(attachmentRepo))
+      .feed(Ether.compose(timelineModuleFacadeEther)).value,
   ),
 );
 
