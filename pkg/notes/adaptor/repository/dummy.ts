@@ -202,11 +202,8 @@ export class InMemoryNoteAttachmentRepository
   async findByNoteID(noteID: NoteID): Promise<Result.Result<Error, Medium[]>> {
     const attachment = this.attachments.get(noteID);
     if (!attachment) {
-      return Result.err(
-        new NoteAttachmentNotFoundError('attachment not recorded', {
-          cause: { noteID },
-        }),
-      );
+      // NOTE: If no attachment exists, return an empty array
+      return Result.ok([]);
     }
 
     // ToDo: make filter more safe (may be fix at TypeScript 5.4)
