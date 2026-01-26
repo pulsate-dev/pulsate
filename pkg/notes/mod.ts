@@ -7,27 +7,32 @@ import {
   AuthenticateMiddlewareService,
   type AuthMiddlewareVariable,
 } from '../adaptors/authenticateMiddleware.js';
+import { isProduction } from '../adaptors/env.js';
 import { prismaClient } from '../adaptors/prisma.js';
+import { clockSymbol, snowflakeIDGenerator } from '../id/mod.js';
 import {
   accountModule,
   accountModuleEther,
+  accountModuleFacadeSymbol,
   dummyAccountModuleFacade,
 } from '../intermodule/account.js';
-import {
-  noteAttachmentRepoEther,
-  noteClockEther,
-  noteCreateServiceInstance,
-  noteFetchServiceInstance,
-  noteIdGeneratorEther,
-  noteReactionRepoEther,
-  noteRepoEther,
-} from '../intermodule/note.js';
+import { timelineModuleFacadeEther } from '../intermodule/timeline.js';
 import { BookmarkController } from './adaptor/controller/bookmark.js';
 import { NoteController } from './adaptor/controller/note.js';
 import { ReactionController } from './adaptor/controller/reaction.js';
 import { noteModuleLogger } from './adaptor/logger.js';
-import { inMemoryBookmarkRepo } from './adaptor/repository/dummy.js';
-import { prismaBookmarkRepo } from './adaptor/repository/prisma.js';
+import {
+  inMemoryBookmarkRepo,
+  inMemoryNoteAttachmentRepo,
+  inMemoryNoteRepo,
+  inMemoryReactionRepo,
+} from './adaptor/repository/dummy.js';
+import {
+  prismaBookmarkRepo,
+  prismaNoteAttachmentRepo,
+  prismaNoteRepo,
+  prismaReactionRepo,
+} from './adaptor/repository/prisma.js';
 import {
   NoteAccountSilencedError,
   NoteAlreadyReactedError,
@@ -49,25 +54,68 @@ import {
   GetNoteRoute,
   RenoteRoute,
 } from './router.js';
+import { createService } from './service/create.js';
 import { createBookmark } from './service/createBookmark.js';
 import { createReactionService } from './service/createReaction.js';
 import { deleteBookmarkService } from './service/deleteBookmark.js';
 import { deleteReaction } from './service/deleteReaction.js';
+import { fetch } from './service/fetch.js';
 import { renote } from './service/renote.js';
 
-const isProduction = process.env.NODE_ENV === 'production';
+// NOTE: These dependency Ethers are shared between intermodule and notes module to ensure the same instances are used
+export const noteAttachmentRepoEther = isProduction
+  ? prismaNoteAttachmentRepo(prismaClient)
+  : inMemoryNoteAttachmentRepo([], []);
+export const noteReactionRepoEther = isProduction
+  ? prismaReactionRepo(prismaClient)
+  : inMemoryReactionRepo([]);
+export const noteRepoEther = isProduction
+  ? prismaNoteRepo(prismaClient)
+  : inMemoryNoteRepo([]);
+
+const accountModuleFacade = Ether.newEther(accountModuleFacadeSymbol, () =>
+  isProduction ? accountModule : dummyAccountModuleFacade,
+);
+
+class Clock {
+  now() {
+    return BigInt(Date.now());
+  }
+}
+export const noteClockEther = Ether.newEther(clockSymbol, () => new Clock());
+export const noteIdGeneratorEther = Ether.compose(noteClockEther)(
+  snowflakeIDGenerator(0),
+);
+
+/**
+ *  Shared Service Instances
+ *  NOTE: These instances are shared between intermodule and notes module to ensure subscription works correctly
+ */
+export const noteFetchServiceInstance = Ether.runEther(
+  Cat.cat(fetch)
+    .feed(Ether.compose(noteRepoEther))
+    .feed(Ether.compose(accountModuleFacade))
+    .feed(Ether.compose(noteAttachmentRepoEther))
+    .feed(Ether.compose(noteReactionRepoEther)).value,
+);
+
+export const noteCreateServiceInstance = Ether.runEther(
+  Cat.cat(createService)
+    .feed(Ether.compose(noteRepoEther))
+    .feed(Ether.compose(noteClockEther))
+    .feed(Ether.compose(noteIdGeneratorEther))
+    .feed(Ether.compose(noteAttachmentRepoEther))
+    .feed(Ether.compose(timelineModuleFacadeEther)).value,
+);
 export const noteHandlers = new OpenAPIHono<{
   Variables: AuthMiddlewareVariable;
 }>();
 
-// NOTE: Use shared Ethers from intermodule to ensure the same instances are used across modules
 const bookmarkRepository = isProduction
   ? prismaBookmarkRepo(prismaClient)
   : inMemoryBookmarkRepo([]);
 
 const AuthMiddleware = new AuthenticateMiddlewareService();
-
-// NOTE: Use shared service instances from intermodule to ensure subscription works correctly
 
 const renoteServiceObj = Ether.runEther(
   Cat.cat(renote)
