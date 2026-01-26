@@ -118,7 +118,7 @@ export class CreateService {
   }
 
   private async notifyToSubscribers(note: Note) {
-    noteModuleLogger.warn('notify...', this.subscribers.toString());
+    noteModuleLogger.warn('notify...', this.subscribers);
     await Promise.allSettled(this.subscribers.map((s) => s(note)));
   }
 }

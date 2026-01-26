@@ -74,13 +74,14 @@ export class NoteModuleFacade {
   }
 }
 
-const attachmentRepo = isProduction
+// NOTE: These dependency Ethers are shared between intermodule and notes module to ensure the same instances are used
+export const noteAttachmentRepoEther = isProduction
   ? prismaNoteAttachmentRepo(prismaClient)
   : inMemoryNoteAttachmentRepo([], []);
-const reactionRepo = isProduction
+export const noteReactionRepoEther = isProduction
   ? prismaReactionRepo(prismaClient)
   : inMemoryReactionRepo([]);
-const noteRepo = isProduction
+export const noteRepoEther = isProduction
   ? prismaNoteRepo(prismaClient)
   : inMemoryNoteRepo([]);
 const accountModuleFacade = Ether.newEther(accountModuleFacadeSymbol, () =>
@@ -93,29 +94,39 @@ class Clock {
     return BigInt(Date.now());
   }
 }
-const clock = Ether.newEther(clockSymbol, () => new Clock());
-const idGenerator = Ether.compose(clock)(snowflakeIDGenerator(0));
+export const noteClockEther = Ether.newEther(clockSymbol, () => new Clock());
+export const noteIdGeneratorEther = Ether.compose(noteClockEther)(
+  snowflakeIDGenerator(0),
+);
+
+/**
+ *  Shared Service Instances
+ *  NOTE: These instances are shared between intermodule and notes module to ensure subscription works correctly
+ */
+export const noteFetchServiceInstance = Ether.runEther(
+  Cat.cat(fetch)
+    .feed(Ether.compose(noteRepoEther))
+    .feed(Ether.compose(accountModuleFacade))
+    .feed(Ether.compose(noteAttachmentRepoEther))
+    .feed(Ether.compose(noteReactionRepoEther)).value,
+);
+
+export const noteCreateServiceInstance = Ether.runEther(
+  Cat.cat(createService)
+    .feed(Ether.compose(noteRepoEther))
+    .feed(Ether.compose(noteClockEther))
+    .feed(Ether.compose(noteIdGeneratorEther))
+    .feed(Ether.compose(noteAttachmentRepoEther))
+    .feed(Ether.compose(timelineModuleFacadeEther)).value,
+);
 
 /**
  *  Dependency Injected NoteModule Object
  *  production: Prisma Repository / development: InMemory Repository  (auto-detected)
  */
 export const noteModule = new NoteModuleFacade(
-  Ether.runEther(
-    Cat.cat(fetch)
-      .feed(Ether.compose(noteRepo))
-      .feed(Ether.compose(accountModuleFacade))
-      .feed(Ether.compose(attachmentRepo))
-      .feed(Ether.compose(reactionRepo)).value,
-  ),
-  Ether.runEther(
-    Cat.cat(createService)
-      .feed(Ether.compose(noteRepo))
-      .feed(Ether.compose(clock))
-      .feed(Ether.compose(idGenerator))
-      .feed(Ether.compose(attachmentRepo))
-      .feed(Ether.compose(timelineModuleFacadeEther)).value,
-  ),
+  noteFetchServiceInstance,
+  noteCreateServiceInstance,
 );
 
 /**

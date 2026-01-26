@@ -8,29 +8,26 @@ import {
   type AuthMiddlewareVariable,
 } from '../adaptors/authenticateMiddleware.js';
 import { prismaClient } from '../adaptors/prisma.js';
-import { clockSymbol, snowflakeIDGenerator } from '../id/mod.js';
 import {
   accountModule,
   accountModuleEther,
   dummyAccountModuleFacade,
 } from '../intermodule/account.js';
-import { timelineModuleFacadeEther } from '../intermodule/timeline.js';
+import {
+  noteAttachmentRepoEther,
+  noteClockEther,
+  noteCreateServiceInstance,
+  noteFetchServiceInstance,
+  noteIdGeneratorEther,
+  noteReactionRepoEther,
+  noteRepoEther,
+} from '../intermodule/note.js';
 import { BookmarkController } from './adaptor/controller/bookmark.js';
 import { NoteController } from './adaptor/controller/note.js';
 import { ReactionController } from './adaptor/controller/reaction.js';
 import { noteModuleLogger } from './adaptor/logger.js';
-import {
-  inMemoryBookmarkRepo,
-  inMemoryNoteAttachmentRepo,
-  inMemoryNoteRepo,
-  inMemoryReactionRepo,
-} from './adaptor/repository/dummy.js';
-import {
-  prismaBookmarkRepo,
-  prismaNoteAttachmentRepo,
-  prismaNoteRepo,
-  prismaReactionRepo,
-} from './adaptor/repository/prisma.js';
+import { inMemoryBookmarkRepo } from './adaptor/repository/dummy.js';
+import { prismaBookmarkRepo } from './adaptor/repository/prisma.js';
 import {
   NoteAccountSilencedError,
   NoteAlreadyReactedError,
@@ -52,70 +49,38 @@ import {
   GetNoteRoute,
   RenoteRoute,
 } from './router.js';
-import { createService } from './service/create.js';
 import { createBookmark } from './service/createBookmark.js';
 import { createReactionService } from './service/createReaction.js';
 import { deleteBookmarkService } from './service/deleteBookmark.js';
 import { deleteReaction } from './service/deleteReaction.js';
-import { fetch } from './service/fetch.js';
 import { renote } from './service/renote.js';
 
 const isProduction = process.env.NODE_ENV === 'production';
 export const noteHandlers = new OpenAPIHono<{
   Variables: AuthMiddlewareVariable;
 }>();
-const noteRepository = isProduction
-  ? prismaNoteRepo(prismaClient)
-  : inMemoryNoteRepo([]);
+
+// NOTE: Use shared Ethers from intermodule to ensure the same instances are used across modules
 const bookmarkRepository = isProduction
   ? prismaBookmarkRepo(prismaClient)
   : inMemoryBookmarkRepo([]);
-const reactionRepository = isProduction
-  ? prismaReactionRepo(prismaClient)
-  : inMemoryReactionRepo([]);
-const attachmentRepository = isProduction
-  ? prismaNoteAttachmentRepo(prismaClient)
-  : inMemoryNoteAttachmentRepo([], []);
-
-class Clock {
-  now() {
-    return BigInt(Date.now());
-  }
-}
-const clock = Ether.newEther(clockSymbol, () => new Clock());
-const idGenerator = Ether.compose(clock)(snowflakeIDGenerator(0));
 
 const AuthMiddleware = new AuthenticateMiddlewareService();
 
-const createServiceObj = Ether.runEther(
-  Cat.cat(createService)
-    .feed(Ether.compose(clock))
-    .feed(Ether.compose(noteRepository))
-    .feed(Ether.compose(idGenerator))
-    .feed(Ether.compose(attachmentRepository))
-    .feed(Ether.compose(timelineModuleFacadeEther)).value,
-);
-
-const fetchServiceObj = Ether.runEther(
-  Cat.cat(fetch)
-    .feed(Ether.compose(noteRepository))
-    .feed(Ether.compose(accountModuleEther))
-    .feed(Ether.compose(attachmentRepository))
-    .feed(Ether.compose(reactionRepository)).value,
-);
+// NOTE: Use shared service instances from intermodule to ensure subscription works correctly
 
 const renoteServiceObj = Ether.runEther(
   Cat.cat(renote)
-    .feed(Ether.compose(clock))
-    .feed(Ether.compose(noteRepository))
-    .feed(Ether.compose(idGenerator))
-    .feed(Ether.compose(attachmentRepository))
+    .feed(Ether.compose(noteClockEther))
+    .feed(Ether.compose(noteRepoEther))
+    .feed(Ether.compose(noteIdGeneratorEther))
+    .feed(Ether.compose(noteAttachmentRepoEther))
     .feed(Ether.compose(accountModuleEther)).value,
 );
 
 const controller = new NoteController(
-  createServiceObj,
-  fetchServiceObj,
+  noteCreateServiceInstance,
+  noteFetchServiceInstance,
   renoteServiceObj,
   isProduction ? accountModule : dummyAccountModuleFacade,
 );
@@ -123,7 +88,7 @@ const controller = new NoteController(
 // Bookmark
 const createBookmarkServiceObj = Ether.runEther(
   Cat.cat(createBookmark)
-    .feed(Ether.compose(noteRepository))
+    .feed(Ether.compose(noteRepoEther))
     .feed(Ether.compose(bookmarkRepository)).value,
 );
 const bookmarkController = new BookmarkController(
@@ -132,22 +97,22 @@ const bookmarkController = new BookmarkController(
     Cat.cat(deleteBookmarkService).feed(Ether.compose(bookmarkRepository))
       .value,
   ),
-  fetchServiceObj,
+  noteFetchServiceInstance,
 );
 
 // Reaction
 const createReactionServiceObj = Ether.runEther(
   Cat.cat(createReactionService)
-    .feed(Ether.compose(idGenerator))
-    .feed(Ether.compose(reactionRepository))
-    .feed(Ether.compose(noteRepository)).value,
+    .feed(Ether.compose(noteIdGeneratorEther))
+    .feed(Ether.compose(noteReactionRepoEther))
+    .feed(Ether.compose(noteRepoEther)).value,
 );
 const deleteReactionServiceObj = Ether.runEther(
-  Cat.cat(deleteReaction).feed(Ether.compose(reactionRepository)).value,
+  Cat.cat(deleteReaction).feed(Ether.compose(noteReactionRepoEther)).value,
 );
 const reactionController = new ReactionController(
   createReactionServiceObj,
-  fetchServiceObj,
+  noteFetchServiceInstance,
   deleteReactionServiceObj,
 );
 

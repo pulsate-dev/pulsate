@@ -41,6 +41,7 @@ import {
   TimelineInsufficientPermissionError,
   TimelineNoMoreNotesError,
 } from './model/errors.js';
+import { timelineRepoSymbol } from './model/repository.js';
 import {
   AppendListMemberRoute,
   CreateListRoute,
@@ -81,9 +82,17 @@ class Clock {
 const clock = Ether.newEther(clockSymbol, () => new Clock());
 const idGenerator = Ether.compose(clock)(snowflakeIDGenerator(0));
 
-const timelineRepository = isProduction
+const timelineRepositoryEther = isProduction
   ? prismaTimelineRepo(prismaClient)
   : inMemoryTimelineRepo(undefined, noteModule);
+// NOTE: runEther once to create a single shared instance for subscription to work
+const timelineRepositoryInstance = Ether.runEther(timelineRepositoryEther);
+// NOTE: Wrap the instance in Ether for use with Ether.compose
+const timelineRepository = Ether.newEther(
+  timelineRepoSymbol,
+  () => timelineRepositoryInstance,
+);
+
 const listRepository = isProduction
   ? prismaListRepo(prismaClient)
   : inMemoryListRepo();

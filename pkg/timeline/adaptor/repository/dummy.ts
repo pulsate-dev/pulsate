@@ -100,6 +100,7 @@ export class InMemoryTimelineRepository implements TimelineRepository {
     noteIDs: readonly NoteID[],
     filter: FetchHomeTimelineFilter,
   ): Promise<Result.Result<Error, Note[]>> {
+    timelineModuleLogger.debug('Timeline:', this.data);
     if (filter.beforeId && filter.afterId) {
       return Result.err(
         new TimelineInvalidFilterRangeError(
