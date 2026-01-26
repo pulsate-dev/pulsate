@@ -207,8 +207,8 @@ export class TimelineController {
 
     const noteAdditionalDataRes =
       await this.getNoteAdditionalData(accountNotes);
-    if (Result.isErr(res)) {
-      return res;
+    if (Result.isErr(noteAdditionalDataRes)) {
+      return noteAdditionalDataRes;
     }
     const noteAdditionalData = Result.unwrap(noteAdditionalDataRes);
 

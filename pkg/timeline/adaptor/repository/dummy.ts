@@ -27,7 +27,6 @@ import {
   type TimelineRepository,
   timelineRepoSymbol,
 } from '../../model/repository.js';
-import { timelineModuleLogger } from '../logger.js';
 
 export class InMemoryTimelineRepository implements TimelineRepository {
   private data: Map<NoteID, Note>;
@@ -36,14 +35,9 @@ export class InMemoryTimelineRepository implements TimelineRepository {
     this.data = new Map(data.map((v) => [v.getID(), v]));
 
     if (!noteModuleFacade) {
-      timelineModuleLogger.debug('NoteModuleFacade not provided');
       return;
     }
-    timelineModuleLogger.debug('NoteModuleFacade provided, subscribing...');
     noteModuleFacade.subscribeNoteCreation(async (note: Note) => {
-      timelineModuleLogger.debug(
-        `Received new note from Note Module: ${note.getID()}`,
-      );
       this.data.set(note.getID(), note);
     });
   }
@@ -100,7 +94,6 @@ export class InMemoryTimelineRepository implements TimelineRepository {
     noteIDs: readonly NoteID[],
     filter: FetchHomeTimelineFilter,
   ): Promise<Result.Result<Error, Note[]>> {
-    timelineModuleLogger.debug('Timeline:', this.data);
     if (filter.beforeId && filter.afterId) {
       return Result.err(
         new TimelineInvalidFilterRangeError(

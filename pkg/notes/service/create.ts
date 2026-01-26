@@ -12,7 +12,6 @@ import {
   type TimelineModuleFacade,
   timelineModuleFacadeSymbol,
 } from '../../intermodule/timeline.js';
-import { noteModuleLogger } from '../adaptor/logger.js';
 import {
   NoteContentLengthError,
   NoteInternalError,
@@ -82,7 +81,6 @@ export class CreateService {
       await this.deps.timelineModule.pushNoteToTimeline(note);
 
       // NOTE: In dev mode, notify the TimelineRepository about note creation.
-      noteModuleLogger.debug('note created event sent:', note.getID());
       await this.notifyToSubscribers(note);
 
       return Result.ok(note);
@@ -113,12 +111,10 @@ export class CreateService {
    * @param callBack
    */
   subscribeNoteCreated(callBack: (note: Note) => Promise<void>) {
-    noteModuleLogger.debug('Subscribed');
     this.subscribers.push(callBack);
   }
 
   private async notifyToSubscribers(note: Note) {
-    noteModuleLogger.warn('notify...', this.subscribers);
     await Promise.allSettled(this.subscribers.map((s) => s(note)));
   }
 }
