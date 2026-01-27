@@ -19,7 +19,7 @@ importers:
         version: 1.2.0(hono@4.11.5)(zod@4.3.6)
       '@mikuroxina/mini-fn':
         specifier: ^7.0.0
-        version: 7.0.0
+        version: 7.1.0
       '@prisma/adapter-pg':
         specifier: ^7.0.1
         version: 7.3.0
@@ -566,8 +566,8 @@ packages:
     os: [darwin, linux, win32]
     hasBin: true
 
-  '@mikuroxina/mini-fn@7.0.0':
-    resolution: {integrity: sha512-31RvUgwmaiLqw5BXAJ7aB5NU2t99A+/OAVY3G49eymoeXywUEtnl06UQjCQUBxGxDVq9P6+jqQbPeSJzAU513Q==}
+  '@mikuroxina/mini-fn@7.1.0':
+    resolution: {integrity: sha512-PZLLB/jZRmBAof3Wqg3R4/FdtRlRe9JggVcAWyJSiB7b1o+eGpSIO+STmAYzJiEGYZrdBjTV4Crd3K9mqkB9Uw==}
 
   '@mrleebo/prisma-ast@0.13.1':
     resolution: {integrity: sha512-XyroGQXcHrZdvmrGJvsA9KNeOOgGMg1Vg9OlheUsBOSKznLMDl+YChxbkboRHvtFYJEMRYmlV3uoo/njCw05iw==}
@@ -1909,7 +1909,7 @@ snapshots:
 
   '@ls-lint/ls-lint@2.3.1': {}
 
-  '@mikuroxina/mini-fn@7.0.0': {}
+  '@mikuroxina/mini-fn@7.1.0': {}
 
   '@mrleebo/prisma-ast@0.13.1':
     dependencies:
