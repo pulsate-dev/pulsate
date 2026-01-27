@@ -71,16 +71,13 @@ export class InMemoryAccountHeaderRepository
   async findByIDs(
     accountIDs: readonly AccountID[],
   ): Promise<Result.Result<Error, Medium[]>> {
-    const media = accountIDs.map((accountID) => this.data.get(accountID));
-    if (media.some((mediumID) => !mediumID)) {
-      return Result.err(
-        new MediaNotFoundError('medium not found', { cause: null }),
-      );
-    }
+    const media = accountIDs
+      .map((accountID) => this.data.get(accountID))
+      .filter((mediumID): mediumID is MediumID => mediumID !== undefined)
+      .map((mediumID) => this.media.get(mediumID))
+      .filter((medium): medium is Medium => medium !== undefined);
 
-    return Result.ok(
-      media.map((mediumID) => this.media.get(mediumID as MediumID)) as Medium[],
-    );
+    return Result.ok(media);
   }
 }
 export const inMemoryAccountHeaderRepo = (

@@ -1,35 +1,24 @@
-import { Cat, Ether, type Result } from '@mikuroxina/mini-fn';
+import { Ether, type Result } from '@mikuroxina/mini-fn';
 import type { AccountID } from '../accounts/model/account.js';
-import { isProduction } from '../adaptors/env.js';
-import { prismaClient } from '../adaptors/prisma.js';
 import type { Medium } from '../drive/model/medium.js';
 import {
-  InMemoryNoteAttachmentRepository,
-  InMemoryNoteRepository,
-  InMemoryReactionRepository,
-} from '../notes/adaptor/repository/dummy.js';
-import {
-  PrismaNoteAttachmentRepository,
-  PrismaNoteRepository,
-  PrismaReactionRepository,
-} from '../notes/adaptor/repository/prisma.js';
-import type { NoteID } from '../notes/model/note.js';
+  noteAttachmentRepoEther,
+  noteClockEther,
+  noteCreateServiceInstance,
+  noteFetchServiceInstance,
+  noteIdGeneratorEther,
+  noteReactionRepoEther,
+  noteRepoEther,
+} from '../notes/mod.js';
+import type { Note, NoteID } from '../notes/model/note.js';
 import type { Reaction } from '../notes/model/reaction.js';
 import type { RenoteStatus } from '../notes/model/renoteStatus.js';
-import {
-  noteAttachmentRepoSymbol,
-  noteRepoSymbol,
-  reactionRepoSymbol,
-} from '../notes/model/repository.js';
-import { type FetchService, fetch } from '../notes/service/fetch.js';
-import {
-  accountModule,
-  accountModuleFacadeSymbol,
-  dummyAccountModuleFacade,
-} from './account.js';
 
 export class NoteModuleFacade {
-  constructor(private readonly fetchService: FetchService) {}
+  constructor(
+    private readonly fetchService: typeof noteFetchServiceInstance,
+    private readonly createNoteService: typeof noteCreateServiceInstance,
+  ) {}
 
   /**
    * @description Fetch note reactions
@@ -65,29 +54,25 @@ export class NoteModuleFacade {
   ): Promise<RenoteStatus[]> {
     return await this.fetchService.fetchRenoteStatus(accountID, noteIDs);
   }
+
+  // NOTE: The following section is used only in development mode to synchronize Note data between the Note and Timeline modules. Calls from production mode or from modules other than Timeline are prohibited.
+
+  subscribeNoteCreation(callback: (note: Note) => Promise<void>): void {
+    this.createNoteService.subscribeNoteCreated(callback);
+  }
 }
 
-const attachmentRepoObject = isProduction
-  ? new PrismaNoteAttachmentRepository(prismaClient)
-  : new InMemoryNoteAttachmentRepository([], []);
-const reactionRepoObject = isProduction
-  ? new PrismaReactionRepository(prismaClient)
-  : new InMemoryReactionRepository();
-const noteRepoObject = isProduction
-  ? new PrismaNoteRepository(prismaClient)
-  : new InMemoryNoteRepository();
-const accountModuleFacade = Ether.newEther(accountModuleFacadeSymbol, () =>
-  isProduction ? accountModule : dummyAccountModuleFacade,
-);
-const noteAttachmentRepository = Ether.newEther(
-  noteAttachmentRepoSymbol,
-  () => attachmentRepoObject,
-);
-const reactionRepository = Ether.newEther(
-  reactionRepoSymbol,
-  () => reactionRepoObject,
-);
-const noteRepository = Ether.newEther(noteRepoSymbol, () => noteRepoObject);
+// NOTE: Re-export dependency Ethers and Service instances from notes module
+export {
+  noteAttachmentRepoEther,
+  noteClockEther,
+  noteCreateServiceInstance,
+  noteFetchServiceInstance,
+  noteIdGeneratorEther,
+  noteReactionRepoEther,
+  noteRepoEther,
+};
+
 export const noteModuleFacadeSymbol = Ether.newEtherSymbol<NoteModuleFacade>();
 
 /**
@@ -95,13 +80,8 @@ export const noteModuleFacadeSymbol = Ether.newEtherSymbol<NoteModuleFacade>();
  *  production: Prisma Repository / development: InMemory Repository  (auto-detected)
  */
 export const noteModule = new NoteModuleFacade(
-  Ether.runEther(
-    Cat.cat(fetch)
-      .feed(Ether.compose(noteRepository))
-      .feed(Ether.compose(accountModuleFacade))
-      .feed(Ether.compose(noteAttachmentRepository))
-      .feed(Ether.compose(reactionRepository)).value,
-  ),
+  noteFetchServiceInstance,
+  noteCreateServiceInstance,
 );
 
 /**

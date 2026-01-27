@@ -7,11 +7,13 @@ import {
   AuthenticateMiddlewareService,
   type AuthMiddlewareVariable,
 } from '../adaptors/authenticateMiddleware.js';
+import { isProduction } from '../adaptors/env.js';
 import { prismaClient } from '../adaptors/prisma.js';
 import { clockSymbol, snowflakeIDGenerator } from '../id/mod.js';
 import {
   accountModule,
   accountModuleEther,
+  accountModuleFacadeSymbol,
   dummyAccountModuleFacade,
 } from '../intermodule/account.js';
 import { timelineModuleFacadeEther } from '../intermodule/timeline.js';
@@ -60,62 +62,73 @@ import { deleteReaction } from './service/deleteReaction.js';
 import { fetch } from './service/fetch.js';
 import { renote } from './service/renote.js';
 
-const isProduction = process.env.NODE_ENV === 'production';
-export const noteHandlers = new OpenAPIHono<{
-  Variables: AuthMiddlewareVariable;
-}>();
-const noteRepository = isProduction
-  ? prismaNoteRepo(prismaClient)
-  : inMemoryNoteRepo([]);
-const bookmarkRepository = isProduction
-  ? prismaBookmarkRepo(prismaClient)
-  : inMemoryBookmarkRepo([]);
-const reactionRepository = isProduction
-  ? prismaReactionRepo(prismaClient)
-  : inMemoryReactionRepo([]);
-const attachmentRepository = isProduction
+// NOTE: These dependency Ethers are shared between intermodule and notes module to ensure the same instances are used
+export const noteAttachmentRepoEther = isProduction
   ? prismaNoteAttachmentRepo(prismaClient)
   : inMemoryNoteAttachmentRepo([], []);
+export const noteReactionRepoEther = isProduction
+  ? prismaReactionRepo(prismaClient)
+  : inMemoryReactionRepo([]);
+export const noteRepoEther = isProduction
+  ? prismaNoteRepo(prismaClient)
+  : inMemoryNoteRepo([]);
+
+const accountModuleFacade = Ether.newEther(accountModuleFacadeSymbol, () =>
+  isProduction ? accountModule : dummyAccountModuleFacade,
+);
 
 class Clock {
   now() {
     return BigInt(Date.now());
   }
 }
-const clock = Ether.newEther(clockSymbol, () => new Clock());
-const idGenerator = Ether.compose(clock)(snowflakeIDGenerator(0));
+export const noteClockEther = Ether.newEther(clockSymbol, () => new Clock());
+export const noteIdGeneratorEther = Ether.compose(noteClockEther)(
+  snowflakeIDGenerator(0),
+);
+
+/**
+ *  Shared Service Instances
+ *  NOTE: These instances are shared between intermodule and notes module to ensure subscription works correctly
+ */
+export const noteFetchServiceInstance = Ether.runEther(
+  Cat.cat(fetch)
+    .feed(Ether.compose(noteRepoEther))
+    .feed(Ether.compose(accountModuleFacade))
+    .feed(Ether.compose(noteAttachmentRepoEther))
+    .feed(Ether.compose(noteReactionRepoEther)).value,
+);
+
+export const noteCreateServiceInstance = Ether.runEther(
+  Cat.cat(createService)
+    .feed(Ether.compose(noteRepoEther))
+    .feed(Ether.compose(noteClockEther))
+    .feed(Ether.compose(noteIdGeneratorEther))
+    .feed(Ether.compose(noteAttachmentRepoEther))
+    .feed(Ether.compose(timelineModuleFacadeEther)).value,
+);
+export const noteHandlers = new OpenAPIHono<{
+  Variables: AuthMiddlewareVariable;
+}>();
+
+const bookmarkRepository = isProduction
+  ? prismaBookmarkRepo(prismaClient)
+  : inMemoryBookmarkRepo([]);
 
 const AuthMiddleware = new AuthenticateMiddlewareService();
 
-const createServiceObj = Ether.runEther(
-  Cat.cat(createService)
-    .feed(Ether.compose(clock))
-    .feed(Ether.compose(noteRepository))
-    .feed(Ether.compose(idGenerator))
-    .feed(Ether.compose(attachmentRepository))
-    .feed(Ether.compose(timelineModuleFacadeEther)).value,
-);
-
-const fetchServiceObj = Ether.runEther(
-  Cat.cat(fetch)
-    .feed(Ether.compose(noteRepository))
-    .feed(Ether.compose(accountModuleEther))
-    .feed(Ether.compose(attachmentRepository))
-    .feed(Ether.compose(reactionRepository)).value,
-);
-
 const renoteServiceObj = Ether.runEther(
   Cat.cat(renote)
-    .feed(Ether.compose(clock))
-    .feed(Ether.compose(noteRepository))
-    .feed(Ether.compose(idGenerator))
-    .feed(Ether.compose(attachmentRepository))
+    .feed(Ether.compose(noteClockEther))
+    .feed(Ether.compose(noteRepoEther))
+    .feed(Ether.compose(noteIdGeneratorEther))
+    .feed(Ether.compose(noteAttachmentRepoEther))
     .feed(Ether.compose(accountModuleEther)).value,
 );
 
 const controller = new NoteController(
-  createServiceObj,
-  fetchServiceObj,
+  noteCreateServiceInstance,
+  noteFetchServiceInstance,
   renoteServiceObj,
   isProduction ? accountModule : dummyAccountModuleFacade,
 );
@@ -123,7 +136,7 @@ const controller = new NoteController(
 // Bookmark
 const createBookmarkServiceObj = Ether.runEther(
   Cat.cat(createBookmark)
-    .feed(Ether.compose(noteRepository))
+    .feed(Ether.compose(noteRepoEther))
     .feed(Ether.compose(bookmarkRepository)).value,
 );
 const bookmarkController = new BookmarkController(
@@ -132,22 +145,22 @@ const bookmarkController = new BookmarkController(
     Cat.cat(deleteBookmarkService).feed(Ether.compose(bookmarkRepository))
       .value,
   ),
-  fetchServiceObj,
+  noteFetchServiceInstance,
 );
 
 // Reaction
 const createReactionServiceObj = Ether.runEther(
   Cat.cat(createReactionService)
-    .feed(Ether.compose(idGenerator))
-    .feed(Ether.compose(reactionRepository))
-    .feed(Ether.compose(noteRepository)).value,
+    .feed(Ether.compose(noteIdGeneratorEther))
+    .feed(Ether.compose(noteReactionRepoEther))
+    .feed(Ether.compose(noteRepoEther)).value,
 );
 const deleteReactionServiceObj = Ether.runEther(
-  Cat.cat(deleteReaction).feed(Ether.compose(reactionRepository)).value,
+  Cat.cat(deleteReaction).feed(Ether.compose(noteReactionRepoEther)).value,
 );
 const reactionController = new ReactionController(
   createReactionServiceObj,
-  fetchServiceObj,
+  noteFetchServiceInstance,
   deleteReactionServiceObj,
 );
 

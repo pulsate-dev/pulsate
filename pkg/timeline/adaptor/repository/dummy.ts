@@ -2,6 +2,7 @@ import { Ether, Option, Result } from '@mikuroxina/mini-fn';
 
 import type { AccountID } from '../../../accounts/model/account.js';
 import { AccountNotFoundError } from '../../../accounts/model/errors.js';
+import type { NoteModuleFacade } from '../../../intermodule/note.js';
 import type { Bookmark } from '../../../notes/model/bookmark.js';
 import type { Note, NoteID } from '../../../notes/model/note.js';
 import {
@@ -30,8 +31,15 @@ import {
 export class InMemoryTimelineRepository implements TimelineRepository {
   private data: Map<NoteID, Note>;
 
-  constructor(data: readonly Note[] = []) {
+  constructor(data: readonly Note[] = [], noteModuleFacade?: NoteModuleFacade) {
     this.data = new Map(data.map((v) => [v.getID(), v]));
+
+    if (!noteModuleFacade) {
+      return;
+    }
+    noteModuleFacade.subscribeNoteCreation(async (note: Note) => {
+      this.data.set(note.getID(), note);
+    });
   }
 
   async getAccountTimeline(
@@ -228,10 +236,13 @@ export class InMemoryTimelineRepository implements TimelineRepository {
     this.data = new Map(data.map((v) => [v.getID(), v]));
   }
 }
-export const inMemoryTimelineRepo = (data?: Note[]) =>
+export const inMemoryTimelineRepo = (
+  data?: Note[],
+  noteModuleFacade?: NoteModuleFacade,
+) =>
   Ether.newEther(
     timelineRepoSymbol,
-    () => new InMemoryTimelineRepository(data),
+    () => new InMemoryTimelineRepository(data, noteModuleFacade),
   );
 
 export class InMemoryListRepository implements ListRepository {

@@ -35,20 +35,22 @@ export const timelineModuleFacadeEther = Ether.newEther(
   () => timelineModuleFacade,
 );
 
+// NOTE: Shared TimelineCacheRepository instance to ensure it's the same instance used across modules
+export const timelineCacheRepositoryInstance = isProduction
+  ? new ValkeyTimelineCacheRepository(valkeyClient())
+  : new InMemoryTimelineCacheRepository();
+
+// NOTE: Shared ListRepository instance
+export const listRepositoryInstance = isProduction
+  ? new PrismaListRepository(prismaClient)
+  : new InMemoryListRepository();
+
 export const timelineModuleFacade = new TimelineModuleFacade(
   new PushTimelineService(
     accountModule,
     new NoteVisibilityService(accountModule),
-    // ToDo: Use valkey here
-    isProduction
-      ? new ValkeyTimelineCacheRepository(valkeyClient())
-      : new InMemoryTimelineCacheRepository(),
-    // ToDo: Implement PrismaListRepository
-    new FetchSubscribedListService(
-      isProduction
-        ? new PrismaListRepository(prismaClient)
-        : new InMemoryListRepository(),
-    ),
+    timelineCacheRepositoryInstance,
+    new FetchSubscribedListService(listRepositoryInstance),
   ),
 );
 

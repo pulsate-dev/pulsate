@@ -17,19 +17,20 @@ import {
   dummyAccountModuleFacade,
 } from '../intermodule/account.js';
 import { noteModule } from '../intermodule/note.js';
+import {
+  listRepositoryInstance,
+  timelineCacheRepositoryInstance,
+} from '../intermodule/timeline.js';
 import { TimelineController } from './adaptor/controller/timeline.js';
 import { timelineModuleLogger } from './adaptor/logger.js';
 import {
   inMemoryBookmarkTimelineRepo,
   inMemoryConversationRepo,
-  inMemoryListRepo,
   inMemoryTimelineRepo,
 } from './adaptor/repository/dummy.js';
-import { inMemoryTimelineCacheRepo } from './adaptor/repository/dummyCache.js';
 import {
   prismaBookmarkTimelineRepo,
   prismaConversationRepo,
-  prismaListRepo,
   prismaTimelineRepo,
 } from './adaptor/repository/prisma.js';
 import { valkeyTimelineCacheRepo } from './adaptor/repository/valkeyCache.js';
@@ -41,6 +42,11 @@ import {
   TimelineInsufficientPermissionError,
   TimelineNoMoreNotesError,
 } from './model/errors.js';
+import {
+  listRepoSymbol,
+  timelineNotesCacheRepoSymbol,
+  timelineRepoSymbol,
+} from './model/repository.js';
 import {
   AppendListMemberRoute,
   CreateListRoute,
@@ -81,21 +87,35 @@ class Clock {
 const clock = Ether.newEther(clockSymbol, () => new Clock());
 const idGenerator = Ether.compose(clock)(snowflakeIDGenerator(0));
 
-const timelineRepository = isProduction
+const timelineRepositoryEther = isProduction
   ? prismaTimelineRepo(prismaClient)
-  : inMemoryTimelineRepo();
-const listRepository = isProduction
-  ? prismaListRepo(prismaClient)
-  : inMemoryListRepo();
+  : inMemoryTimelineRepo(undefined, noteModule);
+// NOTE: runEther once to create a single shared instance for subscription to work
+const timelineRepositoryInstanceLocal = Ether.runEther(timelineRepositoryEther);
+// NOTE: Wrap the instance in Ether for use with Ether.compose
+const timelineRepository = Ether.newEther(
+  timelineRepoSymbol,
+  () => timelineRepositoryInstanceLocal,
+);
+
+// NOTE: Use shared instance from intermodule to ensure it's the same instance used by NoteModule
+const listRepository = Ether.newEther(
+  listRepoSymbol,
+  () => listRepositoryInstance,
+);
 
 const AuthMiddleware = new AuthenticateMiddlewareService();
 const noteVisibilityService = Cat.cat(noteVisibility).feed(
   Ether.compose(accountModuleEther),
 ).value;
 
+// NOTE: Use shared instance from intermodule to ensure it's the same instance used by NoteModule
 const timelineCacheRepository = isProduction
   ? valkeyTimelineCacheRepo(valkeyClient())
-  : inMemoryTimelineCacheRepo([]);
+  : Ether.newEther(
+      timelineNotesCacheRepoSymbol,
+      () => timelineCacheRepositoryInstance,
+    );
 
 const bookmarkTimelineRepository = isProduction
   ? prismaBookmarkTimelineRepo(prismaClient)
