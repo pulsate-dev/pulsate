@@ -1,12 +1,8 @@
 export type AccountPolicyActionModelName =
   | 'account'
-  | 'authentication'
-  | 'authenticationToken'
   | 'avatar'
   | 'header'
-  | 'follow'
-  | 'relationship'
-  | 'verifyToken';
+  | 'relationship';
 
 export type AccountPolicyActionName = 'read' | 'write' | 'admin';
 
