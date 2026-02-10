@@ -26,13 +26,10 @@ export const AccountPolicy: Policy<AccountPolicyArgs> = {
   withCheck<Target, Res>(
     target: Target,
   ): (
-    args: AccountPolicyArgs,
-    fn: (target: Target) => Promise<Result.Result<Error, Res>>,
+    args: Readonly<AccountPolicyArgs>,
+    fn: PolicyAuthorizedActionFunc<Target, Res>,
   ) => Promise<Result.Result<Error, Res>> {
-    return async (
-      args: AccountPolicyArgs,
-      fn: PolicyAuthorizedActionFunc<Target, Res>,
-    ): Promise<Result.Result<Error, Res>> => {
+    return async (args, fn): Promise<Result.Result<Error, Res>> => {
       // NOTE: Common check for all actions
       if (args.actor.isFrozen()) {
         return Result.err(
