@@ -15,7 +15,7 @@ export interface Policy<Args extends PolicyArgs<unknown, unknown>> {
   withCheck<T, R>(
     target: T,
   ): (
-    args: Args,
+    args: Readonly<Args>,
     fn: PolicyAuthorizedActionFunc<T, R>,
   ) => Promise<Result.Result<Error, R>>;
 }
