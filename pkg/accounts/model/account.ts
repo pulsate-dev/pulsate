@@ -116,7 +116,7 @@ export class Account {
     if (this.isDeleted()) {
       throw new AccountAlreadyDeletedError('account already deleted');
     }
-    if (this.getFrozen() === 'frozen') {
+    if (this.isFrozen()) {
       throw new AccountAlreadyFrozenError('account already frozen');
     }
 
@@ -131,7 +131,7 @@ export class Account {
     if (this.isDeleted()) {
       throw new AccountAlreadyDeletedError('account already deleted');
     }
-    if (this.getFrozen() === 'frozen') {
+    if (this.isFrozen()) {
       throw new AccountAlreadyFrozenError('account already frozen');
     }
 
@@ -149,7 +149,7 @@ export class Account {
     if (this.isDeleted()) {
       throw new AccountAlreadyDeletedError('account already deleted');
     }
-    if (this.getFrozen() === 'frozen') {
+    if (this.isFrozen()) {
       throw new AccountAlreadyFrozenError('account already frozen');
     }
 
@@ -164,7 +164,7 @@ export class Account {
     if (this.isDeleted()) {
       throw new AccountAlreadyDeletedError('account already deleted');
     }
-    if (this.getFrozen() === 'frozen') {
+    if (this.isFrozen()) {
       throw new AccountAlreadyFrozenError('account already frozen');
     }
 
@@ -182,7 +182,7 @@ export class Account {
     if (this.isDeleted()) {
       throw new AccountAlreadyDeletedError('account already deleted');
     }
-    if (this.getFrozen() === 'frozen') {
+    if (this.isFrozen()) {
       throw new AccountAlreadyFrozenError('account already frozen');
     }
 
@@ -192,7 +192,7 @@ export class Account {
     if (this.isDeleted()) {
       throw new AccountAlreadyDeletedError('account already deleted');
     }
-    if (this.getFrozen() === 'frozen') {
+    if (this.isFrozen()) {
       throw new AccountAlreadyFrozenError('account already frozen');
     }
 
@@ -202,7 +202,7 @@ export class Account {
     if (this.isDeleted()) {
       throw new AccountAlreadyDeletedError('account already deleted');
     }
-    if (this.getFrozen() === 'frozen') {
+    if (this.isFrozen()) {
       throw new AccountAlreadyFrozenError('account already frozen');
     }
 
@@ -210,9 +210,17 @@ export class Account {
   }
 
   private frozen: AccountFrozen;
+
+  /**
+   * @deprecated Use isFrozen() instead
+   */
   getFrozen(): AccountFrozen {
     return this.frozen;
   }
+  isFrozen(): boolean {
+    return this.frozen === 'frozen';
+  }
+
   public setFreeze() {
     if (this.isDeleted()) {
       throw new AccountAlreadyDeletedError('account already deleted');
@@ -229,14 +237,22 @@ export class Account {
   }
 
   private silenced: AccountSilenced;
+
+  /**
+   * @deprecated Use isSilenced() instead
+   */
   getSilenced(): AccountSilenced {
     return this.silenced;
   }
+  isSilenced(): boolean {
+    return this.silenced === 'silenced';
+  }
+
   public setSilence() {
     if (this.isDeleted()) {
       throw new AccountAlreadyDeletedError('account already deleted');
     }
-    if (this.getFrozen() === 'frozen') {
+    if (this.isFrozen()) {
       throw new AccountAlreadyFrozenError('account already frozen');
     }
 
@@ -246,7 +262,7 @@ export class Account {
     if (this.isDeleted()) {
       throw new AccountAlreadyDeletedError('account already deleted');
     }
-    if (this.getFrozen() === 'frozen') {
+    if (this.isFrozen()) {
       throw new AccountAlreadyFrozenError('account already frozen');
     }
 
@@ -254,14 +270,23 @@ export class Account {
   }
 
   private status: AccountStatus;
+
+  /**
+   * @deprecated Use isActivated() instead
+   */
   getStatus(): AccountStatus {
     return this.status;
   }
+
+  isActivated(): boolean {
+    return this.status === 'active';
+  }
+
   public activate() {
     if (this.isDeleted()) {
       throw new AccountAlreadyDeletedError('account already deleted');
     }
-    if (this.getFrozen() === 'frozen') {
+    if (this.isFrozen()) {
       throw new AccountAlreadyFrozenError('account already frozen');
     }
     this.status = 'active';
@@ -290,11 +315,7 @@ export class Account {
   }
 
   private isDeleted(): boolean {
-    if (this.deletedAt === undefined) {
-      return false;
-    }
-
-    return true;
+    return this.deletedAt !== undefined;
   }
 
   public static new(arg: Omit<CreateAccountArgs, 'deletedAt' | 'updatedAt'>) {
