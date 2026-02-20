@@ -89,7 +89,7 @@ importers:
         version: 0.27.3
       glob:
         specifier: ^13.0.0
-        version: 13.0.4
+        version: 13.0.5
       ignore:
         specifier: ^7.0.0
         version: 7.0.5
@@ -1054,8 +1054,8 @@ packages:
     resolution: {integrity: sha512-L5bGsVkxJbJgdnwyuheIunkGatUF/zssUoxxjACCseZYAVbaqdh9Tsmmlkl8vYan09H7sbvKt4pS8GqKLBrEzA==}
     hasBin: true
 
-  glob@13.0.4:
-    resolution: {integrity: sha512-KACie1EOs9BIOMtenFaxwmYODWA3/fTfGSUnLhMJpXRntu1g+uL/Xvub5f8SCTppvo9q62Qy4LeOoUiaL54G5A==}
+  glob@13.0.5:
+    resolution: {integrity: sha512-BzXxZg24Ibra1pbQ/zE7Kys4Ua1ks7Bn6pKLkVPZ9FZe4JQS6/Q7ef3LG1H+k7lUf5l4T3PLSyYyYJVYUvfgTw==}
     engines: {node: 20 || >=22}
 
   graceful-fs@4.2.11:
@@ -2422,7 +2422,7 @@ snapshots:
       nypm: 0.6.4
       pathe: 2.0.3
 
-  glob@13.0.4:
+  glob@13.0.5:
     dependencies:
       minimatch: 10.2.2
       minipass: 7.1.3
