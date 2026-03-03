@@ -123,7 +123,8 @@ const renoteServiceObj = Ether.runEther(
     .feed(Ether.compose(noteRepoEther))
     .feed(Ether.compose(noteIdGeneratorEther))
     .feed(Ether.compose(noteAttachmentRepoEther))
-    .feed(Ether.compose(accountModuleEther)).value,
+    .feed(Ether.compose(accountModuleEther))
+    .feed(Ether.compose(timelineModuleFacadeEther)).value,
 );
 
 const controller = new NoteController(
