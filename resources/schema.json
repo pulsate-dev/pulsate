@@ -280,7 +280,7 @@
           },
           "created_at": {
             "type": "string",
-            "format": "date",
+            "format": "date-time",
             "description": "account created at (only when logged in to an account with viewing privileges)",
             "example": "2021-01-01T00:00:00Z"
           }
@@ -565,6 +565,11 @@
                 "following_count"
               ]
             },
+            "original_note_id": {
+              "type": "string",
+              "example": "38477395",
+              "description": "Original note ID (if this note is a renote)"
+            },
             "renoted": {
               "type": "boolean",
               "default": false,
@@ -657,6 +662,11 @@
                 "followed_count",
                 "following_count"
               ]
+            },
+            "original_note_id": {
+              "type": "string",
+              "example": "38477395",
+              "description": "Original note ID (if this note is a renote)"
             },
             "reactions": {
               "type": "array",
@@ -1133,6 +1143,11 @@
                 "followed_count",
                 "following_count"
               ]
+            },
+            "original_note_id": {
+              "type": "string",
+              "example": "38477395",
+              "description": "Original note ID (if this note is a renote)"
             },
             "renoted": {
               "type": "boolean",
@@ -3658,25 +3673,25 @@
                       {
                         "type": "string",
                         "enum": [
-                          "public"
+                          "PUBLIC"
                         ]
                       },
                       {
                         "type": "string",
                         "enum": [
-                          "home"
+                          "HOME"
                         ]
                       },
                       {
                         "type": "string",
                         "enum": [
-                          "followers"
+                          "FOLLOWERS"
                         ]
                       }
                     ],
-                    "default": "public",
-                    "example": "public",
-                    "description": "Note visibility (public/home/followers)"
+                    "default": "PUBLIC",
+                    "example": "PUBLIC",
+                    "description": "Note visibility (PUBLIC/HOME/FOLLOWERS)"
                   },
                   "attachment_file_ids": {
                     "type": "array",
@@ -4875,6 +4890,11 @@
                           "followed_count",
                           "following_count"
                         ]
+                      },
+                      "original_note_id": {
+                        "type": "string",
+                        "example": "38477395",
+                        "description": "Original note ID (if this note is a renote)"
                       },
                       "renoted": {
                         "type": "boolean",
@@ -6082,6 +6102,11 @@
                           "followed_count",
                           "following_count"
                         ]
+                      },
+                      "original_note_id": {
+                        "type": "string",
+                        "example": "38477395",
+                        "description": "Original note ID (if this note is a renote)"
                       },
                       "renoted": {
                         "type": "boolean",
