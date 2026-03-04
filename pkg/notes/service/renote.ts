@@ -44,7 +44,7 @@ export class RenoteService {
    * @returns created note
    */
   async handle(
-    originalNoteID: NoteID,
+    noteID: NoteID,
     content: string,
     contentsWarningComment: string,
     authorID: AccountID,
@@ -83,22 +83,21 @@ export class RenoteService {
       );
     }
 
-    const originalNoteRes =
-      await this.deps.noteRepository.findByID(originalNoteID);
-    if (Option.isNone(originalNoteRes)) {
+    const noteRes = await this.deps.noteRepository.findByID(noteID);
+    if (Option.isNone(noteRes)) {
       return Result.err(
         new NoteNotFoundError('Original note not found', { cause: null }),
       );
     }
-    const originalNote = Option.unwrap(originalNoteRes);
+    const note = Option.unwrap(noteRes);
 
-    switch (originalNote.getVisibility()) {
+    switch (note.getVisibility()) {
       case 'PUBLIC':
       case 'HOME':
         break;
       case 'FOLLOWERS':
-        // NOTE: FOLLOWERS note can renote only author
-        if (originalNote.getAuthorID() !== authorID) {
+        // NOTE: FOLLOWERS note can renote by only author
+        if (note.getAuthorID() !== authorID) {
           return Result.err(
             new NoteVisibilityInvalidError(
               'Can not renote others FOLLOWERS note',
@@ -108,7 +107,7 @@ export class RenoteService {
         }
         break;
       case 'DIRECT':
-        // NOTE: can not renote direct note
+        // NOTE: can't renote direct note
         return Result.err(
           new NoteVisibilityInvalidError('Can not renote direct note', {
             cause: null,
@@ -121,6 +120,11 @@ export class RenoteService {
       return id;
     }
 
+    const originalNoteId =
+      note.isRenote() && !note.isQuote()
+        ? Option.unwrap(note.getOriginalNoteID())
+        : note.getID();
+
     const now = this.deps.clock.now();
     const renote = Note.new({
       id: Result.unwrap(id) as NoteID,
@@ -128,9 +132,9 @@ export class RenoteService {
       content: content,
       contentsWarningComment: contentsWarningComment,
       createdAt: new Date(Number(now)),
-      originalNoteID: Option.some(originalNoteID),
+      originalNoteID: Option.some(originalNoteId),
       attachmentFileID: attachmentFileID,
-      // NOTE: Direct note is can not renote
+      // NOTE: Direct note can't renote
       sendTo: Option.none(),
       visibility: visibility,
     });
@@ -154,17 +158,17 @@ export class RenoteService {
   }
 
   private isAllowed(actor: Account, visibility: NoteVisibility): boolean {
-    // NOTE: actor must be active, not frozen
-    if (actor.getStatus() !== 'active') {
+    // NOTE: an actor must be active
+    if (!actor.isActivated()) {
       return false;
     }
 
-    if (actor.getFrozen() !== 'normal') {
+    if (actor.isFrozen()) {
       return false;
     }
 
-    if (actor.getSilenced() === 'silenced') {
-      // NOTE: silenced account can not set note visibility to PUBLIC
+    if (actor.isSilenced()) {
+      // NOTE: silenced account cannot set note visibility to PUBLIC
       if (visibility === 'PUBLIC') {
         return false;
       }

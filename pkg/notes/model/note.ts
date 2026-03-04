@@ -132,6 +132,19 @@ export class Note {
     return this.originalNoteID;
   }
 
+  isRenote(): boolean {
+    return Option.isSome(this.originalNoteID);
+  }
+
+  isQuote(): boolean {
+    if (!this.isRenote()) return false;
+    if (this.content.length > 0) return true;
+
+    return (
+      this.contentsWarningComment.length > 0 || this.attachmentFileID.length > 0
+    );
+  }
+
   private readonly attachmentFileID: readonly MediumID[];
   getAttachmentFileID(): readonly MediumID[] {
     return this.attachmentFileID;
