@@ -7,6 +7,7 @@ import {
   NoteContentLengthError,
   NoteNoDestinationError,
   NoteTooManyAttachmentsError,
+  NoteVisibilityInvalidError,
 } from './errors.js';
 
 export type NoteID = ID<Note>;
@@ -25,6 +26,8 @@ export interface CreateNoteArgs {
   updatedAt: Option.Option<Date>;
   deletedAt: Option.Option<Date>;
 }
+
+export type NewNoteArgs = Omit<CreateNoteArgs, 'updatedAt' | 'deletedAt'>;
 
 export class Note {
   private constructor(arg: CreateNoteArgs) {
@@ -95,6 +98,135 @@ export class Note {
 
   static reconstruct(arg: CreateNoteArgs) {
     return new Note(arg);
+  }
+
+  static renote(
+    original: Note,
+    arg: Pick<
+      CreateNoteArgs,
+      | 'id'
+      | 'authorID'
+      | 'visibility'
+      | 'sendTo'
+      | 'attachmentFileID'
+      | 'createdAt'
+    >,
+  ): Note {
+    if (arg.visibility === 'DIRECT') {
+      throw new NoteVisibilityInvalidError(
+        'Renote can not be created with DIRECT visibility',
+        {
+          cause: {
+            originalVisibility: original.getVisibility(),
+            visibility: arg.visibility,
+          },
+        },
+      );
+    }
+
+    switch (original.getVisibility()) {
+      case 'PUBLIC': {
+        break;
+      }
+      case 'HOME': {
+        if (arg.visibility === 'PUBLIC')
+          throw new NoteVisibilityInvalidError('Visibility too open', {
+            cause: {
+              originalVisibility: original.getVisibility(),
+              visibility: arg.visibility,
+            },
+          });
+        break;
+      }
+      default:
+        throw new NoteVisibilityInvalidError('This note is not renotable', {
+          cause: {
+            originalVisibility: original.getVisibility(),
+          },
+        });
+    }
+
+    // NOTE: If original is a renote, refer to original's original
+    const originalNoteID = original.isRenote()
+      ? original.getOriginalNoteID()
+      : Option.some(original.getID());
+
+    return Note.new({
+      ...arg,
+      originalNoteID: originalNoteID,
+      // NOTE: Renotes do not have content or contentsWarningComment
+      content: '',
+      contentsWarningComment: '',
+    });
+  }
+
+  static quote(
+    original: Note,
+    arg: Pick<
+      CreateNoteArgs,
+      | 'id'
+      | 'authorID'
+      | 'content'
+      | 'visibility'
+      | 'contentsWarningComment'
+      | 'sendTo'
+      | 'attachmentFileID'
+      | 'createdAt'
+    >,
+  ): Note {
+    if (arg.visibility === 'DIRECT') {
+      throw new NoteVisibilityInvalidError(
+        'Quote can not be created with DIRECT visibility',
+        {
+          cause: {
+            originalVisibility: original.getVisibility(),
+            visibility: arg.visibility,
+          },
+        },
+      );
+    }
+
+    if (
+      arg.content === '' &&
+      arg.contentsWarningComment === '' &&
+      arg.attachmentFileID.length === 0
+    ) {
+      throw new NoteContentLengthError('Quote must have content', {
+        cause: null,
+      });
+    }
+
+    switch (original.getVisibility()) {
+      case 'PUBLIC': {
+        break;
+      }
+      case 'HOME': {
+        if (arg.visibility === 'PUBLIC')
+          throw new NoteVisibilityInvalidError('Visibility too open', {
+            cause: {
+              originalVisibility: original.getVisibility(),
+              visibility: arg.visibility,
+            },
+          });
+        break;
+      }
+      default:
+        throw new NoteVisibilityInvalidError('This note is not quotable', {
+          cause: {
+            originalVisibility: original.getVisibility(),
+          },
+        });
+    }
+
+    // NOTE: If original is a renote, refer to original's original
+    const originalNoteID = original.isRenote()
+      ? original.getOriginalNoteID()
+      : Option.some(original.getID());
+
+    return Note.new({
+      ...arg,
+      originalNoteID: originalNoteID,
+    });
   }
 
   private readonly id: NoteID;
