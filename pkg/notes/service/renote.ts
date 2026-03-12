@@ -44,7 +44,7 @@ export class RenoteService {
    * @returns created note
    */
   async handle(
-    noteID: NoteID,
+    originalID: NoteID,
     content: string,
     contentsWarningComment: string,
     authorID: AccountID,
@@ -83,36 +83,18 @@ export class RenoteService {
       );
     }
 
-    const noteRes = await this.deps.noteRepository.findByID(noteID);
-    if (Option.isNone(noteRes)) {
-      return Result.err(
-        new NoteNotFoundError('Original note not found', { cause: null }),
-      );
+    const originalNoteRes = await this.resolveOriginalNote(originalID);
+    if (Result.isErr(originalNoteRes)) {
+      return originalNoteRes;
     }
-    const note = Option.unwrap(noteRes);
+    const originalNote = Result.unwrap(originalNoteRes);
 
-    switch (note.getVisibility()) {
-      case 'PUBLIC':
-      case 'HOME':
-        break;
-      case 'FOLLOWERS':
-        // NOTE: FOLLOWERS note can renote by only author
-        if (note.getAuthorID() !== authorID) {
-          return Result.err(
-            new NoteVisibilityInvalidError(
-              'Can not renote others FOLLOWERS note',
-              { cause: null },
-            ),
-          );
-        }
-        break;
-      case 'DIRECT':
-        // NOTE: can't renote direct note
-        return Result.err(
-          new NoteVisibilityInvalidError('Can not renote direct note', {
-            cause: null,
-          }),
-        );
+    const visibilityCheckRes = this.checkOriginalVisibility(
+      originalNote,
+      authorID,
+    );
+    if (Result.isErr(visibilityCheckRes)) {
+      return visibilityCheckRes;
     }
 
     const id = this.deps.idGenerator.generate<Note>();
@@ -120,24 +102,28 @@ export class RenoteService {
       return id;
     }
 
-    const originalNoteId =
-      note.isRenote() && !note.isQuote()
-        ? Option.unwrap(note.getOriginalNoteID())
-        : note.getID();
-
     const now = this.deps.clock.now();
-    const renote = Note.new({
+    const noteArgs = {
       id: Result.unwrap(id) as NoteID,
       authorID: authorID,
-      content: content,
-      contentsWarningComment: contentsWarningComment,
       createdAt: new Date(Number(now)),
-      originalNoteID: Option.some(originalNoteId),
       attachmentFileID: attachmentFileID,
-      // NOTE: Direct note can't renote
-      sendTo: Option.none(),
+      sendTo: Option.none() as Option.Option<AccountID>,
       visibility: visibility,
-    });
+    };
+
+    const isQuote =
+      content !== '' ||
+      contentsWarningComment !== '' ||
+      attachmentFileID.length > 0;
+
+    const renote = isQuote
+      ? Note.quote(originalNote, {
+          ...noteArgs,
+          content: content,
+          contentsWarningComment: contentsWarningComment,
+        })
+      : Note.renote(originalNote, noteArgs);
 
     const res = await this.deps.noteRepository.create(renote);
     if (Result.isErr(res)) {
@@ -155,6 +141,61 @@ export class RenoteService {
     }
 
     return Result.ok(renote);
+  }
+
+  /**
+   * originalIDが指すノートがリノートの場合、大元のノートを辿って返す
+   */
+  private async resolveOriginalNote(
+    originalID: NoteID,
+  ): Promise<Result.Result<Error, Note>> {
+    const res = await this.deps.noteRepository.findByID(originalID);
+    if (Option.isNone(res)) {
+      return Result.err(
+        new NoteNotFoundError('Original note not found', { cause: null }),
+      );
+    }
+    const note = Option.unwrap(res);
+
+    if (!note.isRenote()) {
+      return Result.ok(note);
+    }
+
+    const rootID = Option.unwrap(note.getOriginalNoteID());
+    const rootRes = await this.deps.noteRepository.findByID(rootID);
+    if (Option.isNone(rootRes)) {
+      return Result.err(
+        new NoteNotFoundError('Original note not found', { cause: null }),
+      );
+    }
+    return Result.ok(Option.unwrap(rootRes));
+  }
+
+  private checkOriginalVisibility(
+    originalNote: Note,
+    authorID: AccountID,
+  ): Result.Result<Error, void> {
+    switch (originalNote.getVisibility()) {
+      case 'PUBLIC':
+      case 'HOME':
+        return Result.ok(undefined);
+      case 'FOLLOWERS':
+        if (originalNote.getAuthorID() !== authorID) {
+          return Result.err(
+            new NoteVisibilityInvalidError(
+              'Can not renote others FOLLOWERS note',
+              { cause: null },
+            ),
+          );
+        }
+        return Result.ok(undefined);
+      case 'DIRECT':
+        return Result.err(
+          new NoteVisibilityInvalidError('Can not renote direct note', {
+            cause: null,
+          }),
+        );
+    }
   }
 
   private isAllowed(actor: Account, visibility: NoteVisibility): boolean {

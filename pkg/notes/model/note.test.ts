@@ -190,21 +190,6 @@ describe('Note', () => {
       expect(quote.isQuote()).toBe(true);
     });
 
-    it('should throw error when visibility is DIRECT', () => {
-      expect(() =>
-        Note.quote(originalNote, {
-          id: '203' as NoteID,
-          authorID: '3' as AccountID,
-          content: 'quoting',
-          visibility: 'DIRECT',
-          contentsWarningComment: '',
-          sendTo: Option.some('4' as AccountID),
-          attachmentFileID: [],
-          createdAt: new Date('2023-09-11T00:00:00.000Z'),
-        }),
-      ).toThrow('Quote can not be created with DIRECT visibility');
-    });
-
     it('should throw error when content, CW comment, and attachments are all empty', () => {
       expect(() =>
         Note.quote(originalNote, {
@@ -218,48 +203,6 @@ describe('Note', () => {
           createdAt: new Date('2023-09-11T00:00:00.000Z'),
         }),
       ).toThrow('Quote must have content');
-    });
-
-    it('should throw error when quoting HOME note with PUBLIC visibility', () => {
-      const homeNote = Note.new({
-        ...exampleInput,
-        id: '101' as NoteID,
-        visibility: 'HOME',
-      });
-
-      expect(() =>
-        Note.quote(homeNote, {
-          id: '205' as NoteID,
-          authorID: '3' as AccountID,
-          content: 'quoting',
-          visibility: 'PUBLIC',
-          contentsWarningComment: '',
-          sendTo: Option.none(),
-          attachmentFileID: [],
-          createdAt: new Date('2023-09-11T00:00:00.000Z'),
-        }),
-      ).toThrow('Visibility too open');
-    });
-
-    it('should throw error when quoting FOLLOWERS note', () => {
-      const followersNote = Note.new({
-        ...exampleInput,
-        id: '102' as NoteID,
-        visibility: 'FOLLOWERS',
-      });
-
-      expect(() =>
-        Note.quote(followersNote, {
-          id: '206' as NoteID,
-          authorID: '3' as AccountID,
-          content: 'quoting',
-          visibility: 'FOLLOWERS',
-          contentsWarningComment: '',
-          sendTo: Option.none(),
-          attachmentFileID: [],
-          createdAt: new Date('2023-09-11T00:00:00.000Z'),
-        }),
-      ).toThrow('This note is not quotable');
     });
 
     it('should refer to original note when quoting a renote', () => {

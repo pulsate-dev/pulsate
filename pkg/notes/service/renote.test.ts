@@ -59,42 +59,62 @@ describe('RenoteService', () => {
   it('should create renote', async () => {
     const renote = await service.handle(
       '2' as NoteID,
-      'renote',
+      '',
       '',
       '101' as AccountID,
       [],
       'PUBLIC',
     );
-    expect(Result.unwrap(renote).getContent()).toBe('renote');
+    expect(Result.unwrap(renote).getContent()).toBe('');
     expect(Result.unwrap(renote).getCwComment()).toBe('');
     expect(Result.unwrap(renote).getOriginalNoteID()).toStrictEqual(
       Option.some('2' as NoteID),
     );
     expect(Result.unwrap(renote).getVisibility()).toBe('PUBLIC');
+    expect(Result.unwrap(renote).isRenote()).toBe(true);
+    expect(Result.unwrap(renote).isQuote()).toBe(false);
   });
 
-  it('renote with attachments', async () => {
-    const renote = await service.handle(
+  it('should create quote when content is provided', async () => {
+    const quote = await service.handle(
       '2' as NoteID,
-      'renote',
+      'quoting this!',
+      '',
+      '101' as AccountID,
+      [],
+      'PUBLIC',
+    );
+    expect(Result.unwrap(quote).getContent()).toBe('quoting this!');
+    expect(Result.unwrap(quote).getOriginalNoteID()).toStrictEqual(
+      Option.some('2' as NoteID),
+    );
+    expect(Result.unwrap(quote).isRenote()).toBe(true);
+    expect(Result.unwrap(quote).isQuote()).toBe(true);
+  });
+
+  it('renote with attachments creates quote', async () => {
+    const quote = await service.handle(
+      '2' as NoteID,
+      '',
       '',
       '101' as AccountID,
       ['10' as MediumID, '11' as MediumID],
       'PUBLIC',
     );
 
-    expect(Result.unwrap(renote).getContent()).toBe('renote');
-    expect(Result.unwrap(renote).getCwComment()).toBe('');
-    expect(Result.unwrap(renote).getOriginalNoteID()).toStrictEqual(
+    expect(Result.unwrap(quote).getContent()).toBe('');
+    expect(Result.unwrap(quote).getCwComment()).toBe('');
+    expect(Result.unwrap(quote).getOriginalNoteID()).toStrictEqual(
       Option.some('2' as NoteID),
     );
-    expect(Result.unwrap(renote).getVisibility()).toBe('PUBLIC');
+    expect(Result.unwrap(quote).getVisibility()).toBe('PUBLIC');
+    expect(Result.unwrap(quote).isQuote()).toBe(true);
   });
 
   it('renote attachment must be less than 16', async () => {
     const res = await service.handle(
       '2' as NoteID,
-      'renote',
+      '',
       '',
       '101' as AccountID,
       Array.from({ length: 17 }, (_, i) => i.toString() as MediumID),
@@ -107,7 +127,7 @@ describe('RenoteService', () => {
   it('should not create renote with DIRECT visibility', async () => {
     const res = await service.handle(
       '2' as NoteID,
-      'direct renote',
+      '',
       '',
       '101' as AccountID,
       [],
@@ -120,7 +140,7 @@ describe('RenoteService', () => {
   it('if original note not found', async () => {
     const res = await service.handle(
       '3' as NoteID,
-      'renote',
+      '',
       '',
       '101' as AccountID,
       [],
@@ -147,7 +167,7 @@ describe('RenoteService', () => {
     await repository.create(originalDIRECTNote);
     const res = await service.handle(
       originalDIRECTNote.getID(),
-      'renote!',
+      '',
       '',
       '101' as AccountID,
       [],
@@ -180,7 +200,55 @@ describe('RenoteService', () => {
 
     const res = await service.handle(
       '4' as NoteID,
-      'renote',
+      '',
+      '',
+      '101' as AccountID,
+      [],
+      'PUBLIC',
+    );
+
+    expect(Result.isErr(res)).toBe(true);
+    expect(Result.unwrapErr(res)).toStrictEqual(
+      new NoteVisibilityInvalidError('Can not renote others FOLLOWERS note', {
+        cause: null,
+      }),
+    );
+  });
+
+  it('should reject renoting a renote whose original is FOLLOWERS note by other account', async () => {
+    const followersNote = Note.reconstruct({
+      id: '10' as NoteID,
+      authorID: '102' as AccountID,
+      content: 'followers only',
+      contentsWarningComment: '',
+      createdAt: new Date(),
+      originalNoteID: Option.none(),
+      attachmentFileID: [],
+      sendTo: Option.none(),
+      visibility: 'FOLLOWERS',
+      updatedAt: Option.none(),
+      deletedAt: Option.none(),
+    });
+    // renote of followersNote by the author (visibility doesn't matter for resolve)
+    const renoteOfFollowers = Note.reconstruct({
+      id: '11' as NoteID,
+      authorID: '102' as AccountID,
+      content: '',
+      contentsWarningComment: '',
+      createdAt: new Date(),
+      originalNoteID: Option.some('10' as NoteID),
+      attachmentFileID: [],
+      sendTo: Option.none(),
+      visibility: 'PUBLIC',
+      updatedAt: Option.none(),
+      deletedAt: Option.none(),
+    });
+    await repository.create(followersNote);
+    await repository.create(renoteOfFollowers);
+
+    const res = await service.handle(
+      '11' as NoteID,
+      '',
       '',
       '101' as AccountID,
       [],
@@ -249,7 +317,7 @@ describe('RenoteService', () => {
 
     const res = await dummyService.handle(
       '3' as NoteID,
-      'renote',
+      '',
       '',
       '101' as AccountID,
       [],
@@ -266,7 +334,7 @@ describe('RenoteService', () => {
 
     const res = await service.handle(
       '2' as NoteID,
-      'renote',
+      '',
       '',
       '101' as AccountID,
       [],
