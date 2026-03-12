@@ -143,9 +143,6 @@ export class RenoteService {
     return Result.ok(renote);
   }
 
-  /**
-   * originalIDが指すノートがリノートの場合、大元のノートを辿って返す
-   */
   private async resolveOriginalNote(
     originalID: NoteID,
   ): Promise<Result.Result<Error, Note>> {
