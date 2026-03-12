@@ -39,6 +39,17 @@ export const dummyFollowersNote = Note.new({
   visibility: 'FOLLOWERS',
   createdAt: new Date('2023/09/30 00:00:00'),
 });
+export const dummyRenote = Note.new({
+  id: '5' as NoteID,
+  authorID: '100' as AccountID,
+  content: '',
+  contentsWarningComment: '',
+  originalNoteID: Option.some('1' as NoteID),
+  attachmentFileID: [],
+  sendTo: Option.none(),
+  visibility: 'PUBLIC',
+  createdAt: new Date('2023/10/05 00:00:00'),
+});
 export const dummyDirectNote = Note.new({
   id: '4' as NoteID,
   authorID: '100' as AccountID,

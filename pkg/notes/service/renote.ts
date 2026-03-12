@@ -14,6 +14,10 @@ import {
   accountModuleFacadeSymbol,
 } from '../../intermodule/account.js';
 import {
+  type TimelineModuleFacade,
+  timelineModuleFacadeSymbol,
+} from '../../intermodule/timeline.js';
+import {
   NoteInsufficientPermissionError,
   NoteNotFoundError,
   NoteTooManyAttachmentsError,
@@ -35,6 +39,7 @@ export class RenoteService {
       idGenerator: SnowflakeIDGenerator;
       noteAttachmentRepository: NoteAttachmentRepository;
       accountModule: AccountModuleFacade;
+      timelineModule: TimelineModuleFacade;
       clock: Clock;
     },
   ) {}
@@ -140,6 +145,10 @@ export class RenoteService {
       }
     }
 
+    // ToDo: Even if the note cannot be pushed to the timeline, the note is created successfully, so there is no error here.
+    // ToDo: use job queue to push note to timeline
+    await this.deps.timelineModule.pushNoteToTimeline(renote);
+
     return Result.ok(renote);
   }
 
@@ -223,6 +232,7 @@ export const renote = Ether.newEther(
     idGenerator: snowflakeIDGeneratorSymbol,
     noteAttachmentRepository: noteAttachmentRepoSymbol,
     accountModule: accountModuleFacadeSymbol,
+    timelineModule: timelineModuleFacadeSymbol,
     clock: clockSymbol,
   },
 );

@@ -41,6 +41,10 @@ const TimelineNoteBaseSchema = z.object({
     followed_count: z.number(),
     following_count: z.number(),
   }),
+  original_note_id: z.string().optional().openapi({
+    example: '38477395',
+    description: 'Original note ID (if this note is a renote)',
+  }),
   renoted: z.boolean().openapi({
     example: false,
     description:
@@ -91,6 +95,10 @@ export const GetListTimelineResponseSchema = z
         header: z.string(),
         followed_count: z.number(),
         following_count: z.number(),
+      }),
+      original_note_id: z.string().optional().openapi({
+        example: '38477395',
+        description: 'Original note ID (if this note is a renote)',
       }),
       reactions: z.array(reactionSchema).openapi({
         description: 'Reactions',

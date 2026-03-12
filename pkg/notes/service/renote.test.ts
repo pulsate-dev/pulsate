@@ -5,6 +5,8 @@ import type { AccountID } from '../../accounts/model/account.js';
 import { Medium, type MediumID } from '../../drive/model/medium.js';
 import { MockClock, SnowflakeIDGenerator } from '../../id/mod.js';
 import { dummyAccountModuleFacade } from '../../intermodule/account.js';
+import { dummyTimelineModuleFacade } from '../../intermodule/timeline.js';
+import { InMemoryTimelineCacheRepository } from '../../timeline/adaptor/repository/dummyCache.js';
 import {
   InMemoryNoteAttachmentRepository,
   InMemoryNoteRepository,
@@ -45,6 +47,7 @@ const attachmentRepository = new InMemoryNoteAttachmentRepository(
   }),
   [],
 );
+const timelineCacheRepository = new InMemoryTimelineCacheRepository();
 const service = new RenoteService({
   noteRepository: repository,
   idGenerator: new SnowflakeIDGenerator(0, {
@@ -52,6 +55,7 @@ const service = new RenoteService({
   }),
   noteAttachmentRepository: attachmentRepository,
   accountModule: dummyAccountModuleFacade,
+  timelineModule: dummyTimelineModuleFacade(timelineCacheRepository),
   clock: new MockClock(new Date('2023-09-10T00:00:00Z')),
 });
 
@@ -73,6 +77,35 @@ describe('RenoteService', () => {
     expect(Result.unwrap(renote).getVisibility()).toBe('PUBLIC');
     expect(Result.unwrap(renote).isRenote()).toBe(true);
     expect(Result.unwrap(renote).isQuote()).toBe(false);
+  });
+
+  it('should push renote to timeline', async () => {
+    const cacheRepo = new InMemoryTimelineCacheRepository();
+    const timelineModule = dummyTimelineModuleFacade(cacheRepo);
+    const pushSpy = vi.spyOn(timelineModule, 'pushNoteToTimeline');
+
+    const testService = new RenoteService({
+      noteRepository: repository,
+      idGenerator: new SnowflakeIDGenerator(0, {
+        now: () => BigInt(Date.UTC(2023, 9, 10, 0, 0)),
+      }),
+      noteAttachmentRepository: attachmentRepository,
+      accountModule: dummyAccountModuleFacade,
+      timelineModule,
+      clock: new MockClock(new Date('2023-09-10T00:00:00Z')),
+    });
+
+    const renote = await testService.handle(
+      '2' as NoteID,
+      '',
+      '',
+      '101' as AccountID,
+      [],
+      'PUBLIC',
+    );
+
+    expect(Result.isOk(renote)).toBe(true);
+    expect(pushSpy).toHaveBeenCalledWith(Result.unwrap(renote));
   });
 
   it('should create quote when content is provided', async () => {
@@ -312,6 +345,9 @@ describe('RenoteService', () => {
       }),
       noteAttachmentRepository: attachmentRepository,
       accountModule: dummyAccountModuleFacade,
+      timelineModule: dummyTimelineModuleFacade(
+        new InMemoryTimelineCacheRepository(),
+      ),
       clock: new MockClock(new Date('2023-09-10T00:00:00Z')),
     });
 

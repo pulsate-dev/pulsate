@@ -226,6 +226,9 @@ export class TimelineController {
         contents_warning_comment: v.note.getCwComment(),
         visibility: v.note.getVisibility(),
         created_at: v.note.getCreatedAt().toUTCString(),
+        original_note_id: Option.isSome(v.note.getOriginalNoteID())
+          ? Option.unwrap(v.note.getOriginalNoteID())
+          : undefined,
         reactions: v.reactions.map((reaction) => ({
           emoji: reaction.getEmoji(),
           reacted_by: reaction.getAccountID(),
@@ -305,6 +308,9 @@ export class TimelineController {
         contents_warning_comment: v.note.getCwComment(),
         visibility: v.note.getVisibility(),
         created_at: v.note.getCreatedAt().toUTCString(),
+        original_note_id: Option.isSome(v.note.getOriginalNoteID())
+          ? Option.unwrap(v.note.getOriginalNoteID())
+          : undefined,
         reactions: v.reactions.map((reaction) => ({
           emoji: reaction.getEmoji(),
           reacted_by: reaction.getAccountID(),
@@ -373,6 +379,9 @@ export class TimelineController {
           contents_warning_comment: v.note.getCwComment(),
           visibility: v.note.getVisibility(),
           created_at: v.note.getCreatedAt().toUTCString(),
+          original_note_id: Option.isSome(v.note.getOriginalNoteID())
+            ? Option.unwrap(v.note.getOriginalNoteID())
+            : undefined,
           attachment_files: v.attachments.map((file) => {
             return {
               id: file.getId(),
@@ -590,6 +599,9 @@ export class TimelineController {
       contents_warning_comment: v.note.getCwComment(),
       visibility: v.note.getVisibility(),
       created_at: v.note.getCreatedAt().toUTCString(),
+      original_note_id: Option.isSome(v.note.getOriginalNoteID())
+        ? Option.unwrap(v.note.getOriginalNoteID())
+        : undefined,
       reactions: v.reactions.map((reaction) => ({
         emoji: reaction.getEmoji(),
         reacted_by: reaction.getAccountID(),
@@ -718,6 +730,9 @@ export class TimelineController {
         contents_warning_comment: v.note.getCwComment(),
         visibility: v.note.getVisibility(),
         created_at: v.note.getCreatedAt().toUTCString(),
+        original_note_id: Option.isSome(v.note.getOriginalNoteID())
+          ? Option.unwrap(v.note.getOriginalNoteID())
+          : undefined,
         reactions: v.reactions.map((reaction) => ({
           emoji: reaction.getEmoji(),
           reacted_by: reaction.getAccountID(),
