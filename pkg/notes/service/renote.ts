@@ -163,7 +163,9 @@ export class RenoteService {
     }
     const note = Option.unwrap(res);
 
-    if (!note.isRenote()) {
+    // NOTE: Only pure renotes (not quotes) are resolved to their original.
+    // Quoting a quote refers to the quote itself, not the root.
+    if (!note.isRenote() || note.isQuote()) {
       return Result.ok(note);
     }
 

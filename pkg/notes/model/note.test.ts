@@ -238,5 +238,34 @@ describe('Note', () => {
         Option.some('100' as NoteID),
       );
     });
+
+    it('should refer to the quote itself when quoting a quote', () => {
+      const quote300 = Note.quote(originalNote, {
+        id: '300' as NoteID,
+        authorID: '3' as AccountID,
+        content: 'first quote',
+        visibility: 'PUBLIC',
+        contentsWarningComment: '',
+        sendTo: Option.none(),
+        attachmentFileID: [],
+        createdAt: new Date('2023-09-11T00:00:00.000Z'),
+      });
+
+      const quote301 = Note.quote(quote300, {
+        id: '301' as NoteID,
+        authorID: '4' as AccountID,
+        content: 'quoting a quote',
+        visibility: 'PUBLIC',
+        contentsWarningComment: '',
+        sendTo: Option.none(),
+        attachmentFileID: [],
+        createdAt: new Date('2023-09-12T00:00:00.000Z'),
+      });
+
+      // NOTE: 100 <-Quotes- 300 <-Quotes- 301 => 301's original is 300 (not 100)
+      expect(quote301.getOriginalNoteID()).toStrictEqual(
+        Option.some('300' as NoteID),
+      );
+    });
   });
 });

@@ -296,6 +296,40 @@ describe('RenoteService', () => {
     );
   });
 
+  it('should renote a quote and refer to the quote itself (not the original)', async () => {
+    const quoteNote = Note.reconstruct({
+      id: '20' as NoteID,
+      authorID: '102' as AccountID,
+      content: 'quoting!',
+      contentsWarningComment: '',
+      createdAt: new Date(),
+      originalNoteID: Option.some('2' as NoteID),
+      attachmentFileID: [],
+      sendTo: Option.none(),
+      visibility: 'PUBLIC',
+      updatedAt: Option.none(),
+      deletedAt: Option.none(),
+    });
+    await repository.create(quoteNote);
+
+    const res = await service.handle(
+      '20' as NoteID,
+      '',
+      '',
+      '101' as AccountID,
+      [],
+      'PUBLIC',
+    );
+
+    // NOTE: 2 <-Quotes- 20 <-Renotes- result => result's original is 20 (not 2)
+    expect(Result.isOk(res)).toBe(true);
+    expect(Result.unwrap(res).getOriginalNoteID()).toStrictEqual(
+      Option.some('20' as NoteID),
+    );
+    expect(Result.unwrap(res).isRenote()).toBe(true);
+    expect(Result.unwrap(res).isQuote()).toBe(false);
+  });
+
   it("if actor frozen, can't renote", async () => {
     const res = await service.handle(
       originalNote.getID(),

@@ -111,10 +111,12 @@ export class Note {
       | 'createdAt'
     >,
   ): Note {
-    // NOTE: If original is a renote, refer to original's original
-    const originalNoteID = original.isRenote()
-      ? original.getOriginalNoteID()
-      : Option.some(original.getID());
+    // NOTE: If original is a pure renote (not a quote), refer to original's original.
+    // Quoting a quote refers to the quote itself, not the root.
+    const originalNoteID =
+      original.isRenote() && !original.isQuote()
+        ? original.getOriginalNoteID()
+        : Option.some(original.getID());
 
     return Note.new({
       ...arg,
@@ -149,10 +151,12 @@ export class Note {
       });
     }
 
-    // NOTE: If original is a renote, refer to original's original
-    const originalNoteID = original.isRenote()
-      ? original.getOriginalNoteID()
-      : Option.some(original.getID());
+    // NOTE: If original is a pure renote (not a quote), refer to original's original.
+    // Quoting a quote refers to the quote itself, not the root.
+    const originalNoteID =
+      original.isRenote() && !original.isQuote()
+        ? original.getOriginalNoteID()
+        : Option.some(original.getID());
 
     return Note.new({
       ...arg,
