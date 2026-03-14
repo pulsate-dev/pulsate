@@ -43,7 +43,25 @@ export class Note {
     this.deletedAt = arg.deletedAt;
   }
 
-  static new(arg: Omit<CreateNoteArgs, 'updatedAt' | 'deletedAt'>) {
+  static new(args: Omit<CreateNoteArgs, 'updatedAt' | 'deletedAt'>): Note {
+    if (Option.isSome(args.originalNoteID)) {
+      if (Note.isThisArgsQuote(args)) {
+        return Note.quote(args);
+      }
+
+      return Note.renote(args);
+    }
+
+    return new Note(Note.checkArgs(args));
+  }
+
+  static reconstruct(arg: CreateNoteArgs) {
+    return new Note(arg);
+  }
+
+  private static checkArgs(
+    arg: Omit<CreateNoteArgs, 'updatedAt' | 'deletedAt'>,
+  ): CreateNoteArgs {
     /*
     Note must satisfy the following conditions:
     - content length <= 3k
@@ -88,47 +106,36 @@ export class Note {
       throw new NoteNoDestinationError('No destination', { cause: null });
     }
 
-    return new Note({
+    return {
       ...arg,
       updatedAt: Option.none(),
       deletedAt: Option.none(),
-    });
+    };
   }
 
-  static reconstruct(arg: CreateNoteArgs) {
-    return new Note(arg);
-  }
-
-  static renote(
-    original: Note,
+  private static renote(
     arg: Pick<
       CreateNoteArgs,
       | 'id'
       | 'authorID'
       | 'visibility'
-      | 'sendTo'
+      | 'originalNoteID'
       | 'attachmentFileID'
       | 'createdAt'
     >,
   ): Note {
-    // NOTE: If original is a pure renote (not a quote), refer to original's original.
-    // Quoting a quote refers to the quote itself, not the root.
-    const originalNoteID =
-      original.isRenote() && !original.isQuote()
-        ? original.getOriginalNoteID()
-        : Option.some(original.getID());
-
-    return Note.new({
-      ...arg,
-      originalNoteID: originalNoteID,
-      // NOTE: Renotes do not have content or contentsWarningComment
-      content: '',
-      contentsWarningComment: '',
-    });
+    return new Note(
+      Note.checkArgs({
+        ...arg,
+        // NOTE: Renotes do not have content or contentsWarningComment
+        content: '',
+        contentsWarningComment: '',
+        sendTo: Option.none(),
+      }),
+    );
   }
 
-  static quote(
-    original: Note,
+  private static quote(
     arg: Pick<
       CreateNoteArgs,
       | 'id'
@@ -137,6 +144,7 @@ export class Note {
       | 'visibility'
       | 'contentsWarningComment'
       | 'sendTo'
+      | 'originalNoteID'
       | 'attachmentFileID'
       | 'createdAt'
     >,
@@ -151,20 +159,13 @@ export class Note {
       });
     }
 
-    // NOTE: If original is a pure renote (not a quote), refer to original's original.
-    // Quoting a quote refers to the quote itself, not the root.
-    const originalNoteID =
-      original.isRenote() && !original.isQuote()
-        ? original.getOriginalNoteID()
-        : Option.some(original.getID());
-
     return Note.new({
       ...arg,
-      originalNoteID: originalNoteID,
+      sendTo: Option.none(),
     });
   }
 
-  static isThisArgsQuote(
+  private static isThisArgsQuote(
     args: Pick<
       CreateNoteArgs,
       'content' | 'contentsWarningComment' | 'attachmentFileID'

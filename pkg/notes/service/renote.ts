@@ -20,7 +20,6 @@ import {
 import {
   NoteInsufficientPermissionError,
   NoteNotFoundError,
-  NoteTooManyAttachmentsError,
   NoteVisibilityInvalidError,
 } from '../model/errors.js';
 import type { NoteID, NoteVisibility } from '../model/note.js';
@@ -80,14 +79,6 @@ export class RenoteService {
         );
     }
 
-    if (attachmentFileID.length > 16) {
-      return Result.err(
-        new NoteTooManyAttachmentsError('Too many attachments', {
-          cause: null,
-        }),
-      );
-    }
-
     const originalNoteRes = await this.resolveOriginalNote(originalID);
     if (Result.isErr(originalNoteRes)) {
       return originalNoteRes;
@@ -102,37 +93,26 @@ export class RenoteService {
       return visibilityCheckRes;
     }
 
-    const id = this.deps.idGenerator.generate<Note>();
-    if (Result.isErr(id)) {
-      return id;
+    const idRes = this.deps.idGenerator.generate<Note>();
+    if (Result.isErr(idRes)) {
+      return idRes;
     }
+    const id = Result.unwrap(idRes);
 
     const now = this.deps.clock.now();
     const noteArgs = {
-      id: Result.unwrap(id) as NoteID,
+      id,
+      content: content,
+      contentsWarningComment: contentsWarningComment,
+      originalNoteID: Option.some(originalNote.getID()),
       authorID: authorID,
-      createdAt: new Date(Number(now)),
       attachmentFileID: attachmentFileID,
-      sendTo: Option.none() as Option.Option<AccountID>,
       visibility: visibility,
+      sendTo: Option.none(),
+      createdAt: new Date(Number(now)),
     };
 
-    const renote = Note.isThisArgsQuote({
-      content,
-      contentsWarningComment,
-      attachmentFileID,
-    })
-      ? Note.quote(originalNote, {
-          ...noteArgs,
-          content: content,
-          contentsWarningComment: contentsWarningComment,
-        })
-      : Note.renote(originalNote, noteArgs);
-
-    const res = await this.deps.noteRepository.create(renote);
-    if (Result.isErr(res)) {
-      return res;
-    }
+    const renote = Note.new(noteArgs);
 
     if (attachmentFileID.length !== 0) {
       const attachmentRes = await this.deps.noteAttachmentRepository.create(
@@ -142,6 +122,11 @@ export class RenoteService {
       if (Result.isErr(attachmentRes)) {
         return attachmentRes;
       }
+    }
+
+    const res = await this.deps.noteRepository.create(renote);
+    if (Result.isErr(res)) {
+      return res;
     }
 
     // ToDo: Even if the note cannot be pushed to the timeline, the note is created successfully, so there is no error here.
