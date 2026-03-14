@@ -164,6 +164,19 @@ export class Note {
     });
   }
 
+  static isThisArgsQuote(
+    args: Pick<
+      CreateNoteArgs,
+      'content' | 'contentsWarningComment' | 'attachmentFileID'
+    >,
+  ): boolean {
+    return (
+      args.content !== '' ||
+      args.contentsWarningComment !== '' ||
+      args.attachmentFileID.length > 0
+    );
+  }
+
   private readonly id: NoteID;
   getID(): NoteID {
     return this.id;

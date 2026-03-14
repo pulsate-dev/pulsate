@@ -117,12 +117,11 @@ export class RenoteService {
       visibility: visibility,
     };
 
-    const isQuote =
-      content !== '' ||
-      contentsWarningComment !== '' ||
-      attachmentFileID.length > 0;
-
-    const renote = isQuote
+    const renote = Note.isThisArgsQuote({
+      content,
+      contentsWarningComment,
+      attachmentFileID,
+    })
       ? Note.quote(originalNote, {
           ...noteArgs,
           content: content,
