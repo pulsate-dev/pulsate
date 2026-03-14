@@ -159,10 +159,12 @@ export class Note {
       });
     }
 
-    return Note.new({
-      ...arg,
-      sendTo: Option.none(),
-    });
+    return new Note(
+      Note.checkArgs({
+        ...arg,
+        sendTo: Option.none(),
+      }),
+    );
   }
 
   private static isThisArgsQuote(
