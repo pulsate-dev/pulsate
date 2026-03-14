@@ -128,4 +128,106 @@ describe('Note', () => {
       Option.some('999' as NoteID),
     );
   });
+
+  describe('quote', () => {
+    it('should create a quote with content', () => {
+      const quote = Note.new({
+        id: '200' as NoteID,
+        authorID: '3' as AccountID,
+        content: 'quoting this!',
+        visibility: 'PUBLIC',
+        contentsWarningComment: '',
+        sendTo: Option.none(),
+        originalNoteID: Option.some('100' as NoteID),
+        attachmentFileID: [],
+        createdAt: new Date('2023-09-11T00:00:00.000Z'),
+      });
+
+      expect(quote.getContent()).toBe('quoting this!');
+      expect(quote.getOriginalNoteID()).toStrictEqual(
+        Option.some('100' as NoteID),
+      );
+      expect(quote.isRenote()).toBe(true);
+      expect(quote.isQuote()).toBe(true);
+    });
+
+    it('should create a quote with CW comment only', () => {
+      const quote = Note.new({
+        id: '201' as NoteID,
+        authorID: '3' as AccountID,
+        content: '',
+        visibility: 'PUBLIC',
+        contentsWarningComment: 'CW text',
+        sendTo: Option.none(),
+        originalNoteID: Option.some('100' as NoteID),
+        attachmentFileID: [],
+        createdAt: new Date('2023-09-11T00:00:00.000Z'),
+      });
+
+      expect(quote.getContent()).toBe('');
+      expect(quote.getCwComment()).toBe('CW text');
+      expect(quote.isQuote()).toBe(true);
+    });
+
+    it('should create a quote with attachments only', () => {
+      const quote = Note.new({
+        id: '202' as NoteID,
+        authorID: '3' as AccountID,
+        content: '',
+        visibility: 'PUBLIC',
+        contentsWarningComment: '',
+        sendTo: Option.none(),
+        originalNoteID: Option.some('100' as NoteID),
+        attachmentFileID: ['10' as MediumID],
+        createdAt: new Date('2023-09-11T00:00:00.000Z'),
+      });
+
+      expect(quote.getContent()).toBe('');
+      expect(quote.getAttachmentFileID()).toHaveLength(1);
+      expect(quote.isQuote()).toBe(true);
+    });
+
+    it('should refer to original note when quoting a renote', () => {
+      /**
+       * NOTE:
+       * originalNoteID resolution (renote chain traversal) is handled
+       * by the service layer (resolveOriginalNote), not by Note.new().
+       * Note.new() simply stores the originalNoteID as given.
+       */
+      const quote = Note.new({
+        id: '301' as NoteID,
+        authorID: '4' as AccountID,
+        content: 'quoting a renote',
+        visibility: 'PUBLIC',
+        contentsWarningComment: '',
+        sendTo: Option.none(),
+        originalNoteID: Option.some('100' as NoteID),
+        attachmentFileID: [],
+        createdAt: new Date('2023-09-12T00:00:00.000Z'),
+      });
+
+      expect(quote.getOriginalNoteID()).toStrictEqual(
+        Option.some('100' as NoteID),
+      );
+    });
+
+    it('should refer to the quote itself when quoting a quote', () => {
+      const quote301 = Note.new({
+        id: '301' as NoteID,
+        authorID: '4' as AccountID,
+        content: 'quoting a quote',
+        visibility: 'PUBLIC',
+        contentsWarningComment: '',
+        sendTo: Option.none(),
+        originalNoteID: Option.some('300' as NoteID),
+        attachmentFileID: [],
+        createdAt: new Date('2023-09-12T00:00:00.000Z'),
+      });
+
+      // NOTE: 100 <-Quotes- 300 <-Quotes- 301 => 301's original is 300 (not 100)
+      expect(quote301.getOriginalNoteID()).toStrictEqual(
+        Option.some('300' as NoteID),
+      );
+    });
+  });
 });

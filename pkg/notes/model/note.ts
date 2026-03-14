@@ -26,6 +26,8 @@ export interface CreateNoteArgs {
   deletedAt: Option.Option<Date>;
 }
 
+export type NewNoteArgs = Omit<CreateNoteArgs, 'updatedAt' | 'deletedAt'>;
+
 export class Note {
   private constructor(arg: CreateNoteArgs) {
     this.id = arg.id;
@@ -41,7 +43,25 @@ export class Note {
     this.deletedAt = arg.deletedAt;
   }
 
-  static new(arg: Omit<CreateNoteArgs, 'updatedAt' | 'deletedAt'>) {
+  static new(args: Omit<CreateNoteArgs, 'updatedAt' | 'deletedAt'>): Note {
+    if (Option.isSome(args.originalNoteID)) {
+      if (Note.isThisArgsQuote(args)) {
+        return Note.quote(args);
+      }
+
+      return Note.renote(args);
+    }
+
+    return new Note(Note.checkArgs(args));
+  }
+
+  static reconstruct(arg: CreateNoteArgs) {
+    return new Note(arg);
+  }
+
+  private static checkArgs(
+    arg: Omit<CreateNoteArgs, 'updatedAt' | 'deletedAt'>,
+  ): CreateNoteArgs {
     /*
     Note must satisfy the following conditions:
     - content length <= 3k
@@ -86,15 +106,78 @@ export class Note {
       throw new NoteNoDestinationError('No destination', { cause: null });
     }
 
-    return new Note({
+    return {
       ...arg,
       updatedAt: Option.none(),
       deletedAt: Option.none(),
-    });
+    };
   }
 
-  static reconstruct(arg: CreateNoteArgs) {
-    return new Note(arg);
+  private static renote(
+    arg: Pick<
+      CreateNoteArgs,
+      | 'id'
+      | 'authorID'
+      | 'visibility'
+      | 'originalNoteID'
+      | 'attachmentFileID'
+      | 'createdAt'
+    >,
+  ): Note {
+    return new Note(
+      Note.checkArgs({
+        ...arg,
+        // NOTE: Renotes do not have content or contentsWarningComment
+        content: '',
+        contentsWarningComment: '',
+        sendTo: Option.none(),
+      }),
+    );
+  }
+
+  private static quote(
+    arg: Pick<
+      CreateNoteArgs,
+      | 'id'
+      | 'authorID'
+      | 'content'
+      | 'visibility'
+      | 'contentsWarningComment'
+      | 'sendTo'
+      | 'originalNoteID'
+      | 'attachmentFileID'
+      | 'createdAt'
+    >,
+  ): Note {
+    if (
+      arg.content === '' &&
+      arg.contentsWarningComment === '' &&
+      arg.attachmentFileID.length === 0
+    ) {
+      throw new NoteContentLengthError('Quote must have content', {
+        cause: null,
+      });
+    }
+
+    return new Note(
+      Note.checkArgs({
+        ...arg,
+        sendTo: Option.none(),
+      }),
+    );
+  }
+
+  private static isThisArgsQuote(
+    args: Pick<
+      CreateNoteArgs,
+      'content' | 'contentsWarningComment' | 'attachmentFileID'
+    >,
+  ): boolean {
+    return (
+      args.content !== '' ||
+      args.contentsWarningComment !== '' ||
+      args.attachmentFileID.length > 0
+    );
   }
 
   private readonly id: NoteID;
@@ -130,6 +213,19 @@ export class Note {
   private readonly originalNoteID: Option.Option<NoteID>;
   getOriginalNoteID(): Option.Option<NoteID> {
     return this.originalNoteID;
+  }
+
+  isRenote(): boolean {
+    return Option.isSome(this.originalNoteID);
+  }
+
+  isQuote(): boolean {
+    if (!this.isRenote()) return false;
+    if (this.content.length > 0) return true;
+
+    return (
+      this.contentsWarningComment.length > 0 || this.attachmentFileID.length > 0
+    );
   }
 
   private readonly attachmentFileID: readonly MediumID[];

@@ -20,7 +20,6 @@ import {
 import {
   NoteInsufficientPermissionError,
   NoteNotFoundError,
-  NoteTooManyAttachmentsError,
   NoteVisibilityInvalidError,
 } from '../model/errors.js';
 import type { NoteID, NoteVisibility } from '../model/note.js';
@@ -49,7 +48,7 @@ export class RenoteService {
    * @returns created note
    */
   async handle(
-    originalNoteID: NoteID,
+    originalID: NoteID,
     content: string,
     contentsWarningComment: string,
     authorID: AccountID,
@@ -80,70 +79,40 @@ export class RenoteService {
         );
     }
 
-    if (attachmentFileID.length > 16) {
-      return Result.err(
-        new NoteTooManyAttachmentsError('Too many attachments', {
-          cause: null,
-        }),
-      );
+    const originalNoteRes = await this.resolveOriginalNote(originalID);
+    if (Result.isErr(originalNoteRes)) {
+      return originalNoteRes;
+    }
+    const originalNote = Result.unwrap(originalNoteRes);
+
+    const visibilityCheckRes = this.checkOriginalVisibility(
+      originalNote,
+      authorID,
+    );
+    if (Result.isErr(visibilityCheckRes)) {
+      return visibilityCheckRes;
     }
 
-    const originalNoteRes =
-      await this.deps.noteRepository.findByID(originalNoteID);
-    if (Option.isNone(originalNoteRes)) {
-      return Result.err(
-        new NoteNotFoundError('Original note not found', { cause: null }),
-      );
+    const idRes = this.deps.idGenerator.generate<Note>();
+    if (Result.isErr(idRes)) {
+      return idRes;
     }
-    const originalNote = Option.unwrap(originalNoteRes);
-
-    switch (originalNote.getVisibility()) {
-      case 'PUBLIC':
-      case 'HOME':
-        break;
-      case 'FOLLOWERS':
-        // NOTE: FOLLOWERS note can renote only author
-        if (originalNote.getAuthorID() !== authorID) {
-          return Result.err(
-            new NoteVisibilityInvalidError(
-              'Can not renote others FOLLOWERS note',
-              { cause: null },
-            ),
-          );
-        }
-        break;
-      case 'DIRECT':
-        // NOTE: can not renote direct note
-        return Result.err(
-          new NoteVisibilityInvalidError('Can not renote direct note', {
-            cause: null,
-          }),
-        );
-    }
-
-    const id = this.deps.idGenerator.generate<Note>();
-    if (Result.isErr(id)) {
-      return id;
-    }
+    const id = Result.unwrap(idRes);
 
     const now = this.deps.clock.now();
-    const renote = Note.new({
-      id: Result.unwrap(id) as NoteID,
-      authorID: authorID,
+    const noteArgs = {
+      id,
       content: content,
       contentsWarningComment: contentsWarningComment,
-      createdAt: new Date(Number(now)),
-      originalNoteID: Option.some(originalNoteID),
+      originalNoteID: Option.some(originalNote.getID()),
+      authorID: authorID,
       attachmentFileID: attachmentFileID,
-      // NOTE: Direct note is can not renote
-      sendTo: Option.none(),
       visibility: visibility,
-    });
+      sendTo: Option.none(),
+      createdAt: new Date(Number(now)),
+    };
 
-    const res = await this.deps.noteRepository.create(renote);
-    if (Result.isErr(res)) {
-      return res;
-    }
+    const renote = Note.new(noteArgs);
 
     if (attachmentFileID.length !== 0) {
       const attachmentRes = await this.deps.noteAttachmentRepository.create(
@@ -155,6 +124,11 @@ export class RenoteService {
       }
     }
 
+    const res = await this.deps.noteRepository.create(renote);
+    if (Result.isErr(res)) {
+      return res;
+    }
+
     // ToDo: Even if the note cannot be pushed to the timeline, the note is created successfully, so there is no error here.
     // ToDo: use job queue to push note to timeline
     await this.deps.timelineModule.pushNoteToTimeline(renote);
@@ -162,18 +136,72 @@ export class RenoteService {
     return Result.ok(renote);
   }
 
+  private async resolveOriginalNote(
+    originalID: NoteID,
+  ): Promise<Result.Result<Error, Note>> {
+    const res = await this.deps.noteRepository.findByID(originalID);
+    if (Option.isNone(res)) {
+      return Result.err(
+        new NoteNotFoundError('Original note not found', { cause: null }),
+      );
+    }
+    const note = Option.unwrap(res);
+
+    // NOTE: Only pure renotes (not quotes) are resolved to their original.
+    // Quoting a quote refers to the quote itself, not the root.
+    if (!note.isRenote() || note.isQuote()) {
+      return Result.ok(note);
+    }
+
+    const rootID = Option.unwrap(note.getOriginalNoteID());
+    const rootRes = await this.deps.noteRepository.findByID(rootID);
+    if (Option.isNone(rootRes)) {
+      return Result.err(
+        new NoteNotFoundError('Original note not found', { cause: null }),
+      );
+    }
+    return Result.ok(Option.unwrap(rootRes));
+  }
+
+  private checkOriginalVisibility(
+    originalNote: Note,
+    authorID: AccountID,
+  ): Result.Result<Error, void> {
+    switch (originalNote.getVisibility()) {
+      case 'PUBLIC':
+      case 'HOME':
+        return Result.ok(undefined);
+      case 'FOLLOWERS':
+        if (originalNote.getAuthorID() !== authorID) {
+          return Result.err(
+            new NoteVisibilityInvalidError(
+              'Can not renote others FOLLOWERS note',
+              { cause: null },
+            ),
+          );
+        }
+        return Result.ok(undefined);
+      case 'DIRECT':
+        return Result.err(
+          new NoteVisibilityInvalidError('Can not renote direct note', {
+            cause: null,
+          }),
+        );
+    }
+  }
+
   private isAllowed(actor: Account, visibility: NoteVisibility): boolean {
-    // NOTE: actor must be active, not frozen
-    if (actor.getStatus() !== 'active') {
+    // NOTE: an actor must be active
+    if (!actor.isActivated()) {
       return false;
     }
 
-    if (actor.getFrozen() !== 'normal') {
+    if (actor.isFrozen()) {
       return false;
     }
 
-    if (actor.getSilenced() === 'silenced') {
-      // NOTE: silenced account can not set note visibility to PUBLIC
+    if (actor.isSilenced()) {
+      // NOTE: silenced account cannot set note visibility to PUBLIC
       if (visibility === 'PUBLIC') {
         return false;
       }
