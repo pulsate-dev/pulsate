@@ -145,16 +145,16 @@ describe('RenoteService', () => {
   });
 
   it('renote attachment must be less than 16', async () => {
-    const res = await service.handle(
-      '2' as NoteID,
-      '',
-      '',
-      '101' as AccountID,
-      Array.from({ length: 17 }, (_, i) => i.toString() as MediumID),
-      'PUBLIC',
-    );
-
-    expect(Result.isErr(res)).toBe(true);
+    await expect(
+      service.handle(
+        '2' as NoteID,
+        '',
+        '',
+        '101' as AccountID,
+        Array.from({ length: 17 }, (_, i) => i.toString() as MediumID),
+        'PUBLIC',
+      ),
+    ).rejects.toThrow('Too many attachments');
   });
 
   it('should not create renote with DIRECT visibility', async () => {

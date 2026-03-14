@@ -130,20 +130,15 @@ describe('Note', () => {
   });
 
   describe('quote', () => {
-    const originalNote = Note.new({
-      ...exampleInput,
-      id: '100' as NoteID,
-      visibility: 'PUBLIC',
-    });
-
     it('should create a quote with content', () => {
-      const quote = Note.quote(originalNote, {
+      const quote = Note.new({
         id: '200' as NoteID,
         authorID: '3' as AccountID,
         content: 'quoting this!',
         visibility: 'PUBLIC',
         contentsWarningComment: '',
         sendTo: Option.none(),
+        originalNoteID: Option.some('100' as NoteID),
         attachmentFileID: [],
         createdAt: new Date('2023-09-11T00:00:00.000Z'),
       });
@@ -157,13 +152,14 @@ describe('Note', () => {
     });
 
     it('should create a quote with CW comment only', () => {
-      const quote = Note.quote(originalNote, {
+      const quote = Note.new({
         id: '201' as NoteID,
         authorID: '3' as AccountID,
         content: '',
         visibility: 'PUBLIC',
         contentsWarningComment: 'CW text',
         sendTo: Option.none(),
+        originalNoteID: Option.some('100' as NoteID),
         attachmentFileID: [],
         createdAt: new Date('2023-09-11T00:00:00.000Z'),
       });
@@ -174,13 +170,14 @@ describe('Note', () => {
     });
 
     it('should create a quote with attachments only', () => {
-      const quote = Note.quote(originalNote, {
+      const quote = Note.new({
         id: '202' as NoteID,
         authorID: '3' as AccountID,
         content: '',
         visibility: 'PUBLIC',
         contentsWarningComment: '',
         sendTo: Option.none(),
+        originalNoteID: Option.some('100' as NoteID),
         attachmentFileID: ['10' as MediumID],
         createdAt: new Date('2023-09-11T00:00:00.000Z'),
       });
@@ -190,46 +187,21 @@ describe('Note', () => {
       expect(quote.isQuote()).toBe(true);
     });
 
-    it('should throw error when content, CW comment, and attachments are all empty', () => {
-      expect(() =>
-        Note.quote(originalNote, {
-          id: '204' as NoteID,
-          authorID: '3' as AccountID,
-          content: '',
-          visibility: 'PUBLIC',
-          contentsWarningComment: '',
-          sendTo: Option.none(),
-          attachmentFileID: [],
-          createdAt: new Date('2023-09-11T00:00:00.000Z'),
-        }),
-      ).toThrow('Quote must have content');
-    });
-
     it('should refer to original note when quoting a renote', () => {
       /**
        * NOTE:
-       * when   100 <-Renotes- 300 <-Quotes- 301,
-       * actual 100 <-Quotes-- 301
-       *
-       * when   100 <-Quotes- 300  <-Quotes- 301,
-       * actual 300 <-Quotes- 301
+       * originalNoteID resolution (renote chain traversal) is handled
+       * by the service layer (resolveOriginalNote), not by Note.new().
+       * Note.new() simply stores the originalNoteID as given.
        */
-      const renote = Note.renote(originalNote, {
-        id: '300' as NoteID,
-        authorID: '3' as AccountID,
-        visibility: 'PUBLIC',
-        sendTo: Option.none(),
-        attachmentFileID: [],
-        createdAt: new Date('2023-09-11T00:00:00.000Z'),
-      });
-
-      const quote = Note.quote(renote, {
+      const quote = Note.new({
         id: '301' as NoteID,
         authorID: '4' as AccountID,
         content: 'quoting a renote',
         visibility: 'PUBLIC',
         contentsWarningComment: '',
         sendTo: Option.none(),
+        originalNoteID: Option.some('100' as NoteID),
         attachmentFileID: [],
         createdAt: new Date('2023-09-12T00:00:00.000Z'),
       });
@@ -240,24 +212,14 @@ describe('Note', () => {
     });
 
     it('should refer to the quote itself when quoting a quote', () => {
-      const quote300 = Note.quote(originalNote, {
-        id: '300' as NoteID,
-        authorID: '3' as AccountID,
-        content: 'first quote',
-        visibility: 'PUBLIC',
-        contentsWarningComment: '',
-        sendTo: Option.none(),
-        attachmentFileID: [],
-        createdAt: new Date('2023-09-11T00:00:00.000Z'),
-      });
-
-      const quote301 = Note.quote(quote300, {
+      const quote301 = Note.new({
         id: '301' as NoteID,
         authorID: '4' as AccountID,
         content: 'quoting a quote',
         visibility: 'PUBLIC',
         contentsWarningComment: '',
         sendTo: Option.none(),
+        originalNoteID: Option.some('300' as NoteID),
         attachmentFileID: [],
         createdAt: new Date('2023-09-12T00:00:00.000Z'),
       });
