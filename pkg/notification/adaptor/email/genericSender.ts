@@ -34,7 +34,7 @@ export class SmtpEmailSender implements EmailSender {
     const res = await new SmtpTransport({
       host: this.smtpConfig.host,
       port: this.smtpConfig.port,
-      secure: true,
+      secure: false,
       auth: {
         user: this.smtpConfig.user,
         pass: this.smtpConfig.pass,

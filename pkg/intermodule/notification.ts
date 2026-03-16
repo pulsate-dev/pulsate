@@ -96,8 +96,19 @@ const notificationRepo = Ether.newEther(
   () => notificationRepoObject,
 );
 
+const smtpConfig = {
+  host: process.env.SMTP_HOST ?? '',
+  user: process.env.SMTP_USER ?? '',
+  pass: process.env.SMTP_PASS ?? '',
+};
+
 const emailSenderObject = isProduction
-  ? new SmtpEmailSender({ host: '', port: 587, user: '', pass: '' }) // ToDo: make configurable
+  ? new SmtpEmailSender({
+      host: smtpConfig.host,
+      port: 587,
+      user: smtpConfig.user,
+      pass: smtpConfig.pass,
+    })
   : new DummyEmailSender();
 const emailSender = Ether.newEther(emailSenderSymbol, () => emailSenderObject);
 
