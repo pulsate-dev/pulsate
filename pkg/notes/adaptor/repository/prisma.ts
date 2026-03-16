@@ -49,6 +49,13 @@ export class PrismaNoteRepository implements NoteRepository {
           id: note.getAuthorID(),
         },
       },
+      renote: Option.isSome(note.getOriginalNoteID())
+        ? {
+            connect: {
+              id: Option.unwrap(note.getOriginalNoteID()),
+            },
+          }
+        : undefined,
       createdAt: note.getCreatedAt(),
       deletedAt: Option.isNone(note.getDeletedAt())
         ? undefined
@@ -81,7 +88,7 @@ export class PrismaNoteRepository implements NoteRepository {
       createdAt: data.createdAt,
       deletedAt: !data.deletedAt ? Option.none() : Option.some(data.deletedAt),
       contentsWarningComment: '',
-      originalNoteID: !data.renoteId
+      originalNoteID: data.renoteId
         ? Option.some(data.renoteId as NoteID)
         : Option.none(),
       attachmentFileID: [],
