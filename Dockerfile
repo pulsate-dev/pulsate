@@ -1,5 +1,5 @@
 # Stage 1: Base with pnpm
-FROM node:22-slim AS base
+FROM node:24-slim AS base
 ENV PNPM_HOME=/pnpm
 ENV PATH="${PNPM_HOME}:${PATH}"
 RUN corepack enable
@@ -20,7 +20,7 @@ COPY --from=prod-deps /app/node_modules ./node_modules
 RUN pnpm run prepare && pnpm run build
 
 # Stage 4: Final slim image
-FROM node:22-slim
+FROM node:24-slim
 WORKDIR /app
 COPY --from=build /app/node_modules /app/node_modules
 COPY --from=build /app/build /app/build
