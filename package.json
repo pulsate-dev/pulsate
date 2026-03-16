@@ -37,7 +37,7 @@
     "@mikuroxina/mini-fn": "^7.0.0",
     "@prisma/adapter-pg": "^7.0.1",
     "@prisma/client": "7.4.2",
-    "@scalar/hono-api-reference": "^0.9.0",
+    "@scalar/hono-api-reference": "^0.10.0",
     "@upyo/core": "^0.4.0",
     "@upyo/smtp": "^0.4.0",
     "argon2": "^0.44.0",
