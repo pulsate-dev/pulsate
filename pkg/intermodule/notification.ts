@@ -100,6 +100,7 @@ const smtpConfig = {
   host: process.env.SMTP_HOST ?? '',
   user: process.env.SMTP_USER ?? '',
   pass: process.env.SMTP_PASS ?? '',
+  from: process.env.SMTP_FROM ?? '',
 };
 
 const emailSenderObject = isProduction
@@ -108,6 +109,7 @@ const emailSenderObject = isProduction
       port: 587,
       user: smtpConfig.user,
       pass: smtpConfig.pass,
+      from: smtpConfig.from,
     })
   : new DummyEmailSender();
 const emailSender = Ether.newEther(emailSenderSymbol, () => emailSenderObject);
