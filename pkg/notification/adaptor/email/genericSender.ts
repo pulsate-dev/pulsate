@@ -11,6 +11,7 @@ export interface SmtpConfig {
   port: number;
   user: string;
   pass: string;
+  from: string;
 }
 
 export class SmtpEmailSender implements EmailSender {
@@ -22,8 +23,7 @@ export class SmtpEmailSender implements EmailSender {
     body: string,
   ): Promise<Result.Result<Error, void>> {
     const message = createMessage({
-      // ToDo: make configurable
-      from: 'system@example.com',
+      from: this.smtpConfig.from,
       to: to,
       subject: subject,
       content: {
