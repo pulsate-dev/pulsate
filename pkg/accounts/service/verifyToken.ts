@@ -35,7 +35,7 @@ export class VerifyAccountTokenService {
       Number(this.clock.now()) + 7 * 24 * 60 * 60 * 1000,
     );
 
-    const encodedToken = Buffer.from(verifyToken).toString('base64');
+    const encodedToken = Buffer.from(verifyToken).toString('base64url');
 
     const account = await this.accountRepository.findByName(accountName);
     if (Option.isNone(account)) {
