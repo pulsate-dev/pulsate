@@ -43,7 +43,7 @@ importers:
         version: 2.0.5
       file-type:
         specifier: ^21.0.0
-        version: 21.3.2
+        version: 21.3.3
       hono:
         specifier: ^4.12.7
         version: 4.12.8
@@ -1040,8 +1040,8 @@ packages:
       picomatch:
         optional: true
 
-  file-type@21.3.2:
-    resolution: {integrity: sha512-DLkUvGwep3poOV2wpzbHCOnSKGk1LzyXTv+aHFgN2VFl96wnp8YA9YjO2qPzg5PuL8q/SW9Pdi6WTkYOIh995w==}
+  file-type@21.3.3:
+    resolution: {integrity: sha512-pNwbwz8c3aZ+GvbJnIsCnDjKvgCZLHxkFWLEFxU3RMa+Ey++ZSEfisvsWQMcdys6PpxQjWUOIDi1fifXsW3YRg==}
     engines: {node: '>=20'}
 
   foreground-child@3.3.1:
@@ -2436,7 +2436,7 @@ snapshots:
     optionalDependencies:
       picomatch: 4.0.3
 
-  file-type@21.3.2:
+  file-type@21.3.3:
     dependencies:
       '@tokenizer/inflate': 0.4.1
       strtok3: 10.3.4
