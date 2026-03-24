@@ -16,7 +16,7 @@ importers:
         version: 0.6.1(hono@4.12.8)
       '@hono/zod-openapi':
         specifier: ^1.0.0
-        version: 1.2.2(hono@4.12.8)(zod@4.3.6)
+        version: 1.2.3(hono@4.12.8)(zod@4.3.6)
       '@mikuroxina/mini-fn':
         specifier: ^7.0.0
         version: 7.2.0
@@ -83,7 +83,7 @@ importers:
         version: 8.18.0
       '@vitest/coverage-v8':
         specifier: ^4.0.0
-        version: 4.1.0(vitest@4.1.0(@types/node@24.12.0)(vite@7.3.1(@types/node@24.12.0)(jiti@2.6.1)(yaml@2.8.2)))
+        version: 4.1.0(vitest@4.1.0(@types/node@24.12.0)(vite@7.3.1(@types/node@24.12.0)(jiti@2.6.1)(yaml@2.8.3)))
       esbuild:
         specifier: ^0.27.0
         version: 0.27.4
@@ -104,12 +104,12 @@ importers:
         version: 5.9.3
       vitest:
         specifier: ^4.0.0
-        version: 4.1.0(@types/node@24.12.0)(vite@7.3.1(@types/node@24.12.0)(jiti@2.6.1)(yaml@2.8.2))
+        version: 4.1.0(@types/node@24.12.0)(vite@7.3.1(@types/node@24.12.0)(jiti@2.6.1)(yaml@2.8.3))
 
 packages:
 
-  '@asteasolutions/zod-to-openapi@8.4.1':
-    resolution: {integrity: sha512-WmJUsFINbnWxGvHSd16aOjgKf+5GsfdxruO2YDLcgplsidakCauik1lhlk83YDH06265Yd1XtUyF24o09uygpw==}
+  '@asteasolutions/zod-to-openapi@8.5.0':
+    resolution: {integrity: sha512-SABbKiObg5dLRiTFnqiW1WWwGcg1BJfmHtT2asIBnBHg6Smy/Ms2KHc650+JI4Hw7lSkdiNebEGXpwoxfben8Q==}
     peerDependencies:
       zod: ^4.0.0
 
@@ -404,8 +404,8 @@ packages:
     peerDependencies:
       hono: '>=4.0.0'
 
-  '@hono/zod-openapi@1.2.2':
-    resolution: {integrity: sha512-va6vsL23wCJ1d0Vd+vGL1XOt+wPwItxirYafuhlW9iC2MstYr2FvsI7mctb45eBTjZfkqB/3LYDJEppPjOEiHw==}
+  '@hono/zod-openapi@1.2.3':
+    resolution: {integrity: sha512-zAviC3ApRAYGUiGWZiW/mrK/UBqkTi9BKQxn1IvwYyp2kS+k1tlnwut59DfEInpcsq1347zAYOqYI+obMy4vzQ==}
     engines: {node: '>=16.0.0'}
     peerDependencies:
       hono: '>=4.3.6'
@@ -1352,6 +1352,10 @@ packages:
     resolution: {integrity: sha512-5gTmgEY/sqK6gFXLIsQNH19lWb4ebPDLA4SdLP7dsWkIXHWlG66oPuVvXSGFPppYZz8ZDZq0dYYrbHfBCVUb1Q==}
     engines: {node: '>=12'}
 
+  picomatch@4.0.4:
+    resolution: {integrity: sha512-QP88BAKvMam/3NxH6vj2o21R6MjxZUAd6nlwAS/pnGvN9IVLocLHxGYIzFhg6fUQ+5th6P4dv4eW9jX3DSIj7A==}
+    engines: {node: '>=12'}
+
   pkg-types@2.3.0:
     resolution: {integrity: sha512-SIqCzDRg0s9npO5XQ3tNZioRY1uK06lA41ynBC1YmFTmnY6FjUjVt6s4LoADmwoig1qqD0oK8h1p/8mlMx8Oig==}
 
@@ -1672,8 +1676,8 @@ packages:
     resolution: {integrity: sha512-LKYU1iAXJXUgAXn9URjiu+MWhyUXHsvfp7mcuYm9dSUKK0/CjtrUwFAxD82/mCWbtLsGjFIad0wIsod4zrTAEQ==}
     engines: {node: '>=0.4'}
 
-  yaml@2.8.2:
-    resolution: {integrity: sha512-mplynKqc1C2hTVYxd0PU2xQAc22TI1vShAYGksCCfxbn/dFwnHTNi1bvYsBTkhdUNtGIf5xNOg938rrSSYvS9A==}
+  yaml@2.8.3:
+    resolution: {integrity: sha512-AvbaCLOO2Otw/lW5bmh9d/WEdcDFdQp2Z2ZUH3pX9U2ihyUY0nvLv7J6TrWowklRGPYbB/IuIMfYgxaCPg5Bpg==}
     engines: {node: '>= 14.6'}
     hasBin: true
 
@@ -1685,7 +1689,7 @@ packages:
 
 snapshots:
 
-  '@asteasolutions/zod-to-openapi@8.4.1(zod@4.3.6)':
+  '@asteasolutions/zod-to-openapi@8.5.0(zod@4.3.6)':
     dependencies:
       openapi3-ts: 4.5.0
       zod: 4.3.6
@@ -1869,9 +1873,9 @@ snapshots:
     dependencies:
       hono: 4.12.8
 
-  '@hono/zod-openapi@1.2.2(hono@4.12.8)(zod@4.3.6)':
+  '@hono/zod-openapi@1.2.3(hono@4.12.8)(zod@4.3.6)':
     dependencies:
-      '@asteasolutions/zod-to-openapi': 8.4.1(zod@4.3.6)
+      '@asteasolutions/zod-to-openapi': 8.5.0(zod@4.3.6)
       '@hono/zod-validator': 0.7.6(hono@4.12.8)(zod@4.3.6)
       hono: 4.12.8
       openapi3-ts: 4.5.0
@@ -2227,7 +2231,7 @@ snapshots:
     dependencies:
       '@upyo/core': 0.4.0
 
-  '@vitest/coverage-v8@4.1.0(vitest@4.1.0(@types/node@24.12.0)(vite@7.3.1(@types/node@24.12.0)(jiti@2.6.1)(yaml@2.8.2)))':
+  '@vitest/coverage-v8@4.1.0(vitest@4.1.0(@types/node@24.12.0)(vite@7.3.1(@types/node@24.12.0)(jiti@2.6.1)(yaml@2.8.3)))':
     dependencies:
       '@bcoe/v8-coverage': 1.0.2
       '@vitest/utils': 4.1.0
@@ -2239,7 +2243,7 @@ snapshots:
       obug: 2.1.1
       std-env: 4.0.0
       tinyrainbow: 3.1.0
-      vitest: 4.1.0(@types/node@24.12.0)(vite@7.3.1(@types/node@24.12.0)(jiti@2.6.1)(yaml@2.8.2))
+      vitest: 4.1.0(@types/node@24.12.0)(vite@7.3.1(@types/node@24.12.0)(jiti@2.6.1)(yaml@2.8.3))
 
   '@vitest/expect@4.1.0':
     dependencies:
@@ -2250,13 +2254,13 @@ snapshots:
       chai: 6.2.2
       tinyrainbow: 3.1.0
 
-  '@vitest/mocker@4.1.0(vite@7.3.1(@types/node@24.12.0)(jiti@2.6.1)(yaml@2.8.2))':
+  '@vitest/mocker@4.1.0(vite@7.3.1(@types/node@24.12.0)(jiti@2.6.1)(yaml@2.8.3))':
     dependencies:
       '@vitest/spy': 4.1.0
       estree-walker: 3.0.3
       magic-string: 0.30.21
     optionalDependencies:
-      vite: 7.3.1(@types/node@24.12.0)(jiti@2.6.1)(yaml@2.8.2)
+      vite: 7.3.1(@types/node@24.12.0)(jiti@2.6.1)(yaml@2.8.3)
 
   '@vitest/pretty-format@4.1.0':
     dependencies:
@@ -2435,6 +2439,10 @@ snapshots:
   fdir@6.5.0(picomatch@4.0.3):
     optionalDependencies:
       picomatch: 4.0.3
+
+  fdir@6.5.0(picomatch@4.0.4):
+    optionalDependencies:
+      picomatch: 4.0.4
 
   file-type@21.3.3:
     dependencies:
@@ -2663,7 +2671,7 @@ snapshots:
 
   openapi3-ts@4.5.0:
     dependencies:
-      yaml: 2.8.2
+      yaml: 2.8.3
 
   path-key@3.1.1: {}
 
@@ -2726,6 +2734,8 @@ snapshots:
   picocolors@1.1.1: {}
 
   picomatch@4.0.3: {}
+
+  picomatch@4.0.4: {}
 
   pkg-types@2.3.0:
     dependencies:
@@ -2957,11 +2967,11 @@ snapshots:
     optionalDependencies:
       typescript: 5.9.3
 
-  vite@7.3.1(@types/node@24.12.0)(jiti@2.6.1)(yaml@2.8.2):
+  vite@7.3.1(@types/node@24.12.0)(jiti@2.6.1)(yaml@2.8.3):
     dependencies:
       esbuild: 0.27.4
-      fdir: 6.5.0(picomatch@4.0.3)
-      picomatch: 4.0.3
+      fdir: 6.5.0(picomatch@4.0.4)
+      picomatch: 4.0.4
       postcss: 8.5.8
       rollup: 4.60.0
       tinyglobby: 0.2.15
@@ -2969,12 +2979,12 @@ snapshots:
       '@types/node': 24.12.0
       fsevents: 2.3.3
       jiti: 2.6.1
-      yaml: 2.8.2
+      yaml: 2.8.3
 
-  vitest@4.1.0(@types/node@24.12.0)(vite@7.3.1(@types/node@24.12.0)(jiti@2.6.1)(yaml@2.8.2)):
+  vitest@4.1.0(@types/node@24.12.0)(vite@7.3.1(@types/node@24.12.0)(jiti@2.6.1)(yaml@2.8.3)):
     dependencies:
       '@vitest/expect': 4.1.0
-      '@vitest/mocker': 4.1.0(vite@7.3.1(@types/node@24.12.0)(jiti@2.6.1)(yaml@2.8.2))
+      '@vitest/mocker': 4.1.0(vite@7.3.1(@types/node@24.12.0)(jiti@2.6.1)(yaml@2.8.3))
       '@vitest/pretty-format': 4.1.0
       '@vitest/runner': 4.1.0
       '@vitest/snapshot': 4.1.0
@@ -2991,7 +3001,7 @@ snapshots:
       tinyexec: 1.0.4
       tinyglobby: 0.2.15
       tinyrainbow: 3.1.0
-      vite: 7.3.1(@types/node@24.12.0)(jiti@2.6.1)(yaml@2.8.2)
+      vite: 7.3.1(@types/node@24.12.0)(jiti@2.6.1)(yaml@2.8.3)
       why-is-node-running: 2.3.0
     optionalDependencies:
       '@types/node': 24.12.0
@@ -3009,7 +3019,7 @@ snapshots:
 
   xtend@4.0.2: {}
 
-  yaml@2.8.2: {}
+  yaml@2.8.3: {}
 
   zeptomatch@2.1.0:
     dependencies:
