@@ -1,3 +1,5 @@
+import { ConfigInvalidError } from './errors.js';
+
 export type AccountName = `@${string}@${string}`;
 
 export interface CreateConfigArgs {
@@ -43,6 +45,32 @@ export class Config {
   }
 
   public static new(arg: CreateConfigArgs): Config {
+    if (arg.instanceName === '') {
+      throw new ConfigInvalidError('instanceName is required', {
+        cause: arg.instanceName,
+      });
+    }
+    if (arg.instanceFqdn === '') {
+      throw new ConfigInvalidError('instanceFqdn is required', {
+        cause: arg.instanceFqdn,
+      });
+    }
+
+    // validate maintainerAccount: must be `@user@host` with non-empty parts
+    const parts = arg.maintainerAccount.split('@').filter(Boolean);
+    if (parts.length !== 2) {
+      throw new ConfigInvalidError(
+        'maintainerAccount must be in @user@host format',
+        { cause: arg.maintainerAccount },
+      );
+    }
+
+    if (arg.maintainerEmail === '') {
+      throw new ConfigInvalidError('maintainerEmail is required', {
+        cause: arg.maintainerEmail,
+      });
+    }
+
     return new Config(arg);
   }
 }
