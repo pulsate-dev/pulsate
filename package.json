@@ -49,7 +49,8 @@
     "pg": "^8.16.3",
     "prisma": "^7.0.0",
     "sharp": "^0.34.0",
-    "tslog": "^4.9.3"
+    "tslog": "^4.9.3",
+    "yaml": "^2.8.3"
   },
   "peerDependencies": {
     "zod": "^4.0.0"
