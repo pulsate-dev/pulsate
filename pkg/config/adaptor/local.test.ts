@@ -54,6 +54,20 @@ maintainer_email: "contact@pulsate.dev"
     rmSync(join(filePath, '..'), { recursive: true });
   });
 
+  it('should throw ConfigInvalidError when maintainer_account has extra @', () => {
+    const filePath = createTempConfig(`
+instance_name: "Pulsate Demo Server"
+instance_fqdn: "demo.pulsate.dev"
+open_registration: true
+maintainer_account: "@a@@b"
+maintainer_email: "contact@pulsate.dev"
+`);
+
+    expect(() => new LocalConfigStore(filePath)).toThrow(ConfigInvalidError);
+
+    rmSync(join(filePath, '..'), { recursive: true });
+  });
+
   it('should throw when YAML is malformed', () => {
     const filePath = createTempConfig('{{{invalid yaml');
 

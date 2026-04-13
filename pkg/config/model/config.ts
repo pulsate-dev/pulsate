@@ -56,9 +56,8 @@ export class Config {
       });
     }
 
-    // validate maintainerAccount: must be `@user@host` with non-empty parts
-    const parts = arg.maintainerAccount.split('@').filter(Boolean);
-    if (parts.length !== 2) {
+    // validate maintainerAccount: must be exactly `@user@host` with non-empty parts and no extra `@`
+    if (!/^@[^@]+@[^@]+$/.test(arg.maintainerAccount)) {
       throw new ConfigInvalidError(
         'maintainerAccount must be in @user@host format',
         { cause: arg.maintainerAccount },

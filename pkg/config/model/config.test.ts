@@ -40,6 +40,18 @@ describe('Config', () => {
     ).toThrow(ConfigInvalidError);
   });
 
+  it('should throw when maintainerAccount has extra @ separators', () => {
+    expect(() =>
+      Config.new({ ...validArgs, maintainerAccount: '@a@@b' as const }),
+    ).toThrow(ConfigInvalidError);
+    expect(() =>
+      Config.new({ ...validArgs, maintainerAccount: '@a@b@c' as const }),
+    ).toThrow(ConfigInvalidError);
+    expect(() =>
+      Config.new({ ...validArgs, maintainerAccount: '@@@@@' as const }),
+    ).toThrow(ConfigInvalidError);
+  });
+
   it('should throw when maintainerEmail is empty', () => {
     expect(() => Config.new({ ...validArgs, maintainerEmail: '' })).toThrow(
       ConfigInvalidError,
