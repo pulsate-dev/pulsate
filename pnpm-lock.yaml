@@ -25,7 +25,7 @@ importers:
         version: 7.7.0
       '@prisma/client':
         specifier: 7.7.0
-        version: 7.7.0(prisma@7.7.0(@types/react@19.2.7)(magicast@0.3.5)(react-dom@19.2.0(react@19.2.0))(react@19.2.0)(typescript@6.0.2))(typescript@6.0.2)
+        version: 7.7.0(prisma@7.7.0(@types/react@19.2.7)(magicast@0.3.5)(react-dom@19.2.0(react@19.2.0))(react@19.2.0)(typescript@6.0.3))(typescript@6.0.3)
       '@scalar/hono-api-reference':
         specifier: ^0.10.0
         version: 0.10.9(hono@4.12.14)
@@ -58,7 +58,7 @@ importers:
         version: 8.20.0
       prisma:
         specifier: ^7.0.0
-        version: 7.7.0(@types/react@19.2.7)(magicast@0.3.5)(react-dom@19.2.0(react@19.2.0))(react@19.2.0)(typescript@6.0.2)
+        version: 7.7.0(@types/react@19.2.7)(magicast@0.3.5)(react-dom@19.2.0(react@19.2.0))(react@19.2.0)(typescript@6.0.3)
       sharp:
         specifier: ^0.34.0
         version: 0.34.5
@@ -104,7 +104,7 @@ importers:
         version: 2.1.6
       typescript:
         specifier: ^6.0.0
-        version: 6.0.2
+        version: 6.0.3
       vitest:
         specifier: ^4.0.0
         version: 4.1.4(@types/node@24.12.2)(@vitest/coverage-v8@4.1.4)(vite@7.3.1(@types/node@24.12.2)(jiti@2.6.1)(yaml@2.8.3))
@@ -1768,8 +1768,8 @@ packages:
     resolution: {integrity: sha512-8ZiHFm91orbSAe2PSAiSVBVko18pbhbiB3U9GglSzF/zCGkR+rxpHx6sEMCUm4kxY4LjDIUGgCfUMtwfZfjfUA==}
     engines: {node: '>=20'}
 
-  typescript@6.0.2:
-    resolution: {integrity: sha512-bGdAIrZ0wiGDo5l8c++HWtbaNCWTS4UTv7RaTH/ThVIgjkveJt83m74bBHMJkuCbslY8ixgLBVZJIOiQlQTjfQ==}
+  typescript@6.0.3:
+    resolution: {integrity: sha512-y2TvuxSZPDyQakkFRPZHKFm+KKVqIisdg9/CZwm9ftvKXLP8NRWj38/ODjNbr43SsoXqNuAisEf1GdCxqWcdBw==}
     engines: {node: '>=14.17'}
     hasBin: true
 
@@ -2277,12 +2277,12 @@ snapshots:
 
   '@prisma/client-runtime-utils@7.7.0': {}
 
-  '@prisma/client@7.7.0(prisma@7.7.0(@types/react@19.2.7)(magicast@0.3.5)(react-dom@19.2.0(react@19.2.0))(react@19.2.0)(typescript@6.0.2))(typescript@6.0.2)':
+  '@prisma/client@7.7.0(prisma@7.7.0(@types/react@19.2.7)(magicast@0.3.5)(react-dom@19.2.0(react@19.2.0))(react@19.2.0)(typescript@6.0.3))(typescript@6.0.3)':
     dependencies:
       '@prisma/client-runtime-utils': 7.7.0
     optionalDependencies:
-      prisma: 7.7.0(@types/react@19.2.7)(magicast@0.3.5)(react-dom@19.2.0(react@19.2.0))(react@19.2.0)(typescript@6.0.2)
-      typescript: 6.0.2
+      prisma: 7.7.0(@types/react@19.2.7)(magicast@0.3.5)(react-dom@19.2.0(react@19.2.0))(react@19.2.0)(typescript@6.0.3)
+      typescript: 6.0.3
 
   '@prisma/config@7.7.0(magicast@0.3.5)':
     dependencies:
@@ -2297,7 +2297,7 @@ snapshots:
 
   '@prisma/debug@7.7.0': {}
 
-  '@prisma/dev@0.24.3(typescript@6.0.2)':
+  '@prisma/dev@0.24.3(typescript@6.0.3)':
     dependencies:
       '@electric-sql/pglite': 0.4.1
       '@electric-sql/pglite-socket': 0.1.1(@electric-sql/pglite@0.4.1)
@@ -2314,7 +2314,7 @@ snapshots:
       proper-lockfile: 4.1.2
       remeda: 2.33.4
       std-env: 3.10.0
-      valibot: 1.2.0(typescript@6.0.2)
+      valibot: 1.2.0(typescript@6.0.3)
       zeptomatch: 2.1.0
     transitivePeerDependencies:
       - typescript
@@ -3099,16 +3099,16 @@ snapshots:
 
   postgres@3.4.7: {}
 
-  prisma@7.7.0(@types/react@19.2.7)(magicast@0.3.5)(react-dom@19.2.0(react@19.2.0))(react@19.2.0)(typescript@6.0.2):
+  prisma@7.7.0(@types/react@19.2.7)(magicast@0.3.5)(react-dom@19.2.0(react@19.2.0))(react@19.2.0)(typescript@6.0.3):
     dependencies:
       '@prisma/config': 7.7.0(magicast@0.3.5)
-      '@prisma/dev': 0.24.3(typescript@6.0.2)
+      '@prisma/dev': 0.24.3(typescript@6.0.3)
       '@prisma/engines': 7.7.0
       '@prisma/studio-core': 0.27.3(@types/react@19.2.7)(react-dom@19.2.0(react@19.2.0))(react@19.2.0)
       mysql2: 3.15.3
       postgres: 3.4.7
     optionalDependencies:
-      typescript: 6.0.2
+      typescript: 6.0.3
     transitivePeerDependencies:
       - '@types/react'
       - '@types/react-dom'
@@ -3284,15 +3284,15 @@ snapshots:
     dependencies:
       tagged-tag: 1.0.0
 
-  typescript@6.0.2: {}
+  typescript@6.0.3: {}
 
   uint8array-extras@1.5.0: {}
 
   undici-types@7.16.0: {}
 
-  valibot@1.2.0(typescript@6.0.2):
+  valibot@1.2.0(typescript@6.0.3):
     optionalDependencies:
-      typescript: 6.0.2
+      typescript: 6.0.3
 
   vite@7.3.1(@types/node@24.12.2)(jiti@2.6.1)(yaml@2.8.3):
     dependencies:
