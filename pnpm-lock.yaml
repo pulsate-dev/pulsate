@@ -16,7 +16,7 @@ importers:
         version: 0.6.1(hono@4.12.15)
       '@hono/zod-openapi':
         specifier: ^1.0.0
-        version: 1.3.0(hono@4.12.15)(zod@4.4.1)
+        version: 1.3.0(hono@4.12.15)(zod@4.4.2)
       '@mikuroxina/mini-fn':
         specifier: ^7.0.0
         version: 7.2.0
@@ -28,7 +28,7 @@ importers:
         version: 7.8.0(prisma@7.8.0(@types/react@19.2.7)(magicast@0.5.2)(react-dom@19.2.0(react@19.2.0))(react@19.2.0)(typescript@6.0.3))(typescript@6.0.3)
       '@scalar/hono-api-reference':
         specifier: ^0.10.0
-        version: 0.10.11(hono@4.12.15)
+        version: 0.10.12(hono@4.12.15)
       '@upyo/core':
         specifier: ^0.4.0
         version: 0.4.0
@@ -70,7 +70,7 @@ importers:
         version: 2.8.3
       zod:
         specifier: ^4.0.0
-        version: 4.4.1
+        version: 4.4.2
     devDependencies:
       '@biomejs/biome':
         specifier: ^2.0.0
@@ -1016,22 +1016,22 @@ packages:
     cpu: [x64]
     os: [win32]
 
-  '@scalar/client-side-rendering@0.1.4':
-    resolution: {integrity: sha512-xriPrHrKs/FNQbMJTPWiP7bIualAobbJlzrDM5Tl+7nSgKMUUgpR60IcOphCsJ+iFcdOU/VTmjufBcOaVigDPg==}
+  '@scalar/client-side-rendering@0.1.5':
+    resolution: {integrity: sha512-XZ+lZbVli1rAX8Y13sQqisvbjVhkbePVeo0izJZ4cNzpzSh7fDpigEqpV67u4ljpTpLO0B12JDXR5xnmSy+YwQ==}
     engines: {node: '>=22'}
 
-  '@scalar/helpers@0.5.3':
-    resolution: {integrity: sha512-PgQmhuV0oRoHtaqH0OhyCcSY9t35qm8ThNeuUMEAKeN+hW1ijBnJiUADpxaIfXPbLrpN9sjyYza0A16WFbLttg==}
+  '@scalar/helpers@0.5.4':
+    resolution: {integrity: sha512-AJFJNoSVcCHXDPH1Mosie+5+AOpNC4zrtwWywvQEhcaqHfiH4LSq8Og8Bay82M/jhCwNRNjWfGOGcaCE4XbCDw==}
     engines: {node: '>=22'}
 
-  '@scalar/hono-api-reference@0.10.11':
-    resolution: {integrity: sha512-iU3VVhI5ulzwVOaF3Qxswyvd/K3/56k2/420nOSu6me3zP4OqdvA4Xt9/7vkkRu0yOxjkq68GCVVB/R/5AkLuQ==}
+  '@scalar/hono-api-reference@0.10.12':
+    resolution: {integrity: sha512-X7ueApsdUkTEhyLfR9S6G+qzvoFUwZk4Hfh/I8EwTocxMAcv28bWvf0fe9UbmhXBN/vO6lKdpey/RCr5kiFjcg==}
     engines: {node: '>=22'}
     peerDependencies:
       hono: ^4.12.5
 
-  '@scalar/types@0.9.3':
-    resolution: {integrity: sha512-/cEFjVa8PxRIDyhcWKh7McT8pm5O0kbafzd1jvpVq69sgIIq0gJ0P1sCcPye6qJ2k478PK7VmpK9FxZcr6D4Kw==}
+  '@scalar/types@0.9.4':
+    resolution: {integrity: sha512-nspIWRUVPv2uf9d0bBxn2uqKcEVbLqoUqKvNAuBgKMinZ95XSMcGjQjsgqDiRBPsn1luTtjC9xupUFfer7kLtg==}
     engines: {node: '>=22'}
 
   '@standard-schema/spec@1.1.0':
@@ -1870,15 +1870,15 @@ packages:
   zeptomatch@2.1.0:
     resolution: {integrity: sha512-KiGErG2J0G82LSpniV0CtIzjlJ10E04j02VOudJsPyPwNZgGnRKQy7I1R7GMyg/QswnE4l7ohSGrQbQbjXPPDA==}
 
-  zod@4.4.1:
-    resolution: {integrity: sha512-a6ENMBBGZBsnlSebQ/eKCguSBeGKSf4O7BPnqVPmYGtpBYI7VSqoVqw+QcB7kPRjbqPwhYTpFbVj/RqNz/CT0Q==}
+  zod@4.4.2:
+    resolution: {integrity: sha512-IynmDyxsEsb9RKzO3J9+4SxXnl2FTFSzNBaKKaMV6tsSk0rw9gYw9gs+JFCq/qk2LCZ78KDwyj+Z289TijSkUw==}
 
 snapshots:
 
-  '@asteasolutions/zod-to-openapi@8.5.0(zod@4.4.1)':
+  '@asteasolutions/zod-to-openapi@8.5.0(zod@4.4.2)':
     dependencies:
       openapi3-ts: 4.5.0
-      zod: 4.4.1
+      zod: 4.4.2
 
   '@babel/helper-string-parser@7.27.1': {}
 
@@ -2117,18 +2117,18 @@ snapshots:
     dependencies:
       hono: 4.12.15
 
-  '@hono/zod-openapi@1.3.0(hono@4.12.15)(zod@4.4.1)':
+  '@hono/zod-openapi@1.3.0(hono@4.12.15)(zod@4.4.2)':
     dependencies:
-      '@asteasolutions/zod-to-openapi': 8.5.0(zod@4.4.1)
-      '@hono/zod-validator': 0.7.6(hono@4.12.15)(zod@4.4.1)
+      '@asteasolutions/zod-to-openapi': 8.5.0(zod@4.4.2)
+      '@hono/zod-validator': 0.7.6(hono@4.12.15)(zod@4.4.2)
       hono: 4.12.15
       openapi3-ts: 4.5.0
-      zod: 4.4.1
+      zod: 4.4.2
 
-  '@hono/zod-validator@0.7.6(hono@4.12.15)(zod@4.4.1)':
+  '@hono/zod-validator@0.7.6(hono@4.12.15)(zod@4.4.2)':
     dependencies:
       hono: 4.12.15
-      zod: 4.4.1
+      zod: 4.4.2
 
   '@img/colour@1.0.0': {}
 
@@ -2473,23 +2473,23 @@ snapshots:
   '@rollup/rollup-win32-x64-msvc@4.60.2':
     optional: true
 
-  '@scalar/client-side-rendering@0.1.4':
+  '@scalar/client-side-rendering@0.1.5':
     dependencies:
-      '@scalar/types': 0.9.3
+      '@scalar/types': 0.9.4
 
-  '@scalar/helpers@0.5.3': {}
+  '@scalar/helpers@0.5.4': {}
 
-  '@scalar/hono-api-reference@0.10.11(hono@4.12.15)':
+  '@scalar/hono-api-reference@0.10.12(hono@4.12.15)':
     dependencies:
-      '@scalar/client-side-rendering': 0.1.4
+      '@scalar/client-side-rendering': 0.1.5
       hono: 4.12.15
 
-  '@scalar/types@0.9.3':
+  '@scalar/types@0.9.4':
     dependencies:
-      '@scalar/helpers': 0.5.3
+      '@scalar/helpers': 0.5.4
       nanoid: 5.1.11
       type-fest: 5.6.0
-      zod: 4.4.1
+      zod: 4.4.2
 
   '@standard-schema/spec@1.1.0': {}
 
@@ -3303,4 +3303,4 @@ snapshots:
       grammex: 3.1.12
       graphmatch: 1.1.1
 
-  zod@4.4.1: {}
+  zod@4.4.2: {}
