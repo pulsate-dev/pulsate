@@ -32,162 +32,206 @@ describe('Note', () => {
     expect(note.getDeletedAt()).toStrictEqual(Option.none());
   });
 
-  it('note content must be less than 3000', () => {
-    expect(() =>
-      Note.new({ ...exampleInput, content: 'a'.repeat(3001) }),
-    ).toThrowErrorMatchingSnapshot();
+  describe('content length validation', () => {
+    it.each([
+      {
+        label: 'exactly 3000 chars (boundary)',
+        length: 3000,
+        shouldThrow: false,
+      },
+      { label: 'exceeds 3000 chars', length: 3001, shouldThrow: true },
+    ])('$label', ({ length, shouldThrow }) => {
+      const act = () =>
+        Note.new({ ...exampleInput, content: 'a'.repeat(length) });
+      if (shouldThrow) {
+        expect(act).toThrow('Content too long');
+      } else {
+        expect(act).not.toThrow();
+      }
+    });
   });
 
-  it('contentsWarningComment must be less than 256 chars', () => {
-    expect(() =>
-      Note.new({ ...exampleInput, contentsWarningComment: 'a'.repeat(257) }),
-    ).toThrowErrorMatchingSnapshot();
+  describe('contentsWarningComment length validation', () => {
+    it.each([
+      {
+        label: 'exactly 256 chars (boundary)',
+        length: 256,
+        shouldThrow: false,
+      },
+      { label: 'exceeds 256 chars', length: 257, shouldThrow: true },
+    ])('$label', ({ length, shouldThrow }) => {
+      const act = () =>
+        Note.new({
+          ...exampleInput,
+          contentsWarningComment: 'a'.repeat(length),
+        });
+      if (shouldThrow) {
+        expect(act).toThrow('ContentsWarningComment too long');
+      } else {
+        expect(act).not.toThrow();
+      }
+    });
   });
 
-  it('should throw error when attachmentFileID length exceeds 16', () => {
-    expect(() =>
-      Note.new({
-        ...exampleInput,
-        attachmentFileID: Array.from(
-          { length: 17 },
-          (_, i) => (i + 1).toString() as MediumID,
-        ),
-      }),
-    ).toThrowErrorMatchingSnapshot();
+  describe('attachmentFileID count validation', () => {
+    it.each([
+      {
+        label: 'exactly 16 attachments (boundary)',
+        count: 16,
+        shouldThrow: false,
+      },
+      { label: 'exceeds 16 attachments', count: 17, shouldThrow: true },
+    ])('$label', ({ count, shouldThrow }) => {
+      const act = () =>
+        Note.new({
+          ...exampleInput,
+          attachmentFileID: Array.from(
+            { length: count },
+            (_, i) => (i + 1).toString() as MediumID,
+          ),
+        });
+      if (shouldThrow) {
+        expect(act).toThrow('Too many attachments');
+      } else {
+        expect(act).not.toThrow();
+      }
+    });
   });
 
-  it("when visibility is direct, sendTo can't be empty", () => {
-    expect(() =>
-      Note.new({
-        ...exampleInput,
-        visibility: 'DIRECT',
+  describe('DIRECT visibility sendTo validation', () => {
+    it.each([
+      {
+        label: 'sendTo is present',
+        sendTo: Option.some('3' as AccountID),
+        shouldThrow: false,
+      },
+      {
+        label: 'sendTo is absent',
         sendTo: Option.none(),
-      }),
-    ).toThrow('No destination');
+        shouldThrow: true,
+      },
+    ])('$label', ({ sendTo, shouldThrow }) => {
+      const act = () =>
+        Note.new({ ...exampleInput, visibility: 'DIRECT', sendTo });
+      if (shouldThrow) {
+        expect(act).toThrow('No destination');
+      } else {
+        expect(act).not.toThrow();
+      }
+    });
   });
 
-  it('should throw error when normal note (non-renote) has no content, CW comment, and attachments', () => {
-    expect(() =>
-      Note.new({
+  describe('empty content validation', () => {
+    const emptyArgs = {
+      content: '',
+      contentsWarningComment: '',
+      attachmentFileID: [] as MediumID[],
+    } as const;
+
+    it.each([
+      {
+        label:
+          'throws when a normal note has no content, CW comment, or attachments',
+        originalNoteID: Option.none(),
+        shouldThrow: true,
+      },
+      {
+        label: 'allows empty content when originalNoteID is present (renote)',
+        originalNoteID: Option.some('999' as NoteID),
+        shouldThrow: false,
+      },
+    ])('$label', ({ originalNoteID, shouldThrow }) => {
+      const act = () =>
+        Note.new({ ...exampleInput, ...emptyArgs, originalNoteID });
+      if (shouldThrow) {
+        expect(act).toThrow('Note must have content');
+      } else {
+        expect(act).not.toThrow();
+      }
+    });
+
+    it.each([
+      {
+        label: 'allows empty content when renote has a CW comment',
+        args: {
+          contentsWarningComment: 'CW text',
+          attachmentFileID: [] as MediumID[],
+        },
+      },
+      {
+        label: 'allows empty content when renote has attachments',
+        args: {
+          contentsWarningComment: '',
+          attachmentFileID: ['10' as MediumID, '11' as MediumID],
+        },
+      },
+    ])('$label', ({ args }) => {
+      const renote = Note.new({
         ...exampleInput,
         content: '',
-        contentsWarningComment: '',
-        attachmentFileID: [],
-        originalNoteID: Option.none(),
-      }),
-    ).toThrowErrorMatchingSnapshot();
-  });
-
-  it('should allow empty content for renote (originalNoteID is Some)', () => {
-    const renote = Note.new({
-      ...exampleInput,
-      content: '',
-      contentsWarningComment: '',
-      attachmentFileID: [],
-      originalNoteID: Option.some('999' as NoteID),
+        ...args,
+        originalNoteID: Option.some('999' as NoteID),
+      });
+      expect(renote.getContent()).toBe('');
+      expect(renote.getOriginalNoteID()).toStrictEqual(
+        Option.some('999' as NoteID),
+      );
     });
-
-    expect(renote.getContent()).toBe('');
-    expect(renote.getCwComment()).toBe('');
-    expect(renote.getAttachmentFileID()).toHaveLength(0);
-    expect(renote.getOriginalNoteID()).toStrictEqual(
-      Option.some('999' as NoteID),
-    );
-  });
-
-  it('should allow empty content in renote with CW comment', () => {
-    const renote = Note.new({
-      ...exampleInput,
-      content: '',
-      contentsWarningComment: 'CW text',
-      attachmentFileID: [],
-      originalNoteID: Option.some('999' as NoteID),
-    });
-
-    expect(renote.getContent()).toBe('');
-    expect(renote.getCwComment()).toBe('CW text');
-    expect(renote.getOriginalNoteID()).toStrictEqual(
-      Option.some('999' as NoteID),
-    );
-  });
-
-  it('should allow empty content in renote with attachments', () => {
-    const renote = Note.new({
-      ...exampleInput,
-      content: '',
-      contentsWarningComment: '',
-      attachmentFileID: ['10' as MediumID, '11' as MediumID],
-      originalNoteID: Option.some('999' as NoteID),
-    });
-
-    expect(renote.getContent()).toBe('');
-    expect(renote.getAttachmentFileID()).toHaveLength(2);
-    expect(renote.getOriginalNoteID()).toStrictEqual(
-      Option.some('999' as NoteID),
-    );
   });
 
   describe('quote', () => {
-    it('should create a quote with content', () => {
-      const quote = Note.new({
+    it.each([
+      {
+        label: 'with content',
         id: '200' as NoteID,
-        authorID: '3' as AccountID,
         content: 'quoting this!',
-        visibility: 'PUBLIC',
         contentsWarningComment: '',
+        attachmentFileID: [] as MediumID[],
+        checkContent: (q: Note) => expect(q.getContent()).toBe('quoting this!'),
+      },
+      {
+        label: 'with CW comment only',
+        id: '201' as NoteID,
+        content: '',
+        contentsWarningComment: 'CW text',
+        attachmentFileID: [] as MediumID[],
+        checkContent: (q: Note) => expect(q.getCwComment()).toBe('CW text'),
+      },
+      {
+        label: 'with attachments only',
+        id: '202' as NoteID,
+        content: '',
+        contentsWarningComment: '',
+        attachmentFileID: ['10' as MediumID],
+        checkContent: (q: Note) =>
+          expect(q.getAttachmentFileID()).toHaveLength(1),
+      },
+    ])('should create a quote $label', ({
+      id,
+      content,
+      contentsWarningComment,
+      attachmentFileID,
+      checkContent,
+    }) => {
+      const quote = Note.new({
+        id,
+        authorID: '3' as AccountID,
+        content,
+        visibility: 'PUBLIC',
+        contentsWarningComment,
         sendTo: Option.none(),
         originalNoteID: Option.some('100' as NoteID),
-        attachmentFileID: [],
+        attachmentFileID,
         createdAt: new Date('2023-09-11T00:00:00.000Z'),
       });
 
-      expect(quote.getContent()).toBe('quoting this!');
-      expect(quote.getOriginalNoteID()).toStrictEqual(
-        Option.some('100' as NoteID),
-      );
+      checkContent(quote);
       expect(quote.isRenote()).toBe(true);
       expect(quote.isQuote()).toBe(true);
     });
 
-    it('should create a quote with CW comment only', () => {
-      const quote = Note.new({
-        id: '201' as NoteID,
-        authorID: '3' as AccountID,
-        content: '',
-        visibility: 'PUBLIC',
-        contentsWarningComment: 'CW text',
-        sendTo: Option.none(),
-        originalNoteID: Option.some('100' as NoteID),
-        attachmentFileID: [],
-        createdAt: new Date('2023-09-11T00:00:00.000Z'),
-      });
-
-      expect(quote.getContent()).toBe('');
-      expect(quote.getCwComment()).toBe('CW text');
-      expect(quote.isQuote()).toBe(true);
-    });
-
-    it('should create a quote with attachments only', () => {
-      const quote = Note.new({
-        id: '202' as NoteID,
-        authorID: '3' as AccountID,
-        content: '',
-        visibility: 'PUBLIC',
-        contentsWarningComment: '',
-        sendTo: Option.none(),
-        originalNoteID: Option.some('100' as NoteID),
-        attachmentFileID: ['10' as MediumID],
-        createdAt: new Date('2023-09-11T00:00:00.000Z'),
-      });
-
-      expect(quote.getContent()).toBe('');
-      expect(quote.getAttachmentFileID()).toHaveLength(1);
-      expect(quote.isQuote()).toBe(true);
-    });
-
     it('should refer to original note when quoting a renote', () => {
-      /**
-       * NOTE:
+      /*
        * originalNoteID resolution (renote chain traversal) is handled
        * by the service layer (resolveOriginalNote), not by Note.new().
        * Note.new() simply stores the originalNoteID as given.
@@ -217,12 +261,12 @@ describe('Note', () => {
         visibility: 'PUBLIC',
         contentsWarningComment: '',
         sendTo: Option.none(),
+        // 100 <-Quotes- 300 <-Quotes- 301 => 301's original is 300 (not 100)
         originalNoteID: Option.some('300' as NoteID),
         attachmentFileID: [],
         createdAt: new Date('2023-09-12T00:00:00.000Z'),
       });
 
-      // NOTE: 100 <-Quotes- 300 <-Quotes- 301 => 301's original is 300 (not 100)
       expect(quote301.getOriginalNoteID()).toStrictEqual(
         Option.some('300' as NoteID),
       );
