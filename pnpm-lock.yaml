@@ -12,8 +12,8 @@ importers:
         specifier: 2.0.1
         version: 2.0.1(hono@4.12.18)
       '@hono/swagger-ui':
-        specifier: 0.6.0
-        version: 0.6.0(hono@4.12.18)
+        specifier: 0.6.1
+        version: 0.6.1(hono@4.12.18)
       '@hono/zod-openapi':
         specifier: 1.0.0
         version: 1.0.0(hono@4.12.18)(zod@4.4.3)
@@ -541,8 +541,8 @@ packages:
     peerDependencies:
       hono: ^4
 
-  '@hono/swagger-ui@0.6.0':
-    resolution: {integrity: sha512-xl2D/0TEi3oG/uoiKA/yLfb3zUw6zweS9NY5+eIxgu506on5g9T8omeJyHeJnCM+RZgoydTR+w7nnFOpEoYIiQ==}
+  '@hono/swagger-ui@0.6.1':
+    resolution: {integrity: sha512-sJTvldu1GPeEPfyeLG7gRj+W4vEuD+JDi+JjJ3TJs/DvMUtBLs0KJO5yokGegWWdy5qrbdnQGekbhgNRmPmYKQ==}
     peerDependencies:
       hono: '>=4.0.0'
 
@@ -2098,7 +2098,7 @@ snapshots:
     dependencies:
       hono: 4.12.18
 
-  '@hono/swagger-ui@0.6.0(hono@4.12.18)':
+  '@hono/swagger-ui@0.6.1(hono@4.12.18)':
     dependencies:
       hono: 4.12.18
 
