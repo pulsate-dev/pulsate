@@ -5,7 +5,7 @@ import type { AccountID } from '../../accounts/model/account.js';
 import type { MediumID } from '../../drive/model/medium.js';
 import { type CreateNoteArgs, Note, type NoteID } from './note.js';
 
-const exampleInput: CreateNoteArgs = {
+const exampleInput = {
   id: '1' as NoteID,
   authorID: '2' as AccountID,
   content: 'hello world!',
@@ -15,9 +15,7 @@ const exampleInput: CreateNoteArgs = {
   sendTo: Option.none(),
   originalNoteID: Option.none(),
   attachmentFileID: ['10' as MediumID, '20' as MediumID, '30' as MediumID],
-  updatedAt: Option.none(),
-  deletedAt: Option.none(),
-};
+} as const satisfies CreateNoteArgs;
 
 describe('Note', () => {
   it('generate new instance', () => {

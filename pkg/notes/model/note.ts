@@ -12,7 +12,7 @@ import {
 export type NoteID = ID<Note>;
 export type NoteVisibility = 'PUBLIC' | 'HOME' | 'FOLLOWERS' | 'DIRECT';
 
-export interface CreateNoteArgs {
+interface NoteConstructorArgs {
   id: NoteID;
   authorID: AccountID;
   content: string;
@@ -26,13 +26,16 @@ export interface CreateNoteArgs {
   deletedAt: Option.Option<Date>;
 }
 
-export type NewNoteArgs = Omit<CreateNoteArgs, 'updatedAt' | 'deletedAt'>;
+export type CreateNoteArgs = Omit<
+  NoteConstructorArgs,
+  'updatedAt' | 'deletedAt'
+>;
 
 export class Note {
-  private constructor(arg: CreateNoteArgs) {
+  private constructor(arg: NoteConstructorArgs) {
     this.id = arg.id;
-    this.authorID = arg.authorID;
     this.content = arg.content;
+    this.authorID = arg.authorID;
     this.visibility = arg.visibility;
     this.contentsWarningComment = arg.contentsWarningComment;
     this.sendTo = arg.sendTo;
@@ -43,7 +46,7 @@ export class Note {
     this.deletedAt = arg.deletedAt;
   }
 
-  static new(args: Omit<CreateNoteArgs, 'updatedAt' | 'deletedAt'>): Note {
+  static new(args: CreateNoteArgs): Note {
     if (Option.isSome(args.originalNoteID)) {
       if (Note.isThisArgsQuote(args)) {
         return Note.quote(args);
@@ -52,16 +55,18 @@ export class Note {
       return Note.renote(args);
     }
 
-    return new Note(Note.checkArgs(args));
+    return new Note({
+      ...Note.checkArgs(args),
+      updatedAt: Option.none(),
+      deletedAt: Option.none(),
+    });
   }
 
-  static reconstruct(arg: CreateNoteArgs) {
+  static reconstruct(arg: NoteConstructorArgs) {
     return new Note(arg);
   }
 
-  private static checkArgs(
-    arg: Omit<CreateNoteArgs, 'updatedAt' | 'deletedAt'>,
-  ): CreateNoteArgs {
+  private static checkArgs(arg: CreateNoteArgs): CreateNoteArgs {
     /*
     Note must satisfy the following conditions:
     - content length <= 3k
@@ -108,8 +113,6 @@ export class Note {
 
     return {
       ...arg,
-      updatedAt: Option.none(),
-      deletedAt: Option.none(),
     };
   }
 
@@ -124,15 +127,17 @@ export class Note {
       | 'createdAt'
     >,
   ): Note {
-    return new Note(
-      Note.checkArgs({
+    return new Note({
+      ...Note.checkArgs({
         ...arg,
         // NOTE: Renotes do not have content or contentsWarningComment
         content: '',
         contentsWarningComment: '',
         sendTo: Option.none(),
       }),
-    );
+      updatedAt: Option.none(),
+      deletedAt: Option.none(),
+    });
   }
 
   private static quote(
@@ -159,12 +164,14 @@ export class Note {
       });
     }
 
-    return new Note(
-      Note.checkArgs({
+    return new Note({
+      ...Note.checkArgs({
         ...arg,
         sendTo: Option.none(),
       }),
-    );
+      updatedAt: Option.none(),
+      deletedAt: Option.none(),
+    });
   }
 
   private static isThisArgsQuote(
