@@ -12,17 +12,19 @@ describe('FetchConversationService', () => {
     sendToID: Option.Option<AccountID>,
     createdAt: Date,
   ) =>
-    Note.new({
-      attachmentFileID: [],
-      authorID,
-      contentsWarningComment: '',
-      createdAt,
-      id,
-      originalNoteID: Option.none(),
-      sendTo: sendToID,
-      visibility: 'DIRECT',
-      content: 'This is a test note',
-    });
+    Result.unwrap(
+      Note.new({
+        attachmentFileID: [],
+        authorID,
+        contentsWarningComment: '',
+        createdAt,
+        id,
+        originalNoteID: Option.none(),
+        sendTo: sendToID,
+        visibility: 'DIRECT',
+        content: 'This is a test note',
+      }),
+    );
 
   /**
    * 1 received 2 notes from 2

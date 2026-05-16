@@ -12,17 +12,19 @@ import {
 } from '../testData/testData.js';
 import { PublicTimelineService } from './public.js';
 
-const dummyPublicNote2 = Note.new({
-  id: '10' as NoteID,
-  authorID: '200' as AccountID,
-  content: 'Second public note',
-  contentsWarningComment: '',
-  originalNoteID: Option.none(),
-  attachmentFileID: [],
-  sendTo: Option.none(),
-  visibility: 'PUBLIC',
-  createdAt: new Date('2023/09/15 00:00:00'),
-});
+const dummyPublicNote2 = Result.unwrap(
+  Note.new({
+    id: '10' as NoteID,
+    authorID: '200' as AccountID,
+    content: 'Second public note',
+    contentsWarningComment: '',
+    originalNoteID: Option.none(),
+    attachmentFileID: [],
+    sendTo: Option.none(),
+    visibility: 'PUBLIC',
+    createdAt: new Date('2023/09/15 00:00:00'),
+  }),
+);
 
 describe('PublicTimelineService', () => {
   const timelineRepository = new InMemoryTimelineRepository([
