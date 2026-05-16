@@ -1,4 +1,5 @@
-import { Option } from '@mikuroxina/mini-fn';
+import { Option, Result } from '@mikuroxina/mini-fn';
+import * as v from 'valibot';
 
 import type { AccountID } from '../../accounts/model/account.js';
 import type { MediumID } from '../../drive/model/medium.js';
@@ -10,7 +11,14 @@ import {
 } from './errors.js';
 
 export type NoteID = ID<Note>;
-export type NoteVisibility = 'PUBLIC' | 'HOME' | 'FOLLOWERS' | 'DIRECT';
+
+const noteVisibilitySchema = v.union([
+  v.literal('PUBLIC'),
+  v.literal('HOME'),
+  v.literal('FOLLOWERS'),
+  v.literal('DIRECT'),
+]);
+export type NoteVisibility = v.InferOutput<typeof noteVisibilitySchema>;
 
 interface NoteConstructorArgs {
   id: NoteID;
@@ -31,6 +39,24 @@ export type CreateNoteArgs = Omit<
   'updatedAt' | 'deletedAt'
 >;
 
+type RenoteArgs = Omit<
+  CreateNoteArgs,
+  'content' | 'contentsWarningComment' | 'sendTo'
+>;
+type QuoteArgs = Omit<CreateNoteArgs, 'sendTo'>;
+
+const noteTextSchema = v.object({
+  content: v.pipe(
+    v.string(),
+    v.check((s) => [...s].length <= 3000, 'Content too long'),
+  ),
+  visibility: noteVisibilitySchema,
+  contentsWarningComment: v.pipe(
+    v.string(),
+    v.check((s) => [...s].length <= 256, 'ContentsWarningComment too long'),
+  ),
+});
+
 export class Note {
   private constructor(arg: NoteConstructorArgs) {
     this.id = arg.id;
@@ -46,7 +72,7 @@ export class Note {
     this.deletedAt = arg.deletedAt;
   }
 
-  static new(args: CreateNoteArgs): Note {
+  static new(args: CreateNoteArgs): Result.Result<Error, Note> {
     if (Option.isSome(args.originalNoteID)) {
       if (Note.isThisArgsQuote(args)) {
         return Note.quote(args);
@@ -55,45 +81,37 @@ export class Note {
       return Note.renote(args);
     }
 
-    return new Note({
-      ...Note.checkArgs(args),
-      updatedAt: Option.none(),
-      deletedAt: Option.none(),
-    });
+    const checked = Note.checkArgs(args);
+    if (Result.isErr(checked)) return checked;
+
+    return Result.ok(
+      new Note({
+        ...Result.unwrap(checked),
+        updatedAt: Option.none(),
+        deletedAt: Option.none(),
+      }),
+    );
   }
 
   static reconstruct(arg: NoteConstructorArgs) {
     return new Note(arg);
   }
 
-  private static checkArgs(arg: CreateNoteArgs): CreateNoteArgs {
-    /*
-    Note must satisfy the following conditions:
-    - content length <= 3k
-    - contentsWarningComment length <= 256
-    - attachmentFileID length <= 16
-    - if (visibility is "DIRECT")  sendTo must be Some
-    - if (not a renote i.e., originalNoteID is None) and (content, contentsWarningComment, and attachmentFileID are all empty) throw error
-     */
-
-    if ([...arg.content].length > 3000) {
-      throw new NoteContentLengthError('Content too long', {
-        cause: { contentLength: [...arg.content].length },
-      });
-    }
-
-    if ([...arg.contentsWarningComment].length > 256) {
-      throw new NoteContentLengthError('ContentsWarningComment too long', {
-        cause: {
-          contentsWarningCommentLength: [...arg.contentsWarningComment].length,
-        },
-      });
+  private static checkArgs(
+    arg: CreateNoteArgs,
+  ): Result.Result<Error, CreateNoteArgs> {
+    const result = v.safeParse(noteTextSchema, arg);
+    if (!result.success) {
+      const message = result.issues[0].message;
+      return Result.err(new NoteContentLengthError(message, { cause: null }));
     }
 
     if (arg.attachmentFileID.length > 16) {
-      throw new NoteTooManyAttachmentsError('Too many attachments', {
-        cause: { attachmentCount: arg.attachmentFileID.length },
-      });
+      return Result.err(
+        new NoteTooManyAttachmentsError('Too many attachments', {
+          cause: null,
+        }),
+      );
     }
 
     if (
@@ -102,76 +120,63 @@ export class Note {
       arg.contentsWarningComment === '' &&
       arg.attachmentFileID.length === 0
     ) {
-      throw new NoteContentLengthError('Note must have content', {
-        cause: null,
-      });
+      return Result.err(
+        new NoteContentLengthError('Note must have content', { cause: null }),
+      );
     }
 
     if (arg.visibility === 'DIRECT' && Option.isNone(arg.sendTo)) {
-      throw new NoteNoDestinationError('No destination', { cause: null });
+      return Result.err(
+        new NoteNoDestinationError('No destination', { cause: null }),
+      );
     }
 
-    return {
+    return Result.ok(arg);
+  }
+
+  private static renote(arg: RenoteArgs): Result.Result<Error, Note> {
+    const checked = Note.checkArgs({
       ...arg,
-    };
-  }
-
-  private static renote(
-    arg: Pick<
-      CreateNoteArgs,
-      | 'id'
-      | 'authorID'
-      | 'visibility'
-      | 'originalNoteID'
-      | 'attachmentFileID'
-      | 'createdAt'
-    >,
-  ): Note {
-    return new Note({
-      ...Note.checkArgs({
-        ...arg,
-        // NOTE: Renotes do not have content or contentsWarningComment
-        content: '',
-        contentsWarningComment: '',
-        sendTo: Option.none(),
-      }),
-      updatedAt: Option.none(),
-      deletedAt: Option.none(),
+      // NOTE: Renotes do not have content or contentsWarningComment
+      content: '',
+      contentsWarningComment: '',
+      sendTo: Option.none(),
     });
+    if (Result.isErr(checked)) return checked;
+
+    return Result.ok(
+      new Note({
+        ...Result.unwrap(checked),
+        updatedAt: Option.none(),
+        deletedAt: Option.none(),
+      }),
+    );
   }
 
-  private static quote(
-    arg: Pick<
-      CreateNoteArgs,
-      | 'id'
-      | 'authorID'
-      | 'content'
-      | 'visibility'
-      | 'contentsWarningComment'
-      | 'sendTo'
-      | 'originalNoteID'
-      | 'attachmentFileID'
-      | 'createdAt'
-    >,
-  ): Note {
+  private static quote(arg: QuoteArgs): Result.Result<Error, Note> {
     if (
       arg.content === '' &&
       arg.contentsWarningComment === '' &&
       arg.attachmentFileID.length === 0
     ) {
-      throw new NoteContentLengthError('Quote must have content', {
-        cause: null,
-      });
+      return Result.err(
+        new NoteContentLengthError('Quote must have content', { cause: null }),
+      );
     }
 
-    return new Note({
-      ...Note.checkArgs({
-        ...arg,
-        sendTo: Option.none(),
-      }),
-      updatedAt: Option.none(),
-      deletedAt: Option.none(),
+    const checked = Note.checkArgs({
+      ...arg,
+      sendTo: Option.none(),
     });
+    if (Result.isErr(checked)) return checked;
+
+    return Result.ok(
+      new Note({
+        ...Result.unwrap(checked),
+        updatedAt: Option.none(),
+        deletedAt: Option.none(),
+      }),
+    );
   }
 
   private static isThisArgsQuote(

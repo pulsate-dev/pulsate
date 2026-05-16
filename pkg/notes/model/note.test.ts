@@ -1,4 +1,4 @@
-import { Option } from '@mikuroxina/mini-fn';
+import { Option, Result } from '@mikuroxina/mini-fn';
 import { describe, expect, it } from 'vitest';
 
 import type { AccountID } from '../../accounts/model/account.js';
@@ -19,7 +19,7 @@ const exampleInput = {
 
 describe('Note', () => {
   it('generate new instance', () => {
-    const note = Note.new(exampleInput);
+    const note = Result.unwrap(Note.new(exampleInput));
 
     expect(note.getID()).toBe(exampleInput.id);
     expect(note.getAuthorID()).toBe(exampleInput.authorID);
@@ -37,16 +37,16 @@ describe('Note', () => {
       {
         label: 'exactly 3000 chars (boundary)',
         length: 3000,
-        shouldThrow: false,
+        shouldErr: false,
       },
-      { label: 'exceeds 3000 chars', length: 3001, shouldThrow: true },
-    ])('$label', ({ length, shouldThrow }) => {
-      const act = () =>
-        Note.new({ ...exampleInput, content: 'a'.repeat(length) });
-      if (shouldThrow) {
-        expect(act).toThrow('Content too long');
+      { label: 'exceeds 3000 chars', length: 3001, shouldErr: true },
+    ])('$label', ({ length, shouldErr }) => {
+      const res = Note.new({ ...exampleInput, content: 'a'.repeat(length) });
+      if (shouldErr) {
+        expect(Result.isErr(res)).toBe(true);
+        expect(Result.unwrapErr(res).message).toBe('Content too long');
       } else {
-        expect(act).not.toThrow();
+        expect(Result.isOk(res)).toBe(true);
       }
     });
   });
@@ -56,19 +56,21 @@ describe('Note', () => {
       {
         label: 'exactly 256 chars (boundary)',
         length: 256,
-        shouldThrow: false,
+        shouldErr: false,
       },
-      { label: 'exceeds 256 chars', length: 257, shouldThrow: true },
-    ])('$label', ({ length, shouldThrow }) => {
-      const act = () =>
-        Note.new({
-          ...exampleInput,
-          contentsWarningComment: 'a'.repeat(length),
-        });
-      if (shouldThrow) {
-        expect(act).toThrow('ContentsWarningComment too long');
+      { label: 'exceeds 256 chars', length: 257, shouldErr: true },
+    ])('$label', ({ length, shouldErr }) => {
+      const res = Note.new({
+        ...exampleInput,
+        contentsWarningComment: 'a'.repeat(length),
+      });
+      if (shouldErr) {
+        expect(Result.isErr(res)).toBe(true);
+        expect(Result.unwrapErr(res).message).toBe(
+          'ContentsWarningComment too long',
+        );
       } else {
-        expect(act).not.toThrow();
+        expect(Result.isOk(res)).toBe(true);
       }
     });
   });
@@ -78,22 +80,22 @@ describe('Note', () => {
       {
         label: 'exactly 16 attachments (boundary)',
         count: 16,
-        shouldThrow: false,
+        shouldErr: false,
       },
-      { label: 'exceeds 16 attachments', count: 17, shouldThrow: true },
-    ])('$label', ({ count, shouldThrow }) => {
-      const act = () =>
-        Note.new({
-          ...exampleInput,
-          attachmentFileID: Array.from(
-            { length: count },
-            (_, i) => (i + 1).toString() as MediumID,
-          ),
-        });
-      if (shouldThrow) {
-        expect(act).toThrow('Too many attachments');
+      { label: 'exceeds 16 attachments', count: 17, shouldErr: true },
+    ])('$label', ({ count, shouldErr }) => {
+      const res = Note.new({
+        ...exampleInput,
+        attachmentFileID: Array.from(
+          { length: count },
+          (_, i) => (i + 1).toString() as MediumID,
+        ),
+      });
+      if (shouldErr) {
+        expect(Result.isErr(res)).toBe(true);
+        expect(Result.unwrapErr(res).message).toBe('Too many attachments');
       } else {
-        expect(act).not.toThrow();
+        expect(Result.isOk(res)).toBe(true);
       }
     });
   });
@@ -103,20 +105,20 @@ describe('Note', () => {
       {
         label: 'sendTo is present',
         sendTo: Option.some('3' as AccountID),
-        shouldThrow: false,
+        shouldErr: false,
       },
       {
         label: 'sendTo is absent',
         sendTo: Option.none(),
-        shouldThrow: true,
+        shouldErr: true,
       },
-    ])('$label', ({ sendTo, shouldThrow }) => {
-      const act = () =>
-        Note.new({ ...exampleInput, visibility: 'DIRECT', sendTo });
-      if (shouldThrow) {
-        expect(act).toThrow('No destination');
+    ])('$label', ({ sendTo, shouldErr }) => {
+      const res = Note.new({ ...exampleInput, visibility: 'DIRECT', sendTo });
+      if (shouldErr) {
+        expect(Result.isErr(res)).toBe(true);
+        expect(Result.unwrapErr(res).message).toBe('No destination');
       } else {
-        expect(act).not.toThrow();
+        expect(Result.isOk(res)).toBe(true);
       }
     });
   });
@@ -133,20 +135,20 @@ describe('Note', () => {
         label:
           'throws when a normal note has no content, CW comment, or attachments',
         originalNoteID: Option.none(),
-        shouldThrow: true,
+        shouldErr: true,
       },
       {
         label: 'allows empty content when originalNoteID is present (renote)',
         originalNoteID: Option.some('999' as NoteID),
-        shouldThrow: false,
+        shouldErr: false,
       },
-    ])('$label', ({ originalNoteID, shouldThrow }) => {
-      const act = () =>
-        Note.new({ ...exampleInput, ...emptyArgs, originalNoteID });
-      if (shouldThrow) {
-        expect(act).toThrow('Note must have content');
+    ])('$label', ({ originalNoteID, shouldErr }) => {
+      const res = Note.new({ ...exampleInput, ...emptyArgs, originalNoteID });
+      if (shouldErr) {
+        expect(Result.isErr(res)).toBe(true);
+        expect(Result.unwrapErr(res).message).toBe('Note must have content');
       } else {
-        expect(act).not.toThrow();
+        expect(Result.isOk(res)).toBe(true);
       }
     });
 
@@ -166,12 +168,14 @@ describe('Note', () => {
         },
       },
     ])('$label', ({ args }) => {
-      const renote = Note.new({
-        ...exampleInput,
-        content: '',
-        ...args,
-        originalNoteID: Option.some('999' as NoteID),
-      });
+      const renote = Result.unwrap(
+        Note.new({
+          ...exampleInput,
+          content: '',
+          ...args,
+          originalNoteID: Option.some('999' as NoteID),
+        }),
+      );
       expect(renote.getContent()).toBe('');
       expect(renote.getOriginalNoteID()).toStrictEqual(
         Option.some('999' as NoteID),
@@ -213,17 +217,19 @@ describe('Note', () => {
       attachmentFileID,
       checkContent,
     }) => {
-      const quote = Note.new({
-        id,
-        authorID: '3' as AccountID,
-        content,
-        visibility: 'PUBLIC',
-        contentsWarningComment,
-        sendTo: Option.none(),
-        originalNoteID: Option.some('100' as NoteID),
-        attachmentFileID,
-        createdAt: new Date('2023-09-11T00:00:00.000Z'),
-      });
+      const quote = Result.unwrap(
+        Note.new({
+          id,
+          authorID: '3' as AccountID,
+          content,
+          visibility: 'PUBLIC',
+          contentsWarningComment,
+          sendTo: Option.none(),
+          originalNoteID: Option.some('100' as NoteID),
+          attachmentFileID,
+          createdAt: new Date('2023-09-11T00:00:00.000Z'),
+        }),
+      );
 
       checkContent(quote);
       expect(quote.isRenote()).toBe(true);
@@ -236,17 +242,19 @@ describe('Note', () => {
        * by the service layer (resolveOriginalNote), not by Note.new().
        * Note.new() simply stores the originalNoteID as given.
        */
-      const quote = Note.new({
-        id: '301' as NoteID,
-        authorID: '4' as AccountID,
-        content: 'quoting a renote',
-        visibility: 'PUBLIC',
-        contentsWarningComment: '',
-        sendTo: Option.none(),
-        originalNoteID: Option.some('100' as NoteID),
-        attachmentFileID: [],
-        createdAt: new Date('2023-09-12T00:00:00.000Z'),
-      });
+      const quote = Result.unwrap(
+        Note.new({
+          id: '301' as NoteID,
+          authorID: '4' as AccountID,
+          content: 'quoting a renote',
+          visibility: 'PUBLIC',
+          contentsWarningComment: '',
+          sendTo: Option.none(),
+          originalNoteID: Option.some('100' as NoteID),
+          attachmentFileID: [],
+          createdAt: new Date('2023-09-12T00:00:00.000Z'),
+        }),
+      );
 
       expect(quote.getOriginalNoteID()).toStrictEqual(
         Option.some('100' as NoteID),
@@ -254,18 +262,20 @@ describe('Note', () => {
     });
 
     it('should refer to the quote itself when quoting a quote', () => {
-      const quote301 = Note.new({
-        id: '301' as NoteID,
-        authorID: '4' as AccountID,
-        content: 'quoting a quote',
-        visibility: 'PUBLIC',
-        contentsWarningComment: '',
-        sendTo: Option.none(),
-        // 100 <-Quotes- 300 <-Quotes- 301 => 301's original is 300 (not 100)
-        originalNoteID: Option.some('300' as NoteID),
-        attachmentFileID: [],
-        createdAt: new Date('2023-09-12T00:00:00.000Z'),
-      });
+      const quote301 = Result.unwrap(
+        Note.new({
+          id: '301' as NoteID,
+          authorID: '4' as AccountID,
+          content: 'quoting a quote',
+          visibility: 'PUBLIC',
+          contentsWarningComment: '',
+          sendTo: Option.none(),
+          // 100 <-Quotes- 300 <-Quotes- 301 => 301's original is 300 (not 100)
+          originalNoteID: Option.some('300' as NoteID),
+          attachmentFileID: [],
+          createdAt: new Date('2023-09-12T00:00:00.000Z'),
+        }),
+      );
 
       expect(quote301.getOriginalNoteID()).toStrictEqual(
         Option.some('300' as NoteID),
