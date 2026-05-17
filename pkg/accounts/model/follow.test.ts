@@ -21,41 +21,19 @@ describe('AccountFollow', () => {
     expect(follow.getDeletedAt()).toStrictEqual(Option.none());
   });
 
-  describe('reconstruct', () => {
-    it.each([
-      {
-        title: 'without deletedAt',
-        args: {
-          fromID: '1' as AccountID,
-          targetID: '2' as AccountID,
-          createdAt: new Date('2023-09-10T00:00:00.000Z'),
-        } as CreateAccountFollowArgs,
-        expected: true,
-      },
-      {
-        title: 'with valid deletedAt (after createdAt)',
-        args: {
-          fromID: '1' as AccountID,
-          targetID: '2' as AccountID,
-          createdAt: new Date('2023-09-10T00:00:00.000Z'),
-          deletedAt: new Date('2023-09-10T10:00:00.000Z'),
-        } as CreateAccountFollowArgs,
-        expected: true,
-      },
-      {
-        title: 'with invalid deletedAt (before createdAt)',
-        args: {
-          fromID: '1' as AccountID,
-          targetID: '2' as AccountID,
-          createdAt: new Date('2023-09-10T10:00:00.000Z'),
-          deletedAt: new Date('2023-09-10T00:00:00.000Z'),
-        } as CreateAccountFollowArgs,
-        expected: false,
-      },
-    ])('reconstruct: $title', ({ args, expected }) => {
-      const result = AccountFollow.reconstruct(args);
-      expect(Result.isOk(result)).toBe(expected);
+  it('reconstruct restores all fields from DB data', () => {
+    const follow = AccountFollow.reconstruct({
+      fromID: '1' as AccountID,
+      targetID: '2' as AccountID,
+      createdAt: new Date('2023-09-10T00:00:00.000Z'),
+      deletedAt: new Date('2023-09-10T10:00:00.000Z'),
     });
+
+    expect(follow.getFromID()).toBe('1');
+    expect(follow.getTargetID()).toBe('2');
+    expect(follow.getDeletedAt()).toStrictEqual(
+      Option.some(new Date('2023-09-10T10:00:00.000Z')),
+    );
   });
 
   describe('setDeletedAt', () => {

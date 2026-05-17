@@ -33,13 +33,8 @@ export class AccountFollow {
     return new AccountFollow({ ...args, deletedAt: undefined });
   }
 
-  public static reconstruct(
-    args: CreateAccountFollowArgs,
-  ): Result.Result<Error, AccountFollow> {
-    if (args.deletedAt && args.createdAt > args.deletedAt) {
-      return Result.err(new Error('deletedAt must be later than createdAt'));
-    }
-    return Result.ok(new AccountFollow(args));
+  public static reconstruct(args: CreateAccountFollowArgs): AccountFollow {
+    return new AccountFollow(args);
   }
 
   private readonly fromID: AccountID;
