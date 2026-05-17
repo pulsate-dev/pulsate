@@ -1,4 +1,4 @@
-import { Option } from '@mikuroxina/mini-fn';
+import { Option, Result } from '@mikuroxina/mini-fn';
 import { describe, expect, it } from 'vitest';
 
 import type { AccountID } from './account.js';
@@ -19,5 +19,65 @@ describe('AccountFollow', () => {
     expect(follow.getTargetID()).toBe(exampleInput.targetID);
     expect(follow.getCreatedAt()).toBe(exampleInput.createdAt);
     expect(follow.getDeletedAt()).toStrictEqual(Option.none());
+  });
+
+  describe('reconstruct', () => {
+    it.each([
+      {
+        title: 'without deletedAt',
+        args: {
+          fromID: '1' as AccountID,
+          targetID: '2' as AccountID,
+          createdAt: new Date('2023-09-10T00:00:00.000Z'),
+        } as CreateAccountFollowArgs,
+        expected: true,
+      },
+      {
+        title: 'with valid deletedAt (after createdAt)',
+        args: {
+          fromID: '1' as AccountID,
+          targetID: '2' as AccountID,
+          createdAt: new Date('2023-09-10T00:00:00.000Z'),
+          deletedAt: new Date('2023-09-10T10:00:00.000Z'),
+        } as CreateAccountFollowArgs,
+        expected: true,
+      },
+      {
+        title: 'with invalid deletedAt (before createdAt)',
+        args: {
+          fromID: '1' as AccountID,
+          targetID: '2' as AccountID,
+          createdAt: new Date('2023-09-10T10:00:00.000Z'),
+          deletedAt: new Date('2023-09-10T00:00:00.000Z'),
+        } as CreateAccountFollowArgs,
+        expected: false,
+      },
+    ])('reconstruct: $title', ({ args, expected }) => {
+      const result = AccountFollow.reconstruct(args);
+      expect(Result.isOk(result)).toBe(expected);
+    });
+  });
+
+  describe('setDeletedAt', () => {
+    it.each([
+      {
+        title: 'valid deletedAt (after createdAt)',
+        deletedAt: new Date('2023-09-10T10:00:00.000Z'),
+        expected: true,
+      },
+      {
+        title: 'invalid deletedAt (before createdAt)',
+        deletedAt: new Date('2023-09-09T00:00:00.000Z'),
+        expected: false,
+      },
+    ])('setDeletedAt: $title', ({ deletedAt, expected }) => {
+      const follow = AccountFollow.new({
+        fromID: '1' as AccountID,
+        targetID: '2' as AccountID,
+        createdAt: new Date('2023-09-10T00:00:00.000Z'),
+      });
+      const result = follow.setDeletedAt(deletedAt);
+      expect(Result.isOk(result)).toBe(expected);
+    });
   });
 });

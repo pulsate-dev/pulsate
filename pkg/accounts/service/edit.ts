@@ -6,7 +6,6 @@ import {
 } from '../../password/mod.js';
 import type { Account, AccountName } from '../model/account.js';
 import {
-  AccountInternalError,
   AccountMailAddressLengthError,
   AccountNicknameTooLongError,
   AccountNicknameTooShortError,
@@ -36,13 +35,13 @@ export class EditService {
     nickname: string,
     actorName: AccountName,
   ): Promise<Result.Result<Error, boolean>> {
-    const res = await this.accountRepository.findByName(target);
-    if (Option.isNone(res)) {
+    const accountRes = await this.accountRepository.findByName(target);
+    if (Option.isNone(accountRes)) {
       return Result.err(
         new AccountNotFoundError('account not found', { cause: null }),
       );
     }
-    const account = Option.unwrap(res);
+    const account = Option.unwrap(accountRes);
     const actorRes = await this.accountRepository.findByName(actorName);
     if (Option.isNone(actorRes)) {
       return Result.err(
@@ -66,19 +65,17 @@ export class EditService {
       );
     }
 
-    try {
-      account.setNickName(nickname);
-      const res = await this.accountRepository.edit(account);
-      if (Result.isErr(res)) {
-        return res;
-      }
-
-      return Result.ok(true);
-    } catch (e) {
-      return Result.err(
-        new AccountInternalError('failed to update account', { cause: e }),
-      );
+    const setNickNameRes = account.setNickName(nickname);
+    if (Result.isErr(setNickNameRes)) {
+      return setNickNameRes;
     }
+
+    const editRes = await this.accountRepository.edit(account);
+    if (Result.isErr(editRes)) {
+      return editRes;
+    }
+
+    return Result.ok(true);
   }
 
   async editPassphrase(
@@ -86,13 +83,13 @@ export class EditService {
     newPassphrase: string,
     actorName: AccountName,
   ): Promise<Result.Result<Error, boolean>> {
-    const res = await this.accountRepository.findByName(target);
-    if (Option.isNone(res)) {
+    const accountRes = await this.accountRepository.findByName(target);
+    if (Option.isNone(accountRes)) {
       return Result.err(
         new AccountNotFoundError('account not found', { cause: null }),
       );
     }
-    const account = Option.unwrap(res);
+    const account = Option.unwrap(accountRes);
     const actorRes = await this.accountRepository.findByName(actorName);
     if (Option.isNone(actorRes)) {
       return Result.err(
@@ -120,22 +117,19 @@ export class EditService {
       );
     }
 
-    try {
-      account.setPassphraseHash(
-        await this.passwordEncoder.encodePassword(newPassphrase),
-      );
-
-      const res = await this.accountRepository.edit(account);
-      if (Result.isErr(res)) {
-        return res;
-      }
-
-      return Result.ok(true);
-    } catch (e) {
-      return Result.err(
-        new AccountInternalError('failed to update account', { cause: e }),
-      );
+    const encodedPassphrase =
+      await this.passwordEncoder.encodePassword(newPassphrase);
+    const setPassphraseRes = account.setPassphraseHash(encodedPassphrase);
+    if (Result.isErr(setPassphraseRes)) {
+      return setPassphraseRes;
     }
+
+    const editRes = await this.accountRepository.edit(account);
+    if (Result.isErr(editRes)) {
+      return editRes;
+    }
+
+    return Result.ok(true);
   }
 
   async editEmail(
@@ -143,13 +137,13 @@ export class EditService {
     newEmail: string,
     actorName: AccountName,
   ): Promise<Result.Result<Error, boolean>> {
-    const res = await this.accountRepository.findByName(target);
-    if (Option.isNone(res)) {
+    const accountRes = await this.accountRepository.findByName(target);
+    if (Option.isNone(accountRes)) {
       return Result.err(
         new AccountNotFoundError('account not found', { cause: null }),
       );
     }
-    const account = Option.unwrap(res);
+    const account = Option.unwrap(accountRes);
     const actorRes = await this.accountRepository.findByName(actorName);
     if (Option.isNone(actorRes)) {
       return Result.err(
@@ -175,20 +169,17 @@ export class EditService {
 
     // TODO: add a process to check the email is active
 
-    try {
-      account.setMail(newEmail);
-
-      const res = await this.accountRepository.edit(account);
-      if (Result.isErr(res)) {
-        return res;
-      }
-
-      return Result.ok(true);
-    } catch (e) {
-      return Result.err(
-        new AccountInternalError('failed to update account', { cause: e }),
-      );
+    const setMailRes = account.setMail(newEmail);
+    if (Result.isErr(setMailRes)) {
+      return setMailRes;
     }
+
+    const editRes = await this.accountRepository.edit(account);
+    if (Result.isErr(editRes)) {
+      return editRes;
+    }
+
+    return Result.ok(true);
   }
 
   async editBio(
@@ -196,13 +187,13 @@ export class EditService {
     bio: string,
     actorName: AccountName,
   ): Promise<Result.Result<Error, boolean>> {
-    const res = await this.accountRepository.findByName(target);
-    if (Option.isNone(res)) {
+    const accountRes = await this.accountRepository.findByName(target);
+    if (Option.isNone(accountRes)) {
       return Result.err(
         new AccountNotFoundError('account not found', { cause: null }),
       );
     }
-    const account = Option.unwrap(res);
+    const account = Option.unwrap(accountRes);
     const actorRes = await this.accountRepository.findByName(actorName);
     if (Option.isNone(actorRes)) {
       return Result.err(
@@ -216,20 +207,17 @@ export class EditService {
     }
 
     // ToDo(laminne): bio length check
-    try {
-      account.setBio(bio);
-
-      const res = await this.accountRepository.edit(account);
-      if (Result.isErr(res)) {
-        return res;
-      }
-
-      return Result.ok(true);
-    } catch (e) {
-      return Result.err(
-        new AccountInternalError('failed to update account', { cause: e }),
-      );
+    const setBioRes = account.setBio(bio);
+    if (Result.isErr(setBioRes)) {
+      return setBioRes;
     }
+
+    const editRes = await this.accountRepository.edit(account);
+    if (Result.isErr(editRes)) {
+      return editRes;
+    }
+
+    return Result.ok(true);
   }
 
   private isAllowed(

@@ -38,12 +38,11 @@ export class SilenceService {
       return Result.err(new Error('not allowed'));
     }
 
-    try {
-      account.setSilence();
-      return Result.ok(true);
-    } catch (e) {
-      return Result.err(e as unknown as Error);
+    const setSilenceRes = account.setSilence();
+    if (Result.isErr(setSilenceRes)) {
+      return setSilenceRes;
     }
+    return Result.ok(true);
   }
 
   async undoSilence(
@@ -70,12 +69,11 @@ export class SilenceService {
       return Result.err(new Error('not allowed'));
     }
 
-    try {
-      account.undoSilence();
-      return Result.ok(true);
-    } catch (e) {
-      return Result.err(e as unknown as Error);
+    const undoSilenceRes = account.undoSilence();
+    if (Result.isErr(undoSilenceRes)) {
+      return undoSilenceRes;
     }
+    return Result.ok(true);
   }
 
   private isAllowed(

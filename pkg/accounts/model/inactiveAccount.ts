@@ -1,3 +1,5 @@
+import { Result } from '@mikuroxina/mini-fn';
+
 import {
   Account,
   type AccountID,
@@ -50,18 +52,20 @@ export class InactiveAccount {
     return this.mail;
   }
 
-  public activate(args: ActivateArgs): Account {
+  public activate(args: ActivateArgs): Result.Result<Error, Account> {
     if (this.isActivated()) {
-      throw new AlreadyActivatedError();
+      return Result.err(new AlreadyActivatedError());
     }
 
     this.activated = true;
-    return Account.new({
-      id: this.id,
-      name: this.name,
-      mail: this.mail,
-      ...args,
-    });
+    return Result.ok(
+      Account.new({
+        id: this.id,
+        name: this.name,
+        mail: this.mail,
+        ...args,
+      }),
+    );
   }
 
   static new(arg: CreateInactiveAccountArgs): InactiveAccount {

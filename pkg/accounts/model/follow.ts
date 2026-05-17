@@ -1,4 +1,4 @@
-import { Option } from '@mikuroxina/mini-fn';
+import { Option, Result } from '@mikuroxina/mini-fn';
 
 import type { AccountID } from './account.js';
 
@@ -25,9 +25,6 @@ export class AccountFollow {
       this.deletedAt = Option.none();
       return;
     }
-    if (args.deletedAt > args.createdAt) {
-      throw new Error('deletedAt must be later than createdAt');
-    }
 
     this.deletedAt = Option.some(args.deletedAt);
   }
@@ -36,8 +33,13 @@ export class AccountFollow {
     return new AccountFollow({ ...args, deletedAt: undefined });
   }
 
-  public static reconstruct(args: CreateAccountFollowArgs) {
-    return new AccountFollow(args);
+  public static reconstruct(
+    args: CreateAccountFollowArgs,
+  ): Result.Result<Error, AccountFollow> {
+    if (args.deletedAt && args.createdAt > args.deletedAt) {
+      return Result.err(new Error('deletedAt must be later than createdAt'));
+    }
+    return Result.ok(new AccountFollow(args));
   }
 
   private readonly fromID: AccountID;
@@ -64,10 +66,11 @@ export class AccountFollow {
     return this.deletedAt;
   }
 
-  public setDeletedAt(deletedAt: Date) {
+  public setDeletedAt(deletedAt: Date): Result.Result<Error, void> {
     if (this.createdAt > deletedAt) {
-      throw new Error('deletedAt must be later than createdAt');
+      return Result.err(new Error('deletedAt must be later than createdAt'));
     }
     this.deletedAt = Option.some(deletedAt);
+    return Result.ok(undefined);
   }
 }

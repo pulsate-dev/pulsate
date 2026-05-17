@@ -33,12 +33,11 @@ export class FreezeService {
       return Result.err(new Error('not allowed'));
     }
 
-    try {
-      account.setFreeze();
-      return Result.ok(true);
-    } catch (e) {
-      return Result.err(e as unknown as Error);
+    const setFreezeRes = account.setFreeze();
+    if (Result.isErr(setFreezeRes)) {
+      return setFreezeRes;
     }
+    return Result.ok(true);
   }
 
   async undoFreeze(
@@ -64,12 +63,11 @@ export class FreezeService {
       return Result.err(new Error('not allowed'));
     }
 
-    try {
-      account.setUnfreeze();
-      return Result.ok(true);
-    } catch (e) {
-      return Result.err(e as unknown as Error);
+    const setUnfreezeRes = account.setUnfreeze();
+    if (Result.isErr(setUnfreezeRes)) {
+      return setUnfreezeRes;
     }
+    return Result.ok(true);
   }
 
   private isAllowed(

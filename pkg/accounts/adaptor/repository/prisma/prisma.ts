@@ -343,7 +343,7 @@ export class PrismaAccountFollowRepository implements AccountFollowRepository {
         toId: accountID,
       },
     });
-    return Result.ok(res.map((f) => this.fromPrismaArgs(f)));
+    return this.parseFollowResults(res);
   }
   async fetchAllFollowing(
     accountID: AccountID,
@@ -353,7 +353,7 @@ export class PrismaAccountFollowRepository implements AccountFollowRepository {
         fromId: accountID,
       },
     });
-    return Result.ok(res.map((f) => this.fromPrismaArgs(f)));
+    return this.parseFollowResults(res);
   }
 
   async fetchOrderedFollowers(
@@ -369,7 +369,7 @@ export class PrismaAccountFollowRepository implements AccountFollowRepository {
         createdAt: 'desc',
       },
     });
-    return Result.ok(res.map((f) => this.fromPrismaArgs(f)));
+    return this.parseFollowResults(res);
   }
 
   async fetchOrderedFollowing(
@@ -385,7 +385,21 @@ export class PrismaAccountFollowRepository implements AccountFollowRepository {
         createdAt: 'desc',
       },
     });
-    return Result.ok(res.map((f) => this.fromPrismaArgs(f)));
+    return this.parseFollowResults(res);
+  }
+
+  private parseFollowResults(
+    args: AccountFollowPrismaArgs[],
+  ): Result.Result<Error, AccountFollow[]> {
+    const follows: AccountFollow[] = [];
+    for (const f of args) {
+      const res = this.fromPrismaArgs(f);
+      if (Result.isErr(res)) {
+        return res;
+      }
+      follows.push(Result.unwrap(res));
+    }
+    return Result.ok(follows);
   }
 
   async followCount(
@@ -411,7 +425,9 @@ export class PrismaAccountFollowRepository implements AccountFollowRepository {
     }
   }
 
-  private fromPrismaArgs(args: AccountFollowPrismaArgs): AccountFollow {
+  private fromPrismaArgs(
+    args: AccountFollowPrismaArgs,
+  ): Result.Result<Error, AccountFollow> {
     return AccountFollow.reconstruct({
       fromID: args.fromId as AccountID,
       targetID: args.toId as AccountID,

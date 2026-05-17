@@ -1,3 +1,4 @@
+import { Result } from '@mikuroxina/mini-fn';
 import { describe, expect, it } from 'vitest';
 
 import {
@@ -40,68 +41,50 @@ describe('Account', () => {
     expect(account.getDeletedAt()).toBe(undefined);
   });
 
-  it('account nickname must be less than 256', () => {
-    const name = 'a'.repeat(257);
+  it.each([
+    { title: 'exactly 256 chars', input: 'a'.repeat(256), expected: true },
+    { title: 'over 256 chars (257)', input: 'a'.repeat(257), expected: false },
+    { title: 'normal nickname', input: 'John Doe', expected: true },
+  ])('setNickName: $title', ({ input, expected }) => {
     const account = Account.new(exampleInput);
-    expect(() => account.setNickName(name)).toThrow();
+    const result = account.setNickName(input);
+    expect(Result.isOk(result)).toBe(expected);
   });
 
-  it('account bio must be less than 1024 chars', () => {
-    const bio = 'a'.repeat(1025);
+  it.each([
+    { title: 'exactly 1024 chars', input: 'a'.repeat(1024), expected: true },
+    {
+      title: 'over 1024 chars (1025)',
+      input: 'a'.repeat(1025),
+      expected: false,
+    },
+    { title: 'normal bio', input: 'hello world', expected: true },
+  ])('setBio: $title', ({ input, expected }) => {
     const account = Account.new(exampleInput);
-    expect(() => {
-      account.setBio(bio);
-    }).toThrow();
+    const result = account.setBio(input);
+    expect(Result.isOk(result)).toBe(expected);
   });
 
   it('can’t change values when account is frozen', () => {
     const account = Account.new(exampleInput);
     account.setFreeze();
 
-    expect(() => {
-      account.setBio('test');
-    }).toThrow();
-
-    expect(() => {
-      account.setNickName('hello@example.com');
-    }).toThrow();
-
-    expect(() => {
-      account.setPassphraseHash('123');
-    }).toThrow();
-
-    expect(() => {
-      account.setSilence();
-    }).toThrow();
-
-    expect(() => {
-      account.setMail('pulsate@example.com');
-    }).toThrow();
+    expect(Result.isErr(account.setBio('test'))).toBe(true);
+    expect(Result.isErr(account.setNickName('hello@example.com'))).toBe(true);
+    expect(Result.isErr(account.setPassphraseHash('123'))).toBe(true);
+    expect(Result.isErr(account.setSilence())).toBe(true);
+    expect(Result.isErr(account.setMail('pulsate@example.com'))).toBe(true);
   });
 
   it('deleted account can’t change values', () => {
     const account = Account.new(exampleInput);
     account.setDeletedAt(new Date());
 
-    expect(() => {
-      account.setBio('test');
-    }).toThrow();
-
-    expect(() => {
-      account.setNickName('hello@example.com');
-    }).toThrow();
-
-    expect(() => {
-      account.setPassphraseHash('123');
-    }).toThrow();
-
-    expect(() => {
-      account.setSilence();
-    }).toThrow();
-
-    expect(() => {
-      account.setMail('pulsate@example.com');
-    }).toThrow();
+    expect(Result.isErr(account.setBio('test'))).toBe(true);
+    expect(Result.isErr(account.setNickName('hello@example.com'))).toBe(true);
+    expect(Result.isErr(account.setPassphraseHash('123'))).toBe(true);
+    expect(Result.isErr(account.setSilence())).toBe(true);
+    expect(Result.isErr(account.setMail('pulsate@example.com'))).toBe(true);
   });
 });
 

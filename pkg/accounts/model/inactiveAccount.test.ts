@@ -1,3 +1,4 @@
+import { Result } from '@mikuroxina/mini-fn';
 import { describe, expect, it } from 'vitest';
 
 import type { AccountID, CreateAccountArgs } from './account.js';
@@ -36,7 +37,10 @@ describe('InactiveAccount', () => {
 
   it('activate account', () => {
     const inactiveAccount = InactiveAccount.new(exampleInput);
-    const account = inactiveAccount.activate(exampleActivateArgs);
+    const result = inactiveAccount.activate(exampleActivateArgs);
+
+    expect(Result.isOk(result)).toBe(true);
+    const account = Result.unwrap(result);
 
     expect(account.getID()).toBe(exampleInput.id);
     expect(account.getName()).toBe(exampleInput.name);
@@ -58,9 +62,8 @@ describe('InactiveAccount', () => {
     const inactiveAccount = InactiveAccount.new(exampleInput);
     inactiveAccount.activate(exampleActivateArgs);
 
-    expect(() => {
-      inactiveAccount.activate(exampleActivateArgs);
-    }).toThrow();
+    const result = inactiveAccount.activate(exampleActivateArgs);
+    expect(Result.isErr(result)).toBe(true);
   });
 
   it('get account property', () => {

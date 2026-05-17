@@ -103,7 +103,10 @@ export class VerifyAccountTokenService {
       return deleteTokenRes;
     }
 
-    account.activate();
+    const activateRes = account.activate();
+    if (Result.isErr(activateRes)) {
+      return activateRes;
+    }
     const editRes = await this.accountRepository.edit(account);
     if (Result.isErr(editRes)) {
       return editRes;
