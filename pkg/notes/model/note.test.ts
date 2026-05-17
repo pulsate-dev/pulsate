@@ -21,10 +21,7 @@ const exampleInput: CreateNoteArgs = {
 
 describe('Note', () => {
   it('generate new instance', () => {
-    const result = Note.new(exampleInput);
-    expect(Result.isOk(result)).toBe(true);
-
-    const note = Result.unwrap(result);
+    const note = Result.unwrap(Note.new(exampleInput));
     expect(note.getID()).toBe(exampleInput.id);
     expect(note.getAuthorID()).toBe(exampleInput.authorID);
     expect(note.getContent()).toBe(exampleInput.content);

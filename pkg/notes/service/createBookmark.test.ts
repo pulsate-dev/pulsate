@@ -14,34 +14,25 @@ const anotherNoteID = 'noteID_2' as NoteID;
 const accountID = 'accountID_1' as AccountID;
 const anotherAccountID = 'accountID_2' as AccountID;
 
+const createTestNote = (id: NoteID, content: string): Note =>
+  Note.reconstruct({
+    id,
+    authorID: '3' as AccountID,
+    content,
+    contentsWarningComment: '',
+    createdAt: new Date('2023-09-10T00:00:00Z'),
+    sendTo: Option.none(),
+    originalNoteID: Option.none(),
+    attachmentFileID: [],
+    visibility: 'PUBLIC',
+    updatedAt: Option.none(),
+    deletedAt: Option.none(),
+  });
+
 const bookmarkRepository = new InMemoryBookmarkRepository();
 const noteRepository = new InMemoryNoteRepository([
-  Result.unwrap(
-    Note.new({
-      id: 'noteID_1' as NoteID,
-      authorID: '3' as AccountID,
-      content: 'Hello world',
-      contentsWarningComment: '',
-      createdAt: new Date('2023-09-10T00:00:00Z'),
-      sendTo: Option.none(),
-      originalNoteID: Option.none(),
-      attachmentFileID: [],
-      visibility: 'PUBLIC',
-    }),
-  ),
-  Result.unwrap(
-    Note.new({
-      id: 'noteID_2' as NoteID,
-      authorID: '3' as AccountID,
-      content: 'Another note',
-      contentsWarningComment: '',
-      createdAt: new Date('2023-09-10T00:00:00Z'),
-      sendTo: Option.none(),
-      originalNoteID: Option.none(),
-      attachmentFileID: [],
-      visibility: 'PUBLIC',
-    }),
-  ),
+  createTestNote('noteID_1' as NoteID, 'Hello world'),
+  createTestNote('noteID_2' as NoteID, 'Another note'),
 ]);
 const createBookmarkService = new CreateBookmarkService(
   bookmarkRepository,
