@@ -1,3 +1,4 @@
+import { Result } from '@mikuroxina/mini-fn';
 import { describe, expect, it } from 'vitest';
 import type { AccountID } from '../../accounts/model/account.js';
 import type { NoteID } from './note.js';
@@ -29,21 +30,42 @@ const invalidCustomEmojiInput: CreateReactionArgs = {
 };
 
 describe('Reaction', () => {
-  it('add reaction to note', () => {
-    const reaction = Reaction.new(exampleInput);
+  it.each([
+    {
+      title: 'valid unicode emoji',
+      input: exampleInput,
+      isOk: true,
+    },
+    {
+      title: 'valid custom emoji',
+      input: exampleCustomEmojiInput,
+      isOk: true,
+    },
+    {
+      title: 'invalid custom emoji format',
+      input: invalidCustomEmojiInput,
+      isOk: false,
+    },
+  ])('Reaction.new: $title', ({ input, isOk }) => {
+    const result = Reaction.new(input);
+    expect(Result.isOk(result)).toBe(isOk);
+  });
 
+  it('add reaction to note', () => {
+    const result = Reaction.new(exampleInput);
+    expect(Result.isOk(result)).toBe(true);
+
+    const reaction = Result.unwrap(result);
     expect(reaction.getAccountID()).toBe(exampleInput.accountID);
     expect(reaction.getNoteID()).toBe(exampleInput.noteID);
     expect(reaction.getEmoji()).toBe(exampleInput.body);
   });
-  it('add custom emoji to note', () => {
-    const reaction = Reaction.new(exampleCustomEmojiInput);
 
+  it('add custom emoji to note', () => {
+    const result = Reaction.new(exampleCustomEmojiInput);
+    expect(Result.isOk(result)).toBe(true);
+
+    const reaction = Result.unwrap(result);
     expect(reaction.getEmoji()).toBe(exampleCustomEmojiInput.body);
-  });
-  it('throw error when invalid custom emoji input', () => {
-    expect(() => Reaction.new(invalidCustomEmojiInput)).toThrow(
-      'Emoji type is invalid',
-    );
   });
 });

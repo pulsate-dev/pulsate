@@ -12,17 +12,19 @@ import { CreateReactionService } from './createReaction.js';
 const idGenerator = new SnowflakeIDGenerator(1, new MockClock(new Date()));
 let reactionRepository = new InMemoryReactionRepository();
 let noteRepository = new InMemoryNoteRepository([
-  Note.new({
-    id: '1' as NoteID,
-    authorID: '2' as AccountID,
-    content: 'this is a test note',
-    visibility: 'PUBLIC',
-    contentsWarningComment: '',
-    attachmentFileID: [],
-    createdAt: new Date(2023, 9, 10, 0, 0),
-    originalNoteID: Option.none(),
-    sendTo: Option.none(),
-  }),
+  Result.unwrap(
+    Note.new({
+      id: '1' as NoteID,
+      authorID: '2' as AccountID,
+      content: 'this is a test note',
+      visibility: 'PUBLIC',
+      contentsWarningComment: '',
+      attachmentFileID: [],
+      createdAt: new Date(2023, 9, 10, 0, 0),
+      originalNoteID: Option.none(),
+      sendTo: Option.none(),
+    }),
+  ),
 ]);
 let service = new CreateReactionService(
   idGenerator,
@@ -34,17 +36,19 @@ describe('CreateReactionService', () => {
   afterEach(() => {
     reactionRepository = new InMemoryReactionRepository();
     noteRepository = new InMemoryNoteRepository([
-      Note.new({
-        id: '1' as NoteID,
-        authorID: '2' as AccountID,
-        content: 'this is a test note',
-        visibility: 'PUBLIC',
-        contentsWarningComment: '',
-        attachmentFileID: [],
-        createdAt: new Date(2023, 9, 10, 0, 0),
-        originalNoteID: Option.none(),
-        sendTo: Option.none(),
-      }),
+      Result.unwrap(
+        Note.new({
+          id: '1' as NoteID,
+          authorID: '2' as AccountID,
+          content: 'this is a test note',
+          visibility: 'PUBLIC',
+          contentsWarningComment: '',
+          attachmentFileID: [],
+          createdAt: new Date(2023, 9, 10, 0, 0),
+          originalNoteID: Option.none(),
+          sendTo: Option.none(),
+        }),
+      ),
     ]);
     service = new CreateReactionService(
       idGenerator,

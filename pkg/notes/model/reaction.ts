@@ -1,4 +1,5 @@
 import { z } from '@hono/zod-openapi';
+import { Result } from '@mikuroxina/mini-fn';
 import type { AccountID } from '../../accounts/model/account.js';
 import type { ID } from '../../id/type.js';
 import type { NoteID } from './note.js';
@@ -32,12 +33,12 @@ export class Reaction {
     this.emoji = args.body;
   }
 
-  static new(arg: CreateReactionArgs): Reaction {
+  static new(arg: CreateReactionArgs): Result.Result<Error, Reaction> {
     const emoji = EmojiSchema.safeParse(arg.body);
-    if (emoji.success) {
-      return new Reaction(arg);
+    if (!emoji.success) {
+      return Result.err(new Error('Emoji type is invalid'));
     }
-    throw new Error('Emoji type is invalid');
+    return Result.ok(new Reaction(arg));
   }
 
   private readonly id: ReactionID;

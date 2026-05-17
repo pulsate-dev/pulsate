@@ -14,50 +14,58 @@ describe('AccountTimelineService', () => {
     dummyAccountModuleFacade,
   );
 
-  const dummyPublicNote = Note.new({
-    id: '1' as NoteID,
-    authorID: '100' as AccountID,
-    content: 'Hello world',
-    contentsWarningComment: '',
-    createdAt: new Date('2023-09-10T00:00:00Z'),
-    originalNoteID: Option.none(),
-    attachmentFileID: [],
-    sendTo: Option.none(),
-    visibility: 'PUBLIC',
-  });
-  const dummyHomeNote = Note.new({
-    id: '2' as NoteID,
-    authorID: '100' as AccountID,
-    content: 'Hello world to Home',
-    contentsWarningComment: '',
-    createdAt: new Date('2023-09-11T00:00:00Z'),
-    originalNoteID: Option.none(),
-    attachmentFileID: [],
-    sendTo: Option.none(),
-    visibility: 'HOME',
-  });
-  const dummyFollowersNote = Note.new({
-    id: '3' as NoteID,
-    authorID: '100' as AccountID,
-    content: 'Hello world to followers',
-    contentsWarningComment: '',
-    createdAt: new Date('2023-09-12T00:00:00Z'),
-    originalNoteID: Option.none(),
-    attachmentFileID: [],
-    sendTo: Option.none(),
-    visibility: 'FOLLOWERS',
-  });
-  const dummyDirectNote = Note.new({
-    id: '4' as NoteID,
-    authorID: '100' as AccountID,
-    content: 'Hello world to direct',
-    contentsWarningComment: '',
-    createdAt: new Date('2023-09-13T00:00:00Z'),
-    originalNoteID: Option.none(),
-    attachmentFileID: [],
-    sendTo: Option.some('101' as AccountID),
-    visibility: 'DIRECT',
-  });
+  const dummyPublicNote = Result.unwrap(
+    Note.new({
+      id: '1' as NoteID,
+      authorID: '100' as AccountID,
+      content: 'Hello world',
+      contentsWarningComment: '',
+      createdAt: new Date('2023-09-10T00:00:00Z'),
+      originalNoteID: Option.none(),
+      attachmentFileID: [],
+      sendTo: Option.none(),
+      visibility: 'PUBLIC',
+    }),
+  );
+  const dummyHomeNote = Result.unwrap(
+    Note.new({
+      id: '2' as NoteID,
+      authorID: '100' as AccountID,
+      content: 'Hello world to Home',
+      contentsWarningComment: '',
+      createdAt: new Date('2023-09-11T00:00:00Z'),
+      originalNoteID: Option.none(),
+      attachmentFileID: [],
+      sendTo: Option.none(),
+      visibility: 'HOME',
+    }),
+  );
+  const dummyFollowersNote = Result.unwrap(
+    Note.new({
+      id: '3' as NoteID,
+      authorID: '100' as AccountID,
+      content: 'Hello world to followers',
+      contentsWarningComment: '',
+      createdAt: new Date('2023-09-12T00:00:00Z'),
+      originalNoteID: Option.none(),
+      attachmentFileID: [],
+      sendTo: Option.none(),
+      visibility: 'FOLLOWERS',
+    }),
+  );
+  const dummyDirectNote = Result.unwrap(
+    Note.new({
+      id: '4' as NoteID,
+      authorID: '100' as AccountID,
+      content: 'Hello world to direct',
+      contentsWarningComment: '',
+      createdAt: new Date('2023-09-13T00:00:00Z'),
+      originalNoteID: Option.none(),
+      attachmentFileID: [],
+      sendTo: Option.some('101' as AccountID),
+      visibility: 'DIRECT',
+    }),
+  );
   const dummyAccount1 = Account.new({
     id: '101' as AccountID,
     bio: 'this is test user',

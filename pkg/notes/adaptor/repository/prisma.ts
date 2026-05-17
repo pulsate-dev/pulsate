@@ -399,9 +399,11 @@ type DeserializeReactionArgs = Awaited<
 export class PrismaReactionRepository implements ReactionRepository {
   constructor(private readonly client: PrismaClient) {}
 
-  private deserialize(data: DeserializeReactionArgs): Reaction {
+  private deserialize(
+    data: DeserializeReactionArgs,
+  ): Result.Result<Error, Reaction> {
     if (!data) {
-      throw new Error('Invalid Reaction data');
+      return Result.err(new Error('Invalid Reaction data'));
     }
 
     return Reaction.new({
@@ -437,7 +439,7 @@ export class PrismaReactionRepository implements ReactionRepository {
         },
       });
 
-      return Result.ok(this.deserialize(res));
+      return this.deserialize(res);
     } catch (e) {
       return Result.err(e as Error);
     }
@@ -458,7 +460,7 @@ export class PrismaReactionRepository implements ReactionRepository {
         },
       });
 
-      return Result.ok(this.deserialize(res));
+      return this.deserialize(res);
     } catch (e) {
       return Result.err(e as Error);
     }
@@ -475,7 +477,15 @@ export class PrismaReactionRepository implements ReactionRepository {
         },
       });
 
-      return Result.ok(res.map((v) => this.deserialize(v)));
+      const reactions: Reaction[] = [];
+      for (const v of res) {
+        const r = this.deserialize(v);
+        if (Result.isErr(r)) {
+          return r;
+        }
+        reactions.push(Result.unwrap(r));
+      }
+      return Result.ok(reactions);
     } catch (e) {
       return Result.err(e as Error);
     }
@@ -490,7 +500,15 @@ export class PrismaReactionRepository implements ReactionRepository {
         },
       });
 
-      return Result.ok(res.map((v) => this.deserialize(v)));
+      const reactions: Reaction[] = [];
+      for (const v of res) {
+        const r = this.deserialize(v);
+        if (Result.isErr(r)) {
+          return r;
+        }
+        reactions.push(Result.unwrap(r));
+      }
+      return Result.ok(reactions);
     } catch (e) {
       return Result.err(e as Error);
     }

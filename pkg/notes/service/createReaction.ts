@@ -38,12 +38,16 @@ export class CreateReactionService {
       return id;
     }
 
-    const reaction = Reaction.new({
+    const reactionResult = Reaction.new({
       id: Result.unwrap(id),
       noteID,
       accountID,
       body,
     });
+    if (Result.isErr(reactionResult)) {
+      return reactionResult;
+    }
+    const reaction = Result.unwrap(reactionResult);
 
     const res = await this.reactionRepository.create(reaction);
     if (Result.isErr(res)) {

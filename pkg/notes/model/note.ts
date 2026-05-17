@@ -1,4 +1,4 @@
-import { Option } from '@mikuroxina/mini-fn';
+import { Option, Result } from '@mikuroxina/mini-fn';
 
 import type { AccountID } from '../../accounts/model/account.js';
 import type { MediumID } from '../../drive/model/medium.js';
@@ -43,7 +43,9 @@ export class Note {
     this.deletedAt = arg.deletedAt;
   }
 
-  static new(args: Omit<CreateNoteArgs, 'updatedAt' | 'deletedAt'>): Note {
+  static new(
+    args: Omit<CreateNoteArgs, 'updatedAt' | 'deletedAt'>,
+  ): Result.Result<Error, Note> {
     if (Option.isSome(args.originalNoteID)) {
       if (Note.isThisArgsQuote(args)) {
         return Note.quote(args);
@@ -52,7 +54,7 @@ export class Note {
       return Note.renote(args);
     }
 
-    return new Note(Note.checkArgs(args));
+    return Note.checkArgs(args);
   }
 
   static reconstruct(arg: CreateNoteArgs) {
@@ -61,7 +63,7 @@ export class Note {
 
   private static checkArgs(
     arg: Omit<CreateNoteArgs, 'updatedAt' | 'deletedAt'>,
-  ): CreateNoteArgs {
+  ): Result.Result<Error, Note> {
     /*
     Note must satisfy the following conditions:
     - content length <= 3k
@@ -72,23 +74,30 @@ export class Note {
      */
 
     if ([...arg.content].length > 3000) {
-      throw new NoteContentLengthError('Content too long', {
-        cause: { contentLength: [...arg.content].length },
-      });
+      return Result.err(
+        new NoteContentLengthError('Content too long', {
+          cause: { contentLength: [...arg.content].length },
+        }),
+      );
     }
 
     if ([...arg.contentsWarningComment].length > 256) {
-      throw new NoteContentLengthError('ContentsWarningComment too long', {
-        cause: {
-          contentsWarningCommentLength: [...arg.contentsWarningComment].length,
-        },
-      });
+      return Result.err(
+        new NoteContentLengthError('ContentsWarningComment too long', {
+          cause: {
+            contentsWarningCommentLength: [...arg.contentsWarningComment]
+              .length,
+          },
+        }),
+      );
     }
 
     if (arg.attachmentFileID.length > 16) {
-      throw new NoteTooManyAttachmentsError('Too many attachments', {
-        cause: { attachmentCount: arg.attachmentFileID.length },
-      });
+      return Result.err(
+        new NoteTooManyAttachmentsError('Too many attachments', {
+          cause: { attachmentCount: arg.attachmentFileID.length },
+        }),
+      );
     }
 
     if (
@@ -97,20 +106,22 @@ export class Note {
       arg.contentsWarningComment === '' &&
       arg.attachmentFileID.length === 0
     ) {
-      throw new NoteContentLengthError('Note must have content', {
-        cause: null,
-      });
+      return Result.err(
+        new NoteContentLengthError('Note must have content', {
+          cause: null,
+        }),
+      );
     }
 
     if (arg.visibility === 'DIRECT' && Option.isNone(arg.sendTo)) {
-      throw new NoteNoDestinationError('No destination', { cause: null });
+      return Result.err(
+        new NoteNoDestinationError('No destination', { cause: null }),
+      );
     }
 
-    return {
-      ...arg,
-      updatedAt: Option.none(),
-      deletedAt: Option.none(),
-    };
+    return Result.ok(
+      new Note({ ...arg, updatedAt: Option.none(), deletedAt: Option.none() }),
+    );
   }
 
   private static renote(
@@ -123,16 +134,14 @@ export class Note {
       | 'attachmentFileID'
       | 'createdAt'
     >,
-  ): Note {
-    return new Note(
-      Note.checkArgs({
-        ...arg,
-        // NOTE: Renotes do not have content or contentsWarningComment
-        content: '',
-        contentsWarningComment: '',
-        sendTo: Option.none(),
-      }),
-    );
+  ): Result.Result<Error, Note> {
+    return Note.checkArgs({
+      ...arg,
+      // NOTE: Renotes do not have content or contentsWarningComment
+      content: '',
+      contentsWarningComment: '',
+      sendTo: Option.none(),
+    });
   }
 
   private static quote(
@@ -148,23 +157,23 @@ export class Note {
       | 'attachmentFileID'
       | 'createdAt'
     >,
-  ): Note {
+  ): Result.Result<Error, Note> {
     if (
       arg.content === '' &&
       arg.contentsWarningComment === '' &&
       arg.attachmentFileID.length === 0
     ) {
-      throw new NoteContentLengthError('Quote must have content', {
-        cause: null,
-      });
+      return Result.err(
+        new NoteContentLengthError('Quote must have content', {
+          cause: null,
+        }),
+      );
     }
 
-    return new Note(
-      Note.checkArgs({
-        ...arg,
-        sendTo: Option.none(),
-      }),
-    );
+    return Note.checkArgs({
+      ...arg,
+      sendTo: Option.none(),
+    });
   }
 
   private static isThisArgsQuote(
@@ -247,10 +256,12 @@ export class Note {
   getDeletedAt(): Option.Option<Date> {
     return this.deletedAt;
   }
-  setDeletedAt(deletedAt: Date) {
+
+  setDeletedAt(deletedAt: Date): Result.Result<Error, void> {
     if (this.createdAt > deletedAt) {
-      throw new Error('deletedAt must be after createdAt');
+      return Result.err(new Error('deletedAt must be after createdAt'));
     }
     this.deletedAt = Option.some(deletedAt);
+    return Result.ok(undefined);
   }
 }
