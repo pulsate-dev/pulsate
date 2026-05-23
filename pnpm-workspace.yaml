@@ -1,0 +1,7 @@
+allowBuilds:
+  '@prisma/engines': true
+  argon2: true
+  esbuild: true
+  lefthook: true
+  prisma: true
+  sharp: true
