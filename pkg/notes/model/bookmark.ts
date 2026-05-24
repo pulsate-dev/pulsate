@@ -7,24 +7,23 @@ export interface CreateBookmarkArgs {
 }
 
 export class Bookmark {
+  readonly #noteID: NoteID;
+  readonly #accountID: AccountID;
+
   private constructor(arg: CreateBookmarkArgs) {
-    this.noteID = arg.noteID;
-    this.accountID = arg.accountID;
+    this.#noteID = arg.noteID;
+    this.#accountID = arg.accountID;
   }
 
-  static new(arg: CreateBookmarkArgs) {
+  static new(arg: CreateBookmarkArgs): Bookmark {
     return new Bookmark(arg);
   }
 
-  private readonly noteID: NoteID;
-
   getNoteID(): NoteID {
-    return this.noteID;
+    return this.#noteID;
   }
 
-  private readonly accountID: AccountID;
-
   getAccountID(): AccountID {
-    return this.accountID;
+    return this.#accountID;
   }
 }

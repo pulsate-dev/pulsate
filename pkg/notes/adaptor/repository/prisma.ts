@@ -404,12 +404,16 @@ export class PrismaReactionRepository implements ReactionRepository {
       throw new Error('Invalid Reaction data');
     }
 
-    return Reaction.new({
+    const reaction = Reaction.new({
       id: data.reactionId as ReactionID,
       noteID: data.reactedToId as NoteID,
       accountID: data.reactedById as AccountID,
       body: data.body,
     });
+    if (Result.isErr(reaction)) {
+      throw new Error('Invalid Reaction data');
+    }
+    return Result.unwrap(reaction);
   }
 
   async create(reaction: Reaction): Promise<Result.Result<Error, void>> {

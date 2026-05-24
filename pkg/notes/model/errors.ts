@@ -109,3 +109,19 @@ export class NoteBookmarkAlreadyCreatedError extends Error {
     this.cause = options.cause;
   }
 }
+
+export class NoteInvalidReactionError extends Error {
+  constructor(message: string, options: { cause: unknown }) {
+    super(message);
+    this.name = 'NoteInvalidReactionError';
+    this.cause = options.cause;
+  }
+}
+
+export class NoteDateInvalidError extends Error {
+  constructor(message: string, options: { cause: unknown }) {
+    super(message);
+    this.name = 'NoteDateInvalidError';
+    this.cause = options.cause;
+  }
+}
