@@ -1,10 +1,12 @@
-import { Option } from '@mikuroxina/mini-fn';
+import { Option, Result } from '@mikuroxina/mini-fn';
+import * as v from 'valibot';
 
 import type { AccountID } from '../../accounts/model/account.js';
 import type { MediumID } from '../../drive/model/medium.js';
 import type { ID } from '../../id/type.js';
 import {
   NoteContentLengthError,
+  NoteDateInvalidError,
   NoteNoDestinationError,
   NoteTooManyAttachmentsError,
 } from './errors.js';
@@ -28,67 +30,109 @@ export interface CreateNoteArgs {
 
 export type NewNoteArgs = Omit<CreateNoteArgs, 'updatedAt' | 'deletedAt'>;
 
+type NoteValidationError =
+  | NoteContentLengthError
+  | NoteTooManyAttachmentsError
+  | NoteNoDestinationError;
+
+const segmenter = new Intl.Segmenter();
+const graphemeLength = (s: string): number => [...segmenter.segment(s)].length;
+
+const noteContentSchema = v.pipe(
+  v.string(),
+  v.check((s) => graphemeLength(s) <= 3000),
+);
+
+const cwCommentSchema = v.pipe(
+  v.string(),
+  v.check((s) => graphemeLength(s) <= 256),
+);
+
 export class Note {
+  readonly #id: NoteID;
+  readonly #authorID: AccountID;
+  readonly #content: string;
+  readonly #visibility: NoteVisibility;
+  readonly #contentsWarningComment: string;
+  readonly #sendTo: Option.Option<AccountID>;
+  readonly #originalNoteID: Option.Option<NoteID>;
+  readonly #attachmentFileID: readonly MediumID[];
+  readonly #createdAt: Date;
+  readonly #updatedAt: Option.Option<Date>;
+  #deletedAt: Option.Option<Date>;
+
   private constructor(arg: CreateNoteArgs) {
-    this.id = arg.id;
-    this.authorID = arg.authorID;
-    this.content = arg.content;
-    this.visibility = arg.visibility;
-    this.contentsWarningComment = arg.contentsWarningComment;
-    this.sendTo = arg.sendTo;
-    this.originalNoteID = arg.originalNoteID;
-    this.attachmentFileID = arg.attachmentFileID;
-    this.createdAt = arg.createdAt;
-    this.updatedAt = arg.updatedAt;
-    this.deletedAt = arg.deletedAt;
+    this.#id = arg.id;
+    this.#authorID = arg.authorID;
+    this.#content = arg.content;
+    this.#visibility = arg.visibility;
+    this.#contentsWarningComment = arg.contentsWarningComment;
+    this.#sendTo = arg.sendTo;
+    this.#originalNoteID = arg.originalNoteID;
+    this.#attachmentFileID = arg.attachmentFileID;
+    this.#createdAt = arg.createdAt;
+    this.#updatedAt = arg.updatedAt;
+    this.#deletedAt = arg.deletedAt;
   }
 
-  static new(args: Omit<CreateNoteArgs, 'updatedAt' | 'deletedAt'>): Note {
+  static new(
+    args: Omit<CreateNoteArgs, 'updatedAt' | 'deletedAt'>,
+  ): Result.Result<NoteValidationError, Note> {
     if (Option.isSome(args.originalNoteID)) {
-      if (Note.isThisArgsQuote(args)) {
-        return Note.quote(args);
+      if (Note.#isThisArgsQuote(args)) {
+        return Note.#quote(args);
       }
-
-      return Note.renote(args);
+      return Note.#renote(args);
     }
-
-    return new Note(Note.checkArgs(args));
+    const err = Note.#checkArgs(args);
+    if (Result.isErr(err)) return err;
+    return Result.ok(
+      new Note({ ...args, updatedAt: Option.none(), deletedAt: Option.none() }),
+    );
   }
 
-  static reconstruct(arg: CreateNoteArgs) {
+  static reconstruct(arg: CreateNoteArgs): Note {
     return new Note(arg);
   }
 
-  private static checkArgs(
+  static #checkArgs(
     arg: Omit<CreateNoteArgs, 'updatedAt' | 'deletedAt'>,
-  ): CreateNoteArgs {
+  ): Result.Result<NoteValidationError, void> {
     /*
     Note must satisfy the following conditions:
     - content length <= 3k
     - contentsWarningComment length <= 256
     - attachmentFileID length <= 16
     - if (visibility is "DIRECT")  sendTo must be Some
-    - if (not a renote i.e., originalNoteID is None) and (content, contentsWarningComment, and attachmentFileID are all empty) throw error
+    - if (not a renote i.e., originalNoteID is None) and (content, contentsWarningComment, and attachmentFileID are all empty) return error
      */
 
-    if ([...arg.content].length > 3000) {
-      throw new NoteContentLengthError('Content too long', {
-        cause: { contentLength: [...arg.content].length },
-      });
+    if (!v.safeParse(noteContentSchema, arg.content).success) {
+      return Result.err(
+        new NoteContentLengthError('Content too long', {
+          cause: { contentLength: graphemeLength(arg.content) },
+        }),
+      );
     }
 
-    if ([...arg.contentsWarningComment].length > 256) {
-      throw new NoteContentLengthError('ContentsWarningComment too long', {
-        cause: {
-          contentsWarningCommentLength: [...arg.contentsWarningComment].length,
-        },
-      });
+    if (!v.safeParse(cwCommentSchema, arg.contentsWarningComment).success) {
+      return Result.err(
+        new NoteContentLengthError('ContentsWarningComment too long', {
+          cause: {
+            contentsWarningCommentLength: graphemeLength(
+              arg.contentsWarningComment,
+            ),
+          },
+        }),
+      );
     }
 
     if (arg.attachmentFileID.length > 16) {
-      throw new NoteTooManyAttachmentsError('Too many attachments', {
-        cause: { attachmentCount: arg.attachmentFileID.length },
-      });
+      return Result.err(
+        new NoteTooManyAttachmentsError('Too many attachments', {
+          cause: { attachmentCount: arg.attachmentFileID.length },
+        }),
+      );
     }
 
     if (
@@ -97,23 +141,23 @@ export class Note {
       arg.contentsWarningComment === '' &&
       arg.attachmentFileID.length === 0
     ) {
-      throw new NoteContentLengthError('Note must have content', {
-        cause: null,
-      });
+      return Result.err(
+        new NoteContentLengthError('Note must have content', {
+          cause: null,
+        }),
+      );
     }
 
     if (arg.visibility === 'DIRECT' && Option.isNone(arg.sendTo)) {
-      throw new NoteNoDestinationError('No destination', { cause: null });
+      return Result.err(
+        new NoteNoDestinationError('No destination', { cause: null }),
+      );
     }
 
-    return {
-      ...arg,
-      updatedAt: Option.none(),
-      deletedAt: Option.none(),
-    };
+    return Result.ok(undefined);
   }
 
-  private static renote(
+  static #renote(
     arg: Pick<
       CreateNoteArgs,
       | 'id'
@@ -123,19 +167,26 @@ export class Note {
       | 'attachmentFileID'
       | 'createdAt'
     >,
-  ): Note {
-    return new Note(
-      Note.checkArgs({
-        ...arg,
-        // NOTE: Renotes do not have content or contentsWarningComment
-        content: '',
-        contentsWarningComment: '',
-        sendTo: Option.none(),
+  ): Result.Result<NoteValidationError, Note> {
+    const normalizedArg = {
+      ...arg,
+      // NOTE: Renotes do not have content or contentsWarningComment
+      content: '',
+      contentsWarningComment: '',
+      sendTo: Option.none(),
+    } as const;
+    const err = Note.#checkArgs(normalizedArg);
+    if (Result.isErr(err)) return err;
+    return Result.ok(
+      new Note({
+        ...normalizedArg,
+        updatedAt: Option.none(),
+        deletedAt: Option.none(),
       }),
     );
   }
 
-  private static quote(
+  static #quote(
     arg: Pick<
       CreateNoteArgs,
       | 'id'
@@ -148,26 +199,32 @@ export class Note {
       | 'attachmentFileID'
       | 'createdAt'
     >,
-  ): Note {
+  ): Result.Result<NoteValidationError, Note> {
     if (
       arg.content === '' &&
       arg.contentsWarningComment === '' &&
       arg.attachmentFileID.length === 0
     ) {
-      throw new NoteContentLengthError('Quote must have content', {
-        cause: null,
-      });
+      return Result.err(
+        new NoteContentLengthError('Quote must have content', {
+          cause: null,
+        }),
+      );
     }
 
-    return new Note(
-      Note.checkArgs({
-        ...arg,
-        sendTo: Option.none(),
+    const normalizedArg = { ...arg, sendTo: Option.none() } as const;
+    const err = Note.#checkArgs(normalizedArg);
+    if (Result.isErr(err)) return err;
+    return Result.ok(
+      new Note({
+        ...normalizedArg,
+        updatedAt: Option.none(),
+        deletedAt: Option.none(),
       }),
     );
   }
 
-  private static isThisArgsQuote(
+  static #isThisArgsQuote(
     args: Pick<
       CreateNoteArgs,
       'content' | 'contentsWarningComment' | 'attachmentFileID'
@@ -180,77 +237,72 @@ export class Note {
     );
   }
 
-  private readonly id: NoteID;
   getID(): NoteID {
-    return this.id;
+    return this.#id;
   }
 
-  private readonly authorID: AccountID;
   getAuthorID(): AccountID {
-    return this.authorID;
+    return this.#authorID;
   }
 
-  private readonly content: string;
   getContent(): string {
-    return this.content;
+    return this.#content;
   }
 
-  private readonly visibility: NoteVisibility;
   getVisibility(): NoteVisibility {
-    return this.visibility;
+    return this.#visibility;
   }
 
-  private readonly contentsWarningComment: string;
   getCwComment(): string {
-    return this.contentsWarningComment;
+    return this.#contentsWarningComment;
   }
 
-  private readonly sendTo: Option.Option<AccountID>;
   getSendTo(): Option.Option<AccountID> {
-    return this.sendTo;
+    return this.#sendTo;
   }
 
-  private readonly originalNoteID: Option.Option<NoteID>;
   getOriginalNoteID(): Option.Option<NoteID> {
-    return this.originalNoteID;
+    return this.#originalNoteID;
   }
 
   isRenote(): boolean {
-    return Option.isSome(this.originalNoteID);
+    return Option.isSome(this.#originalNoteID);
   }
 
   isQuote(): boolean {
     if (!this.isRenote()) return false;
-    if (this.content.length > 0) return true;
-
+    if (this.#content.length > 0) return true;
     return (
-      this.contentsWarningComment.length > 0 || this.attachmentFileID.length > 0
+      this.#contentsWarningComment.length > 0 ||
+      this.#attachmentFileID.length > 0
     );
   }
 
-  private readonly attachmentFileID: readonly MediumID[];
   getAttachmentFileID(): readonly MediumID[] {
-    return this.attachmentFileID;
+    return this.#attachmentFileID;
   }
 
-  private readonly createdAt: Date;
   getCreatedAt(): Date {
-    return this.createdAt;
+    return this.#createdAt;
   }
 
-  private readonly updatedAt: Option.Option<Date>;
   getUpdatedAt(): Option.Option<Date> {
-    return this.updatedAt;
+    return this.#updatedAt;
   }
 
-  private deletedAt: Option.Option<Date>;
   getDeletedAt(): Option.Option<Date> {
-    return this.deletedAt;
+    return this.#deletedAt;
   }
-  setDeletedAt(deletedAt: Date) {
-    if (this.createdAt > deletedAt) {
-      throw new Error('deletedAt must be after createdAt');
+
+  setDeletedAt(deletedAt: Date): Result.Result<NoteDateInvalidError, void> {
+    if (this.#createdAt > deletedAt) {
+      return Result.err(
+        new NoteDateInvalidError('deletedAt must be after createdAt', {
+          cause: null,
+        }),
+      );
     }
-    this.deletedAt = Option.some(deletedAt);
+    this.#deletedAt = Option.some(deletedAt);
+    return Result.ok(undefined);
   }
 }
