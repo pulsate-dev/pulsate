@@ -1,4 +1,4 @@
-import { Option } from '@mikuroxina/mini-fn';
+import { Option, Result } from '@mikuroxina/mini-fn';
 import { describe, expect, it } from 'vitest';
 
 import { InMemoryAccountRepository } from '../adaptor/repository/dummy/account.js';
@@ -43,11 +43,13 @@ await accountRepository.create(
   }),
 );
 const repository = new InMemoryAccountFollowRepository([
-  AccountFollow.new({
-    fromID: '1' as AccountID,
-    targetID: '2' as AccountID,
-    createdAt: new Date(),
-  }),
+  Result.unwrap(
+    AccountFollow.new({
+      fromID: '1' as AccountID,
+      targetID: '2' as AccountID,
+      createdAt: new Date(),
+    }),
+  ),
 ]);
 const service = new UnfollowService(repository, accountRepository);
 

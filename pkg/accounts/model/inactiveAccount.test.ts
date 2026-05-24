@@ -1,3 +1,4 @@
+import { Result } from '@mikuroxina/mini-fn';
 import { describe, expect, it } from 'vitest';
 
 import type { AccountID, CreateAccountArgs } from './account.js';
@@ -30,13 +31,15 @@ const exampleActivateArgs: CreateAccountArgs = {
 
 describe('InactiveAccount', () => {
   it('generate new instance', () => {
-    const account = InactiveAccount.new(exampleInput);
+    const account = Result.unwrap(InactiveAccount.new(exampleInput));
     expect(account.isActivated()).toBe(false);
   });
 
   it('activate account', () => {
-    const inactiveAccount = InactiveAccount.new(exampleInput);
-    const account = inactiveAccount.activate(exampleActivateArgs);
+    const inactiveAccount = Result.unwrap(InactiveAccount.new(exampleInput));
+    const account = Result.unwrap(
+      inactiveAccount.activate(exampleActivateArgs),
+    );
 
     expect(account.getID()).toBe(exampleInput.id);
     expect(account.getName()).toBe(exampleInput.name);
@@ -55,16 +58,15 @@ describe('InactiveAccount', () => {
   });
 
   it('already activated', () => {
-    const inactiveAccount = InactiveAccount.new(exampleInput);
+    const inactiveAccount = Result.unwrap(InactiveAccount.new(exampleInput));
     inactiveAccount.activate(exampleActivateArgs);
 
-    expect(() => {
-      inactiveAccount.activate(exampleActivateArgs);
-    }).toThrow();
+    const result = inactiveAccount.activate(exampleActivateArgs);
+    expect(Result.isErr(result)).toBe(true);
   });
 
   it('get account property', () => {
-    const account = InactiveAccount.new(exampleInput);
+    const account = Result.unwrap(InactiveAccount.new(exampleInput));
 
     expect(account.getID()).toBe(exampleInput.id);
     expect(account.getName()).toBe(exampleInput.name);

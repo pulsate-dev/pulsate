@@ -49,19 +49,23 @@ const createdAt = new Date();
 const repository = new InMemoryAccountFollowRepository();
 
 await repository.follow(
-  AccountFollow.new({
-    fromID: '1' as AccountID,
-    targetID: '2' as AccountID,
-    createdAt,
-  }),
+  Result.unwrap(
+    AccountFollow.new({
+      fromID: '1' as AccountID,
+      targetID: '2' as AccountID,
+      createdAt,
+    }),
+  ),
 );
 
 await repository.follow(
-  AccountFollow.new({
-    fromID: '2' as AccountID,
-    targetID: '1' as AccountID,
-    createdAt,
-  }),
+  Result.unwrap(
+    AccountFollow.new({
+      fromID: '2' as AccountID,
+      targetID: '1' as AccountID,
+      createdAt,
+    }),
+  ),
 );
 
 const service = new FetchFollowService(repository, accountRepository);
@@ -79,11 +83,13 @@ describe('FetchFollowService', () => {
     }
 
     expect(resFollows[1]).toStrictEqual([
-      AccountFollow.new({
-        fromID: '1' as AccountID,
-        targetID: '2' as AccountID,
-        createdAt,
-      }),
+      Result.unwrap(
+        AccountFollow.new({
+          fromID: '1' as AccountID,
+          targetID: '2' as AccountID,
+          createdAt,
+        }),
+      ),
     ]);
   });
 
@@ -94,11 +100,13 @@ describe('FetchFollowService', () => {
     }
 
     expect(resFollows[1]).toStrictEqual([
-      AccountFollow.new({
-        fromID: '1' as AccountID,
-        targetID: '2' as AccountID,
-        createdAt,
-      }),
+      Result.unwrap(
+        AccountFollow.new({
+          fromID: '1' as AccountID,
+          targetID: '2' as AccountID,
+          createdAt,
+        }),
+      ),
     ]);
   });
 
@@ -109,11 +117,13 @@ describe('FetchFollowService', () => {
     }
 
     expect(resFollows[1]).toStrictEqual([
-      AccountFollow.new({
-        fromID: '2' as AccountID,
-        targetID: '1' as AccountID,
-        createdAt,
-      }),
+      Result.unwrap(
+        AccountFollow.new({
+          fromID: '2' as AccountID,
+          targetID: '1' as AccountID,
+          createdAt,
+        }),
+      ),
     ]);
   });
 
@@ -124,11 +134,13 @@ describe('FetchFollowService', () => {
     }
 
     expect(resFollows[1]).toStrictEqual([
-      AccountFollow.new({
-        fromID: '2' as AccountID,
-        targetID: '1' as AccountID,
-        createdAt,
-      }),
+      Result.unwrap(
+        AccountFollow.new({
+          fromID: '2' as AccountID,
+          targetID: '1' as AccountID,
+          createdAt,
+        }),
+      ),
     ]);
   });
 

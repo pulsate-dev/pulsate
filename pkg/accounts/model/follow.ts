@@ -1,12 +1,21 @@
-import { Option } from '@mikuroxina/mini-fn';
+import { Option, Result } from '@mikuroxina/mini-fn';
 
 import type { AccountID } from './account.js';
 
-export interface CreateAccountFollowArgs {
+export interface AccountFollowConstructorArgs {
   fromID: AccountID;
   targetID: AccountID;
   createdAt: Date;
-  deletedAt?: Date;
+  deletedAt: Option.Option<Date>;
+}
+type AccountFollowArgs = Omit<AccountFollowConstructorArgs, 'deletedAt'>;
+
+export class AccountFollowDateInvalidError extends Error {
+  override readonly name = 'AccountFollowDateInvalidError' as const;
+  constructor(message: string, options?: { cause?: unknown }) {
+    super(message, options);
+    this.cause = options?.cause;
+  }
 }
 
 /*
@@ -16,58 +25,55 @@ export interface CreateAccountFollowArgs {
  *
  * */
 export class AccountFollow {
-  // 必要な情報: フォロー元のアカウントID, フォロー先のアカウントID, created, deleted
-  private constructor(args: CreateAccountFollowArgs) {
-    this.fromID = args.fromID;
-    this.targetID = args.targetID;
-    this.createdAt = args.createdAt;
-    if (!args.deletedAt) {
-      this.deletedAt = Option.none();
-      return;
-    }
-    if (args.deletedAt > args.createdAt) {
-      throw new Error('deletedAt must be later than createdAt');
-    }
+  readonly #fromID: AccountID;
+  readonly #targetID: AccountID;
+  readonly #createdAt: Date;
+  #deletedAt: Option.Option<Date>;
 
-    this.deletedAt = Option.some(args.deletedAt);
+  private constructor(args: AccountFollowConstructorArgs) {
+    this.#fromID = args.fromID;
+    this.#targetID = args.targetID;
+    this.#createdAt = args.createdAt;
+    this.#deletedAt = args.deletedAt;
   }
 
-  public static new(args: Omit<CreateAccountFollowArgs, 'deletedAt'>) {
-    return new AccountFollow({ ...args, deletedAt: undefined });
+  public static new(
+    args: AccountFollowArgs,
+  ): Result.Result<never, AccountFollow> {
+    return Result.ok(new AccountFollow({ ...args, deletedAt: Option.none() }));
   }
 
-  public static reconstruct(args: CreateAccountFollowArgs) {
+  public static reconstruct(args: AccountFollowConstructorArgs): AccountFollow {
     return new AccountFollow(args);
   }
 
-  private readonly fromID: AccountID;
-
-  public getFromID(): AccountID {
-    return this.fromID;
+  getFromID(): AccountID {
+    return this.#fromID;
   }
 
-  private readonly targetID: AccountID;
-
-  public getTargetID(): AccountID {
-    return this.targetID;
+  getTargetID(): AccountID {
+    return this.#targetID;
   }
 
-  private readonly createdAt: Date;
-
-  public getCreatedAt(): Date {
-    return this.createdAt;
+  getCreatedAt(): Date {
+    return this.#createdAt;
   }
 
-  private deletedAt: Option.Option<Date>;
-
-  public getDeletedAt(): Option.Option<Date> {
-    return this.deletedAt;
+  getDeletedAt(): Option.Option<Date> {
+    return this.#deletedAt;
   }
 
-  public setDeletedAt(deletedAt: Date) {
-    if (this.createdAt > deletedAt) {
-      throw new Error('deletedAt must be later than createdAt');
+  setDeletedAt(
+    deletedAt: Date,
+  ): Result.Result<AccountFollowDateInvalidError, void> {
+    if (this.#createdAt > deletedAt) {
+      return Result.err(
+        new AccountFollowDateInvalidError(
+          'deletedAt must be later than createdAt',
+        ),
+      );
     }
-    this.deletedAt = Option.some(deletedAt);
+    this.#deletedAt = Option.some(deletedAt);
+    return Result.ok(undefined);
   }
 }

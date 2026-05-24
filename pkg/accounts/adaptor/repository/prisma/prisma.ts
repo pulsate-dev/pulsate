@@ -399,7 +399,8 @@ export class PrismaAccountFollowRepository implements AccountFollowRepository {
       fromID: args.fromId as AccountID,
       targetID: args.toId as AccountID,
       createdAt: args.createdAt,
-      deletedAt: args.deletedAt === null ? undefined : args.deletedAt,
+      deletedAt:
+        args.deletedAt === null ? Option.none() : Option.some(args.deletedAt),
     });
   }
 }

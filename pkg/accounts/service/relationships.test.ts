@@ -36,11 +36,13 @@ const createMockFollow = (
   targetId: string,
   dayOffset = 0,
 ): AccountFollow => {
-  return AccountFollow.new({
-    fromID: fromId as AccountID,
-    targetID: targetId as AccountID,
-    createdAt: new Date(`2024-01-${10 + dayOffset}T12:00:00Z`),
-  });
+  return Result.unwrap(
+    AccountFollow.new({
+      fromID: fromId as AccountID,
+      targetID: targetId as AccountID,
+      createdAt: new Date(`2024-01-${10 + dayOffset}T12:00:00Z`),
+    }),
+  );
 };
 
 describe('FetchRelationshipService', () => {
