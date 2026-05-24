@@ -1,3 +1,5 @@
+import { Result } from '@mikuroxina/mini-fn';
+
 import type { PartialAccount } from '../../intermodule/account.js';
 import {
   Account,
@@ -110,19 +112,25 @@ export const partialAccount2: PartialAccount = {
 export const partialAccounts = [partialAccount1, partialAccount2];
 
 export const dummyfollows: AccountFollow[] = [
-  AccountFollow.new({
-    fromID: '101' as AccountID,
-    targetID: '102' as AccountID,
-    createdAt: new Date('2023-09-12T00:00:00Z'),
-  }),
-  AccountFollow.new({
-    fromID: '102' as AccountID,
-    targetID: '101' as AccountID,
-    createdAt: new Date('2023-09-13T00:00:00Z'),
-  }),
-  AccountFollow.new({
-    fromID: '103' as AccountID,
-    targetID: '101' as AccountID,
-    createdAt: new Date('2023-09-14T00:00:00Z'),
-  }),
+  Result.unwrap(
+    AccountFollow.new({
+      fromID: '101' as AccountID,
+      targetID: '102' as AccountID,
+      createdAt: new Date('2023-09-12T00:00:00Z'),
+    }),
+  ),
+  Result.unwrap(
+    AccountFollow.new({
+      fromID: '102' as AccountID,
+      targetID: '101' as AccountID,
+      createdAt: new Date('2023-09-13T00:00:00Z'),
+    }),
+  ),
+  Result.unwrap(
+    AccountFollow.new({
+      fromID: '103' as AccountID,
+      targetID: '101' as AccountID,
+      createdAt: new Date('2023-09-14T00:00:00Z'),
+    }),
+  ),
 ];

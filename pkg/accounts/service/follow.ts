@@ -36,11 +36,13 @@ export class FollowService {
     }
 
     const now = this.clock.now();
-    const follow = AccountFollow.new({
-      fromID: fromAccount[1].getID(),
-      targetID: targetAccount[1].getID(),
-      createdAt: new Date(Number(now)),
-    });
+    const follow = Result.unwrap(
+      AccountFollow.new({
+        fromID: fromAccount[1].getID(),
+        targetID: targetAccount[1].getID(),
+        createdAt: new Date(Number(now)),
+      }),
+    );
 
     const res = await this.followRepository.follow(follow);
     if (Result.isErr(res)) {

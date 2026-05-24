@@ -1,3 +1,5 @@
+import { Result } from '@mikuroxina/mini-fn';
+
 import {
   Account,
   type AccountID,
@@ -16,55 +18,68 @@ export type ActivateArgs = Omit<
   keyof Omit<CreateInactiveAccountArgs, 'activated'>
 >;
 
-export class AlreadyActivatedError extends Error {
-  constructor(message = 'This account was already activated.') {
-    super(message);
+export class AccountAlreadyActivatedError extends Error {
+  override readonly name = 'AccountAlreadyActivatedError' as const;
+  constructor(message: string, options?: { cause?: unknown }) {
+    super(message, options);
+    this.cause = options?.cause;
   }
 }
 
 export class InactiveAccount {
   constructor(arg: CreateInactiveAccountArgs) {
-    this.id = arg.id;
-    this.name = arg.name;
-    this.mail = arg.mail;
-    this.activated = false;
+    this.#id = arg.id;
+    this.#name = arg.name;
+    this.#mail = arg.mail;
+    this.#activated = false;
   }
 
-  private activated: boolean;
+  #activated: boolean;
   isActivated(): boolean {
-    return this.activated;
+    return this.#activated;
   }
 
-  private readonly id: AccountID;
+  readonly #id: AccountID;
   getID(): string {
-    return this.id;
+    return this.#id;
   }
 
-  private readonly name: AccountName;
+  readonly #name: AccountName;
   getName(): string {
-    return this.name;
+    return this.#name;
   }
 
-  private readonly mail: string;
+  readonly #mail: string;
   getMail(): string {
-    return this.mail;
+    return this.#mail;
   }
 
-  public activate(args: ActivateArgs): Account {
+  public activate(
+    args: ActivateArgs,
+  ): Result.Result<AccountAlreadyActivatedError, Account> {
     if (this.isActivated()) {
-      throw new AlreadyActivatedError();
+      return Result.err(
+        new AccountAlreadyActivatedError('This account was already activated.'),
+      );
     }
 
-    this.activated = true;
-    return Account.new({
-      id: this.id,
-      name: this.name,
-      mail: this.mail,
-      ...args,
-    });
+    this.#activated = true;
+    return Result.ok(
+      Account.reconstruct({
+        id: this.#id,
+        name: this.#name,
+        mail: this.#mail,
+        ...args,
+        status: 'active',
+        updatedAt: undefined,
+        deletedAt: undefined,
+      }),
+    );
   }
 
-  static new(arg: CreateInactiveAccountArgs): InactiveAccount {
-    return new InactiveAccount(arg);
+  static new(
+    arg: CreateInactiveAccountArgs,
+  ): Result.Result<never, InactiveAccount> {
+    return Result.ok(new InactiveAccount(arg));
   }
 }
