@@ -112,7 +112,11 @@ export class RenoteService {
       createdAt: new Date(Number(now)),
     };
 
-    const renote = Note.new(noteArgs);
+    const renoteRes = Note.new(noteArgs);
+    if (Result.isErr(renoteRes)) {
+      return renoteRes;
+    }
+    const renote = Result.unwrap(renoteRes);
 
     if (attachmentFileID.length !== 0) {
       const attachmentRes = await this.deps.noteAttachmentRepository.create(
