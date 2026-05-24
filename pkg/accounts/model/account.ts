@@ -76,59 +76,123 @@ export interface CreateAccountArgs {
 
 export class Account {
   private constructor(arg: CreateAccountArgs) {
-    this.id = arg.id;
-    this.name = arg.name;
-    this.mail = arg.mail;
-    this.nickname = arg.nickname;
-    this.passphraseHash = arg.passphraseHash;
-    this.bio = arg.bio;
-    this.role = arg.role;
-    this.status = arg.status;
-    this.frozen = arg.frozen;
-    this.silenced = arg.silenced;
-    this.createdAt = arg.createdAt;
-    this.updatedAt = arg.updatedAt;
-    this.deletedAt = arg.deletedAt;
+    this.#id = arg.id;
+    this.#name = arg.name;
+    this.#mail = arg.mail;
+    this.#nickname = arg.nickname;
+    this.#passphraseHash = arg.passphraseHash;
+    this.#bio = arg.bio;
+    this.#role = arg.role;
+    this.#status = arg.status;
+    this.#frozen = arg.frozen;
+    this.#silenced = arg.silenced;
+    this.#createdAt = arg.createdAt;
+    this.#updatedAt = arg.updatedAt;
+    this.#deletedAt = arg.deletedAt;
   }
 
-  // 不変
-  private readonly id: AccountID;
+  readonly #id: AccountID;
+  readonly #name: AccountName;
+  readonly #createdAt: Date;
+  #nickname: string;
+  #bio: string;
+  #mail: string;
+  #frozen: AccountFrozen;
+  #role: AccountRole;
+  #passphraseHash?: string;
+  #silenced: AccountSilenced;
+  #status: AccountStatus;
+  #updatedAt?: Date;
+  #deletedAt?: Date;
+
+  // get methods
   getID(): AccountID {
-    return this.id;
+    return this.#id;
   }
 
-  private readonly name: AccountName;
   getName(): AccountName {
-    return this.name;
+    return this.#name;
   }
 
-  private readonly createdAt: Date;
   getCreatedAt(): Date {
-    return this.createdAt;
+    return this.#createdAt;
   }
 
-  // 可変
-  private mail: string;
   getMail(): string {
-    return this.mail;
+    return this.#mail;
   }
-  public setMail(mail: string) {
-    if (this.isDeleted()) {
+
+  getNickname(): string {
+    return this.#nickname;
+  }
+
+  getPassphraseHash(): string | undefined {
+    return this.#passphraseHash;
+  }
+
+  getBio(): string {
+    return this.#bio;
+  }
+
+  getRole(): AccountRole {
+    return this.#role;
+  }
+
+  /**
+   * @deprecated Use isFrozen() instead
+   */
+  getFrozen(): AccountFrozen {
+    return this.#frozen;
+  }
+
+  isFrozen(): boolean {
+    return this.#frozen === 'frozen';
+  }
+
+  /**
+   * @deprecated Use isSilenced() instead
+   */
+  getSilenced(): AccountSilenced {
+    return this.#silenced;
+  }
+
+  isSilenced(): boolean {
+    return this.#silenced === 'silenced';
+  }
+
+  /**
+   * @deprecated Use isActivated() instead
+   */
+  getStatus(): AccountStatus {
+    return this.#status;
+  }
+
+  isActivated(): boolean {
+    return this.#status === 'active';
+  }
+
+  getUpdatedAt(): Date | undefined {
+    return this.#updatedAt;
+  }
+
+  getDeletedAt(): Date | undefined {
+    return this.#deletedAt;
+  }
+
+  // mutation methods
+  setMail(mail: string) {
+    if (this.#isDeleted()) {
       throw new AccountAlreadyDeletedError('account already deleted');
     }
     if (this.isFrozen()) {
       throw new AccountAlreadyFrozenError('account already frozen');
     }
 
-    this.mail = mail;
+    this.#mail = mail;
   }
 
-  private nickname: string;
-  getNickname(): string {
-    return this.nickname;
-  }
-  public setNickName(name: string) {
-    if (this.isDeleted()) {
+  setNickName(name: string) {
+    if (this.#isDeleted()) {
       throw new AccountAlreadyDeletedError('account already deleted');
     }
     if (this.isFrozen()) {
@@ -138,30 +202,22 @@ export class Account {
     if ([...name].length > 256) {
       throw new AccountNickNameLengthError('nickname length is too long');
     }
-    this.nickname = name;
+    this.#nickname = name;
   }
 
-  private passphraseHash?: string;
-  getPassphraseHash(): string | undefined {
-    return this.passphraseHash;
-  }
-  public setPassphraseHash(hash: string) {
-    if (this.isDeleted()) {
+  setPassphraseHash(hash: string) {
+    if (this.#isDeleted()) {
       throw new AccountAlreadyDeletedError('account already deleted');
     }
     if (this.isFrozen()) {
       throw new AccountAlreadyFrozenError('account already frozen');
     }
 
-    this.passphraseHash = hash;
+    this.#passphraseHash = hash;
   }
 
-  private bio: string;
-  getBio(): string {
-    return this.bio;
-  }
-  public setBio(bio: string) {
-    if (this.isDeleted()) {
+  setBio(bio: string) {
+    if (this.#isDeleted()) {
       throw new AccountAlreadyDeletedError('account already deleted');
     }
     if (this.isFrozen()) {
@@ -171,154 +227,105 @@ export class Account {
     if ([...bio].length > 1024) {
       throw new AccountBioLengthError('bio is too long');
     }
-    this.bio = bio;
+    this.#bio = bio;
   }
 
-  private role: AccountRole;
-  getRole(): AccountRole {
-    return this.role;
-  }
-  public toAdmin() {
-    if (this.isDeleted()) {
+  toAdmin() {
+    if (this.#isDeleted()) {
       throw new AccountAlreadyDeletedError('account already deleted');
     }
     if (this.isFrozen()) {
       throw new AccountAlreadyFrozenError('account already frozen');
     }
 
-    this.role = 'admin';
+    this.#role = 'admin';
   }
-  public toNormal() {
-    if (this.isDeleted()) {
+  toNormal() {
+    if (this.#isDeleted()) {
       throw new AccountAlreadyDeletedError('account already deleted');
     }
     if (this.isFrozen()) {
       throw new AccountAlreadyFrozenError('account already frozen');
     }
 
-    this.role = 'normal';
+    this.#role = 'normal';
   }
-  public toModerator() {
-    if (this.isDeleted()) {
+  toModerator() {
+    if (this.#isDeleted()) {
       throw new AccountAlreadyDeletedError('account already deleted');
     }
     if (this.isFrozen()) {
       throw new AccountAlreadyFrozenError('account already frozen');
     }
 
-    this.role = 'moderator';
+    this.#role = 'moderator';
   }
 
-  private frozen: AccountFrozen;
-
-  /**
-   * @deprecated Use isFrozen() instead
-   */
-  getFrozen(): AccountFrozen {
-    return this.frozen;
-  }
-  isFrozen(): boolean {
-    return this.frozen === 'frozen';
-  }
-
-  public setFreeze() {
-    if (this.isDeleted()) {
+  setFreeze() {
+    if (this.#isDeleted()) {
       throw new AccountAlreadyDeletedError('account already deleted');
     }
 
-    this.frozen = 'frozen';
+    this.#frozen = 'frozen';
   }
 
-  public setUnfreeze() {
-    if (this.isDeleted()) {
+  setUnfreeze() {
+    if (this.#isDeleted()) {
       throw new AccountAlreadyDeletedError('account already deleted');
     }
-    this.frozen = 'normal';
+    this.#frozen = 'normal';
   }
 
-  private silenced: AccountSilenced;
-
-  /**
-   * @deprecated Use isSilenced() instead
-   */
-  getSilenced(): AccountSilenced {
-    return this.silenced;
-  }
-  isSilenced(): boolean {
-    return this.silenced === 'silenced';
-  }
-
-  public setSilence() {
-    if (this.isDeleted()) {
+  setSilence() {
+    if (this.#isDeleted()) {
       throw new AccountAlreadyDeletedError('account already deleted');
     }
     if (this.isFrozen()) {
       throw new AccountAlreadyFrozenError('account already frozen');
     }
 
-    this.silenced = 'silenced';
+    this.#silenced = 'silenced';
   }
-  public undoSilence() {
-    if (this.isDeleted()) {
+  undoSilence() {
+    if (this.#isDeleted()) {
       throw new AccountAlreadyDeletedError('account already deleted');
     }
     if (this.isFrozen()) {
       throw new AccountAlreadyFrozenError('account already frozen');
     }
 
-    this.silenced = 'normal';
+    this.#silenced = 'normal';
   }
 
-  private status: AccountStatus;
-
-  /**
-   * @deprecated Use isActivated() instead
-   */
-  getStatus(): AccountStatus {
-    return this.status;
-  }
-
-  isActivated(): boolean {
-    return this.status === 'active';
-  }
-
-  public activate() {
-    if (this.isDeleted()) {
+  activate() {
+    if (this.#isDeleted()) {
       throw new AccountAlreadyDeletedError('account already deleted');
     }
     if (this.isFrozen()) {
       throw new AccountAlreadyFrozenError('account already frozen');
     }
-    this.status = 'active';
+    this.#status = 'active';
   }
 
-  private updatedAt?: Date;
-  getUpdatedAt(): Date | undefined {
-    return this.updatedAt;
-  }
-  public setUpdatedAt(at: Date) {
-    if (this.createdAt > at) {
+  setUpdatedAt(at: Date) {
+    if (this.#createdAt > at) {
       throw new AccountDateInvalidError('updatedAt must be after createdAt');
     }
-    this.updatedAt = at;
+    this.#updatedAt = at;
   }
 
-  private deletedAt?: Date;
-  getDeletedAt(): Date | undefined {
-    return this.deletedAt;
-  }
-  public setDeletedAt(at: Date) {
-    if (this.createdAt > at) {
+  setDeletedAt(at: Date) {
+    if (this.#createdAt > at) {
       throw new AccountDateInvalidError('deletedAt must be after createdAt');
     }
-    this.deletedAt = at;
+    this.#deletedAt = at;
   }
 
-  private isDeleted(): boolean {
-    return this.deletedAt !== undefined;
+  #isDeleted(): boolean {
+    return this.#deletedAt !== undefined;
   }
 
-  public static new(arg: Omit<CreateAccountArgs, 'deletedAt' | 'updatedAt'>) {
+  static new(arg: Omit<CreateAccountArgs, 'deletedAt' | 'updatedAt'>) {
     return new Account({
       id: arg.id,
       mail: arg.mail,
@@ -336,7 +343,7 @@ export class Account {
     });
   }
 
-  public static reconstruct(arg: CreateAccountArgs) {
+  static reconstruct(arg: CreateAccountArgs) {
     return new Account(arg);
   }
 }
