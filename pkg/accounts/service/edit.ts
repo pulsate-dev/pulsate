@@ -66,19 +66,15 @@ export class EditService {
       );
     }
 
-    try {
-      account.setNickName(nickname);
-      const res = await this.accountRepository.edit(account);
-      if (Result.isErr(res)) {
-        return res;
-      }
-
-      return Result.ok(true);
-    } catch (e) {
-      return Result.err(
-        new AccountInternalError('failed to update account', { cause: e }),
-      );
+    const setResult = account.setNickName(nickname);
+    if (Result.isErr(setResult)) {
+      return setResult;
     }
+    const editResult = await this.accountRepository.edit(account);
+    if (Result.isErr(editResult)) {
+      return editResult;
+    }
+    return Result.ok(true);
   }
 
   async editPassphrase(
@@ -120,22 +116,24 @@ export class EditService {
       );
     }
 
+    let encoded: string;
     try {
-      account.setPassphraseHash(
-        await this.passwordEncoder.encodePassword(newPassphrase),
-      );
-
-      const res = await this.accountRepository.edit(account);
-      if (Result.isErr(res)) {
-        return res;
-      }
-
-      return Result.ok(true);
+      encoded = await this.passwordEncoder.encodePassword(newPassphrase);
     } catch (e) {
       return Result.err(
-        new AccountInternalError('failed to update account', { cause: e }),
+        new AccountInternalError('failed to encode passphrase', { cause: e }),
       );
     }
+
+    const setResult = account.setPassphraseHash(encoded);
+    if (Result.isErr(setResult)) {
+      return setResult;
+    }
+    const editResult = await this.accountRepository.edit(account);
+    if (Result.isErr(editResult)) {
+      return editResult;
+    }
+    return Result.ok(true);
   }
 
   async editEmail(
@@ -175,20 +173,15 @@ export class EditService {
 
     // TODO: add a process to check the email is active
 
-    try {
-      account.setMail(newEmail);
-
-      const res = await this.accountRepository.edit(account);
-      if (Result.isErr(res)) {
-        return res;
-      }
-
-      return Result.ok(true);
-    } catch (e) {
-      return Result.err(
-        new AccountInternalError('failed to update account', { cause: e }),
-      );
+    const setResult = account.setMail(newEmail);
+    if (Result.isErr(setResult)) {
+      return setResult;
     }
+    const editResult = await this.accountRepository.edit(account);
+    if (Result.isErr(editResult)) {
+      return editResult;
+    }
+    return Result.ok(true);
   }
 
   async editBio(
@@ -216,20 +209,15 @@ export class EditService {
     }
 
     // ToDo(laminne): bio length check
-    try {
-      account.setBio(bio);
-
-      const res = await this.accountRepository.edit(account);
-      if (Result.isErr(res)) {
-        return res;
-      }
-
-      return Result.ok(true);
-    } catch (e) {
-      return Result.err(
-        new AccountInternalError('failed to update account', { cause: e }),
-      );
+    const setResult = account.setBio(bio);
+    if (Result.isErr(setResult)) {
+      return setResult;
     }
+    const editResult = await this.accountRepository.edit(account);
+    if (Result.isErr(editResult)) {
+      return editResult;
+    }
+    return Result.ok(true);
   }
 
   private isAllowed(

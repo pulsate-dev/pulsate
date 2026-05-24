@@ -1,3 +1,4 @@
+import { Result } from '@mikuroxina/mini-fn';
 import { describe, expect, it } from 'vitest';
 
 import {
@@ -9,7 +10,7 @@ import {
 
 const exampleInput: CreateAccountArgs = {
   id: '1' as AccountID,
-  bio: 'this is john doe’s account!',
+  bio: 'this is john doe"s account!',
   createdAt: new Date('2023-09-10T00:00:00.000Z'),
   mail: 'test@mail.example.com',
   nickname: 'John Doe',
@@ -43,65 +44,35 @@ describe('Account', () => {
   it('account nickname must be less than 256', () => {
     const name = 'a'.repeat(257);
     const account = Account.new(exampleInput);
-    expect(() => account.setNickName(name)).toThrow();
+    expect(Result.isErr(account.setNickName(name))).toBe(true);
   });
 
   it('account bio must be less than 1024 chars', () => {
     const bio = 'a'.repeat(1025);
     const account = Account.new(exampleInput);
-    expect(() => {
-      account.setBio(bio);
-    }).toThrow();
+    expect(Result.isErr(account.setBio(bio))).toBe(true);
   });
 
-  it('can’t change values when account is frozen', () => {
+  it("can't change values when account is frozen", () => {
     const account = Account.new(exampleInput);
     account.setFreeze();
 
-    expect(() => {
-      account.setBio('test');
-    }).toThrow();
-
-    expect(() => {
-      account.setNickName('hello@example.com');
-    }).toThrow();
-
-    expect(() => {
-      account.setPassphraseHash('123');
-    }).toThrow();
-
-    expect(() => {
-      account.setSilence();
-    }).toThrow();
-
-    expect(() => {
-      account.setMail('pulsate@example.com');
-    }).toThrow();
+    expect(Result.isErr(account.setBio('test'))).toBe(true);
+    expect(Result.isErr(account.setNickName('hello@example.com'))).toBe(true);
+    expect(Result.isErr(account.setPassphraseHash('123'))).toBe(true);
+    expect(Result.isErr(account.setSilence())).toBe(true);
+    expect(Result.isErr(account.setMail('pulsate@example.com'))).toBe(true);
   });
 
-  it('deleted account can’t change values', () => {
+  it("deleted account can't change values", () => {
     const account = Account.new(exampleInput);
     account.setDeletedAt(new Date());
 
-    expect(() => {
-      account.setBio('test');
-    }).toThrow();
-
-    expect(() => {
-      account.setNickName('hello@example.com');
-    }).toThrow();
-
-    expect(() => {
-      account.setPassphraseHash('123');
-    }).toThrow();
-
-    expect(() => {
-      account.setSilence();
-    }).toThrow();
-
-    expect(() => {
-      account.setMail('pulsate@example.com');
-    }).toThrow();
+    expect(Result.isErr(account.setBio('test'))).toBe(true);
+    expect(Result.isErr(account.setNickName('hello@example.com'))).toBe(true);
+    expect(Result.isErr(account.setPassphraseHash('123'))).toBe(true);
+    expect(Result.isErr(account.setSilence())).toBe(true);
+    expect(Result.isErr(account.setMail('pulsate@example.com'))).toBe(true);
   });
 });
 

@@ -22,12 +22,7 @@ export class FetchService {
       );
     }
 
-    try {
-      const account = Option.unwrap(res);
-      return Result.ok(account);
-    } catch (e) {
-      return Result.err(e as unknown as Error);
-    }
+    return Result.ok(Option.unwrap(res));
   }
 
   async fetchAccountByID(

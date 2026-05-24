@@ -1,5 +1,5 @@
 import { z } from '@hono/zod-openapi';
-
+import { Result } from '@mikuroxina/mini-fn';
 import type { ID } from '../../id/type.js';
 import {
   AccountAlreadyDeletedError,
@@ -159,145 +159,275 @@ export class Account {
   }
 
   // mutation methods
-  setMail(mail: string) {
+  setMail(
+    mail: string,
+  ): Result.Result<
+    AccountAlreadyDeletedError | AccountAlreadyFrozenError,
+    void
+  > {
     if (this.#isDeleted()) {
-      throw new AccountAlreadyDeletedError('account already deleted');
+      return Result.err(
+        new AccountAlreadyDeletedError('account already deleted'),
+      );
     }
     if (this.isFrozen()) {
-      throw new AccountAlreadyFrozenError('account already frozen');
+      return Result.err(
+        new AccountAlreadyFrozenError('account already frozen'),
+      );
     }
 
     this.#mail = mail;
+    return Result.ok(undefined);
   }
 
-  setNickName(name: string) {
+  setNickName(
+    name: string,
+  ): Result.Result<
+    | AccountAlreadyDeletedError
+    | AccountAlreadyFrozenError
+    | AccountNickNameLengthError,
+    void
+  > {
     if (this.#isDeleted()) {
-      throw new AccountAlreadyDeletedError('account already deleted');
+      return Result.err(
+        new AccountAlreadyDeletedError('account already deleted'),
+      );
     }
     if (this.isFrozen()) {
-      throw new AccountAlreadyFrozenError('account already frozen');
+      return Result.err(
+        new AccountAlreadyFrozenError('account already frozen'),
+      );
     }
 
     if ([...name].length > 256) {
-      throw new AccountNickNameLengthError('nickname length is too long');
+      return Result.err(
+        new AccountNickNameLengthError('nickname length is too long'),
+      );
     }
+
     this.#nickname = name;
+    return Result.ok(undefined);
   }
 
-  setPassphraseHash(hash: string) {
+  setPassphraseHash(
+    hash: string,
+  ): Result.Result<
+    AccountAlreadyDeletedError | AccountAlreadyFrozenError,
+    void
+  > {
     if (this.#isDeleted()) {
-      throw new AccountAlreadyDeletedError('account already deleted');
+      return Result.err(
+        new AccountAlreadyDeletedError('account already deleted'),
+      );
     }
     if (this.isFrozen()) {
-      throw new AccountAlreadyFrozenError('account already frozen');
+      return Result.err(
+        new AccountAlreadyFrozenError('account already frozen'),
+      );
     }
 
     this.#passphraseHash = hash;
+    return Result.ok(undefined);
   }
 
-  setBio(bio: string) {
+  setBio(
+    bio: string,
+  ): Result.Result<
+    | AccountAlreadyDeletedError
+    | AccountAlreadyFrozenError
+    | AccountBioLengthError,
+    void
+  > {
     if (this.#isDeleted()) {
-      throw new AccountAlreadyDeletedError('account already deleted');
+      return Result.err(
+        new AccountAlreadyDeletedError('account already deleted'),
+      );
     }
     if (this.isFrozen()) {
-      throw new AccountAlreadyFrozenError('account already frozen');
+      return Result.err(
+        new AccountAlreadyFrozenError('account already frozen'),
+      );
     }
 
     if ([...bio].length > 1024) {
-      throw new AccountBioLengthError('bio is too long');
+      return Result.err(new AccountBioLengthError('bio is too long'));
     }
     this.#bio = bio;
+    return Result.ok(undefined);
   }
 
-  toAdmin() {
+  toAdmin(): Result.Result<
+    AccountAlreadyDeletedError | AccountAlreadyFrozenError,
+    void
+  > {
     if (this.#isDeleted()) {
-      throw new AccountAlreadyDeletedError('account already deleted');
+      return Result.err(
+        new AccountAlreadyDeletedError('account already deleted'),
+      );
     }
     if (this.isFrozen()) {
-      throw new AccountAlreadyFrozenError('account already frozen');
+      return Result.err(
+        new AccountAlreadyFrozenError('account already frozen'),
+      );
     }
 
     this.#role = 'admin';
+    return Result.ok(undefined);
   }
-  toNormal() {
+  toNormal(): Result.Result<
+    AccountAlreadyDeletedError | AccountAlreadyFrozenError,
+    void
+  > {
     if (this.#isDeleted()) {
-      throw new AccountAlreadyDeletedError('account already deleted');
+      return Result.err(
+        new AccountAlreadyDeletedError('account already deleted'),
+      );
     }
     if (this.isFrozen()) {
-      throw new AccountAlreadyFrozenError('account already frozen');
+      return Result.err(
+        new AccountAlreadyFrozenError('account already frozen'),
+      );
     }
 
     this.#role = 'normal';
+    return Result.ok(undefined);
   }
-  toModerator() {
+  toModerator(): Result.Result<
+    AccountAlreadyDeletedError | AccountAlreadyFrozenError,
+    void
+  > {
     if (this.#isDeleted()) {
-      throw new AccountAlreadyDeletedError('account already deleted');
+      return Result.err(
+        new AccountAlreadyDeletedError('account already deleted'),
+      );
     }
     if (this.isFrozen()) {
-      throw new AccountAlreadyFrozenError('account already frozen');
+      return Result.err(
+        new AccountAlreadyFrozenError('account already frozen'),
+      );
     }
 
     this.#role = 'moderator';
+    return Result.ok(undefined);
   }
 
-  setFreeze() {
+  setFreeze(): Result.Result<
+    AccountAlreadyDeletedError | AccountAlreadyFrozenError,
+    void
+  > {
     if (this.#isDeleted()) {
-      throw new AccountAlreadyDeletedError('account already deleted');
+      return Result.err(
+        new AccountAlreadyDeletedError('account already deleted'),
+      );
     }
 
     this.#frozen = 'frozen';
+    return Result.ok(undefined);
   }
 
-  setUnfreeze() {
+  setUnfreeze(): Result.Result<
+    AccountAlreadyDeletedError | AccountAlreadyFrozenError,
+    void
+  > {
     if (this.#isDeleted()) {
-      throw new AccountAlreadyDeletedError('account already deleted');
+      return Result.err(
+        new AccountAlreadyDeletedError('account already deleted'),
+      );
     }
     this.#frozen = 'normal';
+    return Result.ok(undefined);
   }
 
-  setSilence() {
+  setSilence(): Result.Result<
+    AccountAlreadyDeletedError | AccountAlreadyFrozenError,
+    void
+  > {
     if (this.#isDeleted()) {
-      throw new AccountAlreadyDeletedError('account already deleted');
+      return Result.err(
+        new AccountAlreadyDeletedError('account already deleted'),
+      );
     }
     if (this.isFrozen()) {
-      throw new AccountAlreadyFrozenError('account already frozen');
+      return Result.err(
+        new AccountAlreadyFrozenError('account already frozen'),
+      );
     }
 
     this.#silenced = 'silenced';
+    return Result.ok(undefined);
   }
-  undoSilence() {
+  undoSilence(): Result.Result<
+    AccountAlreadyDeletedError | AccountAlreadyFrozenError,
+    void
+  > {
     if (this.#isDeleted()) {
-      throw new AccountAlreadyDeletedError('account already deleted');
+      return Result.err(
+        new AccountAlreadyDeletedError('account already deleted'),
+      );
     }
     if (this.isFrozen()) {
-      throw new AccountAlreadyFrozenError('account already frozen');
+      return Result.err(
+        new AccountAlreadyFrozenError('account already frozen'),
+      );
     }
 
     this.#silenced = 'normal';
+    return Result.ok(undefined);
   }
 
-  activate() {
+  activate(): Result.Result<
+    AccountAlreadyDeletedError | AccountAlreadyFrozenError,
+    void
+  > {
     if (this.#isDeleted()) {
-      throw new AccountAlreadyDeletedError('account already deleted');
+      return Result.err(
+        new AccountAlreadyDeletedError('account already deleted'),
+      );
     }
     if (this.isFrozen()) {
-      throw new AccountAlreadyFrozenError('account already frozen');
+      return Result.err(
+        new AccountAlreadyFrozenError('account already frozen'),
+      );
     }
     this.#status = 'active';
+    return Result.ok(undefined);
   }
 
-  setUpdatedAt(at: Date) {
+  setUpdatedAt(
+    at: Date,
+  ): Result.Result<
+    | AccountAlreadyDeletedError
+    | AccountAlreadyFrozenError
+    | AccountDateInvalidError,
+    void
+  > {
+    if (this.#isDeleted()) {
+      return Result.err(
+        new AccountAlreadyDeletedError('account already deleted'),
+      );
+    }
+    if (this.isFrozen()) {
+      return Result.err(
+        new AccountAlreadyFrozenError('account already frozen'),
+      );
+    }
     if (this.#createdAt > at) {
-      throw new AccountDateInvalidError('updatedAt must be after createdAt');
+      return Result.err(
+        new AccountDateInvalidError('updatedAt must be after createdAt'),
+      );
     }
     this.#updatedAt = at;
+    return Result.ok(undefined);
   }
 
-  setDeletedAt(at: Date) {
+  setDeletedAt(at: Date): Result.Result<AccountDateInvalidError, void> {
     if (this.#createdAt > at) {
-      throw new AccountDateInvalidError('deletedAt must be after createdAt');
+      return Result.err(
+        new AccountDateInvalidError('deletedAt must be after createdAt'),
+      );
     }
     this.#deletedAt = at;
+    return Result.ok(undefined);
   }
 
   #isDeleted(): boolean {
