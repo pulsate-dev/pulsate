@@ -11,7 +11,7 @@ import {
 
 const exampleInput: CreateAccountArgs = {
   id: '1' as AccountID,
-  bio: 'this is john doe"s account!',
+  bio: "this is john doe's account!",
   createdAt: new Date('2023-09-10T00:00:00.000Z'),
   mail: 'test@mail.example.com',
   nickname: 'John Doe',
