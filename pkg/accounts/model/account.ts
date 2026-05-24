@@ -138,33 +138,12 @@ export class Account {
     return this.#role;
   }
 
-  /**
-   * @deprecated Use isFrozen() instead
-   */
-  getFrozen(): AccountFrozen {
-    return this.#frozen;
-  }
-
   isFrozen(): boolean {
     return this.#frozen === 'frozen';
   }
 
-  /**
-   * @deprecated Use isSilenced() instead
-   */
-  getSilenced(): AccountSilenced {
-    return this.#silenced;
-  }
-
   isSilenced(): boolean {
     return this.#silenced === 'silenced';
-  }
-
-  /**
-   * @deprecated Use isActivated() instead
-   */
-  getStatus(): AccountStatus {
-    return this.#status;
   }
 
   isActivated(): boolean {

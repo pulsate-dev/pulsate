@@ -85,7 +85,7 @@ export class FreezeService {
         }
 
         // NOTE: actor must be active, not frozen
-        if (actor.getStatus() !== 'active' || actor.getFrozen() !== 'normal') {
+        if (!actor.isActivated() || actor.isFrozen()) {
           return false;
         }
 
@@ -110,7 +110,7 @@ export class FreezeService {
         }
 
         // NOTE: actor must be active, not frozen
-        if (actor.getStatus() !== 'active' || actor.getFrozen() !== 'normal') {
+        if (!actor.isActivated() || actor.isFrozen()) {
           return false;
         }
 

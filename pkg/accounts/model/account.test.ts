@@ -34,7 +34,7 @@ describe('Account', () => {
     expect(account.getPassphraseHash()).toBe(exampleInput.passphraseHash);
     expect(account.getBio()).toBe(exampleInput.bio);
     expect(account.getRole()).toBe(exampleInput.role);
-    expect(account.getStatus()).toBe('notActivated');
+    expect(account.isActivated()).toBe(false);
     expect(account.getCreatedAt()).toBe(exampleInput.createdAt);
     expect(account.getUpdatedAt()).toBe(undefined);
     expect(account.getDeletedAt()).toBe(undefined);

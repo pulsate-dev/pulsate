@@ -47,8 +47,7 @@ describe('SilenceService', () => {
 
     await silenceService.setSilence('@john@example.com', '@alice@example.com');
 
-    expect(account[1].getSilenced()).toBe('silenced');
-    expect(account[1].getSilenced()).not.toBe('normal');
+    expect(account[1].isSilenced()).toBe(true);
   });
 
   it('unset account silence', async () => {
@@ -57,7 +56,6 @@ describe('SilenceService', () => {
 
     await silenceService.undoSilence('@john@example.com', '@alice@example.com');
 
-    expect(account[1].getSilenced()).toBe('normal');
-    expect(account[1].getSilenced()).not.toBe('silenced');
+    expect(account[1].isSilenced()).toBe(false);
   });
 });

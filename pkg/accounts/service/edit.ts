@@ -240,10 +240,7 @@ export class EditService {
     switch (action) {
       case 'edit':
         // NOTE: Frozen account or notActivated account can't edit account information
-        if (
-          actor.getFrozen() === 'frozen' ||
-          actor.getStatus() === 'notActivated'
-        ) {
+        if (actor.isFrozen() || !actor.isActivated()) {
           return false;
         }
 
