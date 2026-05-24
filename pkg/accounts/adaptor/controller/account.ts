@@ -268,9 +268,9 @@ export class AccountController {
       note_count: 0,
       created_at: account.getCreatedAt(),
       role: account.getRole(),
-      frozen: account.getFrozen(),
-      status: account.getStatus(),
-      silenced: account.getSilenced(),
+      frozen: account.isFrozen() ? 'frozen' : 'normal',
+      status: account.isActivated() ? 'active' : 'notActivated',
+      silenced: account.isSilenced() ? 'silenced' : 'normal',
     });
   }
 
@@ -319,9 +319,9 @@ export class AccountController {
       note_count: 0,
       created_at: account.getCreatedAt(),
       role: account.getRole(),
-      frozen: account.getFrozen(),
-      status: account.getStatus(),
-      silenced: account.getSilenced(),
+      frozen: account.isFrozen() ? 'frozen' : 'normal',
+      status: account.isActivated() ? 'active' : 'notActivated',
+      silenced: account.isSilenced() ? 'silenced' : 'normal',
     });
   }
 
@@ -498,9 +498,9 @@ export class AccountController {
           note_count: 0,
           created_at: v.getCreatedAt(),
           role: v.getRole(),
-          frozen: v.getFrozen(),
-          status: v.getStatus(),
-          silenced: v.getSilenced(),
+          frozen: v.isFrozen() ? 'frozen' : 'normal',
+          status: v.isActivated() ? 'active' : 'notActivated',
+          silenced: v.isSilenced() ? 'silenced' : 'normal',
         };
       }),
     );
@@ -576,9 +576,9 @@ export class AccountController {
           note_count: 0,
           created_at: v.getCreatedAt(),
           role: v.getRole(),
-          frozen: v.getFrozen(),
-          status: v.getStatus(),
-          silenced: v.getSilenced(),
+          frozen: v.isFrozen() ? 'frozen' : 'normal',
+          status: v.isActivated() ? 'active' : 'notActivated',
+          silenced: v.isSilenced() ? 'silenced' : 'normal',
         };
       }),
     );

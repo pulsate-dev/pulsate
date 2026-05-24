@@ -44,7 +44,7 @@ export class FetchService {
     }
 
     // if account frozen
-    if (account[1].getFrozen() === 'frozen') {
+    if (account[1].isFrozen()) {
       return Option.none();
     }
 

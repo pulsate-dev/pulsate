@@ -122,26 +122,9 @@ export class PrismaAccountRepository implements AccountRepository {
       } satisfies Record<AccountRole, number>
     )[account.getRole()];
 
-    const status = (
-      {
-        active: 0,
-        notActivated: 1,
-      } satisfies Record<AccountStatus, number>
-    )[account.getStatus()];
-
-    const frozen = (
-      {
-        normal: 0,
-        frozen: 1,
-      } satisfies Record<AccountFrozen, number>
-    )[account.getFrozen()];
-
-    const silenced = (
-      {
-        normal: 0,
-        silenced: 1,
-      } satisfies Record<AccountSilenced, number>
-    )[account.getSilenced()];
+    const status = account.isActivated() ? 0 : 1;
+    const frozen = account.isFrozen() ? 1 : 0;
+    const silenced = account.isSilenced() ? 1 : 0;
 
     return {
       id: account.getID(),
