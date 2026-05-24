@@ -54,7 +54,7 @@ export class InactiveAccount {
     return this.#mail;
   }
 
-  public activate(
+  activate(
     args: ActivateArgs,
   ): Result.Result<AccountAlreadyActivatedError, Account> {
     if (this.isActivated()) {
