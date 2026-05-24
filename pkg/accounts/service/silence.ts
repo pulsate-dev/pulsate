@@ -38,12 +38,11 @@ export class SilenceService {
       return Result.err(new Error('not allowed'));
     }
 
-    try {
-      account.setSilence();
-      return Result.ok(true);
-    } catch (e) {
-      return Result.err(e as unknown as Error);
+    const setResult = account.setSilence();
+    if (Result.isErr(setResult)) {
+      return setResult;
     }
+    return Result.ok(true);
   }
 
   async undoSilence(
@@ -70,12 +69,11 @@ export class SilenceService {
       return Result.err(new Error('not allowed'));
     }
 
-    try {
-      account.undoSilence();
-      return Result.ok(true);
-    } catch (e) {
-      return Result.err(e as unknown as Error);
+    const setResult = account.undoSilence();
+    if (Result.isErr(setResult)) {
+      return setResult;
     }
+    return Result.ok(true);
   }
 
   private isAllowed(
@@ -91,7 +89,7 @@ export class SilenceService {
         }
 
         // NOTE: actor must be active, not frozen
-        if (actor.getStatus() !== 'active' || actor.getFrozen() !== 'normal') {
+        if (!actor.isActivated() || actor.isFrozen()) {
           return false;
         }
 
@@ -116,7 +114,7 @@ export class SilenceService {
         }
 
         // NOTE: actor must be active, not frozen
-        if (actor.getStatus() !== 'active' || actor.getFrozen() !== 'normal') {
+        if (!actor.isActivated() || actor.isFrozen()) {
           return false;
         }
 

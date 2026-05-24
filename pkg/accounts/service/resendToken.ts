@@ -41,7 +41,7 @@ export class ResendVerifyTokenService {
     }
     const account = Option.unwrap(accountRes);
 
-    if (account.getStatus() !== 'notActivated') {
+    if (account.isActivated()) {
       return Option.some(
         new AccountMailAddressAlreadyVerifiedError('account already verified', {
           cause: null,

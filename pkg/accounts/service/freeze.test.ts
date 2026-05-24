@@ -90,8 +90,7 @@ describe('FreezeService', () => {
 
     await freezeService.setFreeze('@john@example.com', '@alice@example.com');
 
-    expect(account.getFrozen()).toBe('frozen');
-    expect(account.getFrozen()).not.toBe('normal');
+    expect(account.isFrozen()).toBe(true);
   });
 
   it('unset account freeze', async () => {
@@ -103,8 +102,7 @@ describe('FreezeService', () => {
       await repository.findByName('@john@example.com'),
     );
 
-    expect(account.getFrozen()).toBe('normal');
-    expect(account.getFrozen()).not.toBe('frozen');
+    expect(account.isFrozen()).toBe(false);
   });
 
   describe('permission check', () => {
@@ -121,7 +119,7 @@ describe('FreezeService', () => {
 
       expect(Result.isErr(result)).toBe(true);
       expect(result[1]).toStrictEqual(new Error('not allowed'));
-      expect(account.getFrozen()).toBe('normal');
+      expect(account.isFrozen()).toBe(false);
     });
 
     it('cannot freeze/unFreeze if actor is not admin or moderator', async () => {

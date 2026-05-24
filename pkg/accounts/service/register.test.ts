@@ -53,7 +53,7 @@ describe('RegisterService', () => {
     expect(res[1].getNickname()).toBe(exampleInput.nickname);
     expect(res[1].getBio()).toBe(exampleInput.bio);
     expect(res[1].getRole()).toBe(exampleInput.role);
-    expect(res[1].getStatus()).toBe('notActivated');
+    expect(res[1].isActivated()).toBe(false);
     repository.reset();
   });
 });
