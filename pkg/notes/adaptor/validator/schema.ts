@@ -46,6 +46,9 @@ export const noteAttachmentSchema = z.object({
 
 const zodEmojiSchema = z
   .string()
+  // ToDo: The validator library for the API and the model are different,
+  // so a separate schema is defined for the API validator (plan to unify
+  // libraries to valibot in the future).
   .regex(
     /[\u2700-\u27BF]|[\uE000-\uF8FF]|\uD83C[\uDC00-\uDFFF]|\uD83D[\uDC00-\uDFFF]|[\u2011-\u26FF]|\uD83E[\uDD10-\uDDFF]|<:(\w+):(\d+)>/,
   );
