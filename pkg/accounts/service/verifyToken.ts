@@ -1,6 +1,6 @@
 import { Ether, Option, Result } from '@mikuroxina/mini-fn';
 
-import { type Clock, clockSymbol } from '../../id/mod.js';
+import { type Clock, clockSymbol } from '../../internal/id/mod.js';
 import type { AccountName } from '../model/account.js';
 import {
   AccountMailAddressVerificationTokenInvalidError,

@@ -2,7 +2,7 @@ import { Cat, Ether } from '@mikuroxina/mini-fn';
 import type { AccountID } from '../accounts/model/account.js';
 import { isProduction } from '../adaptors/env.js';
 import { prismaClient } from '../adaptors/prisma.js';
-import { clockSymbol, snowflakeIDGenerator } from '../id/mod.js';
+import { clockSymbol, snowflakeIDGenerator } from '../internal/id/mod.js';
 import type { NoteID } from '../notes/model/note.js';
 import type { ReactionID } from '../notes/model/reaction.js';
 import { DummyEmailSender } from '../notification/adaptor/email/dummySender.js';

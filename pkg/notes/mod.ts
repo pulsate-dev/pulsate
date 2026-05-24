@@ -9,7 +9,6 @@ import {
 } from '../adaptors/authenticateMiddleware.js';
 import { isProduction } from '../adaptors/env.js';
 import { prismaClient } from '../adaptors/prisma.js';
-import { clockSymbol, snowflakeIDGenerator } from '../id/mod.js';
 import {
   accountModule,
   accountModuleEther,
@@ -17,6 +16,7 @@ import {
   dummyAccountModuleFacade,
 } from '../intermodule/account.js';
 import { timelineModuleFacadeEther } from '../intermodule/timeline.js';
+import { clockSymbol, snowflakeIDGenerator } from '../internal/id/mod.js';
 import { BookmarkController } from './adaptor/controller/bookmark.js';
 import { NoteController } from './adaptor/controller/note.js';
 import { ReactionController } from './adaptor/controller/reaction.js';

@@ -3,7 +3,7 @@ import { Ether, Option, Result } from '@mikuroxina/mini-fn';
 import {
   type PasswordEncoder,
   passwordEncoderSymbol,
-} from '../../password/mod.js';
+} from '../../internal/password/mod.js';
 import {
   AccountAuthenticationFailedError,
   AccountInternalError,

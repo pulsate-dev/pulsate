@@ -1,19 +1,18 @@
 import { OpenAPIHono } from '@hono/zod-openapi';
 import { Cat, Ether, Option, Promise, Result } from '@mikuroxina/mini-fn';
-
 import {
   AuthenticateMiddlewareService,
   type AuthMiddlewareVariable,
 } from '../adaptors/authenticateMiddleware.js';
 import { prismaClient } from '../adaptors/prisma.js';
 import { MediaNotFoundError } from '../drive/model/errors.js';
-import { clockSymbol, snowflakeIDGenerator } from '../id/mod.js';
 import { mediaModuleFacadeEther } from '../intermodule/media.js';
 import {
   notificationModule,
   notificationModuleFacadeSymbol,
 } from '../intermodule/notification.js';
-import { argon2idPasswordEncoder } from '../password/mod.js';
+import { clockSymbol, snowflakeIDGenerator } from '../internal/id/mod.js';
+import { argon2idPasswordEncoder } from '../internal/password/mod.js';
 import { newTurnstileCaptchaValidator } from './adaptor/captcha/turnstile.js';
 import { AccountController } from './adaptor/controller/account.js';
 import { accountModuleLogger } from './adaptor/logger.js';

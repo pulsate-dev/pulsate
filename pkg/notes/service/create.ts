@@ -3,15 +3,15 @@ import { Ether, Option, Result } from '@mikuroxina/mini-fn';
 import type { AccountID } from '../../accounts/model/account.js';
 import type { MediumID } from '../../drive/model/medium.js';
 import {
+  type TimelineModuleFacade,
+  timelineModuleFacadeSymbol,
+} from '../../intermodule/timeline.js';
+import {
   type Clock,
   clockSymbol,
   type SnowflakeIDGenerator,
   snowflakeIDGeneratorSymbol,
-} from '../../id/mod.js';
-import {
-  type TimelineModuleFacade,
-  timelineModuleFacadeSymbol,
-} from '../../intermodule/timeline.js';
+} from '../../internal/id/mod.js';
 import {
   NoteContentLengthError,
   NoteInternalError,

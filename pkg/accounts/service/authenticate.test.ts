@@ -1,8 +1,7 @@
 import { Result } from '@mikuroxina/mini-fn';
 import { describe, expect, it } from 'vitest';
-
-import { MockClock } from '../../id/mod.js';
-import { Argon2idPasswordEncoder } from '../../password/mod.js';
+import { MockClock } from '../../internal/id/mod.js';
+import { Argon2idPasswordEncoder } from '../../internal/password/mod.js';
 import { InMemoryAccountRepository } from '../adaptor/repository/dummy/account.js';
 import { Account, type AccountID } from '../model/account.js';
 import { AuthenticateService } from './authenticate.js';

@@ -1,5 +1,5 @@
 import { Option } from '@mikuroxina/mini-fn';
-import type { ID } from '../../id/type.js';
+import type { ID } from '../../internal/id/type.js';
 
 export type InstanceID = ID<Instance>;
 /**

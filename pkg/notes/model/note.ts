@@ -2,7 +2,7 @@ import { Option } from '@mikuroxina/mini-fn';
 
 import type { AccountID } from '../../accounts/model/account.js';
 import type { MediumID } from '../../drive/model/medium.js';
-import type { ID } from '../../id/type.js';
+import type { ID } from '../../internal/id/type.js';
 import {
   NoteContentLengthError,
   NoteNoDestinationError,

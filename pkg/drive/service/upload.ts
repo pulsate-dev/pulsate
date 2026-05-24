@@ -4,7 +4,7 @@ import { fileTypeFromBuffer } from 'file-type';
 import sharp from 'sharp';
 
 import type { AccountID } from '../../accounts/model/account.js';
-import type { SnowflakeIDGenerator } from '../../id/mod.js';
+import type { SnowflakeIDGenerator } from '../../internal/id/mod.js';
 import {
   DriveInternalError,
   MediaSizeTooLargeError,

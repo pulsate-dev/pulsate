@@ -4,12 +4,6 @@ import type { Account, AccountID } from '../../accounts/model/account.js';
 import { AccountNotFoundError } from '../../accounts/model/errors.js';
 import type { MediumID } from '../../drive/model/medium.js';
 import {
-  type Clock,
-  clockSymbol,
-  type SnowflakeIDGenerator,
-  snowflakeIDGeneratorSymbol,
-} from '../../id/mod.js';
-import {
   type AccountModuleFacade,
   accountModuleFacadeSymbol,
 } from '../../intermodule/account.js';
@@ -17,6 +11,12 @@ import {
   type TimelineModuleFacade,
   timelineModuleFacadeSymbol,
 } from '../../intermodule/timeline.js';
+import {
+  type Clock,
+  clockSymbol,
+  type SnowflakeIDGenerator,
+  snowflakeIDGeneratorSymbol,
+} from '../../internal/id/mod.js';
 import {
   NoteInsufficientPermissionError,
   NoteNotFoundError,
