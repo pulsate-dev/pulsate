@@ -1,5 +1,6 @@
-import { z } from '@hono/zod-openapi';
 import { Result } from '@mikuroxina/mini-fn';
+import * as v from 'valibot';
+
 import type { ID } from '../../id/type.js';
 import {
   AccountAlreadyDeletedError,
@@ -16,38 +17,36 @@ export type AccountStatus = 'active' | 'notActivated';
 export type AccountFrozen = 'frozen' | 'normal';
 export type AccountSilenced = 'silenced' | 'normal';
 
-export const AccountNameSchema = z
-  .string()
-  .refine((s) => {
+export const AccountNameSchema = v.pipe(
+  v.string(),
+  v.check((s) => {
     const parts = s.split('@');
 
-    // check. @ 区切りで 3 つの文字列に区切ることが出来る
+    // must split into exactly 3 parts by "@"
     if (!((p): p is [string, string, string] => p.length === 3)(parts)) {
       return false;
     }
 
     const [head, name, domain] = parts;
 
-    // check. 最初の文字は @, 最初の @ の手前は空文字
+    // must start with "@": nothing before the first "@"
     if (head.length !== 0) {
       return false;
     }
 
-    // check. 名前は a-z A-Z 0-9 - _ . のみ許容
-    //        但し 1 文字以上, 最初の文字は記号非許容
+    // username: a-z A-Z 0-9 - _ . only; at least 1 char; must start with alphanumeric
     if (!/^[a-zA-Z0-9][\w\-.]*$/.test(name)) {
       return false;
     }
 
     // ref. RFC1035 https://www.rfc-editor.org/rfc/rfc1035#page-8
     //
-    // check. ドメイン名は RFC1035 より "<subdomain>" を参照, 空白は許容しない
-    //        ここでは文字種の検証のみ
+    // domain: follows RFC1035 "<subdomain>"; no whitespace; character set only
     if (!/^[a-zA-Z0-9\-.]+$/.test(domain)) {
       return false;
     }
 
-    // check. RFC1035 より "<label>" を参照
+    // each label follows RFC1035 "<label>"
     for (const label of domain.split('.')) {
       if (!/^[a-zA-Z](?:.*[a-zA-Z0-9])?$/.test(label)) {
         return false;
@@ -55,8 +54,22 @@ export const AccountNameSchema = z
     }
 
     return true;
-  })
-  .transform((s) => s as AccountName);
+  }),
+  v.transform((s) => s as AccountName),
+);
+
+const graphemeLength = (s: string): number =>
+  [...new Intl.Segmenter().segment(s)].length;
+
+const nicknameSchema = v.pipe(
+  v.string(),
+  v.check((s) => graphemeLength(s) <= 256),
+);
+
+const bioSchema = v.pipe(
+  v.string(),
+  v.check((s) => graphemeLength(s) <= 1024),
+);
 
 export interface CreateAccountArgs {
   id: AccountID;
@@ -199,7 +212,7 @@ export class Account {
       );
     }
 
-    if ([...name].length > 256) {
+    if (!v.safeParse(nicknameSchema, name).success) {
       return Result.err(
         new AccountNickNameLengthError('nickname length is too long'),
       );
@@ -249,7 +262,7 @@ export class Account {
       );
     }
 
-    if ([...bio].length > 1024) {
+    if (!v.safeParse(bioSchema, bio).success) {
       return Result.err(new AccountBioLengthError('bio is too long'));
     }
     this.#bio = bio;

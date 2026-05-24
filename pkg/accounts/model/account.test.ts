@@ -1,4 +1,5 @@
 import { Result } from '@mikuroxina/mini-fn';
+import * as v from 'valibot';
 import { describe, expect, it } from 'vitest';
 
 import {
@@ -82,7 +83,8 @@ describe('Account', () => {
 });
 
 describe('AccountNameSchema', () => {
-  const check = (v: unknown) => AccountNameSchema.safeParse(v).success;
+  const check = (input: unknown) =>
+    v.safeParse(AccountNameSchema, input).success;
 
   const account = Account.new(exampleInput);
 
