@@ -58,8 +58,8 @@ export const AccountNameSchema = v.pipe(
   v.transform((s) => s as AccountName),
 );
 
-const graphemeLength = (s: string): number =>
-  [...new Intl.Segmenter().segment(s)].length;
+const segmenter = new Intl.Segmenter();
+const graphemeLength = (s: string): number => [...segmenter.segment(s)].length;
 
 const nicknameSchema = v.pipe(
   v.string(),

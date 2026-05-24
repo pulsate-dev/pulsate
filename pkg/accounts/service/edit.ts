@@ -208,7 +208,6 @@ export class EditService {
       return Result.err(new Error('not allowed'));
     }
 
-    // ToDo(laminne): bio length check
     const setResult = account.setBio(bio);
     if (Result.isErr(setResult)) {
       return setResult;
