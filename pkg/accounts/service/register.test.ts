@@ -1,9 +1,8 @@
 import { Result } from '@mikuroxina/mini-fn';
 import { describe, expect, it } from 'vitest';
-
-import { MockClock, SnowflakeIDGenerator } from '../../id/mod.js';
 import { notificationModule } from '../../intermodule/notification.js';
-import { Argon2idPasswordEncoder } from '../../password/mod.js';
+import { MockClock, SnowflakeIDGenerator } from '../../internal/id/mod.js';
+import { Argon2idPasswordEncoder } from '../../internal/password/mod.js';
 import { InMemoryAccountRepository } from '../adaptor/repository/dummy/account.js';
 import { InMemoryAccountVerifyTokenRepository } from '../adaptor/repository/dummy/verifyToken.js';
 import type { AccountName, AccountRole } from '../model/account.js';

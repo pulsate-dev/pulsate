@@ -1,5 +1,5 @@
 import type { AccountID } from '../../accounts/model/account.js';
-import type { ID } from '../../id/type.js';
+import type { ID } from '../../internal/id/type.js';
 
 export type ListID = ID<List>;
 export type CreateListArgs = Readonly<{

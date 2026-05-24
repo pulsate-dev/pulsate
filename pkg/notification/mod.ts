@@ -6,8 +6,8 @@ import {
 } from '../adaptors/authenticateMiddleware.js';
 import { isProduction } from '../adaptors/env.js';
 import { prismaClient } from '../adaptors/prisma.js';
-import { clockSymbol } from '../id/mod.js';
 import { accountModuleEther } from '../intermodule/account.js';
+import { clockSymbol } from '../internal/id/mod.js';
 import { NotificationController } from './adaptor/controller/notification.js';
 import { inMemoryNotificationRepo } from './adaptor/repository/dummy/notification.js';
 import { prismaNotificationRepo } from './adaptor/repository/prisma/notification.js';

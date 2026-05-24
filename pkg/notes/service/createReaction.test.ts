@@ -1,7 +1,7 @@
 import { Option, Result } from '@mikuroxina/mini-fn';
 import { afterEach, describe, expect, it } from 'vitest';
 import type { AccountID } from '../../accounts/model/account.js';
-import { MockClock, SnowflakeIDGenerator } from '../../id/mod.js';
+import { MockClock, SnowflakeIDGenerator } from '../../internal/id/mod.js';
 import {
   InMemoryNoteRepository,
   InMemoryReactionRepository,

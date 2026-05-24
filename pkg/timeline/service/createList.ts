@@ -6,7 +6,7 @@ import {
   clockSymbol,
   type SnowflakeIDGenerator,
   snowflakeIDGeneratorSymbol,
-} from '../../id/mod.js';
+} from '../../internal/id/mod.js';
 import { List } from '../model/list.js';
 import { type ListRepository, listRepoSymbol } from '../model/repository.js';
 

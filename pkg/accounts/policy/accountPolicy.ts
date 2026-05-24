@@ -3,7 +3,7 @@ import type {
   Policy,
   PolicyArgs,
   PolicyAuthorizedActionFunc,
-} from '../../policy/policy.js';
+} from '../../internal/policy/policy.js';
 import { accountModuleLogger } from '../adaptor/logger.js';
 import { AccountAlreadyFrozenError } from '../model/account.errors.js';
 import type { Account } from '../model/account.js';

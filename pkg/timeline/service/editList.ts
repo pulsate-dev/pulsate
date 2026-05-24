@@ -1,5 +1,5 @@
 import { Ether, Result } from '@mikuroxina/mini-fn';
-import type { ID } from '../../id/type.js';
+import type { ID } from '../../internal/id/type.js';
 import type { List } from '../model/list.js';
 import { type ListRepository, listRepoSymbol } from '../model/repository.js';
 

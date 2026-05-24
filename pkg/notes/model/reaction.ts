@@ -1,6 +1,6 @@
 import { z } from '@hono/zod-openapi';
 import type { AccountID } from '../../accounts/model/account.js';
-import type { ID } from '../../id/type.js';
+import type { ID } from '../../internal/id/type.js';
 import type { NoteID } from './note.js';
 
 export const UnicodeEmojiSchema = z
