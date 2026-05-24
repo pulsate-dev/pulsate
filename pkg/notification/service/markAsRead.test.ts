@@ -1,7 +1,7 @@
 import { Option, Result } from '@mikuroxina/mini-fn';
 import { describe, expect, it } from 'vitest';
 import type { AccountID } from '../../accounts/model/account.js';
-import { MockClock } from '../../id/mod.js';
+import { MockClock } from '../../internal/id/mod.js';
 import { InMemoryNotificationRepository } from '../adaptor/repository/dummy/notification.js';
 import {
   type CreateFollowedNotificationArgs,

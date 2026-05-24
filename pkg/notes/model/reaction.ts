@@ -2,7 +2,7 @@ import { Result } from '@mikuroxina/mini-fn';
 import * as v from 'valibot';
 
 import type { AccountID } from '../../accounts/model/account.js';
-import type { ID } from '../../id/type.js';
+import type { ID } from '../../internal/id/type.js';
 import { NoteInvalidReactionError } from './errors.js';
 import type { NoteID } from './note.js';
 

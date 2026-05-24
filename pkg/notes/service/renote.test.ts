@@ -3,9 +3,9 @@ import { describe, expect, it, vi } from 'vitest';
 
 import type { AccountID } from '../../accounts/model/account.js';
 import { Medium, type MediumID } from '../../drive/model/medium.js';
-import { MockClock, SnowflakeIDGenerator } from '../../id/mod.js';
 import { dummyAccountModuleFacade } from '../../intermodule/account.js';
 import { dummyTimelineModuleFacade } from '../../intermodule/timeline.js';
+import { MockClock, SnowflakeIDGenerator } from '../../internal/id/mod.js';
 import { InMemoryTimelineCacheRepository } from '../../timeline/adaptor/repository/dummyCache.js';
 import {
   InMemoryNoteAttachmentRepository,

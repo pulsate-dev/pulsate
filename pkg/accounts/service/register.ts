@@ -1,19 +1,18 @@
 import { Ether, Option, Result } from '@mikuroxina/mini-fn';
-
-import {
-  type Clock,
-  clockSymbol,
-  type SnowflakeIDGenerator,
-  snowflakeIDGeneratorSymbol,
-} from '../../id/mod.js';
 import {
   type NotificationModuleFacade,
   notificationModuleFacadeSymbol,
 } from '../../intermodule/notification.js';
 import {
+  type Clock,
+  clockSymbol,
+  type SnowflakeIDGenerator,
+  snowflakeIDGeneratorSymbol,
+} from '../../internal/id/mod.js';
+import {
   type PasswordEncoder,
   passwordEncoderSymbol,
-} from '../../password/mod.js';
+} from '../../internal/password/mod.js';
 import {
   Account,
   type AccountName,

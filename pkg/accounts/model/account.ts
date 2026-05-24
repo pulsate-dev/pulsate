@@ -1,7 +1,7 @@
 import { Result } from '@mikuroxina/mini-fn';
 import * as v from 'valibot';
 
-import type { ID } from '../../id/type.js';
+import type { ID } from '../../internal/id/type.js';
 import {
   AccountAlreadyDeletedError,
   AccountAlreadyFrozenError,

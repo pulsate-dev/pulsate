@@ -3,7 +3,7 @@ import type { AccountID } from '../../accounts/model/account.js';
 import {
   type SnowflakeIDGenerator,
   snowflakeIDGeneratorSymbol,
-} from '../../id/mod.js';
+} from '../../internal/id/mod.js';
 import { NoteNotFoundError } from '../model/errors.js';
 import type { Note, NoteID } from '../model/note.js';
 import { Reaction } from '../model/reaction.js';

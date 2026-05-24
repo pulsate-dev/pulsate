@@ -1,5 +1,5 @@
 import { Option, Result } from '@mikuroxina/mini-fn';
-import type { ID } from '../../id/type.js';
+import type { ID } from '../../internal/id/type.js';
 import { importRSAKey } from '../cryptoLib.js';
 import type { ActorID } from './actor.js';
 

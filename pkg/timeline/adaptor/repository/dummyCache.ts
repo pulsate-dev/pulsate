@@ -1,7 +1,7 @@
 import { Ether, Result } from '@mikuroxina/mini-fn';
 
 import type { AccountID } from '../../../accounts/model/account.js';
-import { compareID } from '../../../id/mod.js';
+import { compareID } from '../../../internal/id/mod.js';
 import type { Note, NoteID } from '../../../notes/model/note.js';
 import { TimelineCacheNotFoundError } from '../../model/errors.js';
 import type { ListID } from '../../model/list.js';
