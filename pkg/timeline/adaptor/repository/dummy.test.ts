@@ -12,50 +12,58 @@ import {
 } from './dummy.js';
 
 describe('InMemoryTimelineRepository', () => {
-  const dummyPublicNote = Note.new({
-    id: '1' as NoteID,
-    authorID: '100' as AccountID,
-    content: 'Hello world',
-    contentsWarningComment: '',
-    createdAt: new Date('2023-09-10T00:00:00Z'),
-    originalNoteID: Option.none(),
-    attachmentFileID: [],
-    sendTo: Option.none(),
-    visibility: 'PUBLIC',
-  });
-  const dummyHomeNote = Note.new({
-    id: '2' as NoteID,
-    authorID: '100' as AccountID,
-    content: 'Hello world to Home',
-    contentsWarningComment: '',
-    createdAt: new Date('2023-09-11T00:00:00Z'),
-    originalNoteID: Option.none(),
-    attachmentFileID: [],
-    sendTo: Option.none(),
-    visibility: 'HOME',
-  });
-  const dummyFollowersNote = Note.new({
-    id: '3' as NoteID,
-    authorID: '100' as AccountID,
-    content: 'Hello world to followers',
-    contentsWarningComment: '',
-    createdAt: new Date('2023-09-12T00:00:00Z'),
-    originalNoteID: Option.none(),
-    attachmentFileID: [],
-    sendTo: Option.none(),
-    visibility: 'FOLLOWERS',
-  });
-  const dummyDirectNote = Note.new({
-    id: '4' as NoteID,
-    authorID: '100' as AccountID,
-    content: 'Hello world to direct',
-    contentsWarningComment: '',
-    createdAt: new Date('2023-09-13T00:00:00Z'),
-    originalNoteID: Option.none(),
-    attachmentFileID: [],
-    sendTo: Option.some('101' as AccountID),
-    visibility: 'DIRECT',
-  });
+  const dummyPublicNote = Result.unwrap(
+    Note.new({
+      id: '1' as NoteID,
+      authorID: '100' as AccountID,
+      content: 'Hello world',
+      contentsWarningComment: '',
+      createdAt: new Date('2023-09-10T00:00:00Z'),
+      originalNoteID: Option.none(),
+      attachmentFileID: [],
+      sendTo: Option.none(),
+      visibility: 'PUBLIC',
+    }),
+  );
+  const dummyHomeNote = Result.unwrap(
+    Note.new({
+      id: '2' as NoteID,
+      authorID: '100' as AccountID,
+      content: 'Hello world to Home',
+      contentsWarningComment: '',
+      createdAt: new Date('2023-09-11T00:00:00Z'),
+      originalNoteID: Option.none(),
+      attachmentFileID: [],
+      sendTo: Option.none(),
+      visibility: 'HOME',
+    }),
+  );
+  const dummyFollowersNote = Result.unwrap(
+    Note.new({
+      id: '3' as NoteID,
+      authorID: '100' as AccountID,
+      content: 'Hello world to followers',
+      contentsWarningComment: '',
+      createdAt: new Date('2023-09-12T00:00:00Z'),
+      originalNoteID: Option.none(),
+      attachmentFileID: [],
+      sendTo: Option.none(),
+      visibility: 'FOLLOWERS',
+    }),
+  );
+  const dummyDirectNote = Result.unwrap(
+    Note.new({
+      id: '4' as NoteID,
+      authorID: '100' as AccountID,
+      content: 'Hello world to direct',
+      contentsWarningComment: '',
+      createdAt: new Date('2023-09-13T00:00:00Z'),
+      originalNoteID: Option.none(),
+      attachmentFileID: [],
+      sendTo: Option.some('101' as AccountID),
+      visibility: 'DIRECT',
+    }),
+  );
 
   const repository = new InMemoryTimelineRepository([
     dummyPublicNote,
@@ -246,28 +254,32 @@ describe('InMemoryListRepository', () => {
     createdAt: new Date(),
   });
 
-  const dummyPublicNote = Note.new({
-    id: '10' as NoteID,
-    authorID: '100' as AccountID,
-    content: 'Hello world',
-    contentsWarningComment: '',
-    createdAt: new Date('2023-09-10T00:00:00Z'),
-    originalNoteID: Option.none(),
-    attachmentFileID: [],
-    sendTo: Option.none(),
-    visibility: 'PUBLIC',
-  });
-  const dummyDirectNote = Note.new({
-    id: '14' as NoteID,
-    authorID: '100' as AccountID,
-    content: 'Hello world to direct',
-    contentsWarningComment: '',
-    createdAt: new Date('2023-09-13T00:00:00Z'),
-    originalNoteID: Option.none(),
-    attachmentFileID: [],
-    sendTo: Option.some('101' as AccountID),
-    visibility: 'DIRECT',
-  });
+  const dummyPublicNote = Result.unwrap(
+    Note.new({
+      id: '10' as NoteID,
+      authorID: '100' as AccountID,
+      content: 'Hello world',
+      contentsWarningComment: '',
+      createdAt: new Date('2023-09-10T00:00:00Z'),
+      originalNoteID: Option.none(),
+      attachmentFileID: [],
+      sendTo: Option.none(),
+      visibility: 'PUBLIC',
+    }),
+  );
+  const dummyDirectNote = Result.unwrap(
+    Note.new({
+      id: '14' as NoteID,
+      authorID: '100' as AccountID,
+      content: 'Hello world to direct',
+      contentsWarningComment: '',
+      createdAt: new Date('2023-09-13T00:00:00Z'),
+      originalNoteID: Option.none(),
+      attachmentFileID: [],
+      sendTo: Option.some('101' as AccountID),
+      visibility: 'DIRECT',
+    }),
+  );
 
   const repository = new InMemoryListRepository(
     [dummyList],
@@ -329,17 +341,19 @@ describe('InMemoryConversationRepository', () => {
     sendToID: Option.Option<AccountID>,
     createdAt: Date,
   ) =>
-    Note.new({
-      attachmentFileID: [],
-      authorID,
-      contentsWarningComment: '',
-      createdAt,
-      id,
-      originalNoteID: Option.none(),
-      sendTo: sendToID,
-      visibility: 'DIRECT',
-      content: 'this is a test note',
-    });
+    Result.unwrap(
+      Note.new({
+        attachmentFileID: [],
+        authorID,
+        contentsWarningComment: '',
+        createdAt,
+        id,
+        originalNoteID: Option.none(),
+        sendTo: sendToID,
+        visibility: 'DIRECT',
+        content: 'this is a test note',
+      }),
+    );
 
   const testMap = [
     // 1-->2
