@@ -5,7 +5,7 @@ import {
   Account,
   type AccountID,
   type AccountName,
-  type CreateAccountArgs,
+  type AccountRole,
   mailSchema,
 } from './account.js';
 
@@ -13,12 +13,13 @@ export interface CreateInactiveAccountArgs {
   id: AccountID;
   name: AccountName;
   mail: string;
+  passphraseHash: string;
+  role: AccountRole;
 }
 
-export type ActivateArgs = Omit<
-  CreateAccountArgs,
-  keyof Omit<CreateInactiveAccountArgs, 'activated'>
->;
+export interface ActivateArgs {
+  createdAt: Date;
+}
 
 export class AccountAlreadyActivatedError extends Error {
   override readonly name = 'AccountAlreadyActivatedError' as const;
@@ -33,6 +34,8 @@ export class InactiveAccount {
     this.#id = arg.id;
     this.#name = arg.name;
     this.#mail = arg.mail;
+    this.#passphraseHash = arg.passphraseHash;
+    this.#role = arg.role;
     this.#activated = false;
   }
 
@@ -42,18 +45,28 @@ export class InactiveAccount {
   }
 
   readonly #id: AccountID;
-  getID(): string {
+  getID(): AccountID {
     return this.#id;
   }
 
   readonly #name: AccountName;
-  getName(): string {
+  getName(): AccountName {
     return this.#name;
   }
 
   readonly #mail: string;
   getMail(): string {
     return this.#mail;
+  }
+
+  readonly #passphraseHash: string;
+  getPassphraseHash(): string {
+    return this.#passphraseHash;
+  }
+
+  readonly #role: AccountRole;
+  getRole(): AccountRole {
+    return this.#role;
   }
 
   activate(
@@ -71,8 +84,14 @@ export class InactiveAccount {
         id: this.#id,
         name: this.#name,
         mail: this.#mail,
-        ...args,
+        passphraseHash: this.#passphraseHash,
+        role: this.#role,
+        nickname: '',
+        bio: '',
+        createdAt: args.createdAt,
         status: 'active',
+        frozen: 'normal',
+        silenced: 'normal',
         updatedAt: undefined,
         deletedAt: undefined,
       }),
