@@ -37,6 +37,10 @@ export class FreezeService {
     if (Result.isErr(setResult)) {
       return setResult;
     }
+    const saveResult = await this.accountRepository.edit(account);
+    if (Result.isErr(saveResult)) {
+      return saveResult;
+    }
     return Result.ok(true);
   }
 
@@ -66,6 +70,10 @@ export class FreezeService {
     const setResult = account.setUnfreeze();
     if (Result.isErr(setResult)) {
       return setResult;
+    }
+    const saveResult = await this.accountRepository.edit(account);
+    if (Result.isErr(saveResult)) {
+      return saveResult;
     }
     return Result.ok(true);
   }
