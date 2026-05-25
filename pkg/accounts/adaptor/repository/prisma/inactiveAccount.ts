@@ -11,6 +11,7 @@ import {
   type InactiveAccountRepository,
   inactiveAccountRepoSymbol,
 } from '../../../model/repository.js';
+import { accountModuleLogger } from '../../logger.js';
 import { parsePrismaError } from './prisma.js';
 
 type InactiveAccountPrismaArgs = Awaited<
@@ -82,21 +83,27 @@ export class PrismaInactiveAccountRepository
     if (args === null) {
       throw new Error('failed to serialize');
     }
-    const role =
-      (
-        {
-          0: 'normal',
-          1: 'moderator',
-          2: 'admin',
-        } satisfies Record<number, AccountRole>
-      )[args.role] ?? 'normal';
+    const role = (
+      {
+        0: 'normal',
+        1: 'moderator',
+        2: 'admin',
+      } satisfies Record<number, AccountRole>
+    )[args.role];
+
+    if (role === undefined) {
+      accountModuleLogger.warn(
+        `Unknown role value: ${args.role} for InactiveAccount id: ${args.id}, falling back to 'normal'`,
+      );
+    }
+    const resolvedRole: AccountRole = role ?? 'normal';
 
     return InactiveAccount.reconstruct({
       id: args.id as AccountID,
       name: args.name as AccountName,
       mail: args.mail,
       passphraseHash: args.passphraseHash,
-      role,
+      role: resolvedRole,
     });
   }
 }

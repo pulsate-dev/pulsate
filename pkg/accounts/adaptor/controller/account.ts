@@ -95,9 +95,7 @@ export class AccountController {
     const res = await this.registerService.handle(
       name as AccountName,
       email,
-      '',
       passphrase,
-      '',
       'normal',
     );
 

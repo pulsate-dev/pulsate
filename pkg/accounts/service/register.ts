@@ -4,8 +4,6 @@ import {
   notificationModuleFacadeSymbol,
 } from '../../intermodule/notification.js';
 import {
-  type Clock,
-  clockSymbol,
   type SnowflakeIDGenerator,
   snowflakeIDGeneratorSymbol,
 } from '../../internal/id/mod.js';
@@ -13,14 +11,11 @@ import {
   type PasswordEncoder,
   passwordEncoderSymbol,
 } from '../../internal/password/mod.js';
+import type { Account, AccountName, AccountRole } from '../model/account.js';
+import { InactiveAccount } from '../model/inactiveAccount.js';
 import {
-  Account,
-  type AccountName,
-  type AccountRole,
-} from '../model/account.js';
-import {
-  type AccountRepository,
-  accountRepoSymbol,
+  type InactiveAccountRepository,
+  inactiveAccountRepoSymbol,
 } from '../model/repository.js';
 import {
   type VerifyAccountTokenService,
@@ -36,42 +31,38 @@ export class AccountAlreadyExistsError extends Error {
 }
 
 export class RegisterService {
-  private readonly accountRepository: AccountRepository;
+  private readonly inactiveAccountRepository: InactiveAccountRepository;
   private readonly snowflakeIDGenerator: SnowflakeIDGenerator;
   private readonly passwordEncoder: PasswordEncoder;
   private readonly notificationModule: NotificationModuleFacade;
   private readonly verifyAccountTokenService: VerifyAccountTokenService;
-  private readonly clock: Clock;
 
   constructor(arg: {
-    repository: AccountRepository;
+    repository: InactiveAccountRepository;
     idGenerator: SnowflakeIDGenerator;
     passwordEncoder: PasswordEncoder;
     notificationModule: NotificationModuleFacade;
     verifyAccountTokenService: VerifyAccountTokenService;
-    clock: Clock;
   }) {
-    this.accountRepository = arg.repository;
+    this.inactiveAccountRepository = arg.repository;
     this.snowflakeIDGenerator = arg.idGenerator;
     this.passwordEncoder = arg.passwordEncoder;
     this.notificationModule = arg.notificationModule;
     this.verifyAccountTokenService = arg.verifyAccountTokenService;
-    this.clock = arg.clock;
   }
 
   public async handle(
     name: AccountName,
     mail: string,
-    nickname: string,
     passphrase: string,
-    bio: string,
     role: AccountRole,
-  ): Promise<Result.Result<Error, Account>> {
+  ): Promise<Result.Result<Error, InactiveAccount>> {
     if (await this.isExists(mail, name)) {
       return Result.err(
         new AccountAlreadyExistsError('account already exists'),
       );
     }
+
     const passphraseHash =
       await this.passwordEncoder.encodePassword(passphrase);
     const generatedIDRes = this.snowflakeIDGenerator.generate<Account>();
@@ -80,18 +71,19 @@ export class RegisterService {
     }
     const generatedID = Result.unwrap(generatedIDRes);
 
-    const now = this.clock.now();
-    const account = Account.new({
+    const accountRes = InactiveAccount.new({
       id: generatedID,
-      name: name,
-      mail: mail,
-      nickname: nickname,
-      passphraseHash: passphraseHash,
-      bio: bio,
-      role: role,
-      createdAt: new Date(Number(now)),
+      name,
+      mail,
+      passphraseHash,
+      role,
     });
-    const res = await this.accountRepository.create(account);
+    if (Result.isErr(accountRes)) {
+      return accountRes;
+    }
+    const account = Result.unwrap(accountRes);
+
+    const res = await this.inactiveAccountRepository.create(account);
     if (Result.isErr(res)) {
       return res;
     }
@@ -114,14 +106,9 @@ export class RegisterService {
     return Result.ok(account);
   }
 
-  /**
-   * @param mail account mail addr
-   * @param name account name (e.g. "@me@example.com" )
-   * @returns account is exist
-   */
   private async isExists(mail: string, name: string): Promise<boolean> {
-    const byName = await this.accountRepository.findByName(name);
-    const byMail = await this.accountRepository.findByMail(mail);
+    const byName = await this.inactiveAccountRepository.findByName(name);
+    const byMail = await this.inactiveAccountRepository.findByMail(mail);
 
     return Option.isSome(byName) || Option.isSome(byMail);
   }
@@ -132,11 +119,10 @@ export const register = Ether.newEther(
   registerSymbol,
   (deps) => new RegisterService(deps),
   {
-    repository: accountRepoSymbol,
+    repository: inactiveAccountRepoSymbol,
     idGenerator: snowflakeIDGeneratorSymbol,
     passwordEncoder: passwordEncoderSymbol,
     notificationModule: notificationModuleFacadeSymbol,
     verifyAccountTokenService: verifyAccountTokenSymbol,
-    clock: clockSymbol,
   },
 );
