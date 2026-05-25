@@ -1,4 +1,5 @@
 import { Ether, Option, Result } from '@mikuroxina/mini-fn';
+import type { AccountID } from '../../../model/account.js';
 import type { InactiveAccount } from '../../../model/inactiveAccount.js';
 import {
   type InactiveAccountRepository,
@@ -38,6 +39,15 @@ export class InMemoryInactiveAccountRepository
     }
 
     return Promise.resolve(Option.some(account));
+  }
+
+  delete(id: AccountID): Promise<Result.Result<Error, void>> {
+    const account = Array.from(this.data).find((a) => a.getID() === id);
+    if (!account) {
+      return Promise.resolve(Result.ok(undefined));
+    }
+    this.data.delete(account);
+    return Promise.resolve(Result.ok(undefined));
   }
 }
 
