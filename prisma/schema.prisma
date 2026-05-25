@@ -198,6 +198,15 @@ model AccountVerifyToken {
   @@map("account_verify_token")
 }
 
+model InactiveAccount {
+  id        String   @id
+  name      String   @unique
+  mail      String   @unique
+  createdAt DateTime @default(now()) @map("created_at")
+
+  @@map("inactive_account")
+}
+
 model Notification {
   id               String    @id
   recipientID      String    @map("recipient_id")
