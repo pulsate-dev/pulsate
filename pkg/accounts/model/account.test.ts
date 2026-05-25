@@ -54,10 +54,33 @@ describe('Account', () => {
   ][] = [
     ['nickname too long', (a) => a.setNickName('a'.repeat(257))],
     ['bio too long', (a) => a.setBio('a'.repeat(1025))],
+    ['mail too short', (a) => a.setMail('a'.repeat(6))],
+    ['mail too long', (a) => a.setMail('a'.repeat(320))],
   ];
+
+  it('allows empty string as nickname (no nickname set)', () => {
+    const account = Account.new(exampleInput);
+    expect(Result.isOk(account.setNickName(''))).toBe(true);
+  });
 
   it.each(validationCases)('returns error when %s', (_, call) => {
     expect(Result.isErr(call(Account.new(exampleInput)))).toBe(true);
+  });
+
+  describe('validatePassphrase', () => {
+    it.each([
+      { title: 'length 8', passphrase: 'a'.repeat(8) },
+      { title: 'length 512', passphrase: 'a'.repeat(512) },
+    ])('succeeds when $title', ({ passphrase }) => {
+      expect(Result.isOk(Account.validatePassphrase(passphrase))).toBe(true);
+    });
+
+    it.each([
+      { title: 'too short', passphrase: 'a'.repeat(7) },
+      { title: 'too long', passphrase: 'a'.repeat(513) },
+    ])('fails when $title', ({ passphrase }) => {
+      expect(Result.isErr(Account.validatePassphrase(passphrase))).toBe(true);
+    });
   });
 
   const mutationCalls: [string, (a: Account) => Result.Result<Error, void>][] =

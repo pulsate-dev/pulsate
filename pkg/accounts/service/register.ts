@@ -89,9 +89,6 @@ export class RegisterService {
       passphraseHash: passphraseHash,
       bio: bio,
       role: role,
-      frozen: 'normal',
-      silenced: 'normal',
-      status: 'notActivated',
       createdAt: new Date(Number(now)),
     });
     const res = await this.accountRepository.create(account);

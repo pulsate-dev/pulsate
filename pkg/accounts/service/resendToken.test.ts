@@ -19,9 +19,6 @@ await repository.create(
     passphraseHash: 'hash',
     bio: '',
     role: 'normal',
-    frozen: 'normal',
-    silenced: 'normal',
-    status: 'notActivated',
     createdAt: new Date(),
   }),
 );

@@ -74,9 +74,6 @@ describe('AccountTimelineService', () => {
     nickname: 'John Doe',
     passphraseHash: '',
     role: 'normal',
-    silenced: 'normal',
-    status: 'active',
-    frozen: 'normal',
     createdAt: new Date(),
   });
   const partialAccount1: PartialAccount = {
