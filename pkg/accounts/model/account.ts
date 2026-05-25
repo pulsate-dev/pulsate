@@ -19,7 +19,7 @@ export type AccountStatus = 'active' | 'notActivated';
 export type AccountFrozen = 'frozen' | 'normal';
 export type AccountSilenced = 'silenced' | 'normal';
 
-export const AccountNameSchema = v.pipe(
+export const accountNameSchema = v.pipe(
   v.string(),
   v.check((s) => {
     const parts = s.split('@');
@@ -69,7 +69,7 @@ const nicknameSchema = v.pipe(
   v.check((s) => graphemeLength(s) === 0 || graphemeLength(s) <= 256),
 );
 
-const mailSchema = v.pipe(
+export const mailSchema = v.pipe(
   v.string(),
   v.check((s) => s.length >= 7 && s.length <= 319),
 );

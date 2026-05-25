@@ -56,7 +56,7 @@ export class NotificationController {
   ): Promise<
     Result.Result<Error, z.infer<typeof GetNotificationsResponseSchema>>
   > {
-    if (!!options.afterID && !!options.beforeID) {
+    if (options.afterID && options.beforeID) {
       return Result.err(
         new Error('Cannot specify both after_id and before_id'),
       );

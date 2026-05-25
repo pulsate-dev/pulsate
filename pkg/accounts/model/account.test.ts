@@ -5,7 +5,7 @@ import { describe, expect, it } from 'vitest';
 import {
   Account,
   type AccountID,
-  AccountNameSchema,
+  accountNameSchema,
   type CreateAccountArgs,
 } from './account.js';
 
@@ -107,7 +107,7 @@ describe('Account', () => {
 
 describe('AccountNameSchema', () => {
   const check = (input: unknown) =>
-    v.safeParse(AccountNameSchema, input).success;
+    v.safeParse(accountNameSchema, input).success;
 
   const account = Account.new(exampleInput);
 

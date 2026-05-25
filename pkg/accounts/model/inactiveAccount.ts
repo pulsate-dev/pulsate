@@ -1,10 +1,12 @@
 import { Result } from '@mikuroxina/mini-fn';
-
+import * as v from 'valibot';
+import { AccountMailAddressLengthError } from './account.errors.js';
 import {
   Account,
   type AccountID,
   type AccountName,
   type CreateAccountArgs,
+  mailSchema,
 } from './account.js';
 
 export interface CreateInactiveAccountArgs {
@@ -27,7 +29,7 @@ export class AccountAlreadyActivatedError extends Error {
 }
 
 export class InactiveAccount {
-  constructor(arg: CreateInactiveAccountArgs) {
+  private constructor(arg: CreateInactiveAccountArgs) {
     this.#id = arg.id;
     this.#name = arg.name;
     this.#mail = arg.mail;
@@ -79,7 +81,18 @@ export class InactiveAccount {
 
   static new(
     arg: CreateInactiveAccountArgs,
-  ): Result.Result<never, InactiveAccount> {
+  ): Result.Result<AccountMailAddressLengthError, InactiveAccount> {
+    if (!v.safeParse(mailSchema, arg.mail).success) {
+      return Result.err(
+        new AccountMailAddressLengthError(
+          'mail address length is out of range',
+        ),
+      );
+    }
     return Result.ok(new InactiveAccount(arg));
+  }
+
+  static reconstruct(arg: CreateInactiveAccountArgs): InactiveAccount {
+    return new InactiveAccount(arg);
   }
 }

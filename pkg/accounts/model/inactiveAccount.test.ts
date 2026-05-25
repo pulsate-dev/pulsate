@@ -35,6 +35,22 @@ describe('InactiveAccount', () => {
     expect(account.isActivated()).toBe(false);
   });
 
+  it('fail to create with too short mail', () => {
+    const result = InactiveAccount.new({
+      ...exampleInput,
+      mail: 'a@b.c',
+    });
+    expect(Result.isErr(result)).toBe(true);
+  });
+
+  it('fail to create with too long mail', () => {
+    const result = InactiveAccount.new({
+      ...exampleInput,
+      mail: `${'a'.repeat(320)}@example.com`,
+    });
+    expect(Result.isErr(result)).toBe(true);
+  });
+
   it('activate account', () => {
     const inactiveAccount = Result.unwrap(InactiveAccount.new(exampleInput));
     const account = Result.unwrap(
