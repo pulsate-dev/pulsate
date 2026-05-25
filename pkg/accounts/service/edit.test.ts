@@ -50,6 +50,10 @@ describe('EditService', () => {
         title: 'when nickname length 1',
         nickname: 'a',
       },
+      {
+        title: 'when nickname is empty (no nickname)',
+        nickname: '',
+      },
     ])('should be success to update $title', async ({ nickname }) => {
       //
       const updateRes = await editService.editNickname(
@@ -66,10 +70,6 @@ describe('EditService', () => {
     });
 
     it.each([
-      {
-        title: 'nickname length shorter more than 1',
-        nickname: '',
-      },
       {
         title: 'nickname length more than 256',
         nickname: 'a'.repeat(257),

@@ -7,7 +7,9 @@ import {
   AccountAlreadyFrozenError,
   AccountBioLengthError,
   AccountDateInvalidError,
+  AccountMailAddressLengthError,
   AccountNickNameLengthError,
+  AccountPassphraseRequirementsNotMetError,
 } from './account.errors.js';
 
 export type AccountID = ID<Account>;
@@ -61,9 +63,20 @@ export const AccountNameSchema = v.pipe(
 const segmenter = new Intl.Segmenter();
 const graphemeLength = (s: string): number => [...segmenter.segment(s)].length;
 
+// empty string is allowed (means "no nickname set"); non-empty must be <= 256
 const nicknameSchema = v.pipe(
   v.string(),
-  v.check((s) => graphemeLength(s) <= 256),
+  v.check((s) => graphemeLength(s) === 0 || graphemeLength(s) <= 256),
+);
+
+const mailSchema = v.pipe(
+  v.string(),
+  v.check((s) => s.length >= 7 && s.length <= 319),
+);
+
+const passphraseSchema = v.pipe(
+  v.string(),
+  v.check((s) => s.length >= 8 && s.length <= 512),
 );
 
 const bioSchema = v.pipe(
@@ -175,7 +188,9 @@ export class Account {
   setMail(
     mail: string,
   ): Result.Result<
-    AccountAlreadyDeletedError | AccountAlreadyFrozenError,
+    | AccountAlreadyDeletedError
+    | AccountAlreadyFrozenError
+    | AccountMailAddressLengthError,
     void
   > {
     if (this.#isDeleted()) {
@@ -186,6 +201,14 @@ export class Account {
     if (this.isFrozen()) {
       return Result.err(
         new AccountAlreadyFrozenError('account already frozen'),
+      );
+    }
+
+    if (!v.safeParse(mailSchema, mail).success) {
+      return Result.err(
+        new AccountMailAddressLengthError(
+          'mail address length is out of range',
+        ),
       );
     }
 
@@ -447,7 +470,12 @@ export class Account {
     return this.#deletedAt !== undefined;
   }
 
-  static new(arg: Omit<CreateAccountArgs, 'deletedAt' | 'updatedAt'>) {
+  static new(
+    arg: Omit<
+      CreateAccountArgs,
+      'deletedAt' | 'updatedAt' | 'frozen' | 'silenced' | 'status'
+    >,
+  ) {
     return new Account({
       id: arg.id,
       mail: arg.mail,
@@ -463,6 +491,19 @@ export class Account {
       updatedAt: undefined,
       deletedAt: undefined,
     });
+  }
+
+  static validatePassphrase(
+    passphrase: string,
+  ): Result.Result<AccountPassphraseRequirementsNotMetError, void> {
+    if (!v.safeParse(passphraseSchema, passphrase).success) {
+      return Result.err(
+        new AccountPassphraseRequirementsNotMetError(
+          'passphrase requirements not met',
+        ),
+      );
+    }
+    return Result.ok(undefined);
   }
 
   static reconstruct(arg: CreateAccountArgs) {

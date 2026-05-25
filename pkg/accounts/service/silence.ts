@@ -42,6 +42,10 @@ export class SilenceService {
     if (Result.isErr(setResult)) {
       return setResult;
     }
+    const saveResult = await this.accountRepository.edit(account);
+    if (Result.isErr(saveResult)) {
+      return saveResult;
+    }
     return Result.ok(true);
   }
 
@@ -72,6 +76,10 @@ export class SilenceService {
     const setResult = account.undoSilence();
     if (Result.isErr(setResult)) {
       return setResult;
+    }
+    const saveResult = await this.accountRepository.edit(account);
+    if (Result.isErr(saveResult)) {
+      return saveResult;
     }
     return Result.ok(true);
   }
@@ -119,7 +127,7 @@ export class SilenceService {
         }
 
         // NOTE: undoSilence action is allowed for only admin / moderator
-        if (actor.getRole() !== 'admin' || actor.getRole() !== 'moderator') {
+        if (actor.getRole() !== 'admin' && actor.getRole() !== 'moderator') {
           return false;
         }
 

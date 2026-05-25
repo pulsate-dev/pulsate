@@ -37,3 +37,19 @@ export class AccountAlreadyFrozenError extends Error {
     this.cause = options?.cause;
   }
 }
+
+export class AccountMailAddressLengthError extends Error {
+  override readonly name = 'AccountMailAddressLengthError' as const;
+  constructor(message: string, options?: { cause?: unknown }) {
+    super(message, options);
+    this.cause = options?.cause;
+  }
+}
+
+export class AccountPassphraseRequirementsNotMetError extends Error {
+  override readonly name = 'AccountPassphraseRequirementsNotMetError' as const;
+  constructor(message: string, options?: { cause?: unknown }) {
+    super(message, options);
+    this.cause = options?.cause;
+  }
+}

@@ -13,9 +13,6 @@ describe('InMemoryAccountRepository', () => {
       nickname: 'John Doe',
       bio: 'Hello, World!',
       role: 'normal',
-      frozen: 'normal',
-      silenced: 'normal',
-      status: 'active',
       createdAt: new Date('2023-09-10T12:00:00Z'),
     }),
     Account.new({
@@ -25,9 +22,6 @@ describe('InMemoryAccountRepository', () => {
       nickname: 'Alice',
       bio: 'Hello, World!',
       role: 'normal',
-      frozen: 'normal',
-      silenced: 'normal',
-      status: 'active',
       createdAt: new Date('2023-09-11T12:00:00Z'),
     }),
     Account.new({
@@ -37,9 +31,6 @@ describe('InMemoryAccountRepository', () => {
       nickname: 'bob',
       bio: 'Hello, World!',
       role: 'normal',
-      frozen: 'normal',
-      silenced: 'normal',
-      status: 'active',
       createdAt: new Date('2023-09-12T12:00:00Z'),
     }),
   ];

@@ -4,28 +4,14 @@ import {
   type PasswordEncoder,
   passwordEncoderSymbol,
 } from '../../internal/password/mod.js';
-import type { Account, AccountName } from '../model/account.js';
-import {
-  AccountInternalError,
-  AccountMailAddressLengthError,
-  AccountNicknameTooLongError,
-  AccountNicknameTooShortError,
-  AccountNotFoundError,
-  AccountPassphraseRequirementsNotMetError,
-} from '../model/errors.js';
+import { Account, type AccountName } from '../model/account.js';
+import { AccountInternalError, AccountNotFoundError } from '../model/errors.js';
 import {
   type AccountRepository,
   accountRepoSymbol,
 } from '../model/repository.js';
 
 export class EditService {
-  private readonly nicknameShortest = 1;
-  private readonly nicknameLongest = 256;
-  private readonly passphraseShortest = 8;
-  private readonly passphraseLongest = 512;
-  private readonly emailShortest = 7;
-  private readonly emailLongest = 319;
-
   constructor(
     private accountRepository: AccountRepository,
     private passwordEncoder: PasswordEncoder,
@@ -53,17 +39,6 @@ export class EditService {
 
     if (!this.isAllowed('edit', actor, account)) {
       return Result.err(new Error('not allowed'));
-    }
-
-    if (nickname.length < this.nicknameShortest) {
-      return Result.err(
-        new AccountNicknameTooShortError('nickname too short', { cause: null }),
-      );
-    }
-    if (nickname.length > this.nicknameLongest) {
-      return Result.err(
-        new AccountNicknameTooLongError('nickname too long', { cause: null }),
-      );
     }
 
     const setResult = account.setNickName(nickname);
@@ -101,19 +76,9 @@ export class EditService {
       return Result.err(new Error('not allowed'));
     }
 
-    if (newPassphrase.length < this.passphraseShortest) {
-      return Result.err(
-        new AccountPassphraseRequirementsNotMetError('passphrase too short', {
-          cause: null,
-        }),
-      );
-    }
-    if (newPassphrase.length > this.passphraseLongest) {
-      return Result.err(
-        new AccountPassphraseRequirementsNotMetError('passphrase too long', {
-          cause: null,
-        }),
-      );
+    const validateResult = Account.validatePassphrase(newPassphrase);
+    if (Result.isErr(validateResult)) {
+      return validateResult;
     }
 
     let encoded: string;
@@ -158,17 +123,6 @@ export class EditService {
 
     if (!this.isAllowed('edit', actor, account)) {
       return Result.err(new Error('not allowed'));
-    }
-
-    if (newEmail.length < this.emailShortest) {
-      return Result.err(
-        new AccountMailAddressLengthError('email too short', { cause: null }),
-      );
-    }
-    if (newEmail.length > this.emailLongest) {
-      return Result.err(
-        new AccountMailAddressLengthError('email too long', { cause: null }),
-      );
     }
 
     // TODO: add a process to check the email is active
