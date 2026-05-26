@@ -4,13 +4,10 @@ import {
   notificationModuleFacadeSymbol,
 } from '../../intermodule/notification.js';
 import type { AccountName } from '../model/account.js';
+import { AccountNotFoundError } from '../model/errors.js';
 import {
-  AccountMailAddressAlreadyVerifiedError,
-  AccountNotFoundError,
-} from '../model/errors.js';
-import {
-  type AccountRepository,
-  accountRepoSymbol,
+  type InactiveAccountRepository,
+  inactiveAccountRepoSymbol,
 } from '../model/repository.js';
 import {
   type VerifyAccountTokenService,
@@ -18,36 +15,28 @@ import {
 } from './verifyToken.js';
 
 export class ResendVerifyTokenService {
-  private readonly accountRepository: AccountRepository;
+  private readonly inactiveAccountRepository: InactiveAccountRepository;
   private readonly verifyAccountTokenService: VerifyAccountTokenService;
   private readonly notificationModule: NotificationModuleFacade;
 
   constructor(
-    accountRepository: AccountRepository,
+    inactiveAccountRepository: InactiveAccountRepository,
     verifyAccountTokenService: VerifyAccountTokenService,
     notificationModule: NotificationModuleFacade,
   ) {
-    this.accountRepository = accountRepository;
+    this.inactiveAccountRepository = inactiveAccountRepository;
     this.verifyAccountTokenService = verifyAccountTokenService;
     this.notificationModule = notificationModule;
   }
 
   async handle(name: AccountName): Promise<Option.Option<Error>> {
-    const accountRes = await this.accountRepository.findByName(name);
+    const accountRes = await this.inactiveAccountRepository.findByName(name);
     if (Option.isNone(accountRes)) {
       return Option.some(
         new AccountNotFoundError('account not found', { cause: null }),
       );
     }
     const account = Option.unwrap(accountRes);
-
-    if (account.isActivated()) {
-      return Option.some(
-        new AccountMailAddressAlreadyVerifiedError('account already verified', {
-          cause: null,
-        }),
-      );
-    }
 
     const tokenRes = await this.verifyAccountTokenService.generate(
       account.getName(),
@@ -71,14 +60,18 @@ export const resendTokenSymbol =
   Ether.newEtherSymbol<ResendVerifyTokenService>();
 export const resendToken = Ether.newEther(
   resendTokenSymbol,
-  ({ accountRepository, verifyAccountTokenService, notificationModule }) =>
+  ({
+    inactiveAccountRepository,
+    verifyAccountTokenService,
+    notificationModule,
+  }) =>
     new ResendVerifyTokenService(
-      accountRepository,
+      inactiveAccountRepository,
       verifyAccountTokenService,
       notificationModule,
     ),
   {
-    accountRepository: accountRepoSymbol,
+    inactiveAccountRepository: inactiveAccountRepoSymbol,
     verifyAccountTokenService: verifyAccountTokenSymbol,
     notificationModule: notificationModuleFacadeSymbol,
   },

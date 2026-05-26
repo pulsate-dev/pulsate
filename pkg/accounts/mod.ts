@@ -21,9 +21,11 @@ import { InMemoryAccountRepository } from './adaptor/repository/dummy/account.js
 import { inMemoryAccountAvatarRepo } from './adaptor/repository/dummy/avatar.js';
 import { newFollowRepo } from './adaptor/repository/dummy/follow.js';
 import { inMemoryAccountHeaderRepo } from './adaptor/repository/dummy/header.js';
+import { inactiveAccountRepo } from './adaptor/repository/dummy/inactiveAccount.js';
 import { verifyTokenRepo } from './adaptor/repository/dummy/verifyToken.js';
 import { prismaAccountAvatarRepo } from './adaptor/repository/prisma/avatar.js';
 import { prismaAccountHeaderRepo } from './adaptor/repository/prisma/header.js';
+import { prismaInactiveAccountRepo } from './adaptor/repository/prisma/inactiveAccount.js';
 import {
   PrismaAccountRepository,
   prismaFollowRepo,
@@ -53,6 +55,7 @@ import {
   AccountRefreshTokenInvalidError,
 } from './model/errors.js';
 import { accountRepoSymbol } from './model/repository.js';
+
 import {
   CreateAccountRoute,
   FollowAccountRoute,
@@ -127,6 +130,10 @@ class Clock {
 const clock = Ether.newEther(clockSymbol, () => new Clock());
 const idGenerator = Ether.compose(clock)(snowflakeIDGenerator(0));
 
+const inactiveAccountRepository = isProduction
+  ? prismaInactiveAccountRepo(prismaClient)
+  : inactiveAccountRepo;
+
 const verifyAccountTokenService = Cat.cat(verifyAccountToken)
   .feed(Ether.compose(clock))
   .feed(
@@ -134,6 +141,7 @@ const verifyAccountTokenService = Cat.cat(verifyAccountToken)
       isProduction ? prismaVerifyTokenRepo(prismaClient) : verifyTokenRepo,
     ),
   )
+  .feed(Ether.compose(inactiveAccountRepository))
   .feed(Ether.compose(accountRepository)).value;
 
 const composer = Ether.composeT(Promise.monad);
@@ -173,8 +181,7 @@ export const controller = new AccountController({
   ),
   registerService: Ether.runEther(
     Cat.cat(register)
-      .feed(Ether.compose(clock))
-      .feed(Ether.compose(accountRepository))
+      .feed(Ether.compose(inactiveAccountRepository))
       .feed(Ether.compose(idGenerator))
       .feed(Ether.compose(argon2idPasswordEncoder))
       .feed(
@@ -198,7 +205,7 @@ export const controller = new AccountController({
   ),
   resendTokenService: Ether.runEther(
     Cat.cat(resendToken)
-      .feed(Ether.compose(accountRepository))
+      .feed(Ether.compose(inactiveAccountRepository))
       .feed(Ether.compose(verifyAccountTokenService))
       .feed(
         Ether.compose(

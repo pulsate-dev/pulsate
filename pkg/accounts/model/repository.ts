@@ -21,6 +21,7 @@ export interface InactiveAccountRepository {
   create(account: InactiveAccount): Promise<Result.Result<Error, void>>;
   findByName(name: string): Promise<Option.Option<InactiveAccount>>;
   findByMail(mail: string): Promise<Option.Option<InactiveAccount>>;
+  delete(id: AccountID): Promise<Result.Result<Error, void>>;
 }
 export const inactiveAccountRepoSymbol =
   Ether.newEtherSymbol<InactiveAccountRepository>();

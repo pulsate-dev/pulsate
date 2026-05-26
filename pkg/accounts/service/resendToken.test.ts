@@ -3,58 +3,51 @@ import { afterEach, describe, expect, it } from 'vitest';
 import { notificationModule } from '../../intermodule/notification.js';
 import { MockClock } from '../../internal/id/mod.js';
 import { InMemoryAccountRepository } from '../adaptor/repository/dummy/account.js';
+import { InMemoryInactiveAccountRepository } from '../adaptor/repository/dummy/inactiveAccount.js';
 import { InMemoryAccountVerifyTokenRepository } from '../adaptor/repository/dummy/verifyToken.js';
-import { Account, type AccountID } from '../model/account.js';
+import type { AccountID } from '../model/account.js';
 import { AccountNotFoundError } from '../model/errors.js';
+import { InactiveAccount } from '../model/inactiveAccount.js';
 import { ResendVerifyTokenService } from './resendToken.js';
 import { VerifyAccountTokenService } from './verifyToken.js';
 
-const repository = new InMemoryAccountRepository();
-await repository.create(
-  Account.new({
+const inactiveAccountRepository = new InMemoryInactiveAccountRepository();
+await inactiveAccountRepository.create(
+  InactiveAccount.reconstruct({
     id: '1' as AccountID,
     name: '@john@example.com',
     mail: 'johndoe@example.com',
-    nickname: 'John Doe',
     passphraseHash: 'hash',
-    bio: '',
     role: 'normal',
-    createdAt: new Date(),
   }),
 );
+
 const verifyRepository = new InMemoryAccountVerifyTokenRepository();
 const accountRepository = new InMemoryAccountRepository();
-await accountRepository.create(
-  Account.reconstruct({
-    id: '1' as AccountID,
-    name: '@john@example.com',
-    bio: '',
-    frozen: 'normal',
-    mail: '',
-    nickname: '',
-    role: 'normal',
-    silenced: 'normal',
-    status: 'active',
-    passphraseHash: undefined,
-    createdAt: new Date(),
-    deletedAt: undefined,
-    updatedAt: undefined,
-  }),
-);
 const mockClock = new MockClock(new Date('2023-09-10T00:00:00Z'));
 
 const verifyAccountTokenService = new VerifyAccountTokenService(
   verifyRepository,
+  inactiveAccountRepository,
   accountRepository,
   mockClock,
 );
 
 describe('ResendVerifyTokenService', () => {
-  afterEach(() => repository.reset());
+  afterEach(() => inactiveAccountRepository.reset());
 
   it('resend verify token', async () => {
+    await inactiveAccountRepository.create(
+      InactiveAccount.reconstruct({
+        id: '1' as AccountID,
+        name: '@john@example.com',
+        mail: 'johndoe@example.com',
+        passphraseHash: 'hash',
+        role: 'normal',
+      }),
+    );
     const service = new ResendVerifyTokenService(
-      repository,
+      inactiveAccountRepository,
       verifyAccountTokenService,
       notificationModule,
     );
@@ -64,7 +57,7 @@ describe('ResendVerifyTokenService', () => {
 
   it('when account not found', async () => {
     const service = new ResendVerifyTokenService(
-      repository,
+      inactiveAccountRepository,
       verifyAccountTokenService,
       notificationModule,
     );

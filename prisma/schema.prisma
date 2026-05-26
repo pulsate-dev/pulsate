@@ -34,9 +34,8 @@ model Account {
   reaction           Reaction[]
   bookmark           Bookmark[]
   listMember         ListMember[]
-  medium             Medium[]
-  accountVerifyToken AccountVerifyToken[]
-  list               List[]
+  medium Medium[]
+  list   List[]
 
   recievedNotification Notification[] @relation("recipient")
   sentNotification     Notification[] @relation("actor")
@@ -190,12 +189,25 @@ model NoteAttachment {
 }
 
 model AccountVerifyToken {
-  accountId String   @id @map("account_id")
-  account   Account  @relation(fields: [accountId], references: [id])
-  token     String
-  expiresAt DateTime @map("expires_at")
+  accountId       String          @id @map("account_id")
+  inactiveAccount InactiveAccount @relation(fields: [accountId], references: [id])
+  token           String
+  expiresAt       DateTime        @map("expires_at")
 
   @@map("account_verify_token")
+}
+
+model InactiveAccount {
+  id             String   @id
+  name           String   @unique
+  mail           String   @unique
+  passphraseHash String   @map("passphrase_hash")
+  role           Int      @default(0)
+  createdAt      DateTime @default(now()) @map("created_at")
+
+  accountVerifyToken AccountVerifyToken?
+
+  @@map("inactive_account")
 }
 
 model Notification {
