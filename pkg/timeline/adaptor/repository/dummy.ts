@@ -1,9 +1,10 @@
-import { Ether, Option, Result } from '@mikuroxina/mini-fn';
+import { Ether, Result } from '@mikuroxina/mini-fn';
 
 import type { AccountID } from '../../../accounts/model/account.js';
 import { AccountNotFoundError } from '../../../accounts/model/errors.js';
 import type { NoteModuleFacade } from '../../../intermodule/note.js';
 import type { Bookmark } from '../../../notes/model/bookmark.js';
+import type { DirectNote } from '../../../notes/model/directNote.js';
 import type { Note, NoteID } from '../../../notes/model/note.js';
 import {
   ListInternalError,
@@ -15,11 +16,11 @@ import {
   type BookmarkTimelineFilter,
   type BookmarkTimelineRepository,
   bookmarkTimelineRepoSymbol,
+  type ConversationNotesFilter,
   type ConversationRecipient,
   type ConversationRepository,
   conversationRepoSymbol,
   type FetchAccountTimelineFilter,
-  type FetchConversationNotesFilter,
   type FetchHomeTimelineFilter,
   type FetchListTimelineFilter,
   type ListRepository,
@@ -427,60 +428,38 @@ export const inMemoryBookmarkTimelineRepo = (data?: Bookmark[]) =>
     () => new InMemoryBookmarkTimelineRepository(data),
   );
 
-/**
- * @description Sort notes by creation date (newest first)
- * @param a First note
- * @param b Second note
- * @returns Comparison result for sorting
- */
-const sortByCreatedAtDesc = (a: Note, b: Note): number =>
+const sortDirectNoteByCreatedAtDesc = (a: DirectNote, b: DirectNote): number =>
   b.getCreatedAt().getTime() - a.getCreatedAt().getTime();
 
 export class InMemoryConversationRepository implements ConversationRepository {
-  private data: Note[];
+  private data: DirectNote[];
 
-  constructor(data?: Note[]) {
+  constructor(data?: DirectNote[]) {
     this.data = data ?? [];
-    // FIXME: Consider pre-sorting data at construction/insertion time to avoid O(N log N) sorting
-    // on every query, which can be expensive during debugging with large datasets.
-    // This would require maintaining sorted order when inserting new notes.
   }
 
   async findByAccountID(
     id: AccountID,
   ): Promise<Result.Result<Error, ConversationRecipient[]>> {
     const notes = this.data.filter(
-      (v) => v.getAuthorID() === id || Option.unwrap(v.getSendTo()) === id,
+      (v) => v.getAuthorID() === id || v.getRecipientID() === id,
     );
 
-    // K: Recipient ID/ V: Conversation Notes
-    const recipientMap = new Map<AccountID, Note[]>();
+    // K: counterpart account ID / V: conversation notes
+    const recipientMap = new Map<AccountID, DirectNote[]>();
     for (const note of notes) {
-      if (note.getAuthorID() === id) {
-        // Sent
-        if (recipientMap.has(Option.unwrap(note.getSendTo()))) {
-          const tmp = recipientMap.get(Option.unwrap(note.getSendTo()));
-          if (!tmp) throw new Error('Note not found');
-          tmp.push(note);
-          recipientMap.set(Option.unwrap(note.getSendTo()), tmp);
-          continue;
-        }
-        recipientMap.set(Option.unwrap(note.getSendTo()), [note]);
-        continue;
+      const counterpart =
+        note.getAuthorID() === id ? note.getRecipientID() : note.getAuthorID();
+      const existing = recipientMap.get(counterpart);
+      if (existing) {
+        existing.push(note);
+      } else {
+        recipientMap.set(counterpart, [note]);
       }
-      // Received
-      if (recipientMap.has(note.getAuthorID())) {
-        const tmp = recipientMap.get(note.getAuthorID());
-        if (!tmp) throw new Error('Note not found');
-        tmp.push(note);
-        recipientMap.set(note.getAuthorID(), tmp);
-        continue;
-      }
-      recipientMap.set(note.getAuthorID(), [note]);
     }
 
     const res: ConversationRecipient[] = [...recipientMap].map(([k, v]) => {
-      const latestNote = v.toSorted(sortByCreatedAtDesc)[0];
+      const latestNote = v.toSorted(sortDirectNoteByCreatedAtDesc)[0];
       if (!latestNote) throw new Error('Note not found');
 
       return {
@@ -493,55 +472,40 @@ export class InMemoryConversationRepository implements ConversationRepository {
     return Result.ok(res);
   }
 
-  async fetchConversationNotes(
+  async findConversationNotes(
     accountID: AccountID,
     recipientID: AccountID,
-    filter: FetchConversationNotesFilter,
-  ): Promise<Result.Result<Error, Note[]>> {
-    const notes = this.data.filter(
-      (v) =>
-        v.getVisibility() === 'DIRECT' &&
-        ((v.getAuthorID() === accountID &&
-          Option.unwrap(v.getSendTo()) === recipientID) ||
-          (v.getAuthorID() === recipientID &&
-            Option.unwrap(v.getSendTo()) === accountID)),
-    );
+    filter: ConversationNotesFilter,
+  ): Promise<Result.Result<Error, DirectNote[]>> {
+    const notes = this.data
+      .filter(
+        (v) =>
+          (v.getAuthorID() === accountID &&
+            v.getRecipientID() === recipientID) ||
+          (v.getAuthorID() === recipientID && v.getRecipientID() === accountID),
+      )
+      .toSorted(sortDirectNoteByCreatedAtDesc);
 
     if (!filter.cursor) {
-      const sortedNotes = notes.toSorted(sortByCreatedAtDesc);
-      return Result.ok(sortedNotes.slice(0, filter.limit));
+      return Result.ok(notes.slice(0, filter.limit));
     }
+
+    const cursorIndex = notes.findIndex((v) => v.getID() === filter.cursor?.id);
+    if (cursorIndex === -1) return Result.ok([]);
 
     if (filter.cursor.type === 'before') {
-      const beforeIndex = notes.findIndex(
-        (n) => n.getID() === filter.cursor?.id,
+      // Return notes older than cursor (later in desc-sorted array)
+      return Result.ok(
+        notes.slice(cursorIndex + 1, cursorIndex + 1 + filter.limit),
       );
-      if (beforeIndex === -1) {
-        return Result.ok([]);
-      }
-      const slicedNotes = notes
-        .slice(0, beforeIndex)
-        .toSorted(sortByCreatedAtDesc);
-      return Result.ok(slicedNotes.slice(0, filter.limit));
     }
 
-    if (filter.cursor.type === 'after') {
-      const afterIndex = notes.findIndex(
-        (n) => n.getID() === filter.cursor?.id,
-      );
-      if (afterIndex === -1) {
-        return Result.ok([]);
-      }
-      const slicedNotes = notes
-        .slice(afterIndex + 1)
-        .toSorted(sortByCreatedAtDesc);
-      return Result.ok(slicedNotes.slice(0, filter.limit));
-    }
-
-    return Result.ok([]);
+    // after: return notes newer than cursor (earlier in desc-sorted array)
+    const start = Math.max(0, cursorIndex - filter.limit);
+    return Result.ok(notes.slice(start, cursorIndex));
   }
 }
-export const inMemoryConversationRepo = (data?: Note[]) =>
+export const inMemoryConversationRepo = (data?: DirectNote[]) =>
   Ether.newEther(
     conversationRepoSymbol,
     () => new InMemoryConversationRepository(data),

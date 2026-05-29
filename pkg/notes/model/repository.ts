@@ -3,6 +3,7 @@ import { Ether, type Option, type Result } from '@mikuroxina/mini-fn';
 import type { AccountID } from '../../accounts/model/account.js';
 import type { Medium, MediumID } from '../../drive/model/medium.js';
 import type { Bookmark } from './bookmark.js';
+import type { DirectNote, DirectNoteID } from './directNote.js';
 import type { Note, NoteID } from './note.js';
 import type { Reaction, ReactionID } from './reaction.js';
 import type { RenoteStatus } from './renoteStatus.js';
@@ -69,3 +70,28 @@ export interface ReactionRepository {
   deleteByID(id: ReactionID): Promise<Result.Result<Error, void>>;
 }
 export const reactionRepoSymbol = Ether.newEtherSymbol<ReactionRepository>();
+
+export interface DirectNoteRepository {
+  create(note: DirectNote): Promise<Result.Result<Error, void>>;
+  findByID(
+    id: DirectNoteID,
+  ): Promise<Result.Result<Error, Option.Option<DirectNote>>>;
+  findByRecipientID(
+    recipientID: AccountID,
+  ): Promise<Result.Result<Error, DirectNote[]>>;
+  deleteByID(id: DirectNoteID): Promise<Result.Result<Error, void>>;
+}
+export const directNoteRepoSymbol =
+  Ether.newEtherSymbol<DirectNoteRepository>();
+
+export interface DirectNoteAttachmentRepository {
+  create(
+    directNoteID: DirectNoteID,
+    attachmentFileID: readonly MediumID[],
+  ): Promise<Result.Result<Error, void>>;
+  findByDirectNoteID(
+    directNoteID: DirectNoteID,
+  ): Promise<Result.Result<Error, Medium[]>>;
+}
+export const directNoteAttachmentRepoSymbol =
+  Ether.newEtherSymbol<DirectNoteAttachmentRepository>();

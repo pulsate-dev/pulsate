@@ -26,20 +26,22 @@ model Account {
   updatedAt DateTime? @updatedAt @map("updated_at")
   deletedAt DateTime? @map("deleted_at")
 
-  following          Following[]          @relation("following")
-  followed           Following[]          @relation("followed")
-  avatar             AccountAvatar[]      @relation("avatar")
-  header             AccountHeader[]      @relation("header")
-  note               Note[]               @relation("author")
-  reaction           Reaction[]
-  bookmark           Bookmark[]
-  listMember         ListMember[]
-  medium Medium[]
-  list   List[]
+  following  Following[]     @relation("following")
+  followed   Following[]     @relation("followed")
+  avatar     AccountAvatar[] @relation("avatar")
+  header     AccountHeader[] @relation("header")
+  note       Note[]          @relation("author")
+  reaction   Reaction[]
+  bookmark   Bookmark[]
+  listMember ListMember[]
+  medium     Medium[]
+  list       List[]
 
-  recievedNotification Notification[] @relation("recipient")
-  sentNotification     Notification[] @relation("actor")
-  conversation         Note[]         @relation("conversation")
+  recievedNotification Notification[]       @relation("recipient")
+  sentNotification     Notification[]       @relation("actor")
+  sentDirectNotes      DirectNote[]         @relation("directNoteAuthor")
+  receivedDirectNotes  DirectNote[]         @relation("directNoteRecipient")
+  directNoteReaction   DirectNoteReaction[]
 
   @@map("account")
 }
@@ -60,15 +62,13 @@ model Following {
 }
 
 model Note {
-  id         String   @id
-  text       String   @db.Text
-  visibility Int      @default(0)
-  author     Account  @relation("author", fields: [authorId], references: [id])
-  authorId   String   @map("author_id")
-  renoteId   String?  @map("renote_id")
-  renote     Note?    @relation("renote", fields: [renoteId], references: [id])
-  sendTo     Account? @relation("conversation", fields: [sendToId], references: [id])
-  sendToId   String?  @map("send_to_id")
+  id         String  @id
+  text       String  @db.Text
+  visibility Int     @default(0)
+  author     Account @relation("author", fields: [authorId], references: [id])
+  authorId   String  @map("author_id")
+  renoteId   String? @map("renote_id")
+  renote     Note?   @relation("renote", fields: [renoteId], references: [id])
 
   createdAt      DateTime         @default(now()) @map("created_at")
   deletedAt      DateTime?        @map("deleted_at")
@@ -78,6 +78,51 @@ model Note {
   noteAttachment NoteAttachment[]
 
   @@map("note")
+}
+
+model DirectNote {
+  id          String  @id
+  text        String  @db.Text
+  author      Account @relation("directNoteAuthor", fields: [authorId], references: [id])
+  authorId    String  @map("author_id")
+  recipient   Account @relation("directNoteRecipient", fields: [recipientId], references: [id])
+  recipientId String  @map("recipient_id")
+
+  createdAt            DateTime               @default(now()) @map("created_at")
+  deletedAt            DateTime?              @map("deleted_at")
+  directNoteAttachment DirectNoteAttachment[]
+  reaction             DirectNoteReaction[]
+
+  @@map("direct_note")
+}
+
+model DirectNoteAttachment {
+  mediumId     String     @map("medium_id")
+  medium       Medium     @relation(fields: [mediumId], references: [id])
+  directNoteId String     @map("direct_note_id")
+  directNote   DirectNote @relation(fields: [directNoteId], references: [id])
+
+  alt       String
+  createdAt DateTime  @default(now()) @map("created_at")
+  deletedAt DateTime? @map("deleted_at")
+
+  @@id([mediumId, directNoteId])
+  @@map("direct_note_attachment")
+}
+
+model DirectNoteReaction {
+  reactionId  String     @id
+  reactedById String     @map("reacted_by_id")
+  reactedBy   Account    @relation(fields: [reactedById], references: [id])
+  reactedToId String     @map("reacted_to_id")
+  reactedTo   DirectNote @relation(fields: [reactedToId], references: [id])
+  body        String
+
+  createdAt DateTime  @default(now()) @map("created_at")
+  deletedAt DateTime? @map("deleted_at")
+
+  @@unique([reactedById, reactedToId])
+  @@map("direct_note_reaction")
 }
 
 model Reaction {
@@ -136,20 +181,21 @@ model ListMember {
 }
 
 model Medium {
-  id             String           @id
-  name           String
-  mime           String
-  hash           String
-  nsfw           Boolean
-  authorId       String           @map("author_id")
-  author         Account          @relation(fields: [authorId], references: [id])
-  thumbnailUrl   String
-  url            String
-  createdAt      DateTime         @default(now()) @map("created_at")
-  deletedAt      DateTime?        @map("deleted_at")
-  noteAttachment NoteAttachment[]
-  AccountAvatar  AccountAvatar[]
-  AccountHeader  AccountHeader[]
+  id                   String                 @id
+  name                 String
+  mime                 String
+  hash                 String
+  nsfw                 Boolean
+  authorId             String                 @map("author_id")
+  author               Account                @relation(fields: [authorId], references: [id])
+  thumbnailUrl         String
+  url                  String
+  createdAt            DateTime               @default(now()) @map("created_at")
+  deletedAt            DateTime?              @map("deleted_at")
+  noteAttachment       NoteAttachment[]
+  directNoteAttachment DirectNoteAttachment[]
+  AccountAvatar        AccountAvatar[]
+  AccountHeader        AccountHeader[]
 
   @@map("medium")
 }

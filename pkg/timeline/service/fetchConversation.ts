@@ -1,12 +1,13 @@
 import { Ether, Option, Result } from '@mikuroxina/mini-fn';
+
 import type { AccountID } from '../../accounts/model/account.js';
-import type { Note, NoteID } from '../../notes/model/note.js';
+import type { DirectNote, DirectNoteID } from '../../notes/model/directNote.js';
+import { TimelineInvalidFilterRangeError } from '../model/errors.js';
 import {
-  type ConversationCursor,
+  type ConversationNotesFilter,
   type ConversationRecipient,
   type ConversationRepository,
   conversationRepoSymbol,
-  type FetchConversationNotesFilter,
 } from '../model/repository.js';
 
 export interface FetchConversationNotesArgs {
@@ -14,11 +15,11 @@ export interface FetchConversationNotesArgs {
   /**
    * @description Retrieved from notes before this ID
    */
-  beforeID: Option.Option<NoteID>;
+  beforeID: Option.Option<DirectNoteID>;
   /**
    * @description Retrieved from notes after this ID
    */
-  afterID: Option.Option<NoteID>;
+  afterID: Option.Option<DirectNoteID>;
 }
 
 export class FetchConversationService {
@@ -60,35 +61,38 @@ export class FetchConversationService {
       beforeID: Option.none(),
       afterID: Option.none(),
     },
-  ): Promise<Result.Result<Error, Note[]>> {
+  ): Promise<Result.Result<Error, DirectNote[]>> {
     if (Option.isSome(args.beforeID) && Option.isSome(args.afterID)) {
       return Result.err(
-        new Error('beforeID and afterID cannot be specified at the same time'),
+        new TimelineInvalidFilterRangeError(
+          'beforeID and afterID cannot be specified at the same time',
+          { cause: null },
+        ),
       );
     }
 
     const limit = Option.unwrapOr(20)(args.limit);
 
-    const cursor: Option.Option<ConversationCursor> = Option.isSome(
+    const cursor: ConversationNotesFilter['cursor'] = Option.isSome(
       args.beforeID,
     )
-      ? Option.some({
+      ? {
           type: 'before',
           id: Option.unwrap(args.beforeID),
-        })
+        }
       : Option.isSome(args.afterID)
-        ? Option.some({
+        ? {
             type: 'after',
             id: Option.unwrap(args.afterID),
-          })
-        : Option.none();
+          }
+        : undefined;
 
-    const filter: FetchConversationNotesFilter = {
+    const filter: ConversationNotesFilter = {
       limit,
-      cursor: Option.isSome(cursor) ? Option.unwrap(cursor) : undefined,
+      cursor,
     };
 
-    return await this.conversationRepository.fetchConversationNotes(
+    return await this.conversationRepository.findConversationNotes(
       accountID,
       recipientID,
       filter,

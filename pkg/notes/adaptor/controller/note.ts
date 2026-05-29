@@ -28,12 +28,10 @@ export class NoteController {
     visibility: string;
     contentsWarningComment: string;
     attachmentFileID: string[];
-    sendTo?: string;
   }): Promise<Result.Result<Error, z.infer<typeof CreateNoteResponseSchema>>> {
     const noteRes = await this.createService.handle(
       args.content,
       args.contentsWarningComment,
-      !args.sendTo ? Option.none() : Option.some(args.sendTo as AccountID),
       args.authorID as AccountID,
       args.attachmentFileID as MediumID[],
       args.visibility as NoteVisibility,
@@ -56,9 +54,6 @@ export class NoteController {
       content: note.getContent(),
       visibility: note.getVisibility(),
       contents_warning_comment: note.getCwComment(),
-      send_to: Option.isSome(note.getSendTo())
-        ? Option.unwrap(note.getSendTo())
-        : undefined,
       author_id: note.getAuthorID(),
       created_at: note.getCreatedAt().toUTCString(),
       attachment_files: attachments.map((v) => {
@@ -123,9 +118,6 @@ export class NoteController {
       id: note.getID(),
       content: note.getContent(),
       contents_warning_comment: note.getCwComment(),
-      send_to: Option.isSome(note.getSendTo())
-        ? Option.unwrap(note.getSendTo())
-        : undefined,
       visibility: note.getVisibility(),
       created_at: note.getCreatedAt().toUTCString(),
       attachment_files: attachments.map((v) => {

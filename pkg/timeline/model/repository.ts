@@ -1,6 +1,7 @@
 import { Ether, type Result } from '@mikuroxina/mini-fn';
 
 import type { AccountID } from '../../accounts/model/account.js';
+import type { DirectNote, DirectNoteID } from '../../notes/model/directNote.js';
 import type { Note, NoteID } from '../../notes/model/note.js';
 import type { List, ListID } from './list.js';
 
@@ -168,22 +169,17 @@ export interface ConversationRecipient {
    * @desc Time the last message was sent
    */
   lastSentAt: Date;
-  latestNoteID: NoteID;
+  latestNoteID: DirectNoteID;
   latestNoteAuthor: AccountID;
 }
 
-export interface ConversationCursor {
-  /**
-   * Cursor type
-   */
+export interface ConversationNotesCursor {
   type: 'before' | 'after';
-  id: NoteID;
+  id: DirectNoteID;
 }
 
-export interface FetchConversationNotesFilter {
-  /**
-   * @default 20
-   */
+export interface ConversationNotesFilter {
+  /** @default 20 */
   limit: number;
   /**
    * @description Cursor for pagination
@@ -191,7 +187,7 @@ export interface FetchConversationNotesFilter {
    * - after: Retrieved from notes after this ID
    * - undefined: Retrieved from latest notes
    */
-  cursor?: ConversationCursor;
+  cursor?: ConversationNotesCursor;
 }
 
 export interface ConversationRepository {
@@ -208,21 +204,17 @@ export interface ConversationRepository {
   ): Promise<Result.Result<Error, ConversationRecipient[]>>;
 
   /**
-   * @description
-   * Fetch conversation notes between two accounts.
-   * Returns direct notes (visibility = DIRECT) between the specified accounts.
-   * The sorting order is chronological (newest to oldest).
-   *
+   * @description Fetch direct notes exchanged between two accounts.
    * @param accountID The account ID of the current user
    * @param recipientID The account ID of the conversation partner
-   * @param filter Filter options for pagination
-   * @returns Array of direct notes in the conversation
+   * @param filter Pagination options
+   * @returns {@link DirectNote}[] sorted by createdAt descending
    */
-  fetchConversationNotes(
+  findConversationNotes(
     accountID: AccountID,
     recipientID: AccountID,
-    filter: FetchConversationNotesFilter,
-  ): Promise<Result.Result<Error, Note[]>>;
+    filter: ConversationNotesFilter,
+  ): Promise<Result.Result<Error, DirectNote[]>>;
 }
 export const conversationRepoSymbol =
   Ether.newEtherSymbol<ConversationRepository>();

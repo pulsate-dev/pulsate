@@ -27,19 +27,19 @@ import {
   inMemoryNoteRepo,
   inMemoryReactionRepo,
 } from './adaptor/repository/dummy.js';
+import { prismaDirectNoteRepo } from './adaptor/repository/prisma/directNote.js';
 import {
   prismaBookmarkRepo,
   prismaNoteAttachmentRepo,
   prismaNoteRepo,
   prismaReactionRepo,
-} from './adaptor/repository/prisma.js';
+} from './adaptor/repository/prisma/note.js';
 import {
   NoteAccountSilencedError,
   NoteAlreadyReactedError,
   NoteAttachmentNotFoundError,
   NoteContentLengthError,
   NoteEmojiNotFoundError,
-  NoteNoDestinationError,
   NoteNotFoundError,
   NoteNotReactedYetError,
   NoteTooManyAttachmentsError,
@@ -63,6 +63,8 @@ import { fetch } from './service/fetch.js';
 import { renote } from './service/renote.js';
 
 // NOTE: These dependency Ethers are shared between intermodule and notes module to ensure the same instances are used
+// NOTE: No in-memory fallback — DirectNote repo is Prisma-only until a dev-mode stub is introduced
+export const directNoteRepoEther = prismaDirectNoteRepo(prismaClient);
 export const noteAttachmentRepoEther = isProduction
   ? prismaNoteAttachmentRepo(prismaClient)
   : inMemoryNoteAttachmentRepo([], []);
@@ -182,13 +184,8 @@ noteHandlers[CreateNoteRoute.method](
   AuthMiddleware.handle({ forceAuthorized: true }),
 );
 noteHandlers.openapi(CreateNoteRoute, async (c) => {
-  const {
-    content,
-    visibility,
-    contents_warning_comment,
-    send_to,
-    attachment_file_ids,
-  } = c.req.valid('json');
+  const { content, visibility, contents_warning_comment, attachment_file_ids } =
+    c.req.valid('json');
   const accountID = Option.unwrap(c.get('accountID'));
 
   const res = await controller.createNote({
@@ -197,7 +194,6 @@ noteHandlers.openapi(CreateNoteRoute, async (c) => {
     visibility,
     contentsWarningComment: contents_warning_comment,
     attachmentFileID: attachment_file_ids,
-    sendTo: send_to,
   });
   if (Result.isErr(res)) {
     const error = Result.unwrapErr(res);
@@ -207,9 +203,6 @@ noteHandlers.openapi(CreateNoteRoute, async (c) => {
     }
     if (error instanceof NoteContentLengthError) {
       return c.json({ error: 'TOO_MANY_CONTENT' as const }, 400);
-    }
-    if (error instanceof NoteNoDestinationError) {
-      return c.json({ error: 'NO_DESTINATION' as const }, 400);
     }
     if (error instanceof NoteVisibilityInvalidError) {
       return c.json({ error: 'INVALID_VISIBILITY' as const }, 400);
@@ -280,9 +273,6 @@ noteHandlers.openapi(RenoteRoute, async (c) => {
     }
     if (error instanceof NoteContentLengthError) {
       return c.json({ error: 'TOO_MANY_CONTENT' as const }, 400);
-    }
-    if (error instanceof NoteNoDestinationError) {
-      return c.json({ error: 'NO_DESTINATION' as const }, 400);
     }
     if (error instanceof NoteVisibilityInvalidError) {
       return c.json({ error: 'INVALID_VISIBILITY' as const }, 400);

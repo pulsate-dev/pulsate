@@ -3,6 +3,10 @@ import type { AccountID } from '../../../accounts/model/account.js';
 import { Prisma, type PrismaClient } from '../../../adaptors/prisma/client.js';
 import type { prismaClient } from '../../../adaptors/prisma.js';
 import {
+  DirectNote,
+  type DirectNoteID,
+} from '../../../notes/model/directNote.js';
+import {
   Note,
   type NoteID,
   type NoteVisibility,
@@ -17,11 +21,11 @@ import {
   type BookmarkTimelineFilter,
   type BookmarkTimelineRepository,
   bookmarkTimelineRepoSymbol,
+  type ConversationNotesFilter,
   type ConversationRecipient,
   type ConversationRepository,
   conversationRepoSymbol,
   type FetchAccountTimelineFilter,
-  type FetchConversationNotesFilter,
   type FetchHomeTimelineFilter,
   type FetchListTimelineFilter,
   type ListRepository,
@@ -546,123 +550,59 @@ export const prismaBookmarkTimelineRepo = (client: PrismaClient) =>
     () => new PrismaBookmarkTimelineRepository(client),
   );
 
-export class PrismaConversationRepository implements ConversationRepository {
-  private readonly VISIBILITY_DIRECT = 3;
+type RawConversationDirectNote = Awaited<
+  ReturnType<typeof prismaClient.directNote.findMany>
+>[number];
 
+export class PrismaConversationRepository implements ConversationRepository {
   constructor(private readonly prisma: PrismaClient) {}
 
-  async findByAccountID(
-    accountId: AccountID,
-  ): Promise<Result.Result<Error, ConversationRecipient[]>> {
-    try {
-      const conversations = await this.prisma.note.findMany({
-        where: {
-          visibility: this.VISIBILITY_DIRECT,
-          deletedAt: null,
-          sendToId: accountId,
-        },
-        orderBy: {
-          createdAt: 'desc',
-        },
-        distinct: ['authorId', 'sendToId'],
-      });
-
-      return Result.ok(
-        conversations.map(
-          (v): ConversationRecipient => ({
-            id: accountId,
-            latestNoteAuthor: v.authorId as AccountID,
-            latestNoteID: v.id as NoteID,
-            lastSentAt: v.createdAt,
-          }),
-        ),
-      );
-    } catch (e) {
-      return Result.err(
-        new TimelineInternalError('unknown error', { cause: e }),
-      );
-    }
+  private deserializeDirectNote(data: RawConversationDirectNote): DirectNote {
+    return DirectNote.reconstruct({
+      id: data.id as DirectNoteID,
+      authorID: data.authorId as AccountID,
+      recipientID: data.recipientId as AccountID,
+      content: data.text,
+      contentsWarningComment: '',
+      attachmentFileID: [],
+      createdAt: data.createdAt,
+      deletedAt: data.deletedAt ? Option.some(data.deletedAt) : Option.none(),
+    });
   }
 
-  async fetchConversationNotes(
+  async findByAccountID(
+    _accountId: AccountID,
+  ): Promise<Result.Result<Error, ConversationRecipient[]>> {
+    // TODO: implement using DirectNote table
+    return Result.ok([]);
+  }
+
+  async findConversationNotes(
     accountID: AccountID,
     recipientID: AccountID,
-    filter: FetchConversationNotesFilter,
-  ): Promise<Result.Result<Error, Note[]>> {
+    filter: ConversationNotesFilter,
+  ): Promise<Result.Result<Error, DirectNote[]>> {
+    // For 'after' cursor (get notes newer than cursor): query asc then reverse to keep desc order.
+    // For 'before' cursor or no cursor: query desc directly.
+    const isAfter = filter.cursor?.type === 'after';
     try {
-      const notes = await this.prisma.note.findMany({
+      const res = await this.prisma.directNote.findMany({
         where: {
-          visibility: this.VISIBILITY_DIRECT,
           deletedAt: null,
           OR: [
-            {
-              authorId: accountID,
-              sendToId: recipientID,
-            },
-            {
-              authorId: recipientID,
-              sendToId: accountID,
-            },
+            { authorId: accountID, recipientId: recipientID },
+            { authorId: recipientID, recipientId: accountID },
           ],
         },
-        orderBy: {
-          createdAt: filter.cursor?.type === 'after' ? 'asc' : 'desc',
-        },
-        ...(filter.cursor
-          ? {
-              cursor: {
-                id: filter.cursor.id,
-              },
-              skip: 1,
-            }
-          : {}),
+        orderBy: { createdAt: isAfter ? 'asc' : 'desc' },
         take: filter.limit,
+        ...(filter.cursor ? { cursor: { id: filter.cursor.id }, skip: 1 } : {}),
       });
-
-      return Result.ok(this.deserialize(notes));
+      const notes = res.map((v) => this.deserializeDirectNote(v));
+      return Result.ok(isAfter ? notes.reverse() : notes);
     } catch (e) {
-      return Result.err(
-        new TimelineInternalError('unknown error', { cause: e }),
-      );
+      return Result.err(e as Error);
     }
-  }
-
-  private deserialize(
-    data: Awaited<ReturnType<typeof this.prisma.note.findMany & {}>>,
-  ): Note[] {
-    return data.map((v) => {
-      const visibility = (): NoteVisibility => {
-        switch (v.visibility) {
-          case 0:
-            return 'PUBLIC';
-          case 1:
-            return 'HOME';
-          case 2:
-            return 'FOLLOWERS';
-          case 3:
-            return 'DIRECT';
-          default:
-            throw new Error('Invalid Visibility');
-        }
-      };
-      return Note.reconstruct({
-        id: v.id as NoteID,
-        content: v.text,
-        authorID: v.authorId as AccountID,
-        createdAt: v.createdAt,
-        deletedAt: !v.deletedAt ? Option.none() : Option.some(v.deletedAt),
-        contentsWarningComment: '',
-        originalNoteID: !v.renoteId
-          ? Option.none()
-          : Option.some(v.renoteId as NoteID),
-        attachmentFileID: [],
-        sendTo: !v.sendToId
-          ? Option.none()
-          : Option.some(v.sendToId as AccountID),
-        updatedAt: Option.none(),
-        visibility: visibility() as NoteVisibility,
-      });
-    });
   }
 }
 

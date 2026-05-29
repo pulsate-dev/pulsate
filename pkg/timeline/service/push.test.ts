@@ -10,7 +10,6 @@ import { InMemoryListRepository } from '../adaptor/repository/dummy.js';
 import { InMemoryTimelineCacheRepository } from '../adaptor/repository/dummyCache.js';
 import { List, type ListID } from '../model/list.js';
 import {
-  dummyDirectNote,
   dummyFollowersNote,
   dummyHomeNote,
   dummyPublicNote,
@@ -86,17 +85,6 @@ describe('PushTimelineService', () => {
     expect(Result.unwrap(listTimeline)).toEqual(['1' as NoteID]);
   });
 
-  it("if Note.visibility is DIRECT, don't push to List", async () => {
-    const res = await pushTimelineService.handle(dummyDirectNote);
-    const listTimeline = await timelineCacheRepository.getListTimeline(
-      '10' as ListID,
-    );
-    expect(Result.isErr(res)).toBe(true);
-    expect(Result.unwrap(listTimeline).includes(dummyDirectNote.getID())).toBe(
-      false,
-    );
-  });
-
   it("if Note.visibility is FOLLOWERS, don't push to List", async () => {
     const res = await pushTimelineService.handle(dummyFollowersNote);
     const listTimeline = await timelineCacheRepository.getListTimeline(
@@ -104,9 +92,9 @@ describe('PushTimelineService', () => {
     );
 
     expect(Result.isErr(res)).toBe(true);
-    expect(Result.unwrap(listTimeline).includes(dummyDirectNote.getID())).toBe(
-      false,
-    );
+    expect(
+      Result.unwrap(listTimeline).includes(dummyFollowersNote.getID()),
+    ).toBe(false);
   });
 
   it('if Cache limit reached, delete oldest note', async () => {

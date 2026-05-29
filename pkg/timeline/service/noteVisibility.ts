@@ -1,4 +1,4 @@
-import { Ether, Option, Result } from '@mikuroxina/mini-fn';
+import { Ether, Result } from '@mikuroxina/mini-fn';
 
 import type { AccountID } from '../../accounts/model/account.js';
 import {
@@ -26,13 +26,10 @@ export class NoteVisibilityService {
     if (args.note.getVisibility() === 'HOME') {
       return true;
     }
-    if (args.note.getVisibility() === 'DIRECT') {
-      if (Option.unwrapOr('')(args.note.getSendTo()) === args.accountID) {
-        return true;
-      }
-    }
     if (args.note.getVisibility() === 'FOLLOWERS') {
-      const followers = await this.accountModule.fetchFollowers(args.accountID);
+      const followers = await this.accountModule.fetchFollowers(
+        args.note.getAuthorID(),
+      );
       if (Result.isErr(followers)) {
         return false;
       }
@@ -46,19 +43,10 @@ export class NoteVisibilityService {
     return false;
   }
 
-  public async isVisibleNoteInHomeTimeline(
-    args: NoteVisibilityCheckArgs,
-  ): Promise<boolean> {
-    return args.note.getVisibility() !== 'DIRECT';
-  }
-
   public async isVisibleNoteInList(
     args: NoteVisibilityCheckArgs,
   ): Promise<boolean> {
-    return (
-      args.note.getVisibility() !== 'DIRECT' &&
-      args.note.getVisibility() !== 'FOLLOWERS'
-    );
+    return args.note.getVisibility() !== 'FOLLOWERS';
   }
 }
 export const noteVisibilitySymbol =

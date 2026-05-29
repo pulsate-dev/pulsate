@@ -185,9 +185,9 @@ export class RenoteService {
           );
         }
         return Result.ok(undefined);
-      case 'DIRECT':
+      default:
         return Result.err(
-          new NoteVisibilityInvalidError('Can not renote direct note', {
+          new NoteVisibilityInvalidError('Cannot renote this note', {
             cause: null,
           }),
         );
