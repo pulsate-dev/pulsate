@@ -2,13 +2,9 @@ import { Ether, Option, Result } from '@mikuroxina/mini-fn';
 
 import type { AccountID } from '../../accounts/model/account.js';
 import type { DirectNote, DirectNoteID } from '../../notes/model/directNote.js';
-import {
-  type DirectNoteConversationFilter,
-  type DirectNoteRepository,
-  directNoteRepoSymbol,
-} from '../../notes/model/repository.js';
 import { TimelineInvalidFilterRangeError } from '../model/errors.js';
 import {
+  type ConversationNotesFilter,
   type ConversationRecipient,
   type ConversationRepository,
   conversationRepoSymbol,
@@ -29,7 +25,6 @@ export interface FetchConversationNotesArgs {
 export class FetchConversationService {
   constructor(
     private readonly conversationRepository: ConversationRepository,
-    private readonly directNoteRepository: DirectNoteRepository,
   ) {}
 
   /**
@@ -78,7 +73,7 @@ export class FetchConversationService {
 
     const limit = Option.unwrapOr(20)(args.limit);
 
-    const cursor: DirectNoteConversationFilter['cursor'] = Option.isSome(
+    const cursor: ConversationNotesFilter['cursor'] = Option.isSome(
       args.beforeID,
     )
       ? {
@@ -92,12 +87,12 @@ export class FetchConversationService {
           }
         : undefined;
 
-    const filter: DirectNoteConversationFilter = {
+    const filter: ConversationNotesFilter = {
       limit,
       cursor,
     };
 
-    return await this.directNoteRepository.findConversation(
+    return await this.conversationRepository.findConversationNotes(
       accountID,
       recipientID,
       filter,
@@ -108,10 +103,9 @@ export const fetchConversationServiceSymbol =
   Ether.newEtherSymbol<FetchConversationService>();
 export const fetchConversation = Ether.newEther(
   fetchConversationServiceSymbol,
-  ({ conversationRepository, directNoteRepository }) =>
-    new FetchConversationService(conversationRepository, directNoteRepository),
+  ({ conversationRepository }) =>
+    new FetchConversationService(conversationRepository),
   {
     conversationRepository: conversationRepoSymbol,
-    directNoteRepository: directNoteRepoSymbol,
   },
 );

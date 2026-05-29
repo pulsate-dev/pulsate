@@ -1,6 +1,7 @@
 import { Ether, type Result } from '@mikuroxina/mini-fn';
 
 import type { AccountID } from '../../accounts/model/account.js';
+import type { DirectNote, DirectNoteID } from '../../notes/model/directNote.js';
 import type { Note, NoteID } from '../../notes/model/note.js';
 import type { List, ListID } from './list.js';
 
@@ -168,8 +169,25 @@ export interface ConversationRecipient {
    * @desc Time the last message was sent
    */
   lastSentAt: Date;
-  latestNoteID: NoteID;
+  latestNoteID: DirectNoteID;
   latestNoteAuthor: AccountID;
+}
+
+export interface ConversationNotesCursor {
+  type: 'before' | 'after';
+  id: DirectNoteID;
+}
+
+export interface ConversationNotesFilter {
+  /** @default 20 */
+  limit: number;
+  /**
+   * @description Cursor for pagination
+   * - before: Retrieved from notes before this ID
+   * - after: Retrieved from notes after this ID
+   * - undefined: Retrieved from latest notes
+   */
+  cursor?: ConversationNotesCursor;
 }
 
 export interface ConversationRepository {
@@ -184,6 +202,19 @@ export interface ConversationRepository {
   findByAccountID(
     id: AccountID,
   ): Promise<Result.Result<Error, ConversationRecipient[]>>;
+
+  /**
+   * @description Fetch direct notes exchanged between two accounts.
+   * @param accountID The account ID of the current user
+   * @param recipientID The account ID of the conversation partner
+   * @param filter Pagination options
+   * @returns {@link DirectNote}[] sorted by createdAt descending
+   */
+  findConversationNotes(
+    accountID: AccountID,
+    recipientID: AccountID,
+    filter: ConversationNotesFilter,
+  ): Promise<Result.Result<Error, DirectNote[]>>;
 }
 export const conversationRepoSymbol =
   Ether.newEtherSymbol<ConversationRepository>();

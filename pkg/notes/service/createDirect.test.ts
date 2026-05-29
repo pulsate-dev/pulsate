@@ -36,7 +36,6 @@ const mockDirectNoteRepo: DirectNoteRepository = {
   create: vi.fn().mockResolvedValue(Result.ok(undefined)),
   findByID: vi.fn(),
   findByRecipientID: vi.fn(),
-  findConversation: vi.fn(),
   deleteByID: vi.fn(),
 };
 

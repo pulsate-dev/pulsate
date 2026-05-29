@@ -1,32 +1,10 @@
 import { Option, Result } from '@mikuroxina/mini-fn';
-import { beforeEach, describe, expect, it, vi } from 'vitest';
+import { describe, expect, it } from 'vitest';
 
 import type { AccountID } from '../../accounts/model/account.js';
 import { DirectNote, type DirectNoteID } from '../../notes/model/directNote.js';
-import { Note, type NoteID } from '../../notes/model/note.js';
-import type { DirectNoteRepository } from '../../notes/model/repository.js';
 import { InMemoryConversationRepository } from '../adaptor/repository/dummy.js';
 import { FetchConversationService } from './fetchConversation.js';
-
-const noteFactory = (
-  id: NoteID,
-  authorID: AccountID,
-  sendToID: Option.Option<AccountID>,
-  createdAt: Date,
-) =>
-  Result.unwrap(
-    Note.new({
-      attachmentFileID: [],
-      authorID,
-      contentsWarningComment: '',
-      createdAt,
-      id,
-      originalNoteID: Option.none(),
-      sendTo: sendToID,
-      visibility: 'DIRECT',
-      content: 'This is a test note',
-    }),
-  );
 
 const directNoteFactory = (
   id: DirectNoteID,
@@ -51,87 +29,49 @@ const directNoteFactory = (
  *   1 sent 2 notes to 2
  * 2 received 2 notes from 1
  *   2 sent 2 notes to 1
- *   2 sent 1 note to 4
+ *   2 sent 1 note to 4 (via 4-->2 below)
  * 4 received 1 note from 2
  */
-const noteTestMap = [
-  // 1-->2
-  noteFactory(
-    '100' as NoteID,
-    '1' as AccountID,
-    Option.some('2' as AccountID),
-    new Date('2023-09-10T00:00:00Z'),
-  ),
-  // 1-->2
-  noteFactory(
-    '101' as NoteID,
-    '1' as AccountID,
-    Option.some('2' as AccountID),
-    new Date('2023-09-11T00:00:00Z'),
-  ),
-  // 2-->1
-  noteFactory(
-    '200' as NoteID,
-    '2' as AccountID,
-    Option.some('1' as AccountID),
-    new Date('2023-09-12T00:00:00Z'),
-  ),
-  // 2-->1
-  noteFactory(
-    '201' as NoteID,
-    '2' as AccountID,
-    Option.some('1' as AccountID),
-    new Date('2023-09-13T00:00:00Z'),
-  ),
-  // 4-->2
-  noteFactory(
-    '400' as NoteID,
-    '4' as AccountID,
-    Option.some('2' as AccountID),
-    new Date('2024-01-01T00:00:00Z'),
-  ),
-];
-
 const dummyDirectNotes = [
+  // 1-->2
   directNoteFactory(
     '100' as DirectNoteID,
     '1' as AccountID,
     '2' as AccountID,
     new Date('2023-09-10T00:00:00Z'),
   ),
+  // 1-->2
   directNoteFactory(
     '101' as DirectNoteID,
     '1' as AccountID,
     '2' as AccountID,
     new Date('2023-09-11T00:00:00Z'),
   ),
+  // 2-->1
   directNoteFactory(
     '200' as DirectNoteID,
     '2' as AccountID,
     '1' as AccountID,
     new Date('2023-09-12T00:00:00Z'),
   ),
+  // 2-->1
   directNoteFactory(
     '201' as DirectNoteID,
     '2' as AccountID,
     '1' as AccountID,
     new Date('2023-09-13T00:00:00Z'),
   ),
+  // 4-->2
+  directNoteFactory(
+    '400' as DirectNoteID,
+    '4' as AccountID,
+    '2' as AccountID,
+    new Date('2024-01-01T00:00:00Z'),
+  ),
 ];
 
-const mockDirectNoteRepo: DirectNoteRepository = {
-  create: vi.fn(),
-  findByID: vi.fn(),
-  findByRecipientID: vi.fn(),
-  findConversation: vi.fn(),
-  deleteByID: vi.fn(),
-};
-
-const conversationRepo = new InMemoryConversationRepository(noteTestMap);
-const service = new FetchConversationService(
-  conversationRepo,
-  mockDirectNoteRepo,
-);
+const conversationRepo = new InMemoryConversationRepository(dummyDirectNotes);
+const service = new FetchConversationService(conversationRepo);
 
 describe('FetchConversationService', () => {
   it('should fetch conversations', async () => {
@@ -140,10 +80,10 @@ describe('FetchConversationService', () => {
     expect(Result.isOk(result)).toBe(true);
     expect(Result.unwrap(result)).toStrictEqual([
       {
-        id: noteTestMap[3]?.getAuthorID(),
-        lastSentAt: noteTestMap[3]?.getCreatedAt(),
-        latestNoteID: noteTestMap[3]?.getID(),
-        latestNoteAuthor: noteTestMap[3]?.getAuthorID(),
+        id: dummyDirectNotes[3]?.getAuthorID(),
+        lastSentAt: dummyDirectNotes[3]?.getCreatedAt(),
+        latestNoteID: dummyDirectNotes[3]?.getID(),
+        latestNoteAuthor: dummyDirectNotes[3]?.getAuthorID(),
       },
     ]);
   });
@@ -155,15 +95,15 @@ describe('FetchConversationService', () => {
     const recipients = Result.unwrap(result);
     expect(recipients).toStrictEqual([
       {
-        id: noteTestMap[4]?.getAuthorID(),
-        lastSentAt: noteTestMap[4]?.getCreatedAt(),
-        latestNoteID: noteTestMap[4]?.getID(),
-        latestNoteAuthor: noteTestMap[4]?.getAuthorID(),
+        id: dummyDirectNotes[4]?.getAuthorID(),
+        lastSentAt: dummyDirectNotes[4]?.getCreatedAt(),
+        latestNoteID: dummyDirectNotes[4]?.getID(),
+        latestNoteAuthor: dummyDirectNotes[4]?.getAuthorID(),
       },
       {
         id: '1' as AccountID,
         lastSentAt: new Date('2023-09-13T00:00:00Z'),
-        latestNoteID: '201' as NoteID,
+        latestNoteID: '201' as DirectNoteID,
         latestNoteAuthor: '2' as AccountID,
       },
     ]);
@@ -177,78 +117,72 @@ describe('FetchConversationService', () => {
   });
 
   describe('fetchConversationNotes', () => {
-    beforeEach(() => {
-      vi.mocked(mockDirectNoteRepo.findConversation).mockResolvedValue(
-        Result.ok(dummyDirectNotes),
-      );
-    });
-
     it('should pass default limit of 20 when no limit provided', async () => {
-      await service.fetchConversationNotes('1' as AccountID, '2' as AccountID);
-
-      expect(mockDirectNoteRepo.findConversation).toHaveBeenCalledWith(
-        '1' as AccountID,
-        '2' as AccountID,
-        { limit: 20, cursor: undefined },
-      );
-    });
-
-    it('should pass custom limit to repository', async () => {
-      await service.fetchConversationNotes('1' as AccountID, '2' as AccountID, {
-        limit: Option.some(5),
-        beforeID: Option.none(),
-        afterID: Option.none(),
-      });
-
-      expect(mockDirectNoteRepo.findConversation).toHaveBeenCalledWith(
-        '1' as AccountID,
-        '2' as AccountID,
-        { limit: 5, cursor: undefined },
-      );
-    });
-
-    it('should pass beforeID cursor to repository', async () => {
-      await service.fetchConversationNotes('1' as AccountID, '2' as AccountID, {
-        limit: Option.none(),
-        beforeID: Option.some('201' as DirectNoteID),
-        afterID: Option.none(),
-      });
-
-      expect(mockDirectNoteRepo.findConversation).toHaveBeenCalledWith(
-        '1' as AccountID,
-        '2' as AccountID,
-        { limit: 20, cursor: { type: 'before', id: '201' as DirectNoteID } },
-      );
-    });
-
-    it('should pass afterID cursor to repository', async () => {
-      await service.fetchConversationNotes('1' as AccountID, '2' as AccountID, {
-        limit: Option.none(),
-        beforeID: Option.none(),
-        afterID: Option.some('100' as DirectNoteID),
-      });
-
-      expect(mockDirectNoteRepo.findConversation).toHaveBeenCalledWith(
-        '1' as AccountID,
-        '2' as AccountID,
-        { limit: 20, cursor: { type: 'after', id: '100' as DirectNoteID } },
-      );
-    });
-
-    it('should return what the repository returns', async () => {
-      const note = dummyDirectNotes[0];
-      if (!note) throw new Error('test data missing');
-      vi.mocked(mockDirectNoteRepo.findConversation).mockResolvedValue(
-        Result.ok([note]),
-      );
-
       const result = await service.fetchConversationNotes(
         '1' as AccountID,
         '2' as AccountID,
       );
 
       expect(Result.isOk(result)).toBe(true);
-      expect(Result.unwrap(result)).toStrictEqual([note]);
+      // dataset has 4 notes between 1 and 2; all returned since limit=20
+      expect(Result.unwrap(result)).toHaveLength(4);
+    });
+
+    it('should pass custom limit to repository', async () => {
+      const result = await service.fetchConversationNotes(
+        '1' as AccountID,
+        '2' as AccountID,
+        {
+          limit: Option.some(2),
+          beforeID: Option.none(),
+          afterID: Option.none(),
+        },
+      );
+
+      expect(Result.isOk(result)).toBe(true);
+      expect(Result.unwrap(result)).toHaveLength(2);
+      // newest two notes between 1 and 2
+      expect(Result.unwrap(result).map((n) => n.getID())).toStrictEqual([
+        '201',
+        '200',
+      ]);
+    });
+
+    it('should apply beforeID cursor correctly', async () => {
+      const result = await service.fetchConversationNotes(
+        '1' as AccountID,
+        '2' as AccountID,
+        {
+          limit: Option.none(),
+          beforeID: Option.some('200' as DirectNoteID),
+          afterID: Option.none(),
+        },
+      );
+
+      expect(Result.isOk(result)).toBe(true);
+      // notes older than '200' (2023-09-12): '101' and '100'
+      expect(Result.unwrap(result).map((n) => n.getID())).toStrictEqual([
+        '101',
+        '100',
+      ]);
+    });
+
+    it('should apply afterID cursor correctly', async () => {
+      const result = await service.fetchConversationNotes(
+        '1' as AccountID,
+        '2' as AccountID,
+        {
+          limit: Option.none(),
+          beforeID: Option.none(),
+          afterID: Option.some('200' as DirectNoteID),
+        },
+      );
+
+      expect(Result.isOk(result)).toBe(true);
+      // notes newer than '200' (2023-09-12): '201'
+      expect(Result.unwrap(result).map((n) => n.getID())).toStrictEqual([
+        '201',
+      ]);
     });
 
     it('should return error when both beforeID and afterID are specified', async () => {

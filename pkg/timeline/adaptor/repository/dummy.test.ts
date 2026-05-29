@@ -2,6 +2,10 @@ import { Option, Result } from '@mikuroxina/mini-fn';
 import { afterEach, describe, expect, it } from 'vitest';
 
 import type { AccountID } from '../../../accounts/model/account.js';
+import {
+  DirectNote,
+  type DirectNoteID,
+} from '../../../notes/model/directNote.js';
 import { Note, type NoteID } from '../../../notes/model/note.js';
 import { TimelineInvalidFilterRangeError } from '../../model/errors.js';
 import { List, type ListID } from '../../model/list.js';
@@ -335,53 +339,51 @@ describe('InMemoryListRepository', () => {
 });
 
 describe('InMemoryConversationRepository', () => {
-  const noteFactory = (
-    id: NoteID,
+  const directNoteFactory = (
+    id: DirectNoteID,
     authorID: AccountID,
-    sendToID: Option.Option<AccountID>,
+    recipientID: AccountID,
     createdAt: Date,
   ) =>
     Result.unwrap(
-      Note.new({
-        attachmentFileID: [],
-        authorID,
-        contentsWarningComment: '',
-        createdAt,
+      DirectNote.new({
         id,
-        originalNoteID: Option.none(),
-        sendTo: sendToID,
-        visibility: 'DIRECT',
+        authorID,
+        recipientID,
         content: 'this is a test note',
+        contentsWarningComment: '',
+        attachmentFileID: [],
+        createdAt,
       }),
     );
 
   const testMap = [
     // 1-->2
-    noteFactory(
-      '100' as NoteID,
+    directNoteFactory(
+      '100' as DirectNoteID,
       '1' as AccountID,
-      Option.some('2' as AccountID),
+      '2' as AccountID,
       new Date('2023-09-10T00:00:00Z'),
     ),
     // 1-->2
-    noteFactory(
-      '101' as NoteID,
+    directNoteFactory(
+      '101' as DirectNoteID,
       '1' as AccountID,
-      Option.some('2' as AccountID),
+      '2' as AccountID,
       new Date('2023-09-11T00:00:00Z'),
     ),
     // 2-->1
-    noteFactory(
-      '200' as NoteID,
+    directNoteFactory(
+      '200' as DirectNoteID,
       '2' as AccountID,
-      Option.some('1' as AccountID),
+      '1' as AccountID,
       new Date('2023-09-12T00:00:00Z'),
     ),
     // 2-->1
-    noteFactory(
-      '201' as NoteID,
+    directNoteFactory(
+      '201' as DirectNoteID,
       '2' as AccountID,
-      Option.some('1' as AccountID),
+      '1' as AccountID,
       new Date('2023-09-13T00:00:00Z'),
     ),
   ];
@@ -395,7 +397,7 @@ describe('InMemoryConversationRepository', () => {
       {
         id: '2' as AccountID,
         lastSentAt: new Date('2023-09-13T00:00:00Z'),
-        latestNoteID: '201' as NoteID,
+        latestNoteID: '201' as DirectNoteID,
         latestNoteAuthor: '2' as AccountID,
       },
     ]);
@@ -409,7 +411,7 @@ describe('InMemoryConversationRepository', () => {
       {
         id: '1' as AccountID,
         lastSentAt: new Date('2023-09-13T00:00:00Z'),
-        latestNoteID: '201' as NoteID,
+        latestNoteID: '201' as DirectNoteID,
         latestNoteAuthor: '2' as AccountID,
       },
     ]);

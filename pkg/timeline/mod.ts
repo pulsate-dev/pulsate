@@ -19,7 +19,6 @@ import {
   timelineCacheRepositoryInstance,
 } from '../intermodule/timeline.js';
 import { clockSymbol, snowflakeIDGenerator } from '../internal/id/mod.js';
-import { directNoteRepoEther } from '../notes/mod.js';
 import { TimelineController } from './adaptor/controller/timeline.js';
 import { timelineModuleLogger } from './adaptor/logger.js';
 import {
@@ -121,7 +120,7 @@ const bookmarkTimelineRepository = isProduction
   : inMemoryBookmarkTimelineRepo();
 
 const conversationRepository = isProduction
-  ? prismaConversationRepo()
+  ? prismaConversationRepo(prismaClient)
   : inMemoryConversationRepo();
 
 const controller = new TimelineController({
@@ -174,9 +173,8 @@ const controller = new TimelineController({
       .feed(Ether.compose(bookmarkTimelineRepository)).value,
   ),
   fetchConversationService: Ether.runEther(
-    Cat.cat(fetchConversation)
-      .feed(Ether.compose(conversationRepository))
-      .feed(Ether.compose(directNoteRepoEther)).value,
+    Cat.cat(fetchConversation).feed(Ether.compose(conversationRepository))
+      .value,
   ),
   publicTimelineService: Ether.runEther(
     Cat.cat(publicTimeline).feed(Ether.compose(timelineRepository)).value,

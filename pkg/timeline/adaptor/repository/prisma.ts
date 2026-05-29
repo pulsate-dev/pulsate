@@ -3,6 +3,10 @@ import type { AccountID } from '../../../accounts/model/account.js';
 import { Prisma, type PrismaClient } from '../../../adaptors/prisma/client.js';
 import type { prismaClient } from '../../../adaptors/prisma.js';
 import {
+  DirectNote,
+  type DirectNoteID,
+} from '../../../notes/model/directNote.js';
+import {
   Note,
   type NoteID,
   type NoteVisibility,
@@ -17,6 +21,7 @@ import {
   type BookmarkTimelineFilter,
   type BookmarkTimelineRepository,
   bookmarkTimelineRepoSymbol,
+  type ConversationNotesFilter,
   type ConversationRecipient,
   type ConversationRepository,
   conversationRepoSymbol,
@@ -545,17 +550,64 @@ export const prismaBookmarkTimelineRepo = (client: PrismaClient) =>
     () => new PrismaBookmarkTimelineRepository(client),
   );
 
+type RawConversationDirectNote = Awaited<
+  ReturnType<typeof prismaClient.directNote.findMany>
+>[number];
+
 export class PrismaConversationRepository implements ConversationRepository {
+  constructor(private readonly prisma: PrismaClient) {}
+
+  private deserializeDirectNote(data: RawConversationDirectNote): DirectNote {
+    return DirectNote.reconstruct({
+      id: data.id as DirectNoteID,
+      authorID: data.authorId as AccountID,
+      recipientID: data.recipientId as AccountID,
+      content: data.text,
+      contentsWarningComment: '',
+      attachmentFileID: [],
+      createdAt: data.createdAt,
+      deletedAt: data.deletedAt ? Option.some(data.deletedAt) : Option.none(),
+    });
+  }
+
   async findByAccountID(
     _accountId: AccountID,
   ): Promise<Result.Result<Error, ConversationRecipient[]>> {
-    // TODO(phase5): implement using DirectNote table
+    // TODO: implement using DirectNote table
     return Result.ok([]);
+  }
+
+  async findConversationNotes(
+    accountID: AccountID,
+    recipientID: AccountID,
+    filter: ConversationNotesFilter,
+  ): Promise<Result.Result<Error, DirectNote[]>> {
+    // For 'after' cursor (get notes newer than cursor): query asc then reverse to keep desc order.
+    // For 'before' cursor or no cursor: query desc directly.
+    const isAfter = filter.cursor?.type === 'after';
+    try {
+      const res = await this.prisma.directNote.findMany({
+        where: {
+          deletedAt: null,
+          OR: [
+            { authorId: accountID, recipientId: recipientID },
+            { authorId: recipientID, recipientId: accountID },
+          ],
+        },
+        orderBy: { createdAt: isAfter ? 'asc' : 'desc' },
+        take: filter.limit,
+        ...(filter.cursor ? { cursor: { id: filter.cursor.id }, skip: 1 } : {}),
+      });
+      const notes = res.map((v) => this.deserializeDirectNote(v));
+      return Result.ok(isAfter ? notes.reverse() : notes);
+    } catch (e) {
+      return Result.err(e as Error);
+    }
   }
 }
 
-export const prismaConversationRepo = () =>
+export const prismaConversationRepo = (client: PrismaClient) =>
   Ether.newEther(
     conversationRepoSymbol,
-    () => new PrismaConversationRepository(),
+    () => new PrismaConversationRepository(client),
   );

@@ -7,7 +7,6 @@ import { Medium, type MediumID } from '../../../../drive/model/medium.js';
 import { DirectNote, type DirectNoteID } from '../../../model/directNote.js';
 import {
   type DirectNoteAttachmentRepository,
-  type DirectNoteConversationFilter,
   type DirectNoteRepository,
   directNoteAttachmentRepoSymbol,
   directNoteRepoSymbol,
@@ -88,39 +87,6 @@ export class PrismaDirectNoteRepository implements DirectNoteRepository {
         orderBy: { createdAt: 'desc' },
       });
       return Result.ok(res.map((v) => this.deserialize(v)));
-    } catch (e) {
-      return Result.err(e as Error);
-    }
-  }
-
-  async findConversation(
-    accountA: AccountID,
-    accountB: AccountID,
-    filter: DirectNoteConversationFilter,
-  ): Promise<Result.Result<Error, DirectNote[]>> {
-    // For 'after' cursor (get notes newer than cursor): query asc then reverse to keep desc order.
-    // For 'before' cursor or no cursor: query desc directly.
-    const isAfter = filter.cursor?.type === 'after';
-    try {
-      const res = await this.client.directNote.findMany({
-        where: {
-          deletedAt: null,
-          OR: [
-            { authorId: accountA, recipientId: accountB },
-            { authorId: accountB, recipientId: accountA },
-          ],
-        },
-        orderBy: { createdAt: isAfter ? 'asc' : 'desc' },
-        take: filter.limit,
-        ...(filter.cursor
-          ? {
-              cursor: { id: filter.cursor.id },
-              skip: 1,
-            }
-          : {}),
-      });
-      const notes = res.map((v) => this.deserialize(v));
-      return Result.ok(isAfter ? notes.reverse() : notes);
     } catch (e) {
       return Result.err(e as Error);
     }

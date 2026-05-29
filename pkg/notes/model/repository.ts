@@ -71,17 +71,6 @@ export interface ReactionRepository {
 }
 export const reactionRepoSymbol = Ether.newEtherSymbol<ReactionRepository>();
 
-export interface DirectNoteConversationCursor {
-  type: 'before' | 'after';
-  id: DirectNoteID;
-}
-
-export interface DirectNoteConversationFilter {
-  /** @default 20 */
-  limit: number;
-  cursor?: DirectNoteConversationCursor;
-}
-
 export interface DirectNoteRepository {
   create(note: DirectNote): Promise<Result.Result<Error, void>>;
   findByID(
@@ -89,11 +78,6 @@ export interface DirectNoteRepository {
   ): Promise<Result.Result<Error, Option.Option<DirectNote>>>;
   findByRecipientID(
     recipientID: AccountID,
-  ): Promise<Result.Result<Error, DirectNote[]>>;
-  findConversation(
-    accountA: AccountID,
-    accountB: AccountID,
-    filter: DirectNoteConversationFilter,
   ): Promise<Result.Result<Error, DirectNote[]>>;
   deleteByID(id: DirectNoteID): Promise<Result.Result<Error, void>>;
 }
