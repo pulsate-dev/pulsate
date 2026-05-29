@@ -5,7 +5,6 @@ import type { AccountID } from '../../accounts/model/account.js';
 import { partialAccount1 } from '../../accounts/testData/testData.js';
 import { dummyAccountModuleFacade } from '../../intermodule/account.js';
 import {
-  dummyDirectNote,
   dummyFollowersNote,
   dummyHomeNote,
   dummyPublicNote,
@@ -22,12 +21,7 @@ describe('NoteVisibilityService', () => {
       },
     );
 
-    const testObjects = [
-      dummyPublicNote,
-      dummyHomeNote,
-      dummyFollowersNote,
-      dummyDirectNote,
-    ];
+    const testObjects = [dummyPublicNote, dummyHomeNote, dummyFollowersNote];
     for (const note of testObjects) {
       expect(
         await visibilityService.handle({
@@ -36,26 +30,6 @@ describe('NoteVisibilityService', () => {
         }),
       ).toBe(true);
     }
-  });
-
-  it('when direct note: return true if sendTo is accountID', async () => {
-    vi.spyOn(dummyAccountModuleFacade, 'fetchFollowers').mockImplementation(
-      async () => {
-        return Result.ok([partialAccount1]);
-      },
-    );
-
-    const res = await visibilityService.handle({
-      accountID: '101' as AccountID,
-      note: dummyDirectNote,
-    });
-    expect(res).toBe(true);
-
-    const res2 = await visibilityService.handle({
-      accountID: '0' as AccountID,
-      note: dummyDirectNote,
-    });
-    expect(res2).toBe(false);
   });
 
   it('when following: return true if public,home,followers', async () => {
@@ -129,38 +103,22 @@ describe('NoteVisibilityService', () => {
     expect(res).toBe(true);
   });
 
-  it("homeTimelineVisibilityCheck: return true if visibility is not 'DIRECT'", async () => {
+  it('homeTimelineVisibilityCheck: always return true', async () => {
     vi.spyOn(dummyAccountModuleFacade, 'fetchFollowers').mockImplementation(
       async () => Result.ok([partialAccount1]),
     );
 
-    expect(
-      await visibilityService.isVisibleNoteInHomeTimeline({
-        accountID: '0' as AccountID,
-        note: dummyPublicNote,
-      }),
-    ).toBe(true);
-    expect(
-      await visibilityService.isVisibleNoteInHomeTimeline({
-        accountID: '0' as AccountID,
-        note: dummyHomeNote,
-      }),
-    ).toBe(true);
-    expect(
-      await visibilityService.isVisibleNoteInHomeTimeline({
-        accountID: '0' as AccountID,
-        note: dummyFollowersNote,
-      }),
-    ).toBe(true);
-    expect(
-      await visibilityService.isVisibleNoteInHomeTimeline({
-        accountID: '0' as AccountID,
-        note: dummyDirectNote,
-      }),
-    ).toBe(false);
+    for (const note of [dummyPublicNote, dummyHomeNote, dummyFollowersNote]) {
+      expect(
+        await visibilityService.isVisibleNoteInHomeTimeline({
+          accountID: '0' as AccountID,
+          note,
+        }),
+      ).toBe(true);
+    }
   });
 
-  it("listVisibilityCheck: return true if visibility is not 'PUBLIC' and 'HOME'", async () => {
+  it("listVisibilityCheck: return false only for 'FOLLOWERS'", async () => {
     vi.spyOn(dummyAccountModuleFacade, 'fetchFollowers').mockImplementation(
       async () => Result.ok([partialAccount1]),
     );
@@ -181,12 +139,6 @@ describe('NoteVisibilityService', () => {
       await visibilityService.isVisibleNoteInList({
         accountID: '0' as AccountID,
         note: dummyFollowersNote,
-      }),
-    ).toBe(false);
-    expect(
-      await visibilityService.isVisibleNoteInList({
-        accountID: '0' as AccountID,
-        note: dummyDirectNote,
       }),
     ).toBe(false);
   });

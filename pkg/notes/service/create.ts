@@ -12,7 +12,10 @@ import {
   type SnowflakeIDGenerator,
   snowflakeIDGeneratorSymbol,
 } from '../../internal/id/mod.js';
-import { NoteInternalError } from '../model/errors.js';
+import {
+  NoteInternalError,
+  NoteVisibilityInvalidError,
+} from '../model/errors.js';
 import { Note, type NoteID, type NoteVisibility } from '../model/note.js';
 import {
   type NoteAttachmentRepository,
@@ -25,11 +28,18 @@ export class CreateService {
   async handle(
     content: string,
     contentsWarningComment: string,
-    sendTo: Option.Option<AccountID>,
     authorID: AccountID,
     attachmentFileID: MediumID[],
     visibility: NoteVisibility,
   ): Promise<Result.Result<Error, Note>> {
+    if (visibility === 'DIRECT') {
+      return Result.err(
+        new NoteVisibilityInvalidError(
+          'Direct notes must use CreateDirectNoteService',
+          { cause: null },
+        ),
+      );
+    }
     const id = this.deps.idGenerator.generate<Note>();
     if (Result.isErr(id)) {
       return Result.err(
@@ -44,7 +54,7 @@ export class CreateService {
       content: content,
       contentsWarningComment: contentsWarningComment,
       createdAt: new Date(Number(now)),
-      sendTo: sendTo,
+      sendTo: Option.none(),
       originalNoteID: Option.none(),
       attachmentFileID: attachmentFileID,
       visibility: visibility,

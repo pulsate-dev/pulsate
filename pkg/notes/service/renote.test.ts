@@ -182,38 +182,6 @@ describe('RenoteService', () => {
     expect(Result.isErr(res)).toBe(true);
   });
 
-  it('should not be able to renote DIRECT notes', async () => {
-    const originalDIRECTNote = Note.reconstruct({
-      id: '3' as NoteID,
-      authorID: '101' as AccountID,
-      content: 'original note',
-      contentsWarningComment: '',
-      createdAt: new Date(),
-      originalNoteID: Option.none(),
-      attachmentFileID: [],
-      sendTo: Option.some('102' as AccountID),
-      visibility: 'DIRECT',
-      updatedAt: Option.none(),
-      deletedAt: Option.none(),
-    });
-    await repository.create(originalDIRECTNote);
-    const res = await service.handle(
-      originalDIRECTNote.getID(),
-      '',
-      '',
-      '101' as AccountID,
-      [],
-      'PUBLIC',
-    );
-
-    expect(Result.isErr(res)).toBe(true);
-    expect(Result.unwrapErr(res)).toStrictEqual(
-      new NoteVisibilityInvalidError('Can not renote direct note', {
-        cause: null,
-      }),
-    );
-  });
-
   it('should not be able to renote others FOLLOWERS notes', async () => {
     const originalFOLLOWRSNote = Note.reconstruct({
       id: '4' as NoteID,

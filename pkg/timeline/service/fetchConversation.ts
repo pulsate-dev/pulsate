@@ -1,12 +1,16 @@
 import { Ether, Option, Result } from '@mikuroxina/mini-fn';
+
 import type { AccountID } from '../../accounts/model/account.js';
-import type { Note, NoteID } from '../../notes/model/note.js';
+import type { DirectNote, DirectNoteID } from '../../notes/model/directNote.js';
 import {
-  type ConversationCursor,
+  type DirectNoteConversationFilter,
+  type DirectNoteRepository,
+  directNoteRepoSymbol,
+} from '../../notes/model/repository.js';
+import {
   type ConversationRecipient,
   type ConversationRepository,
   conversationRepoSymbol,
-  type FetchConversationNotesFilter,
 } from '../model/repository.js';
 
 export interface FetchConversationNotesArgs {
@@ -14,16 +18,17 @@ export interface FetchConversationNotesArgs {
   /**
    * @description Retrieved from notes before this ID
    */
-  beforeID: Option.Option<NoteID>;
+  beforeID: Option.Option<DirectNoteID>;
   /**
    * @description Retrieved from notes after this ID
    */
-  afterID: Option.Option<NoteID>;
+  afterID: Option.Option<DirectNoteID>;
 }
 
 export class FetchConversationService {
   constructor(
     private readonly conversationRepository: ConversationRepository,
+    private readonly directNoteRepository: DirectNoteRepository,
   ) {}
 
   /**
@@ -60,7 +65,7 @@ export class FetchConversationService {
       beforeID: Option.none(),
       afterID: Option.none(),
     },
-  ): Promise<Result.Result<Error, Note[]>> {
+  ): Promise<Result.Result<Error, DirectNote[]>> {
     if (Option.isSome(args.beforeID) && Option.isSome(args.afterID)) {
       return Result.err(
         new Error('beforeID and afterID cannot be specified at the same time'),
@@ -69,26 +74,26 @@ export class FetchConversationService {
 
     const limit = Option.unwrapOr(20)(args.limit);
 
-    const cursor: Option.Option<ConversationCursor> = Option.isSome(
+    const cursor: DirectNoteConversationFilter['cursor'] = Option.isSome(
       args.beforeID,
     )
-      ? Option.some({
+      ? {
           type: 'before',
           id: Option.unwrap(args.beforeID),
-        })
+        }
       : Option.isSome(args.afterID)
-        ? Option.some({
+        ? {
             type: 'after',
             id: Option.unwrap(args.afterID),
-          })
-        : Option.none();
+          }
+        : undefined;
 
-    const filter: FetchConversationNotesFilter = {
+    const filter: DirectNoteConversationFilter = {
       limit,
-      cursor: Option.isSome(cursor) ? Option.unwrap(cursor) : undefined,
+      cursor,
     };
 
-    return await this.conversationRepository.fetchConversationNotes(
+    return await this.directNoteRepository.findConversation(
       accountID,
       recipientID,
       filter,
@@ -99,9 +104,10 @@ export const fetchConversationServiceSymbol =
   Ether.newEtherSymbol<FetchConversationService>();
 export const fetchConversation = Ether.newEther(
   fetchConversationServiceSymbol,
-  ({ conversationRepository }) =>
-    new FetchConversationService(conversationRepository),
+  ({ conversationRepository, directNoteRepository }) =>
+    new FetchConversationService(conversationRepository, directNoteRepository),
   {
     conversationRepository: conversationRepoSymbol,
+    directNoteRepository: directNoteRepoSymbol,
   },
 );

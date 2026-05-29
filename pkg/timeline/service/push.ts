@@ -102,20 +102,6 @@ export class PushTimelineService {
     }
     const unwrappedFollowers = Result.unwrap(followers);
 
-    /*
-    PUBLIC, HOME, FOLLOWER: OK
-    DIRECT: reject (direct note is not pushed to home timeline)
-     */
-    const visible = await this.noteVisibility.isVisibleNoteInHomeTimeline({
-      accountID: note.getAuthorID(),
-      note,
-    });
-    if (!visible) {
-      return Result.err(
-        new NoteVisibilityInvalidError('Note invisible', { cause: null }),
-      );
-    }
-
     for (const v of unwrappedFollowers) {
       const checkRes = await this.timelineLimitCheck('home', v.id);
       if (Result.isErr(checkRes)) {
@@ -154,7 +140,7 @@ export class PushTimelineService {
 
     /*
     PUBLIC, HOME: OK
-    FOLLOWER, DIRECT: reject
+    FOLLOWERS: reject
      */
     const visible = await this.noteVisibility.isVisibleNoteInList({
       accountID: note.getAuthorID(),

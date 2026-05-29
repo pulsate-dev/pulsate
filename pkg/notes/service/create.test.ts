@@ -1,4 +1,4 @@
-import { Option, Result } from '@mikuroxina/mini-fn';
+import { Result } from '@mikuroxina/mini-fn';
 import { describe, expect, it } from 'vitest';
 
 import type { AccountID } from '../../accounts/model/account.js';
@@ -49,7 +49,6 @@ describe('CreateService', () => {
     const res = await createService.handle(
       'Hello world',
       '',
-      Option.none(),
       '1' as AccountID,
       [],
       'PUBLIC',
@@ -62,7 +61,6 @@ describe('CreateService', () => {
     const res = await createService.handle(
       'Hello world',
       '',
-      Option.none(),
       '1' as AccountID,
       ['10' as MediumID, '11' as MediumID],
       'PUBLIC',
@@ -75,7 +73,6 @@ describe('CreateService', () => {
     const res = await createService.handle(
       'Hello world',
       '',
-      Option.none(),
       '1' as AccountID,
       Array.from({ length: 17 }, (_, i) => i.toString() as MediumID),
       'PUBLIC',
@@ -88,7 +85,6 @@ describe('CreateService', () => {
     const res = await createService.handle(
       'a'.repeat(3001),
       '',
-      Option.none(),
       '1' as AccountID,
       [],
       'PUBLIC',
@@ -97,11 +93,10 @@ describe('CreateService', () => {
     expect(Result.isErr(res)).toBe(true);
   });
 
-  it('note visibility DIRECT must have a destination', async () => {
+  it('visibility DIRECT is rejected', async () => {
     const res = await createService.handle(
       'Hello world',
       '',
-      Option.none(),
       '1' as AccountID,
       [],
       'DIRECT',
@@ -114,7 +109,6 @@ describe('CreateService', () => {
     await createService.handle(
       'Hello world',
       '',
-      Option.none(),
       '101' as AccountID,
       [],
       'PUBLIC',
