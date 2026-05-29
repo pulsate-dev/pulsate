@@ -32,7 +32,7 @@ import {
   prismaNoteAttachmentRepo,
   prismaNoteRepo,
   prismaReactionRepo,
-} from './adaptor/repository/prisma.js';
+} from './adaptor/repository/prisma/note.js';
 import {
   NoteAccountSilencedError,
   NoteAlreadyReactedError,
