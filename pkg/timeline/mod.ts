@@ -120,7 +120,7 @@ const bookmarkTimelineRepository = isProduction
   : inMemoryBookmarkTimelineRepo();
 
 const conversationRepository = isProduction
-  ? prismaConversationRepo(prismaClient)
+  ? prismaConversationRepo()
   : inMemoryConversationRepo();
 
 const controller = new TimelineController({
