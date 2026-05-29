@@ -21,7 +21,6 @@ import {
   type ConversationRepository,
   conversationRepoSymbol,
   type FetchAccountTimelineFilter,
-  type FetchConversationNotesFilter,
   type FetchHomeTimelineFilter,
   type FetchListTimelineFilter,
   type ListRepository,
@@ -550,15 +549,6 @@ export class PrismaConversationRepository implements ConversationRepository {
   async findByAccountID(
     _accountId: AccountID,
   ): Promise<Result.Result<Error, ConversationRecipient[]>> {
-    // TODO(phase5): implement using DirectNote table
-    return Result.ok([]);
-  }
-
-  async fetchConversationNotes(
-    _accountID: AccountID,
-    _recipientID: AccountID,
-    _filter: FetchConversationNotesFilter,
-  ): Promise<Result.Result<Error, Note[]>> {
     // TODO(phase5): implement using DirectNote table
     return Result.ok([]);
   }

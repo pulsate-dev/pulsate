@@ -103,21 +103,6 @@ describe('NoteVisibilityService', () => {
     expect(res).toBe(true);
   });
 
-  it('homeTimelineVisibilityCheck: always return true', async () => {
-    vi.spyOn(dummyAccountModuleFacade, 'fetchFollowers').mockImplementation(
-      async () => Result.ok([partialAccount1]),
-    );
-
-    for (const note of [dummyPublicNote, dummyHomeNote, dummyFollowersNote]) {
-      expect(
-        await visibilityService.isVisibleNoteInHomeTimeline({
-          accountID: '0' as AccountID,
-          note,
-        }),
-      ).toBe(true);
-    }
-  });
-
   it("listVisibilityCheck: return false only for 'FOLLOWERS'", async () => {
     vi.spyOn(dummyAccountModuleFacade, 'fetchFollowers').mockImplementation(
       async () => Result.ok([partialAccount1]),

@@ -19,7 +19,6 @@ import {
   type ConversationRepository,
   conversationRepoSymbol,
   type FetchAccountTimelineFilter,
-  type FetchConversationNotesFilter,
   type FetchHomeTimelineFilter,
   type FetchListTimelineFilter,
   type ListRepository,
@@ -491,54 +490,6 @@ export class InMemoryConversationRepository implements ConversationRepository {
       };
     });
     return Result.ok(res);
-  }
-
-  async fetchConversationNotes(
-    accountID: AccountID,
-    recipientID: AccountID,
-    filter: FetchConversationNotesFilter,
-  ): Promise<Result.Result<Error, Note[]>> {
-    const notes = this.data.filter(
-      (v) =>
-        v.getVisibility() === 'DIRECT' &&
-        ((v.getAuthorID() === accountID &&
-          Option.unwrap(v.getSendTo()) === recipientID) ||
-          (v.getAuthorID() === recipientID &&
-            Option.unwrap(v.getSendTo()) === accountID)),
-    );
-
-    if (!filter.cursor) {
-      const sortedNotes = notes.toSorted(sortByCreatedAtDesc);
-      return Result.ok(sortedNotes.slice(0, filter.limit));
-    }
-
-    if (filter.cursor.type === 'before') {
-      const beforeIndex = notes.findIndex(
-        (n) => n.getID() === filter.cursor?.id,
-      );
-      if (beforeIndex === -1) {
-        return Result.ok([]);
-      }
-      const slicedNotes = notes
-        .slice(0, beforeIndex)
-        .toSorted(sortByCreatedAtDesc);
-      return Result.ok(slicedNotes.slice(0, filter.limit));
-    }
-
-    if (filter.cursor.type === 'after') {
-      const afterIndex = notes.findIndex(
-        (n) => n.getID() === filter.cursor?.id,
-      );
-      if (afterIndex === -1) {
-        return Result.ok([]);
-      }
-      const slicedNotes = notes
-        .slice(afterIndex + 1)
-        .toSorted(sortByCreatedAtDesc);
-      return Result.ok(slicedNotes.slice(0, filter.limit));
-    }
-
-    return Result.ok([]);
   }
 }
 export const inMemoryConversationRepo = (data?: Note[]) =>

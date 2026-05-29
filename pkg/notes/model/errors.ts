@@ -149,3 +149,11 @@ export class DirectNoteDateInvalidError extends Error {
     this.cause = options.cause;
   }
 }
+
+export class DirectNoteSelfSendError extends Error {
+  constructor(message: string, options: { cause: unknown }) {
+    super(message);
+    this.name = 'DirectNoteSelfSendError';
+    this.cause = options.cause;
+  }
+}

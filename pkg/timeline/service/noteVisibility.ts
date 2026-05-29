@@ -27,7 +27,9 @@ export class NoteVisibilityService {
       return true;
     }
     if (args.note.getVisibility() === 'FOLLOWERS') {
-      const followers = await this.accountModule.fetchFollowers(args.accountID);
+      const followers = await this.accountModule.fetchFollowers(
+        args.note.getAuthorID(),
+      );
       if (Result.isErr(followers)) {
         return false;
       }
@@ -39,12 +41,6 @@ export class NoteVisibilityService {
     }
 
     return false;
-  }
-
-  public async isVisibleNoteInHomeTimeline(
-    _args: NoteVisibilityCheckArgs,
-  ): Promise<boolean> {
-    return true;
   }
 
   public async isVisibleNoteInList(

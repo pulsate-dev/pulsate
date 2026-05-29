@@ -7,6 +7,7 @@ import {
   type DirectNoteRepository,
   directNoteRepoSymbol,
 } from '../../notes/model/repository.js';
+import { TimelineInvalidFilterRangeError } from '../model/errors.js';
 import {
   type ConversationRecipient,
   type ConversationRepository,
@@ -68,7 +69,10 @@ export class FetchConversationService {
   ): Promise<Result.Result<Error, DirectNote[]>> {
     if (Option.isSome(args.beforeID) && Option.isSome(args.afterID)) {
       return Result.err(
-        new Error('beforeID and afterID cannot be specified at the same time'),
+        new TimelineInvalidFilterRangeError(
+          'beforeID and afterID cannot be specified at the same time',
+          { cause: null },
+        ),
       );
     }
 

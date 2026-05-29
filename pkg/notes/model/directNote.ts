@@ -7,6 +7,7 @@ import type { ID } from '../../internal/id/type.js';
 import {
   DirectNoteContentLengthError,
   DirectNoteDateInvalidError,
+  DirectNoteSelfSendError,
   DirectNoteTooManyAttachmentsError,
 } from './errors.js';
 import { cwCommentSchema, noteContentSchema } from './note.js';
@@ -26,7 +27,8 @@ export interface CreateDirectNoteArgs {
 
 type DirectNoteValidationError =
   | DirectNoteContentLengthError
-  | DirectNoteTooManyAttachmentsError;
+  | DirectNoteTooManyAttachmentsError
+  | DirectNoteSelfSendError;
 
 const segmenter = new Intl.Segmenter();
 const graphemeLength = (s: string): number => [...segmenter.segment(s)].length;
@@ -67,6 +69,14 @@ export class DirectNote {
   static #checkArgs(
     arg: Omit<CreateDirectNoteArgs, 'deletedAt'>,
   ): Result.Result<DirectNoteValidationError, void> {
+    if (arg.authorID === arg.recipientID) {
+      return Result.err(
+        new DirectNoteSelfSendError('Cannot send direct note to yourself', {
+          cause: null,
+        }),
+      );
+    }
+
     if (!v.safeParse(noteContentSchema, arg.content).success) {
       return Result.err(
         new DirectNoteContentLengthError('Content too long', {
