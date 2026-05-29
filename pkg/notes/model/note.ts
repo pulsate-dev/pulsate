@@ -38,12 +38,12 @@ type NoteValidationError =
 const segmenter = new Intl.Segmenter();
 const graphemeLength = (s: string): number => [...segmenter.segment(s)].length;
 
-const noteContentSchema = v.pipe(
+export const noteContentSchema = v.pipe(
   v.string(),
   v.check((s) => graphemeLength(s) <= 3000),
 );
 
-const cwCommentSchema = v.pipe(
+export const cwCommentSchema = v.pipe(
   v.string(),
   v.check((s) => graphemeLength(s) <= 256),
 );

@@ -125,3 +125,27 @@ export class NoteDateInvalidError extends Error {
     this.cause = options.cause;
   }
 }
+
+export class DirectNoteContentLengthError extends Error {
+  constructor(message: string, options: { cause: unknown }) {
+    super(message);
+    this.name = 'DirectNoteContentLengthError';
+    this.cause = options.cause;
+  }
+}
+
+export class DirectNoteTooManyAttachmentsError extends Error {
+  constructor(message: string, options: { cause: unknown }) {
+    super(message);
+    this.name = 'DirectNoteTooManyAttachmentsError';
+    this.cause = options.cause;
+  }
+}
+
+export class DirectNoteDateInvalidError extends Error {
+  constructor(message: string, options: { cause: unknown }) {
+    super(message);
+    this.name = 'DirectNoteDateInvalidError';
+    this.cause = options.cause;
+  }
+}
