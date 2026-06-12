@@ -62,7 +62,7 @@
     "@types/node": "^24.0.0",
     "@types/pg": "^8.15.6",
     "@vitest/coverage-v8": "^4.0.0",
-    "esbuild": "^0.28.0",
+    "esbuild": "^0.28.1",
     "lefthook": "^2.0.0",
     "typescript": "^6.0.0",
     "vitest": "^4.0.0"
