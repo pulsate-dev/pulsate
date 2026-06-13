@@ -5,7 +5,7 @@ import {
   InMemoryNoteRepository,
   InMemoryReactionRepository,
 } from '../adaptor/repository/dummy.js';
-import { NoteNotReactedYetError } from '../model/errors.js';
+import { NoteNotFoundError, NoteNotReactedYetError } from '../model/errors.js';
 import { Note, type NoteID } from '../model/note.js';
 import { Reaction, type ReactionID } from '../model/reaction.js';
 import { DeleteReactionService } from './deleteReaction.js';
@@ -55,8 +55,14 @@ describe('DeleteReactionService', () => {
     expect(Result.isOk(res)).toBe(true);
   });
 
-  it('if reaction not found, should return error', async () => {
+  it('if note not found, should return NoteNotFoundError', async () => {
     const res = await service.handle('999' as NoteID, '2' as AccountID);
+    expect(Result.isErr(res)).toBe(true);
+    expect(Result.unwrapErr(res)).toBeInstanceOf(NoteNotFoundError);
+  });
+
+  it('if reaction not found, should return NoteNotReactedYetError', async () => {
+    const res = await service.handle('1' as NoteID, '99' as AccountID);
     expect(Result.isErr(res)).toBe(true);
     expect(Result.unwrapErr(res)).toBeInstanceOf(NoteNotReactedYetError);
   });

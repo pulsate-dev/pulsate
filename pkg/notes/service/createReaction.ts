@@ -58,9 +58,12 @@ export class CreateReactionService {
     const targetNoteID = reaction.getNoteID();
     if (targetNoteID !== noteID) {
       const originalNote = await this.noteRepository.findByID(targetNoteID);
-      if (Option.isSome(originalNote)) {
-        return Result.ok(Option.unwrap(originalNote));
+      if (Option.isNone(originalNote)) {
+        return Result.err(
+          new NoteNotFoundError('Original note not found', { cause: null }),
+        );
       }
+      return Result.ok(Option.unwrap(originalNote));
     }
 
     return Result.ok(Option.unwrap(note));

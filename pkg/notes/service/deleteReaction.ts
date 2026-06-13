@@ -1,5 +1,6 @@
 import { Ether, Option, Result } from '@mikuroxina/mini-fn';
 import type { AccountID } from '../../accounts/model/account.js';
+import { NoteNotFoundError } from '../model/errors.js';
 import type { NoteID } from '../model/note.js';
 import {
   type NoteRepository,
@@ -19,12 +20,16 @@ export class DeleteReactionService {
     accountID: AccountID,
   ): Promise<Result.Result<Error, void>> {
     const note = await this.noteRepository.findByID(noteID);
+    if (Option.isNone(note)) {
+      return Result.err(
+        new NoteNotFoundError('Note not found', { cause: null }),
+      );
+    }
+
+    const unwrappedNote = Option.unwrap(note);
     let targetNoteID = noteID;
-    if (Option.isSome(note)) {
-      const unwrappedNote = Option.unwrap(note);
-      if (unwrappedNote.isRenote() && !unwrappedNote.isQuote()) {
-        targetNoteID = Option.unwrap(unwrappedNote.getOriginalNoteID());
-      }
+    if (unwrappedNote.isRenote() && !unwrappedNote.isQuote()) {
+      targetNoteID = Option.unwrap(unwrappedNote.getOriginalNoteID());
     }
 
     const reactionRes = await this.reactionRepository.findByCompositeID({
