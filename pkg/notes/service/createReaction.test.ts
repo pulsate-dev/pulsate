@@ -112,5 +112,7 @@ describe('CreateReactionService', () => {
         }),
       ),
     ).toBe(true);
+    // The returned note should be the original note, not the renote
+    expect(Result.unwrap(res).getID()).toBe('1' as NoteID);
   });
 });

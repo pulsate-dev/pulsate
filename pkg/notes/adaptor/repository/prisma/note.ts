@@ -66,7 +66,10 @@ export class PrismaNoteRepository implements NoteRepository {
     };
   }
 
-  private deserialize(data: DeserializeNoteArgs): Note {
+  private deserialize(
+    data: DeserializeNoteArgs,
+    attachmentFileID: readonly MediumID[] = [],
+  ): Note {
     if (!data) {
       throw new Error('Invalid Note data');
     }
@@ -94,7 +97,7 @@ export class PrismaNoteRepository implements NoteRepository {
       originalNoteID: data.renoteId
         ? Option.some(data.renoteId as NoteID)
         : Option.none(),
-      attachmentFileID: [],
+      attachmentFileID,
       // ToDo: add SendTo field to schema
       sendTo: Option.none(),
       updatedAt: Option.none(),
@@ -182,8 +185,15 @@ export class PrismaNoteRepository implements NoteRepository {
           // NOTE: Exclude from the search those whose deletedAt does not appear undefined.
           deletedAt: undefined,
         },
+        include: { noteAttachment: true },
       });
-      return Option.some(this.deserialize(res));
+      const { noteAttachment, ...noteData } = res;
+      return Option.some(
+        this.deserialize(
+          noteData,
+          noteAttachment.map((a) => a.mediumId as MediumID),
+        ),
+      );
     } catch {
       return Option.none();
     }

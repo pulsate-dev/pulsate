@@ -159,7 +159,9 @@ const createReactionServiceObj = Ether.runEther(
     .feed(Ether.compose(noteRepoEther)).value,
 );
 const deleteReactionServiceObj = Ether.runEther(
-  Cat.cat(deleteReaction).feed(Ether.compose(noteReactionRepoEther)).value,
+  Cat.cat(deleteReaction)
+    .feed(Ether.compose(noteReactionRepoEther))
+    .feed(Ether.compose(noteRepoEther)).value,
 );
 const reactionController = new ReactionController(
   createReactionServiceObj,

@@ -54,6 +54,15 @@ export class CreateReactionService {
       return res;
     }
 
+    // If the reaction was attributed to the original note (renote case), return that note
+    const targetNoteID = reaction.getNoteID();
+    if (targetNoteID !== noteID) {
+      const originalNote = await this.noteRepository.findByID(targetNoteID);
+      if (Option.isSome(originalNote)) {
+        return Result.ok(Option.unwrap(originalNote));
+      }
+    }
+
     return Result.ok(Option.unwrap(note));
   }
 }
