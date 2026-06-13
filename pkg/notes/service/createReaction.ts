@@ -40,7 +40,7 @@ export class CreateReactionService {
 
     const reactionRes = Reaction.new({
       id: Result.unwrap(id),
-      noteID,
+      note: Option.unwrap(note),
       accountID,
       body,
     });
