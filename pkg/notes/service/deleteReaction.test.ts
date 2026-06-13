@@ -9,14 +9,12 @@ import { DeleteReactionService } from './deleteReaction.js';
 
 describe('DeleteReactionService', () => {
   const reactionRepo = new InMemoryReactionRepository([
-    Result.unwrap(
-      Reaction.new({
-        id: '100' as ReactionID,
-        noteID: '1' as NoteID,
-        accountID: '2' as AccountID,
-        body: '👍',
-      }),
-    ),
+    Reaction.reconstruct({
+      id: '100' as ReactionID,
+      noteID: '1' as NoteID,
+      accountID: '2' as AccountID,
+      body: '👍',
+    }),
   ]);
   const service = new DeleteReactionService(reactionRepo);
 
