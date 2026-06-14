@@ -40,7 +40,7 @@ export class CreateReactionService {
 
     const reactionRes = Reaction.new({
       id: Result.unwrap(id),
-      noteID,
+      note: Option.unwrap(note),
       accountID,
       body,
     });
@@ -52,6 +52,18 @@ export class CreateReactionService {
     const res = await this.reactionRepository.create(reaction);
     if (Result.isErr(res)) {
       return res;
+    }
+
+    // If the reaction was attributed to the original note (renote case), return that note
+    const targetNoteID = reaction.getNoteID();
+    if (targetNoteID !== noteID) {
+      const originalNote = await this.noteRepository.findByID(targetNoteID);
+      if (Option.isNone(originalNote)) {
+        return Result.err(
+          new NoteNotFoundError('Original note not found', { cause: null }),
+        );
+      }
+      return Result.ok(Option.unwrap(originalNote));
     }
 
     return Result.ok(Option.unwrap(note));

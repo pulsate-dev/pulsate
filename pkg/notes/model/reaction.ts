@@ -1,10 +1,10 @@
-import { Result } from '@mikuroxina/mini-fn';
+import { Option, Result } from '@mikuroxina/mini-fn';
 import * as v from 'valibot';
 
 import type { AccountID } from '../../accounts/model/account.js';
 import type { ID } from '../../internal/id/type.js';
 import { NoteInvalidReactionError } from './errors.js';
-import type { NoteID } from './note.js';
+import type { Note, NoteID } from './note.js';
 
 const unicodeEmojiSchema = v.pipe(
   v.string(),
@@ -24,7 +24,7 @@ export type ReactionID = ID<Reaction>;
 export interface CreateReactionArgs {
   id: ReactionID;
   accountID: AccountID;
-  noteID: NoteID;
+  note: Note;
   body: string;
 }
 
@@ -34,11 +34,16 @@ export class Reaction {
   readonly #noteID: NoteID;
   readonly #emoji: Emoji;
 
-  private constructor(args: CreateReactionArgs) {
+  private constructor(args: {
+    id: ReactionID;
+    accountID: AccountID;
+    noteID: NoteID;
+    emoji: Emoji;
+  }) {
     this.#id = args.id;
     this.#accountID = args.accountID;
     this.#noteID = args.noteID;
-    this.#emoji = args.body as Emoji;
+    this.#emoji = args.emoji;
   }
 
   static new(
@@ -49,7 +54,35 @@ export class Reaction {
         new NoteInvalidReactionError('Emoji type is invalid', { cause: null }),
       );
     }
-    return Result.ok(new Reaction(arg));
+
+    // Reactions on a non-quote renote are attributed to the original note
+    const noteID =
+      arg.note.isRenote() && !arg.note.isQuote()
+        ? Option.unwrap(arg.note.getOriginalNoteID())
+        : arg.note.getID();
+
+    return Result.ok(
+      new Reaction({
+        id: arg.id,
+        accountID: arg.accountID,
+        noteID,
+        emoji: arg.body as Emoji,
+      }),
+    );
+  }
+
+  static reconstruct(arg: {
+    id: ReactionID;
+    accountID: AccountID;
+    noteID: NoteID;
+    body: string;
+  }): Reaction {
+    return new Reaction({
+      id: arg.id,
+      accountID: arg.accountID,
+      noteID: arg.noteID,
+      emoji: arg.body as Emoji,
+    });
   }
 
   getID(): ReactionID {
