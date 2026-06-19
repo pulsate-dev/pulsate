@@ -31,7 +31,7 @@
     "postinstall": "lefthook install"
   },
   "dependencies": {
-    "@hono/node-server": "2.0.4",
+    "@hono/node-server": "2.0.5",
     "@hono/swagger-ui": "0.6.1",
     "@hono/zod-openapi": "1.4.0",
     "@mikuroxina/mini-fn": "7.2.0",
