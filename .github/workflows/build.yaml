@@ -21,7 +21,7 @@ jobs:
       - name: Setup pnpm
         uses: pnpm/action-setup@v6
 
-      - name: Setup Node.js 20
+      - name: Setup Node.js
         uses: actions/setup-node@v6
         with:
           node-version-file: '.tool-versions'
@@ -46,10 +46,6 @@ jobs:
       - name: Run test
         run: |
           pnpm test:coverage
-
-      - name: Run build
-        run: |
-          pnpm build
 
       - name: Upload coverage to codecov
         uses: codecov/codecov-action@v6

@@ -28,6 +28,6 @@
     "esModuleInterop": true,
     "resolveJsonModule": true
   },
-  "include": ["**/*.ts", "scripts/build.js"],
+  "include": ["**/*.ts"],
   "exclude": ["node_modules"]
 }
