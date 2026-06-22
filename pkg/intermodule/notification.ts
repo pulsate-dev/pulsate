@@ -98,20 +98,16 @@ const notificationRepo = Ether.newEther(
 
 const smtpConfig = {
   host: process.env.SMTP_HOST ?? '',
+  port: Number(process.env.SMTP_PORT) || 587,
   user: process.env.SMTP_USER ?? '',
   pass: process.env.SMTP_PASS ?? '',
   from: process.env.SMTP_FROM ?? '',
 };
 
-const emailSenderObject = isProduction
-  ? new SmtpEmailSender({
-      host: smtpConfig.host,
-      port: 587,
-      user: smtpConfig.user,
-      pass: smtpConfig.pass,
-      from: smtpConfig.from,
-    })
-  : new DummyEmailSender();
+const emailSenderObject =
+  isProduction || smtpConfig.host !== ''
+    ? new SmtpEmailSender(smtpConfig)
+    : new DummyEmailSender();
 const emailSender = Ether.newEther(emailSenderSymbol, () => emailSenderObject);
 
 export const notificationModuleFacadeSymbol =

@@ -7,6 +7,9 @@ services:
       - DATABASE_URL=postgresql://pulsate:pulsate_db_pass@db:5432/pulsate?schema=public
       - TURNSTILE_SECRET=1x0000000000000000000000000000000AA
       - VALKEY_REDIS_HOST=kv
+      - SMTP_HOST=mailpit
+      - SMTP_PORT=1025
+      - SMTP_FROM=noreply@pulsate.test
     ports:
       - "3000:3000"
   db:
@@ -26,7 +29,17 @@ services:
       - "6379:6379"
     volumes:
       - kv_data:/data
-
+  # Development-only mail catcher. Not started by a plain `docker compose up`;
+  # use `docker compose --profile dev up` so it never runs in production.
+  mailpit:
+    image: axllent/mailpit
+    container_name: mailpit
+    profiles:
+      - dev
+    restart: on-failure
+    ports:
+      - "1025:1025" # SMTP
+      - "8025:8025" # Web UI
 
 volumes:
   db_data:
