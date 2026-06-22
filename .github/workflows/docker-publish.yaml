@@ -39,7 +39,7 @@ jobs:
             org.opencontainers.image.title=pulsate
             org.opencontainers.image.licenses=Apache-2.0
             dev.pulsate.version=0.0.1
-            dev.pulsate.node-version=24.11.1
+            dev.pulsate.node-version=26.3.1
 
       - name: Build and push
         id: push
