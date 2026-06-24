@@ -1,5 +1,13 @@
+import { Result } from '@mikuroxina/mini-fn';
+import * as v from 'valibot';
+
 import type { AccountID } from '../../accounts/model/account.js';
 import type { ID } from '../../internal/id/type.js';
+import {
+  ListMemberAlreadyExistsError,
+  ListTitleLengthInvalidError,
+  ListTooManyMembersError,
+} from './errors.js';
 
 export type ListID = ID<List>;
 export type CreateListArgs = Readonly<{
@@ -11,7 +19,16 @@ export type CreateListArgs = Readonly<{
   createdAt: Date;
 }>;
 
+export const listTitleSchema = v.pipe(
+  v.string(),
+  v.minLength(1),
+  v.maxLength(100),
+);
+
 export class List {
+  // ToDo: make this configurable
+  readonly #MEMBER_LIMIT = 250;
+
   private readonly id: ListID;
   private title: string;
   private publicity: 'PUBLIC' | 'PRIVATE';
@@ -40,16 +57,31 @@ export class List {
     return this.title;
   }
 
-  setTitle(title: string) {
-    this.title = title;
+  setTitle(title: string): Result.Result<ListTitleLengthInvalidError, void> {
+    const parsed = v.safeParse(listTitleSchema, title);
+    if (parsed.success) {
+      this.title = title;
+      return Result.ok(undefined);
+    }
+    return Result.err(
+      new ListTitleLengthInvalidError('list title length is invalid', {
+        cause: title.length,
+      }),
+    );
   }
 
   isPublic(): boolean {
     return this.publicity === 'PUBLIC';
   }
 
-  setPublicity(publicity: 'PUBLIC' | 'PRIVATE') {
-    this.publicity = publicity;
+  toPublic(): Result.Result<never, void> {
+    this.publicity = 'PUBLIC';
+    return Result.ok(undefined);
+  }
+
+  toPrivate(): Result.Result<never, void> {
+    this.publicity = 'PRIVATE';
+    return Result.ok(undefined);
   }
 
   getOwnerId(): AccountID {
@@ -64,9 +96,26 @@ export class List {
     return this.createdAt;
   }
 
-  addMember(memberId: AccountID): void {
-    // ToDo: member limit
+  addMember(
+    memberId: AccountID,
+  ): Result.Result<
+    ListTooManyMembersError | ListMemberAlreadyExistsError,
+    void
+  > {
+    if (this.memberIds.has(memberId)) {
+      return Result.err(
+        new ListMemberAlreadyExistsError('member already exists', {
+          cause: null,
+        }),
+      );
+    }
+    if (this.memberIds.size >= this.#MEMBER_LIMIT) {
+      return Result.err(
+        new ListTooManyMembersError('too many members', { cause: null }),
+      );
+    }
     this.memberIds.add(memberId);
+    return Result.ok(undefined);
   }
 
   removeMember(memberId: AccountID): void {

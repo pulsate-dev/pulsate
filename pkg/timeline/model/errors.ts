@@ -32,12 +32,12 @@ export class TimelineNoMoreNotesError extends Error {
 }
 
 /**
- * List title too long
+ * List title length is out of valid range
  */
-export class ListTitleTooLongError extends Error {
+export class ListTitleLengthInvalidError extends Error {
   constructor(message: string, options: { cause: unknown }) {
     super(message);
-    this.name = 'ListTitleTooLongError';
+    this.name = 'ListTitleLengthInvalidError';
     this.cause = options.cause;
   }
 }
@@ -60,6 +60,17 @@ export class ListTooManyMembersError extends Error {
   constructor(message: string, options: { cause: unknown }) {
     super(message);
     this.name = 'ListTooManyMembersError';
+    this.cause = options.cause;
+  }
+}
+
+/**
+ * List member already exists
+ */
+export class ListMemberAlreadyExistsError extends Error {
+  constructor(message: string, options: { cause: unknown }) {
+    super(message);
+    this.name = 'ListMemberAlreadyExistsError';
     this.cause = options.cause;
   }
 }
