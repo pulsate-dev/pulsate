@@ -130,13 +130,9 @@ export interface ListRepository {
 
   /**
    * @description Append account to list
-   * @param listID
-   * @param accountID
+   * @param list Updated list with new member already added
    */
-  appendListMember(
-    listID: ListID,
-    accountID: AccountID,
-  ): Promise<Result.Result<Error, void>>;
+  appendListMember(list: List): Promise<Result.Result<Error, void>>;
   /**
    * @description Remove account from list
    * @param listID

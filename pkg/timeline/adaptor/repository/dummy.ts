@@ -315,24 +315,11 @@ export class InMemoryListRepository implements ListRepository {
     return Result.ok(list.getMemberIds());
   }
 
-  async appendListMember(
-    listID: ListID,
-    accountID: AccountID,
-  ): Promise<Result.Result<Error, void>> {
-    const list = this.listData.get(listID);
-    if (!list) {
+  async appendListMember(list: List): Promise<Result.Result<Error, void>> {
+    if (!this.listData.has(list.getId())) {
       return Result.err(new ListNotFoundError('Not found', { cause: null }));
     }
-
-    if (list.getMemberIds().includes(accountID)) {
-      // ToDo: Replace Error to ListMemberAlreadyExistsError
-      return Result.err(
-        new ListInternalError('Account already exists', { cause: null }),
-      );
-    }
-
-    list.addMember(accountID);
-
+    this.listData.set(list.getId(), list);
     return Result.ok(undefined);
   }
 

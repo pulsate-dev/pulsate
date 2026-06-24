@@ -438,16 +438,14 @@ export class PrismaListRepository implements ListRepository {
     }
   }
 
-  async appendListMember(
-    listID: ListID,
-    accountID: AccountID,
-  ): Promise<Result.Result<Error, void>> {
+  async appendListMember(list: List): Promise<Result.Result<Error, void>> {
     try {
-      await this.prisma.listMember.create({
-        data: {
-          listId: listID,
-          memberId: accountID,
-        },
+      await this.prisma.listMember.createMany({
+        data: list.getMemberIds().map((memberId) => ({
+          listId: list.getId(),
+          memberId,
+        })),
+        skipDuplicates: true,
       });
 
       return Result.ok(undefined);

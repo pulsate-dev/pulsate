@@ -34,7 +34,7 @@ import {
 import { valkeyTimelineCacheRepo } from './adaptor/repository/valkeyCache.js';
 import {
   ListNotFoundError,
-  ListTitleTooLongError,
+  ListTitleLengthInvalidError,
   ListTooManyMembersError,
   TimelineBlockedByAccountError,
   TimelineInsufficientPermissionError,
@@ -312,7 +312,7 @@ timeline.openapi(CreateListRoute, async (c) => {
     const error = Result.unwrapErr(res);
     timelineModuleLogger.warn(error);
 
-    if (error instanceof ListTitleTooLongError) {
+    if (error instanceof ListTitleLengthInvalidError) {
       return c.json({ error: 'TITLE_TOO_LONG' as const }, 400);
     }
 
@@ -341,7 +341,7 @@ timeline.openapi(EditListRoute, async (c) => {
       return c.json({ error: 'LIST_NOT_FOUND' as const }, 404);
     }
 
-    if (error instanceof ListTitleTooLongError) {
+    if (error instanceof ListTitleLengthInvalidError) {
       return c.json({ error: 'TITLE_TOO_LONG' as const }, 400);
     }
 
