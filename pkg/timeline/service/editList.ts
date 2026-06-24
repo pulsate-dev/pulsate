@@ -11,48 +11,37 @@ export class EditListService {
     title: string,
   ): Promise<Result.Result<Error, void>> {
     const res = await this.listRepository.fetchList(listId);
-
     if (Result.isErr(res)) {
       return res;
     }
 
     const list = Result.unwrap(res);
 
-    try {
-      list.setTitle(title);
-      const res = await this.listRepository.edit(list);
-      if (Result.isErr(res)) {
-        return res;
-      }
-
-      return Result.ok(undefined);
-    } catch (e) {
-      return Result.err(e as unknown as Error);
+    const setTitleRes = list.setTitle(title);
+    if (Result.isErr(setTitleRes)) {
+      return setTitleRes;
     }
+
+    return await this.listRepository.edit(list);
   }
   async editPublicity(
     listId: ID<List>,
     publicity: 'PUBLIC' | 'PRIVATE',
   ): Promise<Result.Result<Error, void>> {
     const res = await this.listRepository.fetchList(listId);
-
     if (Result.isErr(res)) {
       return res;
     }
 
     const list = Result.unwrap(res);
 
-    try {
-      list.setPublicity(publicity);
-      const res = await this.listRepository.edit(list);
-      if (Result.isErr(res)) {
-        return res;
-      }
-
-      return Result.ok(undefined);
-    } catch (e) {
-      return Result.err(e as unknown as Error);
+    const setPublicityRes =
+      publicity === 'PUBLIC' ? list.toPublic() : list.toPrivate();
+    if (Result.isErr(setPublicityRes)) {
+      return setPublicityRes;
     }
+
+    return await this.listRepository.edit(list);
   }
 }
 

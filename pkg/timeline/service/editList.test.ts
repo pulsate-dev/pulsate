@@ -2,6 +2,7 @@ import { Result } from '@mikuroxina/mini-fn';
 import { beforeEach, describe, expect, it } from 'vitest';
 import type { AccountID } from '../../accounts/model/account.js';
 import { InMemoryListRepository } from '../adaptor/repository/dummy.js';
+import { ListTitleLengthInvalidError } from '../model/errors.js';
 import { type CreateListArgs, List, type ListID } from '../model/list.js';
 import { EditListService } from './editList.js';
 
@@ -20,6 +21,7 @@ const service = new EditListService(repository);
 describe('EditListService', () => {
   let testList: List;
   beforeEach(async () => {
+    repository.reset();
     await repository.create(List.new(testListData));
     const res = await repository.fetchList('1' as ListID);
     if (Result.isErr(res)) return;
@@ -41,5 +43,22 @@ describe('EditListService', () => {
     expect(Result.isOk(res)).toBe(true);
     expect(testList.getTitle()).toBe('Edited');
     expect((await repository.fetchList('1' as ListID))[1]).toBe(testList);
+  });
+
+  it('should return ListTitleLengthInvalidError when title is empty', async () => {
+    const res = await service.editTitle('1' as ListID, '');
+
+    expect(Result.isErr(res)).toBe(true);
+    expect(Result.unwrapErr(res)).toBeInstanceOf(ListTitleLengthInvalidError);
+    expect(testList.getTitle()).toBe('Test List');
+  });
+
+  it('should return ListTitleLengthInvalidError when title exceeds 100 chars', async () => {
+    const tooLong = 'a'.repeat(101);
+    const res = await service.editTitle('1' as ListID, tooLong);
+
+    expect(Result.isErr(res)).toBe(true);
+    expect(Result.unwrapErr(res)).toBeInstanceOf(ListTitleLengthInvalidError);
+    expect(testList.getTitle()).toBe('Test List');
   });
 });
