@@ -45,7 +45,21 @@ export class List {
     this.createdAt = args.createdAt;
   }
 
-  static new(args: CreateListArgs) {
+  static new(
+    args: CreateListArgs,
+  ): Result.Result<ListTitleLengthInvalidError, List> {
+    const parsed = v.safeParse(listTitleSchema, args.title);
+    if (!parsed.success) {
+      return Result.err(
+        new ListTitleLengthInvalidError('list title length is invalid', {
+          cause: args.title.length,
+        }),
+      );
+    }
+    return Result.ok(new List(args));
+  }
+
+  static reconstruct(args: CreateListArgs): List {
     return new List(args);
   }
 

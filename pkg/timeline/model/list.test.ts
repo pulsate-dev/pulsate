@@ -19,19 +19,37 @@ describe('List', () => {
     createdAt: new Date(),
   } as const;
 
-  it('should create a new list', () => {
-    const list = List.new(args);
+  describe('new', () => {
+    it('should create a new list', () => {
+      const res = List.new(args);
 
-    expect(list.getId()).toBe(args.id);
-    expect(list.getTitle()).toBe(args.title);
-    expect(list.isPublic()).toBe(true);
-    expect(list.getOwnerId()).toBe(args.ownerId);
-    expect(list.getMemberIds()).toEqual(args.memberIds);
-    expect(list.getCreatedAt()).toBe(args.createdAt);
+      expect(Result.isOk(res)).toBe(true);
+      const list = Result.unwrap(res);
+      expect(list.getId()).toBe(args.id);
+      expect(list.getTitle()).toBe(args.title);
+      expect(list.isPublic()).toBe(true);
+      expect(list.getOwnerId()).toBe(args.ownerId);
+      expect(list.getMemberIds()).toEqual(args.memberIds);
+      expect(list.getCreatedAt()).toBe(args.createdAt);
+    });
+
+    it('should return ListTitleLengthInvalidError when title is empty', () => {
+      const res = List.new({ ...args, title: '' });
+
+      expect(Result.isErr(res)).toBe(true);
+      expect(Result.unwrapErr(res)).toBeInstanceOf(ListTitleLengthInvalidError);
+    });
+
+    it('should return ListTitleLengthInvalidError when title exceeds 100 chars', () => {
+      const res = List.new({ ...args, title: 'a'.repeat(101) });
+
+      expect(Result.isErr(res)).toBe(true);
+      expect(Result.unwrapErr(res)).toBeInstanceOf(ListTitleLengthInvalidError);
+    });
   });
 
   it('should add a member to the list', () => {
-    const list = List.new(args);
+    const list = List.reconstruct(args);
     const memberId = '4' as AccountID;
 
     const res = list.addMember(memberId);
@@ -44,7 +62,7 @@ describe('List', () => {
   });
 
   it('should not add a member if already in the list', () => {
-    const list = List.new({
+    const list = List.reconstruct({
       ...args,
       memberIds: ['3' as AccountID],
     });
@@ -62,7 +80,7 @@ describe('List', () => {
       { length: 250 },
       (_, i) => `${i + 1}` as AccountID,
     );
-    const list = List.new({ ...args, memberIds });
+    const list = List.reconstruct({ ...args, memberIds });
     const newMemberId = '251' as AccountID;
 
     const res = list.addMember(newMemberId);
@@ -73,7 +91,7 @@ describe('List', () => {
   });
 
   it('should remove member from list', () => {
-    const list = List.new({
+    const list = List.reconstruct({
       ...args,
       memberIds: ['3' as AccountID],
     });
@@ -85,7 +103,7 @@ describe('List', () => {
   });
 
   it('should no duplicate member when initialize', () => {
-    const list = List.new({
+    const list = List.reconstruct({
       ...args,
       memberIds: ['3' as AccountID, '3' as AccountID],
     });
@@ -94,7 +112,7 @@ describe('List', () => {
 
   describe('setTitle', () => {
     it('should set title when length is within range', () => {
-      const list = List.new(args);
+      const list = List.reconstruct(args);
 
       const res = list.setTitle('Edited Title');
 
@@ -103,7 +121,7 @@ describe('List', () => {
     });
 
     it('should return ListTitleLengthInvalidError when title is empty', () => {
-      const list = List.new(args);
+      const list = List.reconstruct(args);
 
       const res = list.setTitle('');
 
@@ -113,7 +131,7 @@ describe('List', () => {
     });
 
     it('should return ListTitleLengthInvalidError when title exceeds 100 chars', () => {
-      const list = List.new(args);
+      const list = List.reconstruct(args);
       const tooLong = 'a'.repeat(101);
 
       const res = list.setTitle(tooLong);
@@ -126,7 +144,7 @@ describe('List', () => {
 
   describe('publicity', () => {
     it('should turn private via toPrivate', () => {
-      const list = List.new(args);
+      const list = List.reconstruct(args);
 
       const res = list.toPrivate();
 
@@ -135,7 +153,7 @@ describe('List', () => {
     });
 
     it('should turn public via toPublic', () => {
-      const list = List.new({ ...args, publicity: 'PRIVATE' });
+      const list = List.reconstruct({ ...args, publicity: 'PRIVATE' });
 
       const res = list.toPublic();
 
