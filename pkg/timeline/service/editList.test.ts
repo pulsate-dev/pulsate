@@ -22,7 +22,7 @@ describe('EditListService', () => {
   let testList: List;
   beforeEach(async () => {
     repository.reset();
-    await repository.create(List.new(testListData));
+    await repository.create(List.reconstruct(testListData));
     const res = await repository.fetchList('1' as ListID);
     if (Result.isErr(res)) return;
 

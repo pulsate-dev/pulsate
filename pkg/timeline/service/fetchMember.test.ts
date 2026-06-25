@@ -8,7 +8,7 @@ import { List, type ListID } from '../model/list.js';
 import { FetchListMemberService } from './fetchMember.js';
 
 describe('FetchListMemberService', () => {
-  const dummyListData = List.new({
+  const dummyListData = List.reconstruct({
     id: '1' as ListID,
     title: 'List',
     publicity: 'PRIVATE',

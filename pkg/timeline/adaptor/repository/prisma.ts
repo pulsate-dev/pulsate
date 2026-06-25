@@ -252,7 +252,7 @@ export class PrismaListRepository implements ListRepository {
     if (!data) {
       throw new Error('Invalid List Data');
     }
-    return List.new({
+    return List.reconstruct({
       id: data.id as ListID,
       title: data.title,
       ownerId: data.accountId as AccountID,

@@ -6,7 +6,7 @@ import { List, type ListID } from '../model/list.js';
 import { FetchSubscribedListService } from './fetchSubscribed.js';
 
 describe('FetchSubscribedListService', () => {
-  const dummyList = List.new({
+  const dummyList = List.reconstruct({
     id: '1' as ListID,
     title: 'dummy',
     memberIds: ['101' as AccountID],
