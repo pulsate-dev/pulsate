@@ -19,7 +19,7 @@ import { NoteVisibilityService } from './noteVisibility.js';
 import { PushTimelineService } from './push.js';
 
 describe('PushTimelineService', () => {
-  const dummyList = List.new({
+  const dummyList = List.reconstruct({
     id: '10' as ListID,
     title: 'dummy',
     memberIds: ['100' as AccountID],

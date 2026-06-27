@@ -12,7 +12,7 @@ import { AppendListMemberService } from './appendMember.js';
 
 describe('AppendListMemberService', () => {
   const listData = [
-    List.new({
+    List.reconstruct({
       createdAt: new Date('2023-09-10T00:00:00.000Z'),
       id: '10' as ListID,
       memberIds: [],

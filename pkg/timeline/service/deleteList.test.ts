@@ -5,7 +5,7 @@ import { InMemoryListRepository } from '../adaptor/repository/dummy.js';
 import { List, type ListID } from '../model/list.js';
 import { DeleteListService } from './deleteList.js';
 
-const testList = List.new({
+const testList = List.reconstruct({
   id: '1' as ListID,
   createdAt: new Date(2023, 9, 10, 0, 0),
   memberIds: [],
