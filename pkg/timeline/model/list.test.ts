@@ -46,6 +46,17 @@ describe('List', () => {
       expect(Result.isErr(res)).toBe(true);
       expect(Result.unwrapErr(res)).toBeInstanceOf(ListTitleLengthInvalidError);
     });
+
+    it('should return ListTooManyMembersError when memberIds exceeds 250', () => {
+      const memberIds = Array.from(
+        { length: 251 },
+        (_, i) => `${i + 1}` as AccountID,
+      );
+      const res = List.new({ ...args, memberIds });
+
+      expect(Result.isErr(res)).toBe(true);
+      expect(Result.unwrapErr(res)).toBeInstanceOf(ListTooManyMembersError);
+    });
   });
 
   it('should add a member to the list', () => {

@@ -25,10 +25,10 @@ export const listTitleSchema = v.pipe(
   v.maxLength(100),
 );
 
-export class List {
-  // ToDo: make this configurable
-  readonly #MEMBER_LIMIT = 250;
+// ToDo: make this configurable
+const MEMBER_LIMIT = 250;
 
+export class List {
   private readonly id: ListID;
   private title: string;
   private publicity: 'PUBLIC' | 'PRIVATE';
@@ -47,7 +47,10 @@ export class List {
 
   static new(
     args: CreateListArgs,
-  ): Result.Result<ListTitleLengthInvalidError, List> {
+  ): Result.Result<
+    ListTitleLengthInvalidError | ListTooManyMembersError,
+    List
+  > {
     const parsed = v.safeParse(listTitleSchema, args.title);
     if (!parsed.success) {
       return Result.err(
@@ -56,11 +59,16 @@ export class List {
         }),
       );
     }
+    if (args.memberIds.length > MEMBER_LIMIT) {
+      return Result.err(
+        new ListTooManyMembersError('too many members', { cause: null }),
+      );
+    }
     return Result.ok(new List(args));
   }
 
   static reconstruct(args: CreateListArgs): List {
-    return new List(args);
+    return Result.unwrap(List.new(args));
   }
 
   getId(): ListID {
@@ -123,7 +131,7 @@ export class List {
         }),
       );
     }
-    if (this.memberIds.size >= this.#MEMBER_LIMIT) {
+    if (this.memberIds.size >= MEMBER_LIMIT) {
       return Result.err(
         new ListTooManyMembersError('too many members', { cause: null }),
       );
