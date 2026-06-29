@@ -2,15 +2,12 @@ import { Ether, Result } from '@mikuroxina/mini-fn';
 import type { AccountID } from '../../accounts/model/account.js';
 import {
   ListNotFoundError,
-  ListTooManyMembersError,
   TimelineInsufficientPermissionError,
 } from '../model/errors.js';
 import type { List, ListID } from '../model/list.js';
 import { type ListRepository, listRepoSymbol } from '../model/repository.js';
 
 export class AppendListMemberService {
-  // ToDo: make this configurable
-  private readonly LIST_MEMBER_LIMIT = 250;
   constructor(private readonly listRepository: ListRepository) {}
 
   /**
@@ -34,33 +31,19 @@ export class AppendListMemberService {
         }),
       );
     }
-    const allowedRes = this.verifyActorPermission(
-      actorID,
-      Result.unwrap(listRes),
-    );
+    const list = Result.unwrap(listRes);
+
+    const allowedRes = this.verifyActorPermission(actorID, list);
     if (Result.isErr(allowedRes)) {
       return allowedRes;
     }
 
-    const membersRes = await this.listRepository.fetchListMembers(listID);
-    if (Result.isErr(membersRes)) {
-      return Result.err(
-        new ListNotFoundError('List not found', {
-          cause: Result.unwrapErr(membersRes),
-        }),
-      );
-    }
-    const members = Result.unwrap(membersRes);
-
-    if (members.length >= this.LIST_MEMBER_LIMIT) {
-      return Result.err(
-        new ListTooManyMembersError('Too many members', {
-          cause: null,
-        }),
-      );
+    const addRes = list.addMember(accountID);
+    if (Result.isErr(addRes)) {
+      return addRes;
     }
 
-    return await this.listRepository.appendListMember(listID, accountID);
+    return await this.listRepository.appendListMember(list);
   }
 
   private verifyActorPermission(

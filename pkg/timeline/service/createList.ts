@@ -36,13 +36,16 @@ export class CreateListService {
       memberIds: [] as const,
       createdAt: new Date(Number(now)),
     });
+    if (Result.isErr(list)) {
+      return list;
+    }
 
-    const res = await this.listRepository.create(list);
+    const res = await this.listRepository.create(Result.unwrap(list));
     if (Result.isErr(res)) {
       return res;
     }
 
-    return Result.ok(list);
+    return Result.ok(Result.unwrap(list));
   }
 }
 

@@ -249,7 +249,7 @@ describe('InMemoryTimelineRepository', () => {
 });
 
 describe('InMemoryListRepository', () => {
-  const dummyList = List.new({
+  const dummyList = List.reconstruct({
     id: '1' as ListID,
     title: 'dummy list',
     publicity: 'PUBLIC',
@@ -294,7 +294,7 @@ describe('InMemoryListRepository', () => {
   });
 
   it('should create list', async () => {
-    const dummy = List.new({
+    const dummy = List.reconstruct({
       id: '2' as ListID,
       title: 'dummy list 2',
       publicity: 'PUBLIC',

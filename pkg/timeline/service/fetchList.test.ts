@@ -6,7 +6,7 @@ import { List, type ListID } from '../model/list.js';
 import { FetchListService } from './fetchList.js';
 
 const repository = new InMemoryListRepository([
-  List.new({
+  List.reconstruct({
     id: '1' as ListID,
     title: 'Test list',
     ownerId: '' as AccountID,
