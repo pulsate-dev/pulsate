@@ -3,7 +3,7 @@ import { Option } from '@mikuroxina/mini-fn';
 import type { AccountID } from '../../accounts/model/account.js';
 import { Medium, type MediumID } from '../model/medium.js';
 
-export const testMedium = Medium.new({
+export const testMedium = Medium.reconstruct({
   id: '300' as MediumID,
   name: 'test.jpg',
   mime: 'image/jpeg',
@@ -14,7 +14,7 @@ export const testMedium = Medium.new({
   hash: '40kdflnrh',
 });
 
-export const testNSFWMedium = Medium.new({
+export const testNSFWMedium = Medium.reconstruct({
   id: '301' as MediumID,
   name: 'test.jpg',
   mime: 'image/jpeg',
@@ -25,7 +25,7 @@ export const testNSFWMedium = Medium.new({
   hash: '40kdflnrh',
 });
 
-export const testOtherMedium = Medium.new({
+export const testOtherMedium = Medium.reconstruct({
   id: '303' as MediumID,
   name: 'test.jpg',
   mime: 'image/jpeg',

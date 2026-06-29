@@ -7,7 +7,7 @@ import { Medium, type MediumID } from '../model/medium.js';
 import { FetchMediaService } from './fetch.js';
 
 describe('FetchMediaService', () => {
-  const dummyMedium = Medium.new({
+  const dummyMedium = Medium.reconstruct({
     id: '1' as MediumID,
     authorId: '10' as AccountID,
     hash: 'ssjrkgnkksjn',

@@ -1,9 +1,27 @@
-import type { Option } from '@mikuroxina/mini-fn';
+import { type Option, Result } from '@mikuroxina/mini-fn';
+import * as v from 'valibot';
 
 import type { AccountID } from '../../accounts/model/account.js';
 import type { ID } from '../../internal/id/type.js';
+import { MediaSizeTooLargeError, MediaTypeInvalidError } from './errors.js';
 
 export type MediumID = ID<Medium>;
+
+const ALLOWED_MIME_TYPES = [
+  'image/apng',
+  'image/avif',
+  'image/gif',
+  'image/jpeg',
+  'image/png',
+  'image/webp',
+  'audio/wav',
+  'audio/mpeg',
+  'audio/ogg',
+  'video/webm',
+  'video/mp4',
+] as const;
+
+const sourceMimeSchema = v.picklist(ALLOWED_MIME_TYPES);
 
 export interface CreateMediumArgs {
   id: MediumID;
@@ -12,10 +30,14 @@ export interface CreateMediumArgs {
   hash: string;
   mime: string;
   nsfw: boolean;
-  // NOTE: Option rather than '' so an undetermined URL cannot be confused with a
-  // real empty value, keeping the model always in a valid state.
   url: Option.Option<string>;
   thumbnailUrl: Option.Option<string>;
+}
+
+export interface NewMediumArgs extends CreateMediumArgs {
+  sourceMime: string;
+  size: number;
+  maxSize: number;
 }
 
 export class Medium {
@@ -30,8 +52,22 @@ export class Medium {
     this.#thumbnailUrl = arg.thumbnailUrl;
   }
 
-  public static new(arg: CreateMediumArgs): Medium {
-    return new Medium(arg);
+  public static new(
+    arg: NewMediumArgs,
+  ): Result.Result<MediaSizeTooLargeError | MediaTypeInvalidError, Medium> {
+    if (!v.safeParse(sourceMimeSchema, arg.sourceMime).success) {
+      return Result.err(
+        new MediaTypeInvalidError('Invalid file type', { cause: null }),
+      );
+    }
+    // NOTE: maxSize is provided per call, so the size schema is built here.
+    const sizeSchema = v.pipe(v.number(), v.maxValue(arg.maxSize));
+    if (!v.safeParse(sizeSchema, arg.size).success) {
+      return Result.err(
+        new MediaSizeTooLargeError('File size is too large', { cause: null }),
+      );
+    }
+    return Result.ok(new Medium(arg));
   }
 
   public static reconstruct(arg: CreateMediumArgs): Medium {

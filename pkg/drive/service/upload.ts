@@ -5,11 +5,7 @@ import sharp from 'sharp';
 
 import type { AccountID } from '../../accounts/model/account.js';
 import type { SnowflakeIDGenerator } from '../../internal/id/mod.js';
-import {
-  DriveInternalError,
-  MediaSizeTooLargeError,
-  MediaTypeInvalidError,
-} from '../model/errors.js';
+import { DriveInternalError, MediaTypeInvalidError } from '../model/errors.js';
 import { Medium } from '../model/medium.js';
 import type { MediaRepository } from '../model/repository.js';
 import type { Storage } from '../model/storage.js';
@@ -41,23 +37,39 @@ export class UploadMediaService {
         new MediaTypeInvalidError('Invalid file type', { cause: null }),
       );
     }
-    if (args.file.length > this.MAX_MEDIA_SIZE) {
-      return Result.err(
-        new MediaSizeTooLargeError('File size is too large', { cause: null }),
-      );
+
+    const id = this.idGenerator.generate<Medium>();
+    if (Result.isErr(id)) {
+      return id;
     }
 
+    // NOTE: Processing runs first because the hash comes from it. If it fails
+    // the empty hash is harmless: an invalid source is rejected by Medium.new,
+    // and a valid source is reported as an internal error below.
     const processed = await this.imageProcessing(args.file);
+
+    const medium = Medium.new({
+      id: id[1],
+      name: args.name,
+      authorId: args.authorId,
+      nsfw: args.nsfw,
+      mime: 'image/webp',
+      hash: Option.isSome(processed) ? processed[1].hash : '',
+      url: Option.none(),
+      thumbnailUrl: Option.none(),
+      sourceMime: mime[1],
+      size: args.file.length,
+      maxSize: this.MAX_MEDIA_SIZE,
+    });
+    if (Result.isErr(medium)) {
+      return medium;
+    }
+
+    // NOTE: The source is valid, so a failed processing is an internal error.
     if (Option.isNone(processed)) {
       return Result.err(
         new DriveInternalError('Failed to process image', { cause: null }),
       );
-    }
-
-    const id = this.idGenerator.generate<Medium>();
-
-    if (Result.isErr(id)) {
-      return id;
     }
 
     await this.storage.upload(`${id[1]}.webp`, processed[1].resized);
@@ -66,23 +78,12 @@ export class UploadMediaService {
       processed[1].thumbnail,
     );
 
-    const medium = Medium.new({
-      id: id[1],
-      name: args.name,
-      authorId: args.authorId,
-      nsfw: args.nsfw,
-      mime: 'image/webp',
-      hash: processed[1].hash,
-      url: Option.none(),
-      thumbnailUrl: Option.none(),
-    });
-
-    const res = await this.repository.create(medium);
+    const res = await this.repository.create(medium[1]);
     if (Result.isErr(res)) {
       return res;
     }
 
-    return Result.ok(medium);
+    return Result.ok(medium[1]);
   }
 
   private async detectFileType(
@@ -90,23 +91,6 @@ export class UploadMediaService {
   ): Promise<Option.Option<string>> {
     const detected = await fileTypeFromBuffer(file);
     if (!detected) {
-      return Option.none();
-    }
-
-    const allowedTypes = [
-      'image/apng',
-      'image/avif',
-      'image/gif',
-      'image/jpeg',
-      'image/png',
-      'image/webp',
-      'audio/wav',
-      'audio/mpeg',
-      'audio/ogg',
-      'video/webm',
-      'video/mp4',
-    ];
-    if (!allowedTypes.includes(detected.mime)) {
       return Option.none();
     }
     return Option.some(detected.mime);
@@ -119,20 +103,26 @@ export class UploadMediaService {
   > {
     // ToDo: separate cases when images are animated
 
-    const resized = await sharp(file).webp().toBuffer();
-    const thumbnail = await sharp(resized).resize(200, 200).toBuffer();
+    // NOTE: sharp throws on unsupported or corrupt inputs; treat that as a
+    // failed processing so the caller can decide the resulting error.
+    try {
+      const resized = await sharp(file).webp().toBuffer();
+      const thumbnail = await sharp(resized).resize(200, 200).toBuffer();
 
-    const { data, info } = await sharp(thumbnail)
-      .ensureAlpha()
-      .raw()
-      .toBuffer({ resolveWithObject: true });
-    const hash = encode(
-      new Uint8ClampedArray(data),
-      info.width,
-      info.height,
-      4,
-      4,
-    );
-    return Option.some({ resized, thumbnail, hash: hash });
+      const { data, info } = await sharp(thumbnail)
+        .ensureAlpha()
+        .raw()
+        .toBuffer({ resolveWithObject: true });
+      const hash = encode(
+        new Uint8ClampedArray(data),
+        info.width,
+        info.height,
+        4,
+        4,
+      );
+      return Option.some({ resized, thumbnail, hash: hash });
+    } catch {
+      return Option.none();
+    }
   }
 }
