@@ -1,4 +1,4 @@
-import { Cat, Ether, Result } from '@mikuroxina/mini-fn';
+import { Cat, Ether, Option, Result } from '@mikuroxina/mini-fn';
 import { InMemoryAccountRepository } from '../accounts/adaptor/repository/dummy/account.js';
 import { inMemoryAccountAvatarRepo } from '../accounts/adaptor/repository/dummy/avatar.js';
 import { newFollowRepo } from '../accounts/adaptor/repository/dummy/follow.js';
@@ -126,7 +126,7 @@ export class AccountModuleFacade {
   ): Promise<Result.Result<Error, string>> {
     const res = await this.avatarService.fetchByAccountID(id);
     const avatar = Result.mapOr('')((avatarImage: Medium): string =>
-      avatarImage.getUrl(),
+      Option.unwrapOr('')(avatarImage.getUrl()),
     )(res);
     return Result.ok(avatar);
   }
@@ -136,7 +136,7 @@ export class AccountModuleFacade {
   ): Promise<Result.Result<Error, string>> {
     const res = await this.headerService.fetchByAccountID(id);
     const header = Result.mapOr('')((headerImage: Medium): string =>
-      headerImage.getUrl(),
+      Option.unwrapOr('')(headerImage.getUrl()),
     )(res);
     return Result.ok(header);
   }
@@ -163,18 +163,22 @@ export class AccountModuleFacade {
     const res = new Map<AccountID, { avatarURL: string; headerURL: string }>();
 
     for (const v of avatar) {
-      res.set(v.getAuthorId(), { avatarURL: v.getUrl(), headerURL: '' });
+      res.set(v.getAuthorId(), {
+        avatarURL: Option.unwrapOr('')(v.getUrl()),
+        headerURL: '',
+      });
     }
     for (const v of header) {
+      const headerURL = Option.unwrapOr('')(v.getUrl());
       const avatarURL = res.get(v.getAuthorId())?.avatarURL;
       if (avatarURL) {
         res.set(v.getAuthorId(), {
           avatarURL,
-          headerURL: v.getUrl(),
+          headerURL,
         });
         continue;
       }
-      res.set(v.getAuthorId(), { avatarURL: '', headerURL: v.getUrl() });
+      res.set(v.getAuthorId(), { avatarURL: '', headerURL });
     }
 
     return Result.ok(res);

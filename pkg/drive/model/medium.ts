@@ -1,3 +1,5 @@
+import type { Option } from '@mikuroxina/mini-fn';
+
 import type { AccountID } from '../../accounts/model/account.js';
 import type { ID } from '../../internal/id/type.js';
 
@@ -10,20 +12,22 @@ export interface CreateMediumArgs {
   hash: string;
   mime: string;
   nsfw: boolean;
-  url: string;
-  thumbnailUrl: string;
+  // NOTE: Option rather than '' so an undetermined URL cannot be confused with a
+  // real empty value, keeping the model always in a valid state.
+  url: Option.Option<string>;
+  thumbnailUrl: Option.Option<string>;
 }
 
 export class Medium {
   private constructor(arg: CreateMediumArgs) {
-    this.id = arg.id;
-    this.name = arg.name;
-    this.authorId = arg.authorId;
-    this.hash = arg.hash;
-    this.mime = arg.mime;
-    this.nsfw = arg.nsfw;
-    this.url = arg.url;
-    this.thumbnailUrl = arg.thumbnailUrl;
+    this.#id = arg.id;
+    this.#name = arg.name;
+    this.#authorId = arg.authorId;
+    this.#hash = arg.hash;
+    this.#mime = arg.mime;
+    this.#nsfw = arg.nsfw;
+    this.#url = arg.url;
+    this.#thumbnailUrl = arg.thumbnailUrl;
   }
 
   public static new(arg: CreateMediumArgs): Medium {
@@ -34,44 +38,43 @@ export class Medium {
     return new Medium(arg);
   }
 
-  private readonly id: MediumID;
-
+  readonly #id: MediumID;
   getId(): MediumID {
-    return this.id;
+    return this.#id;
   }
-  private readonly name: string;
 
+  readonly #name: string;
   getName(): string {
-    return this.name;
+    return this.#name;
   }
-  private readonly authorId: AccountID;
 
+  readonly #authorId: AccountID;
   getAuthorId(): AccountID {
-    return this.authorId;
+    return this.#authorId;
   }
-  private readonly hash: string;
 
+  readonly #hash: string;
   getHash(): string {
-    return this.hash;
+    return this.#hash;
   }
-  private readonly mime: string;
 
+  readonly #mime: string;
   getMime(): string {
-    return this.mime;
+    return this.#mime;
   }
-  private readonly nsfw: boolean;
 
+  readonly #nsfw: boolean;
   isNsfw(): boolean {
-    return this.nsfw;
+    return this.#nsfw;
   }
-  private readonly url: string;
 
-  getUrl(): string {
-    return this.url;
+  readonly #url: Option.Option<string>;
+  getUrl(): Option.Option<string> {
+    return this.#url;
   }
-  private readonly thumbnailUrl: string;
 
-  getThumbnailUrl(): string {
-    return this.thumbnailUrl;
+  readonly #thumbnailUrl: Option.Option<string>;
+  getThumbnailUrl(): Option.Option<string> {
+    return this.#thumbnailUrl;
   }
 }

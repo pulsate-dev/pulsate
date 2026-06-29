@@ -240,8 +240,8 @@ export class TimelineController {
           hash: file.getHash(),
           mime: file.getMime(),
           nsfw: file.isNsfw(),
-          url: file.getUrl(),
-          thumbnail: file.getThumbnailUrl(),
+          url: Option.unwrapOr('')(file.getUrl()),
+          thumbnail: Option.unwrapOr('')(file.getThumbnailUrl()),
         })),
         author: {
           id: v.author.getID(),
@@ -322,8 +322,8 @@ export class TimelineController {
           hash: file.getHash(),
           mime: file.getMime(),
           nsfw: file.isNsfw(),
-          url: file.getUrl(),
-          thumbnail: file.getThumbnailUrl(),
+          url: Option.unwrapOr('')(file.getUrl()),
+          thumbnail: Option.unwrapOr('')(file.getThumbnailUrl()),
         })),
         author: {
           id: v.author.getID(),
@@ -390,8 +390,8 @@ export class TimelineController {
               hash: file.getHash(),
               mime: file.getMime(),
               nsfw: file.isNsfw(),
-              url: file.getUrl(),
-              thumbnail: file.getThumbnailUrl(),
+              url: Option.unwrapOr('')(file.getUrl()),
+              thumbnail: Option.unwrapOr('')(file.getThumbnailUrl()),
             };
           }),
           reactions: v.reactions.map((reaction) => {
@@ -613,8 +613,8 @@ export class TimelineController {
         hash: file.getHash(),
         mime: file.getMime(),
         nsfw: file.isNsfw(),
-        url: file.getUrl(),
-        thumbnail: file.getThumbnailUrl(),
+        url: Option.unwrapOr('')(file.getUrl()),
+        thumbnail: Option.unwrapOr('')(file.getThumbnailUrl()),
       })),
       author: {
         id: v.author.getID(),
@@ -744,8 +744,8 @@ export class TimelineController {
           hash: file.getHash(),
           mime: file.getMime(),
           nsfw: file.isNsfw(),
-          url: file.getUrl(),
-          thumbnail: file.getThumbnailUrl(),
+          url: Option.unwrapOr('')(file.getUrl()),
+          thumbnail: Option.unwrapOr('')(file.getThumbnailUrl()),
         })),
         author: {
           id: v.author.getID(),

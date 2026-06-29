@@ -73,8 +73,8 @@ export class UploadMediaService {
       nsfw: args.nsfw,
       mime: 'image/webp',
       hash: processed[1].hash,
-      url: '',
-      thumbnailUrl: '',
+      url: Option.none(),
+      thumbnailUrl: Option.none(),
     });
 
     const res = await this.repository.create(medium);

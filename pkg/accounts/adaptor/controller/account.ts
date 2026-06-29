@@ -237,10 +237,10 @@ export class AccountController {
       account.getID(),
     );
     const avatar = Result.mapOr('')((avatarImage: Medium): string =>
-      avatarImage.getUrl(),
+      Option.unwrapOr('')(avatarImage.getUrl()),
     )(avatarRes);
     const header = Result.mapOr('')((headerImage: Medium): string =>
-      headerImage.getUrl(),
+      Option.unwrapOr('')(headerImage.getUrl()),
     )(headerRes);
     const followCountRes = await this.fetchFollowService.fetchFollowCount(
       account.getID(),
@@ -288,10 +288,10 @@ export class AccountController {
       account.getID(),
     );
     const avatar = Result.mapOr('')((avatarImage: Medium): string =>
-      avatarImage.getUrl(),
+      Option.unwrapOr('')(avatarImage.getUrl()),
     )(avatarRes);
     const header = Result.mapOr('')((headerImage: Medium): string =>
-      headerImage.getUrl(),
+      Option.unwrapOr('')(headerImage.getUrl()),
     )(headerRes);
     const followCountRes = await this.fetchFollowService.fetchFollowCount(
       account.getID(),
@@ -453,11 +453,11 @@ export class AccountController {
     for (const id of accountIDs) {
       const avatarRes = await this.avatarService.fetchByAccountID(id);
       const avatar = Result.mapOr('')((avatarImage: Medium): string =>
-        avatarImage.getUrl(),
+        Option.unwrapOr('')(avatarImage.getUrl()),
       )(avatarRes);
       const headerRes = await this.headerService.fetchByAccountID(id);
       const header = Result.mapOr('')((headerImage: Medium): string =>
-        headerImage.getUrl(),
+        Option.unwrapOr('')(headerImage.getUrl()),
       )(headerRes);
       headerAvatarImages.set(id, [header, avatar]);
 
@@ -531,11 +531,11 @@ export class AccountController {
     for (const id of accountIDs) {
       const avatarRes = await this.avatarService.fetchByAccountID(id);
       const avatar = Result.mapOr('')((avatarImage: Medium): string =>
-        avatarImage.getUrl(),
+        Option.unwrapOr('')(avatarImage.getUrl()),
       )(avatarRes);
       const headerRes = await this.headerService.fetchByAccountID(id);
       const header = Result.mapOr('')((headerImage: Medium): string =>
-        headerImage.getUrl(),
+        Option.unwrapOr('')(headerImage.getUrl()),
       )(headerRes);
       headerAvatarImages.set(id, [header, avatar]);
 

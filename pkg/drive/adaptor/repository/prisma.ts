@@ -71,8 +71,10 @@ export class PrismaMediaRepository implements MediaRepository {
       hash: medium.getHash(),
       mime: medium.getMime(),
       nsfw: medium.isNsfw(),
-      url: medium.getUrl(),
-      thumbnailUrl: medium.getThumbnailUrl(),
+      // NOTE: An undetermined URL is persisted as an empty string because the
+      // column is non-nullable.
+      url: Option.unwrapOr('')(medium.getUrl()),
+      thumbnailUrl: Option.unwrapOr('')(medium.getThumbnailUrl()),
     };
   }
 
@@ -88,8 +90,11 @@ export class PrismaMediaRepository implements MediaRepository {
       hash: args.hash,
       mime: args.mime,
       nsfw: args.nsfw,
-      url: args.url,
-      thumbnailUrl: args.thumbnailUrl,
+      // NOTE: An empty string represents an undetermined URL.
+      url: Option.fromPredicate((url: string) => url !== '')(args.url),
+      thumbnailUrl: Option.fromPredicate((url: string) => url !== '')(
+        args.thumbnailUrl,
+      ),
     });
   }
 

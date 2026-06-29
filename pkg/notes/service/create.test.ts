@@ -1,4 +1,4 @@
-import { Result } from '@mikuroxina/mini-fn';
+import { Option, Result } from '@mikuroxina/mini-fn';
 import { describe, expect, it } from 'vitest';
 
 import type { AccountID } from '../../accounts/model/account.js';
@@ -20,8 +20,8 @@ const attachmentRepository = new InMemoryNoteAttachmentRepository(
       name: (i + 10).toString(),
       mime: 'image/png',
       hash: 'ewkjnfgr]g:ge+ealksmc',
-      url: '',
-      thumbnailUrl: '',
+      url: Option.none(),
+      thumbnailUrl: Option.none(),
       nsfw: false,
       authorId: '1' as AccountID,
     });

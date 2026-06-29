@@ -61,11 +61,11 @@ export class NoteController {
           id: v.getId(),
           name: v.getName(),
           mime: v.getMime(),
-          url: v.getUrl(),
+          url: Option.unwrapOr('')(v.getUrl()),
           hash: v.getHash(),
           author_id: v.getAuthorId(),
           nsfw: v.isNsfw(),
-          thumbnail: v.getThumbnailUrl(),
+          thumbnail: Option.unwrapOr('')(v.getThumbnailUrl()),
         };
       }),
     });
@@ -125,11 +125,11 @@ export class NoteController {
           id: v.getId(),
           name: v.getName(),
           mime: v.getMime(),
-          url: v.getUrl(),
+          url: Option.unwrapOr('')(v.getUrl()),
           hash: v.getHash(),
           author_id: v.getAuthorId(),
           nsfw: v.isNsfw(),
-          thumbnail: v.getThumbnailUrl(),
+          thumbnail: Option.unwrapOr('')(v.getThumbnailUrl()),
         };
       }),
       reactions: reactions.map((v) => {
@@ -194,11 +194,11 @@ export class NoteController {
           id: v.getId(),
           name: v.getName(),
           mime: v.getMime(),
-          url: v.getUrl(),
+          url: Option.unwrapOr('')(v.getUrl()),
           hash: v.getHash(),
           author_id: v.getAuthorId(),
           nsfw: v.isNsfw(),
-          thumbnail: v.getThumbnailUrl(),
+          thumbnail: Option.unwrapOr('')(v.getThumbnailUrl()),
         };
       }),
       created_at: renote.getCreatedAt().toUTCString(),

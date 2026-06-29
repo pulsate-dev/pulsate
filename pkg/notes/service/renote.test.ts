@@ -39,8 +39,8 @@ const attachmentRepository = new InMemoryNoteAttachmentRepository(
       name: (i + 10).toString(),
       mime: 'image/png',
       hash: 'ewkjnfgr]g:ge+ealksmc',
-      url: '',
-      thumbnailUrl: '',
+      url: Option.none(),
+      thumbnailUrl: Option.none(),
       nsfw: false,
       authorId: '1' as AccountID,
     });

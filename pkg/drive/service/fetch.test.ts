@@ -1,4 +1,4 @@
-import { Result } from '@mikuroxina/mini-fn';
+import { Option, Result } from '@mikuroxina/mini-fn';
 import { describe, expect, it } from 'vitest';
 
 import type { AccountID } from '../../accounts/model/account.js';
@@ -14,8 +14,8 @@ describe('FetchMediaService', () => {
     mime: 'img/png',
     name: 'main.png',
     nsfw: false,
-    thumbnailUrl: 'https://example.com/thumbnail.png',
-    url: 'https://example.com/main.png',
+    thumbnailUrl: Option.some('https://example.com/thumbnail.png'),
+    url: Option.some('https://example.com/main.png'),
   });
   const mediaRepository = new InMemoryMediaRepository([dummyMedium]);
   const service = new FetchMediaService(mediaRepository);
