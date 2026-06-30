@@ -125,9 +125,10 @@ export class AccountModuleFacade {
     id: AccountID,
   ): Promise<Result.Result<Error, string>> {
     const res = await this.avatarService.fetchByAccountID(id);
-    const avatar = Result.mapOr('')((avatarImage: Medium): string =>
-      Option.unwrapOr('')(avatarImage.getUrl()),
-    )(res);
+    const avatar = Cat.cat(res)
+      .feed(Result.optionOk)
+      .feed(Option.andThen((avatarImage: Medium) => avatarImage.getUrl()))
+      .feed(Option.unwrapOr('')).value;
     return Result.ok(avatar);
   }
 
@@ -135,9 +136,10 @@ export class AccountModuleFacade {
     id: AccountID,
   ): Promise<Result.Result<Error, string>> {
     const res = await this.headerService.fetchByAccountID(id);
-    const header = Result.mapOr('')((headerImage: Medium): string =>
-      Option.unwrapOr('')(headerImage.getUrl()),
-    )(res);
+    const header = Cat.cat(res)
+      .feed(Result.optionOk)
+      .feed(Option.andThen((headerImage: Medium) => headerImage.getUrl()))
+      .feed(Option.unwrapOr('')).value;
     return Result.ok(header);
   }
 
