@@ -54,7 +54,9 @@ export class UploadMediaService {
       authorId: args.authorId,
       nsfw: args.nsfw,
       mime: 'image/webp',
-      hash: Option.isSome(processed) ? processed[1].hash : '',
+      hash: Option.unwrapOr('')(
+        Option.map((p: { hash: string }) => p.hash)(processed),
+      ),
       url: Option.none(),
       thumbnailUrl: Option.none(),
       sourceMime: mime[1],
