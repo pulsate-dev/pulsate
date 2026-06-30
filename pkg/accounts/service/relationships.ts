@@ -2,6 +2,7 @@ import { Ether, Option, Result } from '@mikuroxina/mini-fn';
 
 import type { AccountID } from '../model/account.js';
 import { AccountNotFoundError } from '../model/errors.js';
+import { isFollowedBy, isFollowing } from '../model/followDomainService.js';
 import {
   type AccountFollowRepository,
   type AccountRepository,
@@ -35,32 +36,24 @@ export class FetchRelationshipService {
       );
     }
 
-    // Check if target is following from (is_followed)
     const followersResult =
       await this.accountFollowRepository.fetchAllFollowers(fromAccountID);
     if (Result.isErr(followersResult)) {
       return Result.err(Result.unwrapErr(followersResult));
     }
     const followers = Result.unwrap(followersResult);
-    const isFollowed = followers.some(
-      (follow) => follow.getFromID() === targetAccountID,
-    );
 
-    // Check if from is following target (is_following)
     const followingResult =
       await this.accountFollowRepository.fetchAllFollowing(fromAccountID);
     if (Result.isErr(followingResult)) {
       return Result.err(Result.unwrapErr(followingResult));
     }
     const following = Result.unwrap(followingResult);
-    const isFollowing = following.some(
-      (follow) => follow.getTargetID() === targetAccountID,
-    );
 
     return Result.ok({
       id: targetAccountID,
-      isFollowed: isFollowed,
-      isFollowing: isFollowing,
+      isFollowed: isFollowedBy(followers, targetAccountID),
+      isFollowing: isFollowing(following, targetAccountID),
       // ToDo: implement follow request feature
       isFollowRequesting: false,
     });

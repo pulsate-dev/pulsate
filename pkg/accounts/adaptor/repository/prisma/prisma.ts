@@ -27,6 +27,7 @@ import {
   followRepoSymbol,
   verifyTokenRepoSymbol,
 } from '../../../model/repository.js';
+import { VerifyToken } from '../../../model/verifyToken.js';
 
 type AccountPrismaArgs = Awaited<
   ReturnType<typeof prismaClient.account.findUnique>
@@ -225,9 +226,7 @@ export class PrismaAccountVerifyTokenRepository
     return Result.ok(undefined);
   }
 
-  async findByID(
-    id: AccountID,
-  ): Promise<Option.Option<{ token: string; expire: Date }>> {
+  async findByID(id: AccountID): Promise<Option.Option<VerifyToken>> {
     const res = await this.prisma.accountVerifyToken.findUnique({
       where: {
         accountId: id,
@@ -237,10 +236,13 @@ export class PrismaAccountVerifyTokenRepository
     if (!res) {
       return Option.none();
     }
-    return Option.some({
-      token: res.token,
-      expire: res.expiresAt,
-    });
+    return Option.some(
+      VerifyToken.reconstruct({
+        accountID: id,
+        token: res.token,
+        expire: res.expiresAt,
+      }),
+    );
   }
 
   async delete(id: AccountID): Promise<Result.Result<Error, void>> {

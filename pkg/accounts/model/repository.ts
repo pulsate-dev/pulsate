@@ -4,6 +4,7 @@ import type { Medium, MediumID } from '../../drive/model/medium.js';
 import type { Account, AccountID } from './account.js';
 import type { AccountFollow } from './follow.js';
 import type { InactiveAccount } from './inactiveAccount.js';
+import type { VerifyToken } from './verifyToken.js';
 
 export interface AccountRepository {
   create(account: Account): Promise<Result.Result<Error, void>>;
@@ -32,10 +33,7 @@ export interface AccountVerifyTokenRepository {
     token: string,
     expire: Date,
   ): Promise<Result.Result<Error, void>>;
-  // TODO(laminne): Consider create a type for token/expire
-  findByID(
-    id: AccountID,
-  ): Promise<Option.Option<{ token: string; expire: Date }>>;
+  findByID(id: AccountID): Promise<Option.Option<VerifyToken>>;
 
   /**
    * Delete a token by account ID.\

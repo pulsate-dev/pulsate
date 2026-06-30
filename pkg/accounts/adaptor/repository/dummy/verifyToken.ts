@@ -4,6 +4,7 @@ import {
   type AccountVerifyTokenRepository,
   verifyTokenRepoSymbol,
 } from '../../../model/repository.js';
+import { VerifyToken } from '../../../model/verifyToken.js';
 
 export class InMemoryAccountVerifyTokenRepository
   implements AccountVerifyTokenRepository
@@ -23,15 +24,19 @@ export class InMemoryAccountVerifyTokenRepository
     return Result.ok(undefined);
   }
 
-  async findByID(
-    id: AccountID,
-  ): Promise<Option.Option<{ token: string; expire: Date }>> {
+  async findByID(id: AccountID): Promise<Option.Option<VerifyToken>> {
     const data = this.data.get(id);
     if (!data) {
       return Option.none();
     }
 
-    return Option.some(data);
+    return Option.some(
+      VerifyToken.reconstruct({
+        accountID: id,
+        token: data.token,
+        expire: data.expire,
+      }),
+    );
   }
 
   async delete(id: AccountID): Promise<Result.Result<Error, void>> {
