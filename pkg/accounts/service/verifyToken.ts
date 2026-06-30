@@ -14,6 +14,7 @@ import {
   inactiveAccountRepoSymbol,
   verifyTokenRepoSymbol,
 } from '../model/repository.js';
+import { VerifyToken } from '../model/verifyToken.js';
 
 export class VerifyAccountTokenService {
   constructor(
@@ -43,16 +44,26 @@ export class VerifyAccountTokenService {
       );
     }
 
+    const tokenRes = VerifyToken.new({
+      accountID: account[1].getID(),
+      token: encodedToken,
+      expire: expireDate,
+    });
+    if (Result.isErr(tokenRes)) {
+      return Result.err(tokenRes[1]);
+    }
+    const token = Result.unwrap(tokenRes);
+
     const res = await this.repository.create(
-      account[1].getID(),
-      encodedToken,
-      expireDate,
+      token.getAccountID(),
+      token.getToken(),
+      token.getExpire(),
     );
     if (Result.isErr(res)) {
       return Result.err(res[1]);
     }
 
-    return Result.ok(encodedToken);
+    return Result.ok(token.getToken());
   }
 
   async verify(
@@ -74,9 +85,9 @@ export class VerifyAccountTokenService {
         new AccountNotFoundError('account not found', { cause: null }),
       );
     }
-    const tokenData = Option.unwrap(tokenRes);
+    const verifyToken = Option.unwrap(tokenRes);
 
-    if (tokenData.expire < new Date()) {
+    if (verifyToken.isExpired(new Date())) {
       return Result.err(
         new AccountMailAddressVerificationTokenInvalidError('Token expired', {
           cause: null,
@@ -84,7 +95,7 @@ export class VerifyAccountTokenService {
       );
     }
 
-    if (tokenData.token !== token) {
+    if (!verifyToken.matches(token)) {
       return Result.err(
         new AccountMailAddressVerificationTokenInvalidError('Token not match', {
           cause: null,
