@@ -1,4 +1,4 @@
-import { Option } from '@mikuroxina/mini-fn';
+import { Option, Result } from '@mikuroxina/mini-fn';
 import type { AccountID } from '../../accounts/model/account.js';
 import type { ID } from '../../internal/id/type.js';
 
@@ -63,28 +63,28 @@ export interface Notification {
   getActorType(): NotificationActorType;
   getActorID(): AccountID;
   getIsRead(): boolean;
-  setRead(date: Date): void;
+  markAsRead(date: Date): Result.Result<Error, void>;
   getReadAt(): Option.Option<Date>;
 }
 
 export class NotificationBase {
-  private readonly id: NotificationID;
-  private readonly notificationType: NotificationType;
-  private readonly recipientID: AccountID;
-  private readonly createdAt: Date;
-  private readonly actorType: NotificationActorType;
-  private readonly actorID: AccountID;
+  readonly #id: NotificationID;
+  readonly #notificationType: NotificationType;
+  readonly #recipientID: AccountID;
+  readonly #createdAt: Date;
+  readonly #actorType: NotificationActorType;
+  readonly #actorID: AccountID;
 
-  private readAt: Option.Option<Date>;
+  #readAt: Option.Option<Date>;
 
   constructor(args: CreateNotificationBaseArgs) {
-    this.id = args.id;
-    this.recipientID = args.recipientID;
-    this.notificationType = args.notificationType;
-    this.actorType = args.actorType;
-    this.actorID = args.actorID;
-    this.createdAt = args.createdAt;
-    this.readAt = args.readAt;
+    this.#id = args.id;
+    this.#recipientID = args.recipientID;
+    this.#notificationType = args.notificationType;
+    this.#actorType = args.actorType;
+    this.#actorID = args.actorID;
+    this.#createdAt = args.createdAt;
+    this.#readAt = args.readAt;
   }
 
   /**
@@ -95,14 +95,14 @@ export class NotificationBase {
    * ```
    */
   getID(): NotificationID {
-    return this.id;
+    return this.#id;
   }
 
   /**
    * Get recipient account ID
    */
   getRecipientID(): AccountID {
-    return this.recipientID;
+    return this.#recipientID;
   }
 
   /**
@@ -116,11 +116,11 @@ export class NotificationBase {
    * - reacted: Reacted
    */
   getNotificationType(): NotificationType {
-    return this.notificationType;
+    return this.#notificationType;
   }
 
   getCreatedAt(): Date {
-    return this.createdAt;
+    return this.#createdAt;
   }
 
   /**
@@ -130,36 +130,35 @@ export class NotificationBase {
    * - system: System
    */
   getActorType(): NotificationActorType {
-    return this.actorType;
+    return this.#actorType;
   }
 
   /**
    * Get Actor account ID
    */
   getActorID(): AccountID {
-    return this.actorID;
+    return this.#actorID;
   }
 
   /**
    * Get Read Status
    */
   getIsRead(): boolean {
-    return Option.isSome(this.readAt);
+    return Option.isSome(this.#readAt);
   }
 
-  /**
-   * Set time when message read
-   *
-   * NOTE: Once a message has been read, it cannot be marked as unread.
-   */
-  setRead(date: Date) {
-    this.readAt = Option.some(date);
+  markAsRead(date: Date): Result.Result<Error, void> {
+    if (Option.isSome(this.#readAt)) {
+      return Result.err(new Error('Notification already read'));
+    }
+    this.#readAt = Option.some(date);
+    return Result.ok(undefined);
   }
 
   /**
    * Get date when the notification was read
    */
   getReadAt(): Option.Option<Date> {
-    return this.readAt;
+    return this.#readAt;
   }
 }

@@ -1,4 +1,4 @@
-import { Option } from '@mikuroxina/mini-fn';
+import { Option, type Result } from '@mikuroxina/mini-fn';
 import type { AccountID } from '../../accounts/model/account.js';
 import type { NoteID } from '../../notes/model/note.js';
 import type { ReactionID } from '../../notes/model/reaction.js';
@@ -16,10 +16,10 @@ export interface CreateFollowedNotificationArgs
   notificationType: 'followed';
 }
 export class FollowedNotification implements Notification {
-  private readonly notificationBase: NotificationBase;
+  readonly #notificationBase: NotificationBase;
 
   private constructor(args: CreateFollowedNotificationArgs) {
-    this.notificationBase = new NotificationBase(args);
+    this.#notificationBase = new NotificationBase(args);
   }
 
   static new(args: Omit<CreateFollowedNotificationArgs, 'isRead' | 'readAt'>) {
@@ -30,39 +30,39 @@ export class FollowedNotification implements Notification {
   }
 
   getActorID(): AccountID {
-    return this.notificationBase.getActorID();
+    return this.#notificationBase.getActorID();
   }
 
   getActorType(): NotificationActorType {
-    return this.notificationBase.getActorType();
+    return this.#notificationBase.getActorType();
   }
 
   getCreatedAt(): Date {
-    return this.notificationBase.getCreatedAt();
+    return this.#notificationBase.getCreatedAt();
   }
 
   getID(): NotificationID {
-    return this.notificationBase.getID();
+    return this.#notificationBase.getID();
   }
 
   getIsRead(): boolean {
-    return this.notificationBase.getIsRead();
+    return this.#notificationBase.getIsRead();
   }
 
   getNotificationType(): NotificationType {
-    return this.notificationBase.getNotificationType();
+    return this.#notificationBase.getNotificationType();
   }
 
   getReadAt(): Option.Option<Date> {
-    return this.notificationBase.getReadAt();
+    return this.#notificationBase.getReadAt();
   }
 
   getRecipientID(): AccountID {
-    return this.notificationBase.getRecipientID();
+    return this.#notificationBase.getRecipientID();
   }
 
-  setRead(date: Date): void {
-    this.notificationBase.setRead(date);
+  markAsRead(date: Date): Result.Result<Error, void> {
+    return this.#notificationBase.markAsRead(date);
   }
 }
 
@@ -71,10 +71,10 @@ export interface CreateFollowRequestedNotificationArgs
   notificationType: 'followRequested';
 }
 export class FollowRequestedNotification implements Notification {
-  private readonly notificationBase: NotificationBase;
+  readonly #notificationBase: NotificationBase;
 
   private constructor(args: CreateFollowRequestedNotificationArgs) {
-    this.notificationBase = new NotificationBase(args);
+    this.#notificationBase = new NotificationBase(args);
   }
 
   static new(
@@ -87,39 +87,39 @@ export class FollowRequestedNotification implements Notification {
   }
 
   getActorID(): AccountID {
-    return this.notificationBase.getActorID();
+    return this.#notificationBase.getActorID();
   }
 
   getActorType(): NotificationActorType {
-    return this.notificationBase.getActorType();
+    return this.#notificationBase.getActorType();
   }
 
   getCreatedAt(): Date {
-    return this.notificationBase.getCreatedAt();
+    return this.#notificationBase.getCreatedAt();
   }
 
   getID(): NotificationID {
-    return this.notificationBase.getID();
+    return this.#notificationBase.getID();
   }
 
   getIsRead(): boolean {
-    return this.notificationBase.getIsRead();
+    return this.#notificationBase.getIsRead();
   }
 
   getNotificationType(): NotificationType {
-    return this.notificationBase.getNotificationType();
+    return this.#notificationBase.getNotificationType();
   }
 
   getReadAt(): Option.Option<Date> {
-    return this.notificationBase.getReadAt();
+    return this.#notificationBase.getReadAt();
   }
 
   getRecipientID(): AccountID {
-    return this.notificationBase.getRecipientID();
+    return this.#notificationBase.getRecipientID();
   }
 
-  setRead(date: Date): void {
-    this.notificationBase.setRead(date);
+  markAsRead(date: Date): Result.Result<Error, void> {
+    return this.#notificationBase.markAsRead(date);
   }
 }
 
@@ -128,10 +128,10 @@ export interface CreateFollowAcceptedNotificationArgs
   notificationType: 'followAccepted';
 }
 export class FollowAcceptedNotification implements Notification {
-  private readonly notificationBase: NotificationBase;
+  readonly #notificationBase: NotificationBase;
 
   private constructor(args: CreateFollowAcceptedNotificationArgs) {
-    this.notificationBase = new NotificationBase(args);
+    this.#notificationBase = new NotificationBase(args);
   }
 
   static new(
@@ -144,39 +144,39 @@ export class FollowAcceptedNotification implements Notification {
   }
 
   getActorID(): AccountID {
-    return this.notificationBase.getActorID();
+    return this.#notificationBase.getActorID();
   }
 
   getActorType(): NotificationActorType {
-    return this.notificationBase.getActorType();
+    return this.#notificationBase.getActorType();
   }
 
   getCreatedAt(): Date {
-    return this.notificationBase.getCreatedAt();
+    return this.#notificationBase.getCreatedAt();
   }
 
   getID(): NotificationID {
-    return this.notificationBase.getID();
+    return this.#notificationBase.getID();
   }
 
   getIsRead(): boolean {
-    return this.notificationBase.getIsRead();
+    return this.#notificationBase.getIsRead();
   }
 
   getNotificationType(): NotificationType {
-    return this.notificationBase.getNotificationType();
+    return this.#notificationBase.getNotificationType();
   }
 
   getReadAt(): Option.Option<Date> {
-    return this.notificationBase.getReadAt();
+    return this.#notificationBase.getReadAt();
   }
 
   getRecipientID(): AccountID {
-    return this.notificationBase.getRecipientID();
+    return this.#notificationBase.getRecipientID();
   }
 
-  setRead(date: Date): void {
-    this.notificationBase.setRead(date);
+  markAsRead(date: Date): Result.Result<Error, void> {
+    return this.#notificationBase.markAsRead(date);
   }
 }
 
@@ -186,12 +186,12 @@ export interface CreateMentionedNotificationArgs
   activityID: NoteID;
 }
 export class MentionedNotification implements Notification {
-  private readonly notificationBase: NotificationBase;
-  private readonly activityID: NoteID;
+  readonly #notificationBase: NotificationBase;
+  readonly #activityID: NoteID;
 
   private constructor(args: CreateMentionedNotificationArgs) {
-    this.notificationBase = new NotificationBase(args);
-    this.activityID = args.activityID;
+    this.#notificationBase = new NotificationBase(args);
+    this.#activityID = args.activityID;
   }
 
   static new(args: Omit<CreateMentionedNotificationArgs, 'isRead' | 'readAt'>) {
@@ -202,39 +202,39 @@ export class MentionedNotification implements Notification {
   }
 
   getActorID(): AccountID {
-    return this.notificationBase.getActorID();
+    return this.#notificationBase.getActorID();
   }
 
   getActorType(): NotificationActorType {
-    return this.notificationBase.getActorType();
+    return this.#notificationBase.getActorType();
   }
 
   getCreatedAt(): Date {
-    return this.notificationBase.getCreatedAt();
+    return this.#notificationBase.getCreatedAt();
   }
 
   getID(): NotificationID {
-    return this.notificationBase.getID();
+    return this.#notificationBase.getID();
   }
 
   getIsRead(): boolean {
-    return this.notificationBase.getIsRead();
+    return this.#notificationBase.getIsRead();
   }
 
   getNotificationType(): NotificationType {
-    return this.notificationBase.getNotificationType();
+    return this.#notificationBase.getNotificationType();
   }
 
   getReadAt(): Option.Option<Date> {
-    return this.notificationBase.getReadAt();
+    return this.#notificationBase.getReadAt();
   }
 
   getRecipientID(): AccountID {
-    return this.notificationBase.getRecipientID();
+    return this.#notificationBase.getRecipientID();
   }
 
-  setRead(date: Date): void {
-    this.notificationBase.setRead(date);
+  markAsRead(date: Date): Result.Result<Error, void> {
+    return this.#notificationBase.markAsRead(date);
   }
 
   /**
@@ -247,7 +247,7 @@ export class MentionedNotification implements Notification {
    * - notification type  "reacted", ActivityID is ReactionID (Reaction is the object generated by the operation)
    */
   getActivityID(): NoteID {
-    return this.activityID;
+    return this.#activityID;
   }
 }
 
@@ -258,14 +258,14 @@ export interface CreateRenotedNotificationArgs
   activityID: NoteID;
 }
 export class RenotedNotification implements Notification {
-  private readonly notificationBase: NotificationBase;
-  private readonly activityID: NoteID;
-  private readonly sourceID: NoteID;
+  readonly #notificationBase: NotificationBase;
+  readonly #activityID: NoteID;
+  readonly #sourceID: NoteID;
 
   private constructor(args: CreateRenotedNotificationArgs) {
-    this.notificationBase = new NotificationBase(args);
-    this.activityID = args.activityID;
-    this.sourceID = args.sourceID;
+    this.#notificationBase = new NotificationBase(args);
+    this.#activityID = args.activityID;
+    this.#sourceID = args.sourceID;
   }
 
   static new(args: Omit<CreateRenotedNotificationArgs, 'isRead' | 'readAt'>) {
@@ -277,39 +277,39 @@ export class RenotedNotification implements Notification {
   }
 
   getActorID(): AccountID {
-    return this.notificationBase.getActorID();
+    return this.#notificationBase.getActorID();
   }
 
   getActorType(): NotificationActorType {
-    return this.notificationBase.getActorType();
+    return this.#notificationBase.getActorType();
   }
 
   getCreatedAt(): Date {
-    return this.notificationBase.getCreatedAt();
+    return this.#notificationBase.getCreatedAt();
   }
 
   getID(): NotificationID {
-    return this.notificationBase.getID();
+    return this.#notificationBase.getID();
   }
 
   getIsRead(): boolean {
-    return this.notificationBase.getIsRead();
+    return this.#notificationBase.getIsRead();
   }
 
   getNotificationType(): NotificationType {
-    return this.notificationBase.getNotificationType();
+    return this.#notificationBase.getNotificationType();
   }
 
   getReadAt(): Option.Option<Date> {
-    return this.notificationBase.getReadAt();
+    return this.#notificationBase.getReadAt();
   }
 
   getRecipientID(): AccountID {
-    return this.notificationBase.getRecipientID();
+    return this.#notificationBase.getRecipientID();
   }
 
-  setRead(date: Date): void {
-    this.notificationBase.setRead(date);
+  markAsRead(date: Date): Result.Result<Error, void> {
+    return this.#notificationBase.markAsRead(date);
   }
 
   /**
@@ -322,7 +322,7 @@ export class RenotedNotification implements Notification {
    * - notification type is "reacted", SourceID is NoteID
    */
   getSourceID(): NoteID {
-    return this.sourceID;
+    return this.#sourceID;
   }
 
   /**
@@ -335,7 +335,7 @@ export class RenotedNotification implements Notification {
    * - notification type  "reacted", ActivityID is ReactionID (Reaction is the object generated by the operation)
    */
   getActivityID(): NoteID {
-    return this.activityID;
+    return this.#activityID;
   }
 }
 
@@ -346,14 +346,14 @@ export interface CreateReactedNotificationArgs
   activityID: ReactionID;
 }
 export class ReactedNotification implements Notification {
-  private readonly notificationBase: NotificationBase;
-  private readonly activityID: ReactionID;
-  private readonly sourceID: NoteID;
+  readonly #notificationBase: NotificationBase;
+  readonly #activityID: ReactionID;
+  readonly #sourceID: NoteID;
 
   private constructor(args: CreateReactedNotificationArgs) {
-    this.notificationBase = new NotificationBase(args);
-    this.activityID = args.activityID;
-    this.sourceID = args.sourceID;
+    this.#notificationBase = new NotificationBase(args);
+    this.#activityID = args.activityID;
+    this.#sourceID = args.sourceID;
   }
 
   static new(args: Omit<CreateReactedNotificationArgs, 'isRead' | 'readAt'>) {
@@ -364,39 +364,39 @@ export class ReactedNotification implements Notification {
   }
 
   getActorID(): AccountID {
-    return this.notificationBase.getActorID();
+    return this.#notificationBase.getActorID();
   }
 
   getActorType(): NotificationActorType {
-    return this.notificationBase.getActorType();
+    return this.#notificationBase.getActorType();
   }
 
   getCreatedAt(): Date {
-    return this.notificationBase.getCreatedAt();
+    return this.#notificationBase.getCreatedAt();
   }
 
   getID(): NotificationID {
-    return this.notificationBase.getID();
+    return this.#notificationBase.getID();
   }
 
   getIsRead(): boolean {
-    return this.notificationBase.getIsRead();
+    return this.#notificationBase.getIsRead();
   }
 
   getNotificationType(): NotificationType {
-    return this.notificationBase.getNotificationType();
+    return this.#notificationBase.getNotificationType();
   }
 
   getReadAt(): Option.Option<Date> {
-    return this.notificationBase.getReadAt();
+    return this.#notificationBase.getReadAt();
   }
 
   getRecipientID(): AccountID {
-    return this.notificationBase.getRecipientID();
+    return this.#notificationBase.getRecipientID();
   }
 
-  setRead(date: Date): void {
-    this.notificationBase.setRead(date);
+  markAsRead(date: Date): Result.Result<Error, void> {
+    return this.#notificationBase.markAsRead(date);
   }
 
   /**
@@ -409,7 +409,7 @@ export class ReactedNotification implements Notification {
    * - notification type is "reacted", SourceID is NoteID
    */
   getSourceID(): NoteID {
-    return this.sourceID;
+    return this.#sourceID;
   }
 
   /**
@@ -422,6 +422,6 @@ export class ReactedNotification implements Notification {
    * - notification type  "reacted", ActivityID is ReactionID (Reaction is the object generated by the operation)
    */
   getActivityID(): ReactionID {
-    return this.activityID;
+    return this.#activityID;
   }
 }

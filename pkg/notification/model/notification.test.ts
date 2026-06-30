@@ -1,3 +1,4 @@
+import { Option } from '@mikuroxina/mini-fn';
 import { describe, expect, it } from 'vitest';
 import type { AccountID } from '../../accounts/model/account.js';
 import type { NoteID } from '../../notes/model/note.js';
@@ -22,7 +23,16 @@ describe('Followed', () => {
       actorType: 'account',
       actorID: '20' as AccountID,
     });
-    expect(res).toMatchSnapshot();
+    expect(res.getID()).toBe('1');
+    expect(res.getNotificationType()).toBe('followed');
+    expect(res.getRecipientID()).toBe('10');
+    expect(res.getCreatedAt()).toStrictEqual(
+      new Date('2023-09-10T00:00:00.000Z'),
+    );
+    expect(res.getActorType()).toBe('account');
+    expect(res.getActorID()).toBe('20');
+    expect(res.getIsRead()).toBe(false);
+    expect(res.getReadAt()).toStrictEqual(Option.none());
   });
 });
 
@@ -36,7 +46,16 @@ describe('FollowRequested', () => {
       actorType: 'account',
       actorID: '20' as AccountID,
     });
-    expect(res).toMatchSnapshot();
+    expect(res.getID()).toBe('1');
+    expect(res.getNotificationType()).toBe('followRequested');
+    expect(res.getRecipientID()).toBe('10');
+    expect(res.getCreatedAt()).toStrictEqual(
+      new Date('2023-09-10T00:00:00.000Z'),
+    );
+    expect(res.getActorType()).toBe('account');
+    expect(res.getActorID()).toBe('20');
+    expect(res.getIsRead()).toBe(false);
+    expect(res.getReadAt()).toStrictEqual(Option.none());
   });
 });
 
@@ -50,7 +69,16 @@ describe('FollowAccepted', () => {
       actorType: 'account',
       actorID: '20' as AccountID,
     });
-    expect(res).toMatchSnapshot();
+    expect(res.getID()).toBe('1');
+    expect(res.getNotificationType()).toBe('followAccepted');
+    expect(res.getRecipientID()).toBe('10');
+    expect(res.getCreatedAt()).toStrictEqual(
+      new Date('2023-09-10T00:00:00.000Z'),
+    );
+    expect(res.getActorType()).toBe('account');
+    expect(res.getActorID()).toBe('20');
+    expect(res.getIsRead()).toBe(false);
+    expect(res.getReadAt()).toStrictEqual(Option.none());
   });
 });
 
@@ -65,7 +93,17 @@ describe('Mentioned', () => {
       actorID: '20' as AccountID,
       activityID: '1001' as NoteID,
     });
-    expect(res).toMatchSnapshot();
+    expect(res.getID()).toBe('1');
+    expect(res.getNotificationType()).toBe('mentioned');
+    expect(res.getRecipientID()).toBe('10');
+    expect(res.getCreatedAt()).toStrictEqual(
+      new Date('2023-09-10T00:00:00.000Z'),
+    );
+    expect(res.getActorType()).toBe('account');
+    expect(res.getActorID()).toBe('20');
+    expect(res.getIsRead()).toBe(false);
+    expect(res.getReadAt()).toStrictEqual(Option.none());
+    expect(res.getActivityID()).toBe('1001');
   });
 });
 
@@ -82,7 +120,18 @@ describe('Renoted', () => {
       sourceID: '1000' as NoteID,
       activityID: '1001' as NoteID,
     });
-    expect(res).toMatchSnapshot();
+    expect(res.getID()).toBe('1');
+    expect(res.getNotificationType()).toBe('renoted');
+    expect(res.getRecipientID()).toBe('10');
+    expect(res.getCreatedAt()).toStrictEqual(
+      new Date('2023-09-10T00:00:00.000Z'),
+    );
+    expect(res.getActorType()).toBe('account');
+    expect(res.getActorID()).toBe('20');
+    expect(res.getIsRead()).toBe(false);
+    expect(res.getReadAt()).toStrictEqual(Option.none());
+    expect(res.getSourceID()).toBe('1000');
+    expect(res.getActivityID()).toBe('1001');
   });
 });
 
@@ -99,6 +148,17 @@ describe('Reacted', () => {
       sourceID: '1000' as NoteID,
       activityID: '1001' as ReactionID,
     });
-    expect(res).toMatchSnapshot();
+    expect(res.getID()).toBe('1');
+    expect(res.getNotificationType()).toBe('reacted');
+    expect(res.getRecipientID()).toBe('10');
+    expect(res.getCreatedAt()).toStrictEqual(
+      new Date('2023-09-10T00:00:00.000Z'),
+    );
+    expect(res.getActorType()).toBe('account');
+    expect(res.getActorID()).toBe('20');
+    expect(res.getIsRead()).toBe(false);
+    expect(res.getReadAt()).toStrictEqual(Option.none());
+    expect(res.getSourceID()).toBe('1000');
+    expect(res.getActivityID()).toBe('1001');
   });
 });

@@ -32,11 +32,12 @@ export class MarkAsReadNotificationService {
       return Result.err(new Error('Not allowed'));
     }
 
-    if (notification.getIsRead()) {
-      return Result.err(new Error('Notification already read'));
+    const markAsReadRes = notification.markAsRead(
+      new Date(Number(this.clock.now())),
+    );
+    if (Result.isErr(markAsReadRes)) {
+      return markAsReadRes;
     }
-
-    notification.setRead(new Date(Number(this.clock.now())));
 
     const res = await this.notificationRepository.updateReadAt(notification);
     if (Result.isErr(res)) {
