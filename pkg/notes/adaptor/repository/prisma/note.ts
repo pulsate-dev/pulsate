@@ -356,8 +356,10 @@ export class PrismaNoteAttachmentRepository
         mime: medium.mime,
         name: medium.name,
         nsfw: medium.nsfw,
-        thumbnailUrl: medium.thumbnailUrl,
-        url: medium.url,
+        thumbnailUrl: Option.fromPredicate((url: string) => url !== '')(
+          medium.thumbnailUrl,
+        ),
+        url: Option.fromPredicate((url: string) => url !== '')(medium.url),
       });
     });
   }

@@ -1,5 +1,5 @@
 import type { z } from '@hono/zod-openapi';
-import { Option, Result } from '@mikuroxina/mini-fn';
+import { Cat, Option, Result } from '@mikuroxina/mini-fn';
 
 import type { Medium, MediumID } from '../../../drive/model/medium.js';
 import type { AccountID, AccountName } from '../../model/account.js';
@@ -236,12 +236,14 @@ export class AccountController {
     const headerRes = await this.headerService.fetchByAccountID(
       account.getID(),
     );
-    const avatar = Result.mapOr('')((avatarImage: Medium): string =>
-      avatarImage.getUrl(),
-    )(avatarRes);
-    const header = Result.mapOr('')((headerImage: Medium): string =>
-      headerImage.getUrl(),
-    )(headerRes);
+    const avatar = Cat.cat(avatarRes)
+      .feed(Result.optionOk)
+      .feed(Option.andThen((avatarImage: Medium) => avatarImage.getUrl()))
+      .feed(Option.unwrapOr('')).value;
+    const header = Cat.cat(headerRes)
+      .feed(Result.optionOk)
+      .feed(Option.andThen((headerImage: Medium) => headerImage.getUrl()))
+      .feed(Option.unwrapOr('')).value;
     const followCountRes = await this.fetchFollowService.fetchFollowCount(
       account.getID(),
     );
@@ -287,12 +289,14 @@ export class AccountController {
     const headerRes = await this.headerService.fetchByAccountID(
       account.getID(),
     );
-    const avatar = Result.mapOr('')((avatarImage: Medium): string =>
-      avatarImage.getUrl(),
-    )(avatarRes);
-    const header = Result.mapOr('')((headerImage: Medium): string =>
-      headerImage.getUrl(),
-    )(headerRes);
+    const avatar = Cat.cat(avatarRes)
+      .feed(Result.optionOk)
+      .feed(Option.andThen((avatarImage: Medium) => avatarImage.getUrl()))
+      .feed(Option.unwrapOr('')).value;
+    const header = Cat.cat(headerRes)
+      .feed(Result.optionOk)
+      .feed(Option.andThen((headerImage: Medium) => headerImage.getUrl()))
+      .feed(Option.unwrapOr('')).value;
     const followCountRes = await this.fetchFollowService.fetchFollowCount(
       account.getID(),
     );
@@ -452,13 +456,15 @@ export class AccountController {
 
     for (const id of accountIDs) {
       const avatarRes = await this.avatarService.fetchByAccountID(id);
-      const avatar = Result.mapOr('')((avatarImage: Medium): string =>
-        avatarImage.getUrl(),
-      )(avatarRes);
+      const avatar = Cat.cat(avatarRes)
+        .feed(Result.optionOk)
+        .feed(Option.andThen((avatarImage: Medium) => avatarImage.getUrl()))
+        .feed(Option.unwrapOr('')).value;
       const headerRes = await this.headerService.fetchByAccountID(id);
-      const header = Result.mapOr('')((headerImage: Medium): string =>
-        headerImage.getUrl(),
-      )(headerRes);
+      const header = Cat.cat(headerRes)
+        .feed(Result.optionOk)
+        .feed(Option.andThen((headerImage: Medium) => headerImage.getUrl()))
+        .feed(Option.unwrapOr('')).value;
       headerAvatarImages.set(id, [header, avatar]);
 
       const followCountRes = await this.fetchFollowService.fetchFollowCount(id);
@@ -530,13 +536,15 @@ export class AccountController {
 
     for (const id of accountIDs) {
       const avatarRes = await this.avatarService.fetchByAccountID(id);
-      const avatar = Result.mapOr('')((avatarImage: Medium): string =>
-        avatarImage.getUrl(),
-      )(avatarRes);
+      const avatar = Cat.cat(avatarRes)
+        .feed(Result.optionOk)
+        .feed(Option.andThen((avatarImage: Medium) => avatarImage.getUrl()))
+        .feed(Option.unwrapOr('')).value;
       const headerRes = await this.headerService.fetchByAccountID(id);
-      const header = Result.mapOr('')((headerImage: Medium): string =>
-        headerImage.getUrl(),
-      )(headerRes);
+      const header = Cat.cat(headerRes)
+        .feed(Result.optionOk)
+        .feed(Option.andThen((headerImage: Medium) => headerImage.getUrl()))
+        .feed(Option.unwrapOr('')).value;
       headerAvatarImages.set(id, [header, avatar]);
 
       const followCountRes = await this.fetchFollowService.fetchFollowCount(id);

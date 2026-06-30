@@ -1,4 +1,4 @@
-import { Ether, Result } from '@mikuroxina/mini-fn';
+import { Ether, Option, Result } from '@mikuroxina/mini-fn';
 import type { PrismaClient } from '../../../../adaptors/prisma/client.js';
 import type { prismaClient } from '../../../../adaptors/prisma.js';
 import { Medium, type MediumID } from '../../../../drive/model/medium.js';
@@ -101,8 +101,10 @@ export class PrismaAccountHeaderRepository implements AccountHeaderRepository {
       mime: data.mime,
       name: data.name,
       nsfw: data.nsfw,
-      thumbnailUrl: data.thumbnailUrl,
-      url: data.url,
+      thumbnailUrl: Option.fromPredicate((url: string) => url !== '')(
+        data.thumbnailUrl,
+      ),
+      url: Option.fromPredicate((url: string) => url !== '')(data.url),
     });
   }
 }

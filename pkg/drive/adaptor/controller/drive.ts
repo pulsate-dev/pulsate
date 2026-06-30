@@ -1,5 +1,5 @@
 import type { z } from '@hono/zod-openapi';
-import { Result } from '@mikuroxina/mini-fn';
+import { Option, Result } from '@mikuroxina/mini-fn';
 
 import type { AccountID } from '../../../accounts/model/account.js';
 import type { FetchMediaService } from '../../service/fetch.js';
@@ -27,8 +27,8 @@ export class DriveController {
         hash: medium.getHash(),
         mime: medium.getMime(),
         nsfw: medium.isNsfw(),
-        url: medium.getUrl(),
-        thumbnail: medium.getThumbnailUrl(),
+        url: Option.unwrapOr('')(medium.getUrl()),
+        thumbnail: Option.unwrapOr('')(medium.getThumbnailUrl()),
       })),
     );
   }

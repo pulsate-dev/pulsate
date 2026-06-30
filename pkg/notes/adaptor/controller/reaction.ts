@@ -1,5 +1,5 @@
 import type { z } from '@hono/zod-openapi';
-import { Result } from '@mikuroxina/mini-fn';
+import { Option, Result } from '@mikuroxina/mini-fn';
 import type { AccountID } from '../../../accounts/model/account.js';
 import type { NoteID } from '../../model/note.js';
 import type { CreateReactionService } from '../../service/createReaction.js';
@@ -52,11 +52,11 @@ export class ReactionController {
         id: v.getId(),
         name: v.getName(),
         mime: v.getMime(),
-        url: v.getUrl(),
+        url: Option.unwrapOr('')(v.getUrl()),
         hash: v.getHash(),
         author_id: v.getAuthorId(),
         nsfw: v.isNsfw(),
-        thumbnail: v.getThumbnailUrl(),
+        thumbnail: Option.unwrapOr('')(v.getThumbnailUrl()),
       })),
       created_at: note.getCreatedAt().toUTCString(),
     });
