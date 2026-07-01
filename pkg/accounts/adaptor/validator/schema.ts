@@ -120,7 +120,7 @@ export const VerifyEmailRequestSchema = z
   .object({
     token: z.string().openapi({
       description: 'Verification token',
-      example: 'vq34rvyanho10q9hbc98ydbvaervna43r0varhj',
+      example: '123456',
     }),
   })
   .openapi('VerifyEmailRequest');
