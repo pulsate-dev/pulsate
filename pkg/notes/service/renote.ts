@@ -24,6 +24,7 @@ import {
 } from '../model/errors.js';
 import type { NoteID, NoteVisibility } from '../model/note.js';
 import { Note } from '../model/note.js';
+import { getRenoteChainRootID } from '../model/renoteDomainService.js';
 import {
   type NoteAttachmentRepository,
   type NoteRepository,
@@ -151,14 +152,17 @@ export class RenoteService {
     }
     const note = Option.unwrap(res);
 
-    // NOTE: Only pure renotes (not quotes) are resolved to their original.
-    // Quoting a quote refers to the quote itself, not the root.
-    if (!note.isRenote() || note.isQuote()) {
+    // NOTE: For pure renotes the chain is followed one hop to the root; for
+    // quotes and ordinary notes the target note itself is the original. The
+    // decision is owned by the renote domain service.
+    const chainRootID = getRenoteChainRootID(note);
+    if (Option.isNone(chainRootID)) {
       return Result.ok(note);
     }
 
-    const rootID = Option.unwrap(note.getOriginalNoteID());
-    const rootRes = await this.deps.noteRepository.findByID(rootID);
+    const rootRes = await this.deps.noteRepository.findByID(
+      Option.unwrap(chainRootID),
+    );
     if (Option.isNone(rootRes)) {
       return Result.err(
         new NoteNotFoundError('Original note not found', { cause: null }),
