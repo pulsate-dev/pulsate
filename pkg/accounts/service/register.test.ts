@@ -1,5 +1,5 @@
 import { Result } from '@mikuroxina/mini-fn';
-import { describe, expect, it } from 'vitest';
+import { afterEach, describe, expect, it } from 'vitest';
 import { notificationModule } from '../../intermodule/notification.js';
 import { MockClock, SnowflakeIDGenerator } from '../../internal/id/mod.js';
 import { Argon2idPasswordEncoder } from '../../internal/password/mod.js';
@@ -36,6 +36,8 @@ const exampleInput = {
 };
 
 describe('RegisterService', () => {
+  afterEach(() => inactiveAccountRepository.reset());
+
   it('register account', async () => {
     const res = await registerService.handle(
       exampleInput.name,
@@ -49,6 +51,16 @@ describe('RegisterService', () => {
     expect(res[1].getMail()).toBe(exampleInput.mail);
     expect(res[1].getRole()).toBe(exampleInput.role);
     expect(res[1].isActivated()).toBe(false);
-    inactiveAccountRepository.reset();
+  });
+
+  it('rejects passphrase shorter than requirements', async () => {
+    const res = await registerService.handle(
+      exampleInput.name,
+      exampleInput.mail,
+      'short',
+      exampleInput.role,
+    );
+
+    expect(Result.isErr(res)).toBe(true);
   });
 });

@@ -1,4 +1,4 @@
-import { Option, Result } from '@mikuroxina/mini-fn';
+import { Result } from '@mikuroxina/mini-fn';
 import * as v from 'valibot';
 
 import type { AccountID } from '../../accounts/model/account.js';
@@ -55,11 +55,7 @@ export class Reaction {
       );
     }
 
-    // Reactions on a non-quote renote are attributed to the original note
-    const noteID =
-      arg.note.isRenote() && !arg.note.isQuote()
-        ? Option.unwrap(arg.note.getOriginalNoteID())
-        : arg.note.getID();
+    const noteID = arg.note.getReactionTargetNoteID();
 
     return Result.ok(
       new Reaction({

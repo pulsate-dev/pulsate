@@ -3,6 +3,10 @@ import { Ether, Option, Result } from '@mikuroxina/mini-fn';
 import type { AccountID } from '../../accounts/model/account.js';
 import type { MediumID } from '../../drive/model/medium.js';
 import {
+  type AccountModuleFacade,
+  accountModuleFacadeSymbol,
+} from '../../intermodule/account.js';
+import {
   type TimelineModuleFacade,
   timelineModuleFacadeSymbol,
 } from '../../intermodule/timeline.js';
@@ -12,6 +16,7 @@ import {
   type SnowflakeIDGenerator,
   snowflakeIDGeneratorSymbol,
 } from '../../internal/id/mod.js';
+import { checkVisibilityForSilencedActor } from '../model/createDomainService.js';
 import {
   NoteInternalError,
   NoteVisibilityInvalidError,
@@ -23,6 +28,7 @@ import {
   noteAttachmentRepoSymbol,
   noteRepoSymbol,
 } from '../model/repository.js';
+import { fetchActor } from './fetchActor.js';
 
 export class CreateService {
   async handle(
@@ -40,6 +46,20 @@ export class CreateService {
         ),
       );
     }
+
+    const actorRes = await fetchActor(this.deps.accountModule, authorID);
+    if (Result.isErr(actorRes)) {
+      return actorRes;
+    }
+    const actor = Result.unwrap(actorRes);
+    const silencedCheckRes = checkVisibilityForSilencedActor(
+      actor.isSilenced(),
+      visibility,
+    );
+    if (Result.isErr(silencedCheckRes)) {
+      return silencedCheckRes;
+    }
+
     const id = this.deps.idGenerator.generate<Note>();
     if (Result.isErr(id)) {
       return Result.err(
@@ -92,6 +112,7 @@ export class CreateService {
       noteRepository: NoteRepository;
       idGenerator: SnowflakeIDGenerator;
       noteAttachmentRepository: NoteAttachmentRepository;
+      accountModule: AccountModuleFacade;
       timelineModule: TimelineModuleFacade;
       clock: Clock;
     },
@@ -119,6 +140,7 @@ export const createService = Ether.newEther(
     noteRepository: noteRepoSymbol,
     idGenerator: snowflakeIDGeneratorSymbol,
     noteAttachmentRepository: noteAttachmentRepoSymbol,
+    accountModule: accountModuleFacadeSymbol,
     timelineModule: timelineModuleFacadeSymbol,
     clock: clockSymbol,
   },

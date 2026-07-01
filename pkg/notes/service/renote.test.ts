@@ -167,6 +167,7 @@ describe('RenoteService', () => {
     );
 
     expect(Result.isErr(res)).toBe(true);
+    expect(Result.unwrapErr(res)).toBeInstanceOf(NoteVisibilityInvalidError);
   });
 
   it('if original note not found', async () => {
@@ -180,6 +181,20 @@ describe('RenoteService', () => {
     );
 
     expect(Result.isErr(res)).toBe(true);
+  });
+
+  it('rejects invalid renote visibility', async () => {
+    const res = await service.handle(
+      '2' as NoteID,
+      '',
+      '',
+      '101' as AccountID,
+      [],
+      'FOLLOWERS',
+    );
+
+    expect(Result.isErr(res)).toBe(true);
+    expect(Result.unwrapErr(res)).toBeInstanceOf(NoteVisibilityInvalidError);
   });
 
   it('should not be able to renote others FOLLOWERS notes', async () => {

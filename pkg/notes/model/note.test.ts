@@ -257,5 +257,99 @@ describe('Note', () => {
         Option.some('300' as NoteID),
       );
     });
+
+    it.each([
+      'FOLLOWERS',
+      'DIRECT',
+    ] as const)('renote/quote visibility must be PUBLIC or HOME (rejects %s)', (visibility) => {
+      const res = Note.new({
+        ...exampleInput,
+        visibility,
+        sendTo:
+          visibility === 'DIRECT'
+            ? Option.some('999' as AccountID)
+            : Option.none(),
+        originalNoteID: Option.some('100' as NoteID),
+      });
+
+      expect(Result.isErr(res)).toBe(true);
+    });
+  });
+
+  describe('canBeRenotedBy', () => {
+    const author = '2' as AccountID;
+
+    it.each([
+      'PUBLIC',
+      'HOME',
+    ] as const)('%s note can be renoted by anyone', (visibility) => {
+      const note = Result.unwrap(Note.new({ ...exampleInput, visibility }));
+      expect(Result.isOk(note.canBeRenotedBy('999' as AccountID))).toBe(true);
+    });
+
+    it('FOLLOWERS note can be renoted by its author', () => {
+      const note = Result.unwrap(
+        Note.new({
+          ...exampleInput,
+          authorID: author,
+          visibility: 'FOLLOWERS',
+        }),
+      );
+      expect(Result.isOk(note.canBeRenotedBy(author))).toBe(true);
+    });
+
+    it('FOLLOWERS note cannot be renoted by others', () => {
+      const note = Result.unwrap(
+        Note.new({
+          ...exampleInput,
+          authorID: author,
+          visibility: 'FOLLOWERS',
+        }),
+      );
+      expect(Result.isErr(note.canBeRenotedBy('999' as AccountID))).toBe(true);
+    });
+
+    it('DIRECT note cannot be renoted', () => {
+      const note = Result.unwrap(
+        Note.new({
+          ...exampleInput,
+          authorID: author,
+          visibility: 'DIRECT',
+          sendTo: Option.some('999' as AccountID),
+        }),
+      );
+      expect(Result.isErr(note.canBeRenotedBy(author))).toBe(true);
+    });
+  });
+
+  describe('getReactionTargetNoteID', () => {
+    it('returns its own ID for an ordinary note', () => {
+      const note = Result.unwrap(Note.new(exampleInput));
+      expect(note.getReactionTargetNoteID()).toBe(note.getID());
+    });
+
+    it('returns the original note ID for a pure renote', () => {
+      const note = Result.unwrap(
+        Note.new({
+          ...exampleInput,
+          content: '',
+          contentsWarningComment: '',
+          attachmentFileID: [],
+          originalNoteID: Option.some('999' as NoteID),
+        }),
+      );
+      expect(note.getReactionTargetNoteID()).toBe('999' as NoteID);
+    });
+
+    it('returns its own ID for a quote', () => {
+      const note = Result.unwrap(
+        Note.new({
+          ...exampleInput,
+          content: 'quoting!',
+          originalNoteID: Option.some('999' as NoteID),
+        }),
+      );
+      expect(note.getReactionTargetNoteID()).toBe(note.getID());
+    });
   });
 });

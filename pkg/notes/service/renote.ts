@@ -1,7 +1,6 @@
 import { Ether, Option, Result } from '@mikuroxina/mini-fn';
 
 import type { Account, AccountID } from '../../accounts/model/account.js';
-import { AccountNotFoundError } from '../../accounts/model/errors.js';
 import type { MediumID } from '../../drive/model/medium.js';
 import {
   type AccountModuleFacade,
@@ -17,19 +16,20 @@ import {
   type SnowflakeIDGenerator,
   snowflakeIDGeneratorSymbol,
 } from '../../internal/id/mod.js';
+import { checkVisibilityForSilencedActor } from '../model/createDomainService.js';
 import {
   NoteInsufficientPermissionError,
   NoteNotFoundError,
-  NoteVisibilityInvalidError,
 } from '../model/errors.js';
-import type { NoteID, NoteVisibility } from '../model/note.js';
-import { Note } from '../model/note.js';
+import { Note, type NoteID, type NoteVisibility } from '../model/note.js';
+import { getRenoteChainRootID } from '../model/renoteDomainService.js';
 import {
   type NoteAttachmentRepository,
   type NoteRepository,
   noteAttachmentRepoSymbol,
   noteRepoSymbol,
 } from '../model/repository.js';
+import { fetchActor } from './fetchActor.js';
 
 export class RenoteService {
   constructor(
@@ -55,11 +55,9 @@ export class RenoteService {
     attachmentFileID: MediumID[],
     visibility: NoteVisibility,
   ): Promise<Result.Result<Error, Note>> {
-    const actorRes = await this.deps.accountModule.fetchAccount(authorID);
+    const actorRes = await fetchActor(this.deps.accountModule, authorID);
     if (Result.isErr(actorRes)) {
-      return Result.err(
-        new AccountNotFoundError('Account not found', { cause: null }),
-      );
+      return actorRes;
     }
     const actor = Result.unwrap(actorRes);
     if (!this.isAllowed(actor, visibility)) {
@@ -68,27 +66,13 @@ export class RenoteService {
       );
     }
 
-    // NOTE: PUBLIC, HOME note can be renote
-    switch (visibility) {
-      case 'PUBLIC':
-      case 'HOME':
-        break;
-      default:
-        return Result.err(
-          new NoteVisibilityInvalidError('Invalid visibility', { cause: null }),
-        );
-    }
-
     const originalNoteRes = await this.resolveOriginalNote(originalID);
     if (Result.isErr(originalNoteRes)) {
       return originalNoteRes;
     }
     const originalNote = Result.unwrap(originalNoteRes);
 
-    const visibilityCheckRes = this.checkOriginalVisibility(
-      originalNote,
-      authorID,
-    );
+    const visibilityCheckRes = originalNote.canBeRenotedBy(authorID);
     if (Result.isErr(visibilityCheckRes)) {
       return visibilityCheckRes;
     }
@@ -151,47 +135,23 @@ export class RenoteService {
     }
     const note = Option.unwrap(res);
 
-    // NOTE: Only pure renotes (not quotes) are resolved to their original.
-    // Quoting a quote refers to the quote itself, not the root.
-    if (!note.isRenote() || note.isQuote()) {
+    // NOTE: For pure renotes the chain is followed one hop to the root; for
+    // quotes and ordinary notes the target note itself is the original. The
+    // decision is owned by the renote domain service.
+    const chainRootID = getRenoteChainRootID(note);
+    if (Option.isNone(chainRootID)) {
       return Result.ok(note);
     }
 
-    const rootID = Option.unwrap(note.getOriginalNoteID());
-    const rootRes = await this.deps.noteRepository.findByID(rootID);
+    const rootRes = await this.deps.noteRepository.findByID(
+      Option.unwrap(chainRootID),
+    );
     if (Option.isNone(rootRes)) {
       return Result.err(
         new NoteNotFoundError('Original note not found', { cause: null }),
       );
     }
     return Result.ok(Option.unwrap(rootRes));
-  }
-
-  private checkOriginalVisibility(
-    originalNote: Note,
-    authorID: AccountID,
-  ): Result.Result<Error, void> {
-    switch (originalNote.getVisibility()) {
-      case 'PUBLIC':
-      case 'HOME':
-        return Result.ok(undefined);
-      case 'FOLLOWERS':
-        if (originalNote.getAuthorID() !== authorID) {
-          return Result.err(
-            new NoteVisibilityInvalidError(
-              'Can not renote others FOLLOWERS note',
-              { cause: null },
-            ),
-          );
-        }
-        return Result.ok(undefined);
-      default:
-        return Result.err(
-          new NoteVisibilityInvalidError('Cannot renote this note', {
-            cause: null,
-          }),
-        );
-    }
   }
 
   private isAllowed(actor: Account, visibility: NoteVisibility): boolean {
@@ -204,13 +164,9 @@ export class RenoteService {
       return false;
     }
 
-    if (actor.isSilenced()) {
-      // NOTE: silenced account cannot set note visibility to PUBLIC
-      if (visibility === 'PUBLIC') {
-        return false;
-      }
-    }
-    return true;
+    return Result.isOk(
+      checkVisibilityForSilencedActor(actor.isSilenced(), visibility),
+    );
   }
 }
 export const renoteSymbol = Ether.newEtherSymbol<RenoteService>();

@@ -27,10 +27,7 @@ export class DeleteReactionService {
     }
 
     const unwrappedNote = Option.unwrap(note);
-    let targetNoteID = noteID;
-    if (unwrappedNote.isRenote() && !unwrappedNote.isQuote()) {
-      targetNoteID = Option.unwrap(unwrappedNote.getOriginalNoteID());
-    }
+    const targetNoteID = unwrappedNote.getReactionTargetNoteID();
 
     const reactionRes = await this.reactionRepository.findByCompositeID({
       noteID: targetNoteID,
