@@ -11,7 +11,11 @@ import {
   type PasswordEncoder,
   passwordEncoderSymbol,
 } from '../../internal/password/mod.js';
-import type { Account, AccountName, AccountRole } from '../model/account.js';
+import {
+  Account,
+  type AccountName,
+  type AccountRole,
+} from '../model/account.js';
 import { InactiveAccount } from '../model/inactiveAccount.js';
 import {
   type InactiveAccountRepository,
@@ -61,6 +65,11 @@ export class RegisterService {
       return Result.err(
         new AccountAlreadyExistsError('account already exists'),
       );
+    }
+
+    const validateResult = Account.validatePassphrase(passphrase);
+    if (Result.isErr(validateResult)) {
+      return validateResult;
     }
 
     const passphraseHash =

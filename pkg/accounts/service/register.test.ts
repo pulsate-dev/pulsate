@@ -51,4 +51,16 @@ describe('RegisterService', () => {
     expect(res[1].isActivated()).toBe(false);
     inactiveAccountRepository.reset();
   });
+
+  it('rejects passphrase shorter than requirements', async () => {
+    const res = await registerService.handle(
+      exampleInput.name,
+      exampleInput.mail,
+      'short',
+      exampleInput.role,
+    );
+
+    expect(Result.isErr(res)).toBe(true);
+    inactiveAccountRepository.reset();
+  });
 });
