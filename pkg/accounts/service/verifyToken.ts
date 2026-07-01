@@ -27,14 +27,16 @@ export class VerifyAccountTokenService {
   async generate(
     accountName: AccountName,
   ): Promise<Result.Result<Error, string>> {
-    const verifyToken = crypto.getRandomValues(new Uint8Array(32));
+    // 6 random digits (000000-999999); brute force is mitigated by rate limiting (handled separately)
+    const randomBytes = crypto.getRandomValues(new Uint8Array(6));
+    const verifyToken = Array.from(randomBytes, (byte) =>
+      (byte % 10).toString(),
+    ).join('');
 
     // expireDate: After 7 days
     const expireDate = new Date(
       Number(this.clock.now()) + 7 * 24 * 60 * 60 * 1000,
     );
-
-    const encodedToken = Buffer.from(verifyToken).toString('base64url');
 
     const account =
       await this.inactiveAccountRepository.findByName(accountName);
@@ -46,7 +48,7 @@ export class VerifyAccountTokenService {
 
     const tokenRes = VerifyToken.new({
       accountID: account[1].getID(),
-      token: encodedToken,
+      token: verifyToken,
       expire: expireDate,
     });
     if (Result.isErr(tokenRes)) {
