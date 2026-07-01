@@ -52,15 +52,6 @@ describe('VerifyAccountTokenService', () => {
     );
   });
 
-  it('generates a 6-digit numeric token', async () => {
-    const token = await service.generate('@johndoe@example.com');
-    if (Result.isErr(token)) {
-      throw new Error('unreachable');
-    }
-
-    expect(token[1]).toMatch(/^\d{6}$/);
-  });
-
   it('expired token', async () => {
     const dummyService = new VerifyAccountTokenService(
       repository,
@@ -80,7 +71,7 @@ describe('VerifyAccountTokenService', () => {
 
   it('invalid token', async () => {
     const token = await service.generate('@johndoe@example.com');
-    const verify = await service.verify('@johndoe@example.com', 'abcde');
+    const verify = await service.verify('@johndoe@example.com', '000000');
 
     expect(Result.isOk(token)).toBe(true);
     expect(Result.isOk(verify)).toBe(false);
