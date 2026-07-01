@@ -66,11 +66,6 @@ export class RenoteService {
       );
     }
 
-    const renoteVisibilityRes = Note.checkRenoteVisibility(visibility);
-    if (Result.isErr(renoteVisibilityRes)) {
-      return renoteVisibilityRes;
-    }
-
     const originalNoteRes = await this.resolveOriginalNote(originalID);
     if (Result.isErr(originalNoteRes)) {
       return originalNoteRes;

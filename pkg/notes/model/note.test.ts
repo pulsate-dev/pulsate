@@ -276,16 +276,6 @@ describe('Note', () => {
     });
   });
 
-  describe('checkRenoteVisibility', () => {
-    it.each(['PUBLIC', 'HOME'] as const)('allows %s', (visibility) => {
-      expect(Result.isOk(Note.checkRenoteVisibility(visibility))).toBe(true);
-    });
-
-    it.each(['FOLLOWERS', 'DIRECT'] as const)('rejects %s', (visibility) => {
-      expect(Result.isErr(Note.checkRenoteVisibility(visibility))).toBe(true);
-    });
-  });
-
   describe('canBeRenotedBy', () => {
     const author = '2' as AccountID;
 

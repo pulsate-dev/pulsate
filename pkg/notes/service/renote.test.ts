@@ -183,9 +183,9 @@ describe('RenoteService', () => {
     expect(Result.isErr(res)).toBe(true);
   });
 
-  it('rejects invalid renote visibility before looking up the original note', async () => {
+  it('rejects invalid renote visibility', async () => {
     const res = await service.handle(
-      '999' as NoteID,
+      '2' as NoteID,
       '',
       '',
       '101' as AccountID,

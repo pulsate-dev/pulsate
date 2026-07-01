@@ -173,7 +173,7 @@ export class Note {
       | 'createdAt'
     >,
   ): Result.Result<NoteValidationError, Note> {
-    const visibilityErr = Note.checkRenoteVisibility(arg.visibility);
+    const visibilityErr = Note.#checkRenoteVisibility(arg.visibility);
     if (Result.isErr(visibilityErr)) return visibilityErr;
 
     const normalizedArg = {
@@ -208,7 +208,7 @@ export class Note {
       | 'createdAt'
     >,
   ): Result.Result<NoteValidationError, Note> {
-    const visibilityErr = Note.checkRenoteVisibility(arg.visibility);
+    const visibilityErr = Note.#checkRenoteVisibility(arg.visibility);
     if (Result.isErr(visibilityErr)) return visibilityErr;
 
     if (
@@ -236,11 +236,9 @@ export class Note {
   }
 
   /**
-   * A renote/quote's own visibility can only be PUBLIC or HOME. Exposed so
-   * callers (e.g. RenoteService) can fail fast before doing any repository
-   * lookups, instead of only discovering this once Note.new() is called.
+   * A renote/quote's own visibility can only be PUBLIC or HOME.
    */
-  static checkRenoteVisibility(
+  static #checkRenoteVisibility(
     visibility: NoteVisibility,
   ): Result.Result<NoteVisibilityInvalidError, void> {
     if (isPublicOrHome(visibility)) {
