@@ -1,7 +1,6 @@
 import { Ether, Option, Result } from '@mikuroxina/mini-fn';
 
 import type { Account, AccountID } from '../../accounts/model/account.js';
-import { AccountNotFoundError } from '../../accounts/model/errors.js';
 import type { MediumID } from '../../drive/model/medium.js';
 import {
   type AccountModuleFacade,
@@ -17,13 +16,12 @@ import {
   type SnowflakeIDGenerator,
   snowflakeIDGeneratorSymbol,
 } from '../../internal/id/mod.js';
+import { checkVisibilityForSilencedActor } from '../model/createDomainService.js';
 import {
   NoteInsufficientPermissionError,
   NoteNotFoundError,
-  NoteVisibilityInvalidError,
 } from '../model/errors.js';
-import type { NoteID, NoteVisibility } from '../model/note.js';
-import { Note } from '../model/note.js';
+import { Note, type NoteID, type NoteVisibility } from '../model/note.js';
 import { getRenoteChainRootID } from '../model/renoteDomainService.js';
 import {
   type NoteAttachmentRepository,
@@ -31,6 +29,7 @@ import {
   noteAttachmentRepoSymbol,
   noteRepoSymbol,
 } from '../model/repository.js';
+import { fetchActor } from './fetchActor.js';
 
 export class RenoteService {
   constructor(
@@ -56,11 +55,9 @@ export class RenoteService {
     attachmentFileID: MediumID[],
     visibility: NoteVisibility,
   ): Promise<Result.Result<Error, Note>> {
-    const actorRes = await this.deps.accountModule.fetchAccount(authorID);
+    const actorRes = await fetchActor(this.deps.accountModule, authorID);
     if (Result.isErr(actorRes)) {
-      return Result.err(
-        new AccountNotFoundError('Account not found', { cause: null }),
-      );
+      return actorRes;
     }
     const actor = Result.unwrap(actorRes);
     if (!this.isAllowed(actor, visibility)) {
@@ -69,15 +66,9 @@ export class RenoteService {
       );
     }
 
-    // NOTE: PUBLIC, HOME note can be renote
-    switch (visibility) {
-      case 'PUBLIC':
-      case 'HOME':
-        break;
-      default:
-        return Result.err(
-          new NoteVisibilityInvalidError('Invalid visibility', { cause: null }),
-        );
+    const renoteVisibilityRes = Note.checkRenoteVisibility(visibility);
+    if (Result.isErr(renoteVisibilityRes)) {
+      return renoteVisibilityRes;
     }
 
     const originalNoteRes = await this.resolveOriginalNote(originalID);
@@ -86,10 +77,7 @@ export class RenoteService {
     }
     const originalNote = Result.unwrap(originalNoteRes);
 
-    const visibilityCheckRes = this.checkOriginalVisibility(
-      originalNote,
-      authorID,
-    );
+    const visibilityCheckRes = originalNote.canBeRenotedBy(authorID);
     if (Result.isErr(visibilityCheckRes)) {
       return visibilityCheckRes;
     }
@@ -171,33 +159,6 @@ export class RenoteService {
     return Result.ok(Option.unwrap(rootRes));
   }
 
-  private checkOriginalVisibility(
-    originalNote: Note,
-    authorID: AccountID,
-  ): Result.Result<Error, void> {
-    switch (originalNote.getVisibility()) {
-      case 'PUBLIC':
-      case 'HOME':
-        return Result.ok(undefined);
-      case 'FOLLOWERS':
-        if (originalNote.getAuthorID() !== authorID) {
-          return Result.err(
-            new NoteVisibilityInvalidError(
-              'Can not renote others FOLLOWERS note',
-              { cause: null },
-            ),
-          );
-        }
-        return Result.ok(undefined);
-      default:
-        return Result.err(
-          new NoteVisibilityInvalidError('Cannot renote this note', {
-            cause: null,
-          }),
-        );
-    }
-  }
-
   private isAllowed(actor: Account, visibility: NoteVisibility): boolean {
     // NOTE: an actor must be active
     if (!actor.isActivated()) {
@@ -208,13 +169,9 @@ export class RenoteService {
       return false;
     }
 
-    if (actor.isSilenced()) {
-      // NOTE: silenced account cannot set note visibility to PUBLIC
-      if (visibility === 'PUBLIC') {
-        return false;
-      }
-    }
-    return true;
+    return Result.isOk(
+      checkVisibilityForSilencedActor(actor.isSilenced(), visibility),
+    );
   }
 }
 export const renoteSymbol = Ether.newEtherSymbol<RenoteService>();

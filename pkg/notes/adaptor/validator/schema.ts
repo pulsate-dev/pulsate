@@ -186,13 +186,12 @@ export const RenoteRequestSchema = z.object({
       'Note content (max 3000 characters/if attachment file exists, allow 0 character)',
     default: '',
   }),
-  visibility: z
-    .union([z.literal('PUBLIC'), z.literal('HOME'), z.literal('FOLLOWERS')])
-    .openapi({
-      example: 'PUBLIC',
-      description: 'Note visibility (PUBLIC/HOME/FOLLOWERS)',
-      default: 'PUBLIC',
-    }),
+  visibility: z.union([z.literal('PUBLIC'), z.literal('HOME')]).openapi({
+    example: 'PUBLIC',
+    // NOTE: A renote/quote's own visibility can only be PUBLIC or HOME (see Note.#checkRenoteVisibility)
+    description: 'Note visibility (PUBLIC/HOME)',
+    default: 'PUBLIC',
+  }),
   attachment_file_ids: z
     .array(z.string())
     .max(16)

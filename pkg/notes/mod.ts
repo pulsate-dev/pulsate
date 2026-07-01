@@ -107,6 +107,7 @@ export const noteCreateServiceInstance = Ether.runEther(
     .feed(Ether.compose(noteClockEther))
     .feed(Ether.compose(noteIdGeneratorEther))
     .feed(Ether.compose(noteAttachmentRepoEther))
+    .feed(Ether.compose(accountModuleFacade))
     .feed(Ether.compose(timelineModuleFacadeEther)).value,
 );
 export const noteHandlers = new OpenAPIHono<{

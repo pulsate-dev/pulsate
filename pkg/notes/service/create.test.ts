@@ -3,6 +3,7 @@ import { describe, expect, it } from 'vitest';
 
 import type { AccountID } from '../../accounts/model/account.js';
 import { Medium, type MediumID } from '../../drive/model/medium.js';
+import { dummyAccountModuleFacade } from '../../intermodule/account.js';
 import { dummyTimelineModuleFacade } from '../../intermodule/timeline.js';
 import { MockClock, SnowflakeIDGenerator } from '../../internal/id/mod.js';
 import { InMemoryTimelineCacheRepository } from '../../timeline/adaptor/repository/dummyCache.js';
@@ -10,6 +11,7 @@ import {
   InMemoryNoteAttachmentRepository,
   InMemoryNoteRepository,
 } from '../adaptor/repository/dummy.js';
+import { NoteAccountSilencedError } from '../model/errors.js';
 import { CreateService } from './create.js';
 
 const noteRepository = new InMemoryNoteRepository();
@@ -40,6 +42,7 @@ const createService = new CreateService({
     now: () => BigInt(Date.UTC(2023, 9, 10, 0, 0)),
   }),
   noteAttachmentRepository: attachmentRepository,
+  accountModule: dummyAccountModuleFacade,
   timelineModule: dummyTimelineModuleFacade(timelineCacheRepository),
   clock: new MockClock(new Date('2023-09-10T00:00:00Z')),
 });
@@ -49,7 +52,7 @@ describe('CreateService', () => {
     const res = await createService.handle(
       'Hello world',
       '',
-      '1' as AccountID,
+      '102' as AccountID,
       [],
       'PUBLIC',
     );
@@ -61,7 +64,7 @@ describe('CreateService', () => {
     const res = await createService.handle(
       'Hello world',
       '',
-      '1' as AccountID,
+      '102' as AccountID,
       ['10' as MediumID, '11' as MediumID],
       'PUBLIC',
     );
@@ -119,5 +122,28 @@ describe('CreateService', () => {
     );
     expect(Result.isOk(res1)).toBe(true);
     expect(Result.unwrap(res1)).toHaveLength(1);
+  });
+
+  it('if actor silenced, must not set PUBLIC', async () => {
+    const publicRes = await createService.handle(
+      'Hello world',
+      '',
+      '105' as AccountID,
+      [],
+      'PUBLIC',
+    );
+    expect(Result.isErr(publicRes)).toBe(true);
+    expect(Result.unwrapErr(publicRes)).toBeInstanceOf(
+      NoteAccountSilencedError,
+    );
+
+    const homeRes = await createService.handle(
+      'Hello world',
+      '',
+      '105' as AccountID,
+      [],
+      'HOME',
+    );
+    expect(Result.isOk(homeRes)).toBe(true);
   });
 });

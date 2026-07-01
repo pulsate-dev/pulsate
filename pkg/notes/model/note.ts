@@ -9,6 +9,7 @@ import {
   NoteDateInvalidError,
   NoteNoDestinationError,
   NoteTooManyAttachmentsError,
+  NoteVisibilityInvalidError,
 } from './errors.js';
 
 export type NoteID = ID<Note>;
@@ -33,10 +34,14 @@ export type NewNoteArgs = Omit<CreateNoteArgs, 'updatedAt' | 'deletedAt'>;
 type NoteValidationError =
   | NoteContentLengthError
   | NoteTooManyAttachmentsError
-  | NoteNoDestinationError;
+  | NoteNoDestinationError
+  | NoteVisibilityInvalidError;
 
 const segmenter = new Intl.Segmenter();
 const graphemeLength = (s: string): number => [...segmenter.segment(s)].length;
+
+const isPublicOrHome = (visibility: NoteVisibility): boolean =>
+  visibility === 'PUBLIC' || visibility === 'HOME';
 
 export const noteContentSchema = v.pipe(
   v.string(),
@@ -168,6 +173,9 @@ export class Note {
       | 'createdAt'
     >,
   ): Result.Result<NoteValidationError, Note> {
+    const visibilityErr = Note.checkRenoteVisibility(arg.visibility);
+    if (Result.isErr(visibilityErr)) return visibilityErr;
+
     const normalizedArg = {
       ...arg,
       // NOTE: Renotes do not have content or contentsWarningComment
@@ -200,6 +208,9 @@ export class Note {
       | 'createdAt'
     >,
   ): Result.Result<NoteValidationError, Note> {
+    const visibilityErr = Note.checkRenoteVisibility(arg.visibility);
+    if (Result.isErr(visibilityErr)) return visibilityErr;
+
     if (
       arg.content === '' &&
       arg.contentsWarningComment === '' &&
@@ -221,6 +232,25 @@ export class Note {
         updatedAt: Option.none(),
         deletedAt: Option.none(),
       }),
+    );
+  }
+
+  /**
+   * A renote/quote's own visibility can only be PUBLIC or HOME. Exposed so
+   * callers (e.g. RenoteService) can fail fast before doing any repository
+   * lookups, instead of only discovering this once Note.new() is called.
+   */
+  static checkRenoteVisibility(
+    visibility: NoteVisibility,
+  ): Result.Result<NoteVisibilityInvalidError, void> {
+    if (isPublicOrHome(visibility)) {
+      return Result.ok(undefined);
+    }
+    return Result.err(
+      new NoteVisibilityInvalidError(
+        'Renote/Quote visibility must be PUBLIC or HOME',
+        { cause: null },
+      ),
     );
   }
 
@@ -280,6 +310,45 @@ export class Note {
 
   getAttachmentFileID(): readonly MediumID[] {
     return this.#attachmentFileID;
+  }
+
+  /**
+   * Decides whether {@link accountID} may renote this note, based on this
+   * note's own visibility (not the visibility of the renote being created).
+   */
+  canBeRenotedBy(
+    accountID: AccountID,
+  ): Result.Result<NoteVisibilityInvalidError, void> {
+    if (isPublicOrHome(this.#visibility)) {
+      return Result.ok(undefined);
+    }
+    if (this.#visibility === 'FOLLOWERS') {
+      if (this.#authorID !== accountID) {
+        return Result.err(
+          new NoteVisibilityInvalidError(
+            'Can not renote others FOLLOWERS note',
+            { cause: null },
+          ),
+        );
+      }
+      return Result.ok(undefined);
+    }
+    return Result.err(
+      new NoteVisibilityInvalidError('Cannot renote this note', {
+        cause: null,
+      }),
+    );
+  }
+
+  /**
+   * Reactions on a pure renote (not a quote) are attributed to the
+   * original note, since the renote itself carries no content of its own.
+   */
+  getReactionTargetNoteID(): NoteID {
+    if (this.isRenote() && !this.isQuote()) {
+      return Option.unwrap(this.#originalNoteID);
+    }
+    return this.#id;
   }
 
   getCreatedAt(): Date {
