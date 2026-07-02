@@ -1,14 +1,4 @@
-import { Result } from '@mikuroxina/mini-fn';
-
 import type { AccountID } from './account.js';
-
-export class VerifyTokenEmptyError extends Error {
-  override readonly name = 'VerifyTokenEmptyError' as const;
-  constructor(message: string, options?: { cause?: unknown }) {
-    super(message, options);
-    this.cause = options?.cause;
-  }
-}
 
 export interface VerifyTokenArgs {
   accountID: AccountID;
@@ -27,17 +17,17 @@ export class VerifyToken {
     this.#expire = args.expire;
   }
 
-  static new(
-    args: VerifyTokenArgs,
-  ): Result.Result<VerifyTokenEmptyError, VerifyToken> {
-    if (args.token.length === 0) {
-      return Result.err(new VerifyTokenEmptyError('token must not be empty'));
-    }
-    return Result.ok(new VerifyToken(args));
-  }
-
   static reconstruct(args: VerifyTokenArgs): VerifyToken {
     return new VerifyToken(args);
+  }
+
+  static new(accountID: AccountID, expire: Date): VerifyToken {
+    const randomBytes = crypto.getRandomValues(new Uint8Array(6));
+    const token = Array.from(randomBytes, (byte) =>
+      (byte % 10).toString(),
+    ).join('');
+
+    return new VerifyToken({ accountID, token, expire });
   }
 
   getAccountID(): AccountID {

@@ -71,7 +71,7 @@ describe('VerifyAccountTokenService', () => {
 
   it('invalid token', async () => {
     const token = await service.generate('@johndoe@example.com');
-    const verify = await service.verify('@johndoe@example.com', 'abcde');
+    const verify = await service.verify('@johndoe@example.com', '000000');
 
     expect(Result.isOk(token)).toBe(true);
     expect(Result.isOk(verify)).toBe(false);
