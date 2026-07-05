@@ -1,14 +1,21 @@
-import { Option, Result } from '@mikuroxina/mini-fn';
+import { Cat, Option, Promise, Result } from '@mikuroxina/mini-fn';
 import { encode } from 'blurhash';
 import { fileTypeFromBuffer } from 'file-type';
 import sharp from 'sharp';
 
 import type { AccountID } from '../../accounts/model/account.js';
 import type { SnowflakeIDGenerator } from '../../internal/id/mod.js';
+import { resultPromiseMonad } from '../../internal/monad/mod.js';
 import { DriveInternalError, MediaTypeInvalidError } from '../model/errors.js';
 import { Medium } from '../model/medium.js';
 import type { MediaRepository } from '../model/repository.js';
 import type { Storage } from '../model/storage.js';
+
+type ProcessedImage = {
+  resized: Uint8Array;
+  thumbnail: Uint8Array;
+  hash: string;
+};
 
 export class UploadMediaService {
   constructor(
@@ -31,61 +38,71 @@ export class UploadMediaService {
     nsfw: boolean;
     file: Uint8Array;
   }): Promise<Result.Result<Error, Medium>> {
-    const mime = await this.detectFileType(args.file);
-    if (Option.isNone(mime)) {
-      return Result.err(
-        new MediaTypeInvalidError('Invalid file type', { cause: null }),
-      );
-    }
+    const monad = resultPromiseMonad<Error>();
+    const invalidType = () =>
+      new MediaTypeInvalidError('Invalid file type', { cause: null });
 
-    const id = this.idGenerator.generate<Medium>();
-    if (Result.isErr(id)) {
-      return id;
-    }
-
-    // NOTE: Processing runs first because the hash comes from it. If it fails
-    // the empty hash is harmless: an invalid source is rejected by Medium.new,
-    // and a valid source is reported as an internal error below.
-    const processed = await this.imageProcessing(args.file);
-
-    const medium = Medium.new({
-      id: id[1],
-      name: args.name,
-      authorId: args.authorId,
-      nsfw: args.nsfw,
-      mime: 'image/webp',
-      hash: Option.unwrapOr('')(
-        Option.map((p: { hash: string }) => p.hash)(processed),
-      ),
-      url: Option.none(),
-      thumbnailUrl: Option.none(),
-      sourceMime: mime[1],
-      size: args.file.length,
-      maxSize: this.MAX_MEDIA_SIZE,
-    });
-    if (Result.isErr(medium)) {
-      return medium;
-    }
-
-    // NOTE: The source is valid, so a failed processing is an internal error.
-    if (Option.isNone(processed)) {
-      return Result.err(
-        new DriveInternalError('Failed to process image', { cause: null }),
-      );
-    }
-
-    await this.storage.upload(`${id[1]}.webp`, processed[1].resized);
-    await this.storage.upload(
-      `thumbnail-${id[1]}.webp`,
-      processed[1].thumbnail,
+    return (
+      Cat.doT(monad)
+        .addM(
+          'mime',
+          this.detectFileType(args.file).then(Option.okOrElse(invalidType)),
+        )
+        .addM('id', Promise.resolve(this.idGenerator.generate<Medium>()))
+        // NOTE: imageProcessing runs before size validation, but the hash it
+        // produces is only used by Medium.new. When processing fails, the empty
+        // hash is harmless: an invalid source is rejected by Medium.new, and a
+        // valid source is reported as an internal error below.
+        .addM(
+          'processed',
+          this.imageProcessing(args.file).then((opt) =>
+            Result.ok<Option.Option<ProcessedImage>>(opt),
+          ),
+        )
+        .addMWith('medium', ({ id, mime, processed }) =>
+          Promise.resolve(
+            Medium.new({
+              id,
+              name: args.name,
+              authorId: args.authorId,
+              nsfw: args.nsfw,
+              mime: 'image/webp',
+              hash: Option.unwrapOr('')(
+                Option.map((p: ProcessedImage) => p.hash)(processed),
+              ),
+              url: Option.none(),
+              thumbnailUrl: Option.none(),
+              sourceMime: mime,
+              size: args.file.length,
+              maxSize: this.MAX_MEDIA_SIZE,
+            }),
+          ),
+        )
+        // NOTE: The source is valid, so a failed processing is an internal error.
+        .when(
+          ({ processed }) => Option.isNone(processed),
+          () =>
+            Promise.resolve(
+              Result.err(
+                new DriveInternalError('Failed to process image', {
+                  cause: null,
+                }),
+              ),
+            ),
+        )
+        .runWith(({ id, processed }) =>
+          this.storage
+            .upload(`${id}.webp`, Option.unwrap(processed).resized)
+            .then(() => Result.ok([])),
+        )
+        .runWith(({ id, processed }) =>
+          this.storage
+            .upload(`thumbnail-${id}.webp`, Option.unwrap(processed).thumbnail)
+            .then(() => Result.ok([])),
+        )
+        .addMWith('result', ({ medium }) => this.repository.create(medium))
+        .finish(({ result }) => result)
     );
-
-    const res = await this.repository.create(medium[1]);
-    if (Result.isErr(res)) {
-      return res;
-    }
-
-    return Result.ok(medium[1]);
   }
 
   private async detectFileType(
@@ -100,9 +117,7 @@ export class UploadMediaService {
 
   private async imageProcessing(
     file: Uint8Array,
-  ): Promise<
-    Option.Option<{ resized: Uint8Array; thumbnail: Uint8Array; hash: string }>
-  > {
+  ): Promise<Option.Option<ProcessedImage>> {
     // ToDo: separate cases when images are animated
 
     // NOTE: sharp throws on unsupported or corrupt inputs; treat that as a

@@ -15,7 +15,7 @@ type MediumPrismaArgs = Awaited<
 
 export class PrismaMediaRepository implements MediaRepository {
   constructor(private readonly prisma: PrismaClient) {}
-  async create(medium: Medium): Promise<Result.Result<Error, void>> {
+  async create(medium: Medium): Promise<Result.Result<Error, Medium>> {
     try {
       await this.prisma.medium.create({
         data: {
@@ -26,7 +26,7 @@ export class PrismaMediaRepository implements MediaRepository {
       return Result.err(this.parsePrismaError(e));
     }
 
-    return Result.ok(undefined);
+    return Result.ok(medium);
   }
 
   async findById(id: MediumID): Promise<Option.Option<Medium>> {

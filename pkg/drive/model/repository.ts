@@ -4,7 +4,7 @@ import type { AccountID } from '../../accounts/model/account.js';
 import type { Medium, MediumID } from './medium.js';
 
 export interface MediaRepository {
-  create(medium: Medium): Promise<Result.Result<Error, void>>;
+  create(medium: Medium): Promise<Result.Result<Error, Medium>>;
   findById(id: MediumID): Promise<Option.Option<Medium>>;
   findByAuthor(authorId: AccountID): Promise<Option.Option<Medium[]>>;
 }

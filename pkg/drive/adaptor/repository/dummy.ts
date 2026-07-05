@@ -16,9 +16,9 @@ export class InMemoryMediaRepository implements MediaRepository {
     }
   }
 
-  async create(medium: Medium): Promise<Result.Result<Error, void>> {
+  async create(medium: Medium): Promise<Result.Result<Error, Medium>> {
     this.data.set(medium.getId(), medium);
-    return Result.ok(undefined);
+    return Result.ok(medium);
   }
 
   async findByAuthor(authorId: AccountID): Promise<Option.Option<Medium[]>> {
