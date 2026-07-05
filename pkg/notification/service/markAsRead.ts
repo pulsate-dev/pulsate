@@ -1,6 +1,7 @@
-import { Ether, Result } from '@mikuroxina/mini-fn';
+import { Cat, Ether, Promise, Result } from '@mikuroxina/mini-fn';
 import type { AccountID } from '../../accounts/model/account.js';
 import { type Clock, clockSymbol } from '../../internal/id/mod.js';
+import { resultPromiseMonad } from '../../internal/monad/mod.js';
 import type {
   Notification,
   NotificationID,
@@ -20,31 +21,28 @@ export class MarkAsReadNotificationService {
     notificationID: NotificationID,
     actorID: AccountID,
   ): Promise<Result.Result<Error, Notification>> {
-    const notificationRes =
-      await this.notificationRepository.findByID(notificationID);
-    if (Result.isErr(notificationRes)) {
-      return notificationRes;
-    }
+    const monad = resultPromiseMonad<Error>();
 
-    const notification = Result.unwrap(notificationRes);
-
-    if (!this.isAllowed(notification, actorID)) {
-      return Result.err(new Error('Not allowed'));
-    }
-
-    const markAsReadRes = notification.markAsRead(
-      new Date(Number(this.clock.now())),
-    );
-    if (Result.isErr(markAsReadRes)) {
-      return markAsReadRes;
-    }
-
-    const res = await this.notificationRepository.updateReadAt(notification);
-    if (Result.isErr(res)) {
-      return res;
-    }
-
-    return Result.ok(notification);
+    return Cat.doT(monad)
+      .addM(
+        'notification',
+        this.notificationRepository.findByID(notificationID),
+      )
+      .when(
+        ({ notification }) => !this.isAllowed(notification, actorID),
+        () => Promise.resolve(Result.err(new Error('Not allowed'))),
+      )
+      .runWith(({ notification }) =>
+        Promise.resolve(
+          notification.markAsRead(new Date(Number(this.clock.now()))),
+        ).then(Result.map(() => [])),
+      )
+      .runWith(({ notification }) =>
+        this.notificationRepository
+          .updateReadAt(notification)
+          .then(Result.map(() => [])),
+      )
+      .finish(({ notification }) => notification);
   }
 
   private isAllowed(notification: Notification, accountID: AccountID): boolean {
