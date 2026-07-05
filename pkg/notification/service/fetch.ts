@@ -1,5 +1,6 @@
-import { Ether, Result } from '@mikuroxina/mini-fn';
+import { Cat, Ether, Promise, Result } from '@mikuroxina/mini-fn';
 import type { AccountID } from '../../accounts/model/account.js';
+import { resultPromiseMonad } from '../../internal/monad/mod.js';
 import type {
   Notification,
   NotificationID,
@@ -19,36 +20,36 @@ export class FetchNotificationService {
     id: NotificationID,
     actorID: AccountID,
   ): Promise<Result.Result<Error, Notification>> {
-    const res = await this.notificationRepository.findByID(id);
-    if (Result.isErr(res)) {
-      return res;
-    }
-    if (!this.isAllowed(Result.unwrap(res), actorID)) {
-      return Result.err(new Error('not allowed'));
-    }
+    const monad = resultPromiseMonad<Error>();
+    const notAllowed = () => new Error('not allowed');
 
-    return res;
+    return Cat.doT(monad)
+      .addM('notification', this.notificationRepository.findByID(id))
+      .when(
+        ({ notification }) => !this.isAllowed(notification, actorID),
+        () => Promise.resolve(Result.err(notAllowed())),
+      )
+      .finish(({ notification }) => notification);
   }
 
   async fetchByRecipientID(
     recipientID: AccountID,
     filter: NotificationFilter,
   ): Promise<Result.Result<Error, Notification[]>> {
-    const res = await this.notificationRepository.findByRecipientID(
-      recipientID,
-      filter,
-    );
-    if (Result.isErr(res)) {
-      return res;
-    }
+    const monad = resultPromiseMonad<Error>();
+    const notAllowed = () => new Error('not allowed');
 
-    for (const v of Result.unwrap(res)) {
-      if (!this.isAllowed(v, recipientID)) {
-        return Result.err(new Error('not allowed'));
-      }
-    }
-
-    return res;
+    return Cat.doT(monad)
+      .addM(
+        'notifications',
+        this.notificationRepository.findByRecipientID(recipientID, filter),
+      )
+      .when(
+        ({ notifications }) =>
+          !notifications.every((v) => this.isAllowed(v, recipientID)),
+        () => Promise.resolve(Result.err(notAllowed())),
+      )
+      .finish(({ notifications }) => notifications);
   }
 
   private isAllowed(notification: Notification, actorID: AccountID): boolean {

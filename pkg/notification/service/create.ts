@@ -1,4 +1,4 @@
-import { Ether, Result } from '@mikuroxina/mini-fn';
+import { Cat, Ether, Promise, Result } from '@mikuroxina/mini-fn';
 import type { AccountID } from '../../accounts/model/account.js';
 import {
   type Clock,
@@ -6,6 +6,7 @@ import {
   type SnowflakeIDGenerator,
   snowflakeIDGeneratorSymbol,
 } from '../../internal/id/mod.js';
+import { resultPromiseMonad } from '../../internal/monad/mod.js';
 import type { NoteID } from '../../notes/model/note.js';
 import type { ReactionID } from '../../notes/model/reaction.js';
 import {
@@ -33,66 +34,87 @@ export class CreateNotificationService {
     recipientID: AccountID;
     actorID: AccountID;
   }): Promise<Result.Result<Error, void>> {
-    const idRes = this.idGenerator.generate<NotificationBase>();
-    if (Result.isErr(idRes)) {
-      return idRes;
-    }
-    const id = Result.unwrap(idRes);
+    const monad = resultPromiseMonad<Error>();
 
-    const notification = FollowedNotification.new({
-      id,
-      notificationType: 'followed',
-      recipientID: args.recipientID,
-      actorID: args.actorID,
-      actorType: 'account',
-      createdAt: new Date(Number(this.clock.now())),
-    });
-
-    return await this.notificationRepository.create(notification);
+    return Cat.doT(monad)
+      .addM(
+        'id',
+        Promise.resolve(this.idGenerator.generate<NotificationBase>()),
+      )
+      .addWith('notification', ({ id }) =>
+        FollowedNotification.new({
+          id,
+          notificationType: 'followed',
+          recipientID: args.recipientID,
+          actorID: args.actorID,
+          actorType: 'account',
+          createdAt: new Date(Number(this.clock.now())),
+        }),
+      )
+      .runWith(({ notification }) =>
+        this.notificationRepository
+          .create(notification)
+          .then(Result.map(() => [])),
+      )
+      .finish(() => undefined);
   }
 
   async createFollowRequested(args: {
     recipientID: AccountID;
     actorID: AccountID;
   }): Promise<Result.Result<Error, void>> {
-    const idRes = this.idGenerator.generate<NotificationBase>();
-    if (Result.isErr(idRes)) {
-      return idRes;
-    }
-    const id = Result.unwrap(idRes);
+    const monad = resultPromiseMonad<Error>();
 
-    const notification = FollowRequestedNotification.new({
-      id,
-      notificationType: 'followRequested',
-      recipientID: args.recipientID,
-      actorID: args.actorID,
-      actorType: 'account',
-      createdAt: new Date(Number(this.clock.now())),
-    });
-
-    return await this.notificationRepository.create(notification);
+    return Cat.doT(monad)
+      .addM(
+        'id',
+        Promise.resolve(this.idGenerator.generate<NotificationBase>()),
+      )
+      .addWith('notification', ({ id }) =>
+        FollowRequestedNotification.new({
+          id,
+          notificationType: 'followRequested',
+          recipientID: args.recipientID,
+          actorID: args.actorID,
+          actorType: 'account',
+          createdAt: new Date(Number(this.clock.now())),
+        }),
+      )
+      .runWith(({ notification }) =>
+        this.notificationRepository
+          .create(notification)
+          .then(Result.map(() => [])),
+      )
+      .finish(() => undefined);
   }
 
   async createFollowAccepted(args: {
     recipientID: AccountID;
     actorID: AccountID;
   }): Promise<Result.Result<Error, void>> {
-    const idRes = this.idGenerator.generate<NotificationBase>();
-    if (Result.isErr(idRes)) {
-      return idRes;
-    }
-    const id = Result.unwrap(idRes);
+    const monad = resultPromiseMonad<Error>();
 
-    const notification = FollowAcceptedNotification.new({
-      id,
-      notificationType: 'followAccepted',
-      recipientID: args.recipientID,
-      actorID: args.actorID,
-      actorType: 'account',
-      createdAt: new Date(Number(this.clock.now())),
-    });
-
-    return await this.notificationRepository.create(notification);
+    return Cat.doT(monad)
+      .addM(
+        'id',
+        Promise.resolve(this.idGenerator.generate<NotificationBase>()),
+      )
+      .addWith('notification', ({ id }) =>
+        FollowAcceptedNotification.new({
+          id,
+          notificationType: 'followAccepted',
+          recipientID: args.recipientID,
+          actorID: args.actorID,
+          actorType: 'account',
+          createdAt: new Date(Number(this.clock.now())),
+        }),
+      )
+      .runWith(({ notification }) =>
+        this.notificationRepository
+          .create(notification)
+          .then(Result.map(() => [])),
+      )
+      .finish(() => undefined);
   }
 
   async createMentioned(args: {
@@ -100,23 +122,30 @@ export class CreateNotificationService {
     actorID: AccountID;
     activityID: NoteID;
   }): Promise<Result.Result<Error, void>> {
-    const idRes = this.idGenerator.generate<NotificationBase>();
-    if (Result.isErr(idRes)) {
-      return idRes;
-    }
-    const id = Result.unwrap(idRes);
+    const monad = resultPromiseMonad<Error>();
 
-    const notification = MentionedNotification.new({
-      id,
-      notificationType: 'mentioned',
-      recipientID: args.recipientID,
-      actorID: args.actorID,
-      actorType: 'account',
-      activityID: args.activityID,
-      createdAt: new Date(Number(this.clock.now())),
-    });
-
-    return await this.notificationRepository.create(notification);
+    return Cat.doT(monad)
+      .addM(
+        'id',
+        Promise.resolve(this.idGenerator.generate<NotificationBase>()),
+      )
+      .addWith('notification', ({ id }) =>
+        MentionedNotification.new({
+          id,
+          notificationType: 'mentioned',
+          recipientID: args.recipientID,
+          actorID: args.actorID,
+          actorType: 'account',
+          activityID: args.activityID,
+          createdAt: new Date(Number(this.clock.now())),
+        }),
+      )
+      .runWith(({ notification }) =>
+        this.notificationRepository
+          .create(notification)
+          .then(Result.map(() => [])),
+      )
+      .finish(() => undefined);
   }
 
   async createRenoted(args: {
@@ -125,25 +154,31 @@ export class CreateNotificationService {
     sourceID: NoteID;
     activityID: NoteID;
   }): Promise<Result.Result<Error, void>> {
-    const idRes = this.idGenerator.generate<NotificationBase>();
-    if (Result.isErr(idRes)) {
-      return idRes;
-    }
+    const monad = resultPromiseMonad<Error>();
 
-    const id = Result.unwrap(idRes);
-
-    const notification = RenotedNotification.new({
-      id,
-      notificationType: 'renoted',
-      recipientID: args.recipientID,
-      actorID: args.actorID,
-      actorType: 'account',
-      sourceID: args.sourceID,
-      activityID: args.activityID,
-      createdAt: new Date(Number(this.clock.now())),
-    });
-
-    return await this.notificationRepository.create(notification);
+    return Cat.doT(monad)
+      .addM(
+        'id',
+        Promise.resolve(this.idGenerator.generate<NotificationBase>()),
+      )
+      .addWith('notification', ({ id }) =>
+        RenotedNotification.new({
+          id,
+          notificationType: 'renoted',
+          recipientID: args.recipientID,
+          actorID: args.actorID,
+          actorType: 'account',
+          sourceID: args.sourceID,
+          activityID: args.activityID,
+          createdAt: new Date(Number(this.clock.now())),
+        }),
+      )
+      .runWith(({ notification }) =>
+        this.notificationRepository
+          .create(notification)
+          .then(Result.map(() => [])),
+      )
+      .finish(() => undefined);
   }
 
   async createReacted(args: {
@@ -152,25 +187,31 @@ export class CreateNotificationService {
     sourceID: NoteID;
     activityID: ReactionID;
   }): Promise<Result.Result<Error, void>> {
-    const idRes = this.idGenerator.generate<NotificationBase>();
-    if (Result.isErr(idRes)) {
-      return idRes;
-    }
+    const monad = resultPromiseMonad<Error>();
 
-    const id = Result.unwrap(idRes);
-
-    const notification = ReactedNotification.new({
-      id,
-      notificationType: 'reacted',
-      recipientID: args.recipientID,
-      actorID: args.actorID,
-      actorType: 'account',
-      sourceID: args.sourceID,
-      activityID: args.activityID,
-      createdAt: new Date(Number(this.clock.now())),
-    });
-
-    return await this.notificationRepository.create(notification);
+    return Cat.doT(monad)
+      .addM(
+        'id',
+        Promise.resolve(this.idGenerator.generate<NotificationBase>()),
+      )
+      .addWith('notification', ({ id }) =>
+        ReactedNotification.new({
+          id,
+          notificationType: 'reacted',
+          recipientID: args.recipientID,
+          actorID: args.actorID,
+          actorType: 'account',
+          sourceID: args.sourceID,
+          activityID: args.activityID,
+          createdAt: new Date(Number(this.clock.now())),
+        }),
+      )
+      .runWith(({ notification }) =>
+        this.notificationRepository
+          .create(notification)
+          .then(Result.map(() => [])),
+      )
+      .finish(() => undefined);
   }
 }
 export const createNotificationSymbol =
