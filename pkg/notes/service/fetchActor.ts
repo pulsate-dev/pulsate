@@ -13,13 +13,11 @@ export const fetchActor = async (
   accountModule: AccountModuleFacade,
   authorID: AccountID,
 ): Promise<Result.Result<AccountNotFoundError, Account>> => {
-  const res = await accountModule.fetchAccount(authorID);
-  if (Result.isErr(res)) {
-    return Result.err(
-      new AccountNotFoundError('Account not found', {
-        cause: Result.unwrapErr(res),
-      }),
+  return accountModule
+    .fetchAccount(authorID)
+    .then(
+      Result.mapErr(
+        (cause) => new AccountNotFoundError('Account not found', { cause }),
+      ),
     );
-  }
-  return Result.ok(Result.unwrap(res));
 };
