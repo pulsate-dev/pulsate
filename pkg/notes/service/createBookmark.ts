@@ -1,6 +1,7 @@
-import { Ether, Option, Result } from '@mikuroxina/mini-fn';
+import { Cat, Ether, Option, Result } from '@mikuroxina/mini-fn';
 
 import type { AccountID } from '../../accounts/model/account.js';
+import { resultPromiseMonad } from '../../internal/monad/mod.js';
 import {
   NoteBookmarkAlreadyCreatedError,
   NoteNotFoundError,
@@ -23,32 +24,39 @@ export class CreateBookmarkService {
     noteID: NoteID,
     accountID: AccountID,
   ): Promise<Result.Result<Error, Note>> {
-    const note = await this.noteRepository.findByID(noteID);
-    if (Option.isNone(note)) {
-      return Result.err(
-        new NoteNotFoundError('Note not found', { cause: null }),
-      );
-    }
-
-    const existBookmark = await this.bookmarkRepository.findByID({
-      noteID,
-      accountID,
-    });
-
-    if (Option.isSome(existBookmark)) {
-      return Result.err(
-        new NoteBookmarkAlreadyCreatedError('bookmark has already created', {
-          cause: null,
-        }),
-      );
-    }
-
-    const creation = await this.bookmarkRepository.create({
-      noteID,
-      accountID,
-    });
-
-    return Result.map(() => Option.unwrap(note))(creation);
+    return Cat.doT(resultPromiseMonad<Error>())
+      .addM(
+        'result',
+        this.noteRepository
+          .findByID(noteID)
+          .then(
+            Option.okOrElse(
+              () => new NoteNotFoundError('Note not found', { cause: null }),
+            ),
+          ),
+      )
+      .runWith(() =>
+        this.bookmarkRepository
+          .findByID({ noteID, accountID })
+          .then(
+            Option.mapOrElse<Result.Result<Error, never[]>>(() =>
+              Result.ok([]),
+            )(() =>
+              Result.err(
+                new NoteBookmarkAlreadyCreatedError(
+                  'bookmark has already created',
+                  { cause: null },
+                ),
+              ),
+            ),
+          ),
+      )
+      .runWith(() =>
+        this.bookmarkRepository
+          .create({ noteID, accountID })
+          .then(Result.map(() => [])),
+      )
+      .finish(({ result }) => result);
   }
 }
 

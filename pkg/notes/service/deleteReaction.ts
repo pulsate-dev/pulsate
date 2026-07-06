@@ -1,5 +1,6 @@
-import { Ether, Option, Result } from '@mikuroxina/mini-fn';
+import { Cat, Ether, Option, type Result } from '@mikuroxina/mini-fn';
 import type { AccountID } from '../../accounts/model/account.js';
+import { resultPromiseMonad } from '../../internal/monad/mod.js';
 import { NoteNotFoundError } from '../model/errors.js';
 import type { NoteID } from '../model/note.js';
 import {
@@ -19,27 +20,26 @@ export class DeleteReactionService {
     noteID: NoteID,
     accountID: AccountID,
   ): Promise<Result.Result<Error, void>> {
-    const note = await this.noteRepository.findByID(noteID);
-    if (Option.isNone(note)) {
-      return Result.err(
-        new NoteNotFoundError('Note not found', { cause: null }),
+    return Cat.doT(resultPromiseMonad<Error>())
+      .addM(
+        'note',
+        this.noteRepository
+          .findByID(noteID)
+          .then(
+            Option.okOrElse(
+              () => new NoteNotFoundError('Note not found', { cause: null }),
+            ),
+          ),
+      )
+      .addMWith('reaction', ({ note }) =>
+        this.reactionRepository.findByCompositeID({
+          noteID: note.getReactionTargetNoteID(),
+          accountID,
+        }),
+      )
+      .finishM(({ reaction }) =>
+        this.reactionRepository.deleteByID(reaction.getID()),
       );
-    }
-
-    const unwrappedNote = Option.unwrap(note);
-    const targetNoteID = unwrappedNote.getReactionTargetNoteID();
-
-    const reactionRes = await this.reactionRepository.findByCompositeID({
-      noteID: targetNoteID,
-      accountID,
-    });
-    if (Result.isErr(reactionRes)) {
-      return reactionRes;
-    }
-
-    return await this.reactionRepository.deleteByID(
-      Result.unwrap(reactionRes).getID(),
-    );
   }
 }
 export const deleteReactionSymbol =

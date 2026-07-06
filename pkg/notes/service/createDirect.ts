@@ -1,4 +1,4 @@
-import { Ether, Result } from '@mikuroxina/mini-fn';
+import { Cat, Ether, Promise, Result } from '@mikuroxina/mini-fn';
 
 import type { AccountID } from '../../accounts/model/account.js';
 import { AccountNotFoundError } from '../../accounts/model/errors.js';
@@ -13,8 +13,8 @@ import {
   type SnowflakeIDGenerator,
   snowflakeIDGeneratorSymbol,
 } from '../../internal/id/mod.js';
+import { resultPromiseMonad } from '../../internal/monad/mod.js';
 import { DirectNote, type DirectNoteID } from '../model/directNote.js';
-import { NoteInternalError } from '../model/errors.js';
 import {
   type DirectNoteAttachmentRepository,
   type DirectNoteRepository,
@@ -40,62 +40,58 @@ export class CreateDirectNoteService {
     recipientID: AccountID,
     attachmentFileID: MediumID[],
   ): Promise<Result.Result<Error, DirectNote>> {
-    const authorRes = await this.deps.accountModule.fetchAccount(authorID);
-    if (Result.isErr(authorRes)) {
-      return Result.err(
-        new AccountNotFoundError('Author not found', { cause: null }),
-      );
-    }
-
-    const recipientRes =
-      await this.deps.accountModule.fetchAccount(recipientID);
-    if (Result.isErr(recipientRes)) {
-      return Result.err(
-        new AccountNotFoundError('Recipient not found', { cause: null }),
-      );
-    }
-
-    const idRes = this.deps.idGenerator.generate<DirectNote>();
-    if (Result.isErr(idRes)) {
-      return Result.err(
-        new NoteInternalError('id generation failed', {
-          cause: Result.unwrapErr(idRes),
-        }),
-      );
-    }
-
     const now = this.deps.clock.now();
-    const noteRes = DirectNote.new({
-      id: idRes[1] as DirectNoteID,
-      authorID,
-      recipientID,
-      content,
-      contentsWarningComment,
-      attachmentFileID,
-      createdAt: new Date(Number(now)),
-    });
-    if (Result.isErr(noteRes)) {
-      return noteRes;
-    }
-    const note = Result.unwrap(noteRes);
 
-    const createRes = await this.deps.directNoteRepository.create(note);
-    if (Result.isErr(createRes)) {
-      return createRes;
-    }
-
-    if (attachmentFileID.length !== 0) {
-      const attachmentRes =
-        await this.deps.directNoteAttachmentRepository.create(
-          note.getID(),
-          note.getAttachmentFileID(),
-        );
-      if (Result.isErr(attachmentRes)) {
-        return attachmentRes;
-      }
-    }
-
-    return Result.ok(note);
+    return Cat.doT(resultPromiseMonad<Error>())
+      .runWith(() =>
+        this.deps.accountModule
+          .fetchAccount(authorID)
+          .then(
+            Result.mapErr(
+              () =>
+                new AccountNotFoundError('Author not found', { cause: null }),
+            ),
+          )
+          .then(Result.map(() => [])),
+      )
+      .runWith(() =>
+        this.deps.accountModule
+          .fetchAccount(recipientID)
+          .then(
+            Result.mapErr(
+              () =>
+                new AccountNotFoundError('Recipient not found', {
+                  cause: null,
+                }),
+            ),
+          )
+          .then(Result.map(() => [])),
+      )
+      .addM('id', Promise.resolve(this.deps.idGenerator.generate<DirectNote>()))
+      .addMWith('note', ({ id }) =>
+        Promise.resolve(
+          DirectNote.new({
+            id: id as DirectNoteID,
+            authorID,
+            recipientID,
+            content,
+            contentsWarningComment,
+            attachmentFileID,
+            createdAt: new Date(Number(now)),
+          }),
+        ),
+      )
+      .runWith(({ note }) =>
+        this.deps.directNoteRepository.create(note).then(Result.map(() => [])),
+      )
+      .when(
+        () => attachmentFileID.length !== 0,
+        ({ note }) =>
+          this.deps.directNoteAttachmentRepository
+            .create(note.getID(), note.getAttachmentFileID())
+            .then(Result.map(() => [])),
+      )
+      .finish(({ note }) => note);
   }
 }
 

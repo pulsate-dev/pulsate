@@ -1,4 +1,4 @@
-import { Ether, Option, Result } from '@mikuroxina/mini-fn';
+import { Cat, Ether, Option, Promise, Result } from '@mikuroxina/mini-fn';
 
 import type { AccountID } from '../../accounts/model/account.js';
 import type { Medium } from '../../drive/model/medium.js';
@@ -27,28 +27,29 @@ export class FetchService {
   ) {}
 
   async fetchNoteByID(noteID: NoteID): Promise<Option.Option<Note>> {
-    const note = await this.noteRepository.findByID(noteID);
-    if (Option.isNone(note)) {
-      return Option.none();
-    }
-    // if note deleted
-    if (Option.isSome(note[1].getDeletedAt())) {
-      return Option.none();
-    }
-    const account = await this.accountModule.fetchAccount(
-      note[1].getAuthorID(),
-    );
-
-    if (Result.isErr(account)) {
-      return Option.none();
-    }
-
-    // if account frozen
-    if (account[1].isFrozen()) {
-      return Option.none();
-    }
-
-    return note;
+    return Cat.doT(Promise.monadT(Option.traversableMonad))
+      .addM(
+        'note',
+        this.noteRepository
+          .findByID(noteID)
+          .then(
+            Option.andThen((note) =>
+              Option.mapOr<Option.Option<Note>>(Option.some(note))(() =>
+                Option.none(),
+              )(note.getDeletedAt()),
+            ),
+          ),
+      )
+      .addMWith('account', ({ note }) =>
+        this.accountModule
+          .fetchAccount(note.getAuthorID())
+          .then(Result.optionOk),
+      )
+      .when(
+        ({ account }) => account.isFrozen(),
+        () => Promise.resolve(Option.none()),
+      )
+      .finish(({ note }) => note);
   }
 
   async fetchNotesByID(
