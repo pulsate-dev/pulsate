@@ -130,13 +130,13 @@ export class RenoteService {
           .findByID(originalID)
           .then(Option.okOrElse(notFound)),
       )
-      .addMWith('result', ({ note }) => {
+      .addMWith('result', async ({ note }) => {
         // NOTE: For pure renotes the chain is followed one hop to the root; for
         // quotes and ordinary notes the target note itself is the original. The
         // decision is owned by the renote domain service.
         const chainRootID = getRenoteChainRootID(note);
         if (Option.isNone(chainRootID)) {
-          return Promise.resolve(Result.ok(note));
+          return Result.ok(note);
         }
         return this.deps.noteRepository
           .findByID(Option.unwrap(chainRootID))

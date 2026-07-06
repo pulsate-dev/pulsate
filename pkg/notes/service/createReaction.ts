@@ -45,10 +45,10 @@ export class CreateReactionService {
       .runWith(({ reaction }) =>
         this.reactionRepository.create(reaction).then(Result.map(() => [])),
       )
-      .addMWith('result', ({ note }) => {
+      .addMWith('result', async ({ note }) => {
         const redirectTo = getReactionRedirectTargetID(note);
         if (Option.isNone(redirectTo)) {
-          return Promise.resolve(Result.ok(note));
+          return Result.ok(note);
         }
         return this.noteRepository
           .findByID(Option.unwrap(redirectTo))
