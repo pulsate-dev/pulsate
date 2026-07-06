@@ -1,12 +1,14 @@
-import { Ether, Option, Result } from '@mikuroxina/mini-fn';
+import { Cat, Ether, Option, Promise, Result } from '@mikuroxina/mini-fn';
 import type { AccountID } from '../../accounts/model/account.js';
 import {
   type SnowflakeIDGenerator,
   snowflakeIDGeneratorSymbol,
 } from '../../internal/id/mod.js';
+import { resultPromiseMonad } from '../../internal/monad/mod.js';
 import { NoteNotFoundError } from '../model/errors.js';
 import type { Note, NoteID } from '../model/note.js';
 import { Reaction } from '../model/reaction.js';
+import { getReactionRedirectTargetID } from '../model/reactionDomainService.js';
 import {
   type NoteRepository,
   noteRepoSymbol,
@@ -26,47 +28,33 @@ export class CreateReactionService {
     accountID: AccountID,
     body: string,
   ): Promise<Result.Result<Error, Note>> {
-    const note = await this.noteRepository.findByID(noteID);
-    if (Option.isNone(note)) {
-      return Result.err(
-        new NoteNotFoundError('Note not found', { cause: null }),
-      );
-    }
+    const notFound = (message: string) => () =>
+      new NoteNotFoundError(message, { cause: null });
 
-    const id = this.idGenerator.generate<Reaction>();
-    if (Result.isErr(id)) {
-      return id;
-    }
-
-    const reactionRes = Reaction.new({
-      id: Result.unwrap(id),
-      note: Option.unwrap(note),
-      accountID,
-      body,
-    });
-    if (Result.isErr(reactionRes)) {
-      return reactionRes;
-    }
-    const reaction = Result.unwrap(reactionRes);
-
-    const res = await this.reactionRepository.create(reaction);
-    if (Result.isErr(res)) {
-      return res;
-    }
-
-    // If the reaction was attributed to the original note (renote case), return that note
-    const targetNoteID = reaction.getNoteID();
-    if (targetNoteID !== noteID) {
-      const originalNote = await this.noteRepository.findByID(targetNoteID);
-      if (Option.isNone(originalNote)) {
-        return Result.err(
-          new NoteNotFoundError('Original note not found', { cause: null }),
-        );
-      }
-      return Result.ok(Option.unwrap(originalNote));
-    }
-
-    return Result.ok(Option.unwrap(note));
+    return Cat.doT(resultPromiseMonad<Error>())
+      .addM(
+        'note',
+        this.noteRepository
+          .findByID(noteID)
+          .then(Option.okOrElse(notFound('Note not found'))),
+      )
+      .addM('id', Promise.resolve(this.idGenerator.generate<Reaction>()))
+      .addMWith('reaction', ({ id, note }) =>
+        Promise.resolve(Reaction.new({ id, note, accountID, body })),
+      )
+      .runWith(({ reaction }) =>
+        this.reactionRepository.create(reaction).then(Result.map(() => [])),
+      )
+      .addMWith('result', ({ note }) => {
+        const redirectTo = getReactionRedirectTargetID(note);
+        if (Option.isNone(redirectTo)) {
+          return Promise.resolve(Result.ok(note));
+        }
+        return this.noteRepository
+          .findByID(Option.unwrap(redirectTo))
+          .then(Option.okOrElse(notFound('Original note not found')));
+      })
+      .finish(({ result }) => result);
   }
 }
 export const createReactionServiceSymbol =
