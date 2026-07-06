@@ -1,4 +1,4 @@
-import { Ether, Option, Result } from '@mikuroxina/mini-fn';
+import { Cat, Ether, Option, Promise, Result } from '@mikuroxina/mini-fn';
 
 import type { AccountID } from '../../accounts/model/account.js';
 import type { MediumID } from '../../drive/model/medium.js';
@@ -16,11 +16,9 @@ import {
   type SnowflakeIDGenerator,
   snowflakeIDGeneratorSymbol,
 } from '../../internal/id/mod.js';
+import { resultPromiseMonad } from '../../internal/monad/mod.js';
 import { checkVisibilityForSilencedActor } from '../model/createDomainService.js';
-import {
-  NoteInternalError,
-  NoteVisibilityInvalidError,
-} from '../model/errors.js';
+import { NoteVisibilityInvalidError } from '../model/errors.js';
 import { Note, type NoteID, type NoteVisibility } from '../model/note.js';
 import {
   type NoteAttachmentRepository,
@@ -47,65 +45,53 @@ export class CreateService {
       );
     }
 
-    const actorRes = await fetchActor(this.deps.accountModule, authorID);
-    if (Result.isErr(actorRes)) {
-      return actorRes;
-    }
-    const actor = Result.unwrap(actorRes);
-    const silencedCheckRes = checkVisibilityForSilencedActor(
-      actor.isSilenced(),
-      visibility,
-    );
-    if (Result.isErr(silencedCheckRes)) {
-      return silencedCheckRes;
-    }
-
-    const id = this.deps.idGenerator.generate<Note>();
-    if (Result.isErr(id)) {
-      return Result.err(
-        new NoteInternalError('id generation failed', {
-          cause: Result.unwrapErr(id),
-        }),
-      );
-    }
     const now = this.deps.clock.now();
-    const noteRes = Note.new({
-      id: id[1] as NoteID,
-      content: content,
-      contentsWarningComment: contentsWarningComment,
-      createdAt: new Date(Number(now)),
-      sendTo: Option.none(),
-      originalNoteID: Option.none(),
-      attachmentFileID: attachmentFileID,
-      visibility: visibility,
-      authorID: authorID,
-    });
-    if (Result.isErr(noteRes)) {
-      return noteRes;
-    }
-    const note = Result.unwrap(noteRes);
 
-    const res = await this.deps.noteRepository.create(note);
-    if (Result.isErr(res)) {
-      return res;
-    }
-
-    const attachmentRes = await this.deps.noteAttachmentRepository.create(
-      note.getID(),
-      note.getAttachmentFileID(),
+    return (
+      Cat.doT(resultPromiseMonad<Error>())
+        .addM('actor', fetchActor(this.deps.accountModule, authorID))
+        .runWith(({ actor }) =>
+          Promise.resolve(
+            checkVisibilityForSilencedActor(actor.isSilenced(), visibility),
+          ).then(Result.map(() => [])),
+        )
+        .addM('id', Promise.resolve(this.deps.idGenerator.generate<Note>()))
+        .addMWith('note', ({ id }) =>
+          Promise.resolve(
+            Note.new({
+              id: id as NoteID,
+              content: content,
+              contentsWarningComment: contentsWarningComment,
+              createdAt: new Date(Number(now)),
+              sendTo: Option.none(),
+              originalNoteID: Option.none(),
+              attachmentFileID: attachmentFileID,
+              visibility: visibility,
+              authorID: authorID,
+            }),
+          ),
+        )
+        .runWith(({ note }) =>
+          this.deps.noteRepository.create(note).then(Result.map(() => [])),
+        )
+        .runWith(({ note }) =>
+          this.deps.noteAttachmentRepository
+            .create(note.getID(), note.getAttachmentFileID())
+            .then(Result.map(() => [])),
+        )
+        // ToDo: Even if the note cannot be pushed to the timeline, the note is created successfully, so there is no error here.
+        // ToDo: use job queue to push note to timeline
+        .runWith(({ note }) =>
+          this.deps.timelineModule
+            .pushNoteToTimeline(note)
+            .then(() => Result.ok([])),
+        )
+        // NOTE: In dev mode, notify the TimelineRepository about note creation.
+        .runWith(({ note }) =>
+          this.notifyToSubscribers(note).then(() => Result.ok([])),
+        )
+        .finish(({ note }) => note)
     );
-    if (Result.isErr(attachmentRes)) {
-      return attachmentRes;
-    }
-
-    // ToDo: Even if the note cannot be pushed to the timeline, the note is created successfully, so there is no error here.
-    // ToDo: use job queue to push note to timeline
-    await this.deps.timelineModule.pushNoteToTimeline(note);
-
-    // NOTE: In dev mode, notify the TimelineRepository about note creation.
-    await this.notifyToSubscribers(note);
-
-    return Result.ok(note);
   }
   constructor(
     private readonly deps: {
