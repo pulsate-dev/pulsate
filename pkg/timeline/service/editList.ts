@@ -1,5 +1,6 @@
-import { Ether, Result } from '@mikuroxina/mini-fn';
+import { Cat, Ether, Promise, Result } from '@mikuroxina/mini-fn';
 import type { ID } from '../../internal/id/type.js';
+import { resultPromiseMonad } from '../../internal/monad/mod.js';
 import type { List } from '../model/list.js';
 import { type ListRepository, listRepoSymbol } from '../model/repository.js';
 
@@ -10,38 +11,35 @@ export class EditListService {
     listId: ID<List>,
     title: string,
   ): Promise<Result.Result<Error, void>> {
-    const res = await this.listRepository.fetchList(listId);
-    if (Result.isErr(res)) {
-      return res;
-    }
+    const monad = resultPromiseMonad<Error>();
 
-    const list = Result.unwrap(res);
-
-    const setTitleRes = list.setTitle(title);
-    if (Result.isErr(setTitleRes)) {
-      return setTitleRes;
-    }
-
-    return await this.listRepository.edit(list);
+    return Cat.doT(monad)
+      .addM('list', this.listRepository.fetchList(listId))
+      .runWith(({ list }) =>
+        Promise.resolve(list.setTitle(title)).then(Result.map(() => [])),
+      )
+      .runWith(({ list }) =>
+        this.listRepository.edit(list).then(Result.map(() => [])),
+      )
+      .finish(() => undefined);
   }
   async editPublicity(
     listId: ID<List>,
     publicity: 'PUBLIC' | 'PRIVATE',
   ): Promise<Result.Result<Error, void>> {
-    const res = await this.listRepository.fetchList(listId);
-    if (Result.isErr(res)) {
-      return res;
-    }
+    const monad = resultPromiseMonad<Error>();
 
-    const list = Result.unwrap(res);
-
-    const setPublicityRes =
-      publicity === 'PUBLIC' ? list.toPublic() : list.toPrivate();
-    if (Result.isErr(setPublicityRes)) {
-      return setPublicityRes;
-    }
-
-    return await this.listRepository.edit(list);
+    return Cat.doT(monad)
+      .addM('list', this.listRepository.fetchList(listId))
+      .runWith(({ list }) =>
+        Promise.resolve(
+          publicity === 'PUBLIC' ? list.toPublic() : list.toPrivate(),
+        ).then(Result.map(() => [])),
+      )
+      .runWith(({ list }) =>
+        this.listRepository.edit(list).then(Result.map(() => [])),
+      )
+      .finish(() => undefined);
   }
 }
 
