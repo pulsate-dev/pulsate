@@ -1,4 +1,4 @@
-import { Ether, Result } from '@mikuroxina/mini-fn';
+import { Cat, Ether, Promise, type Result } from '@mikuroxina/mini-fn';
 
 import type { AccountID } from '../../accounts/model/account.js';
 import {
@@ -7,6 +7,7 @@ import {
   type SnowflakeIDGenerator,
   snowflakeIDGeneratorSymbol,
 } from '../../internal/id/mod.js';
+import { resultPromiseMonad } from '../../internal/monad/mod.js';
 import { List } from '../model/list.js';
 import { type ListRepository, listRepoSymbol } from '../model/repository.js';
 
@@ -22,30 +23,26 @@ export class CreateListService {
     isPublic: boolean,
     ownerId: AccountID,
   ): Promise<Result.Result<Error, List>> {
-    const id = this.idGenerator.generate<List>();
-    if (Result.isErr(id)) {
-      return id;
-    }
+    const monad = resultPromiseMonad<Error>();
 
-    const now = this.clock.now();
-    const list = List.new({
-      id: Result.unwrap(id),
-      title,
-      publicity: isPublic ? 'PUBLIC' : 'PRIVATE',
-      ownerId,
-      memberIds: [] as const,
-      createdAt: new Date(Number(now)),
-    });
-    if (Result.isErr(list)) {
-      return list;
-    }
-
-    const res = await this.listRepository.create(Result.unwrap(list));
-    if (Result.isErr(res)) {
-      return res;
-    }
-
-    return Result.ok(Result.unwrap(list));
+    return Cat.doT(monad)
+      .addM('id', Promise.resolve(this.idGenerator.generate<List>()))
+      .addMWith('list', ({ id }) =>
+        Promise.resolve(
+          List.new({
+            id,
+            title,
+            publicity: isPublic ? 'PUBLIC' : 'PRIVATE',
+            ownerId,
+            memberIds: [] as const,
+            createdAt: new Date(Number(this.clock.now())),
+          }),
+        ),
+      )
+      .runWith(({ list }) =>
+        monad.map(() => [])(this.listRepository.create(list)),
+      )
+      .finish(({ list }) => list);
   }
 }
 

@@ -1,5 +1,6 @@
-import { Ether, Result } from '@mikuroxina/mini-fn';
+import { Cat, Ether, Promise, Result } from '@mikuroxina/mini-fn';
 import type { AccountID } from '../../accounts/model/account.js';
+import { resultPromiseMonad } from '../../internal/monad/mod.js';
 import {
   ListNotFoundError,
   TimelineInsufficientPermissionError,
@@ -23,43 +24,42 @@ export class AppendListMemberService {
     accountID: AccountID,
     actorID: AccountID,
   ): Promise<Result.Result<Error, void>> {
-    const listRes = await this.listRepository.fetchList(listID);
-    if (Result.isErr(listRes)) {
-      return Result.err(
-        new ListNotFoundError('List not found', {
-          cause: Result.unwrapErr(listRes),
-        }),
-      );
-    }
-    const list = Result.unwrap(listRes);
+    const monad = resultPromiseMonad<Error>();
 
-    const allowedRes = this.verifyActorPermission(actorID, list);
-    if (Result.isErr(allowedRes)) {
-      return allowedRes;
-    }
-
-    const addRes = list.addMember(accountID);
-    if (Result.isErr(addRes)) {
-      return addRes;
-    }
-
-    return await this.listRepository.appendListMember(list);
+    return Cat.doT(monad)
+      .addM(
+        'list',
+        this.listRepository
+          .fetchList(listID)
+          .then(
+            Result.mapErr(
+              (e) => new ListNotFoundError('List not found', { cause: e }),
+            ),
+          ),
+      )
+      .when(
+        ({ list }) => !this.isAllowed(actorID, list),
+        () =>
+          Promise.resolve(
+            Result.err(
+              new TimelineInsufficientPermissionError(
+                "Account don't have permission to do this action",
+                { cause: null },
+              ),
+            ),
+          ),
+      )
+      .runWith(({ list }) =>
+        monad.map(() => [])(Promise.resolve(list.addMember(accountID))),
+      )
+      .runWith(({ list }) =>
+        monad.map(() => [])(this.listRepository.appendListMember(list)),
+      )
+      .finish(() => undefined);
   }
 
-  private verifyActorPermission(
-    actor: AccountID,
-    list: List,
-  ): Result.Result<Error, void> {
-    if (list.getOwnerId() !== actor) {
-      return Result.err(
-        new TimelineInsufficientPermissionError(
-          "Account don't have permission to do this action",
-          { cause: null },
-        ),
-      );
-    }
-
-    return Result.ok(undefined);
+  private isAllowed(actor: AccountID, list: List): boolean {
+    return list.getOwnerId() === actor;
   }
 }
 export const appendListMemberSymbol =

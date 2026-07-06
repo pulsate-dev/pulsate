@@ -1,5 +1,6 @@
-import { Ether, Result } from '@mikuroxina/mini-fn';
+import { Cat, Ether, Promise, Result } from '@mikuroxina/mini-fn';
 import type { AccountID } from '../../accounts/model/account.js';
+import { resultPromiseMonad } from '../../internal/monad/mod.js';
 import {
   ListNotFoundError,
   TimelineInsufficientPermissionError,
@@ -21,39 +22,41 @@ export class RemoveListMemberService {
     accountID: AccountID,
     actorID: AccountID,
   ): Promise<Result.Result<Error, void>> {
-    const listRes = await this.listRepository.fetchList(listID);
-    if (Result.isErr(listRes)) {
-      return Result.err(
-        new ListNotFoundError('List not found', {
-          cause: Result.unwrapErr(listRes),
-        }),
-      );
-    }
-    const allowedRes = this.verifyActorPermission(
-      actorID,
-      Result.unwrap(listRes),
-    );
-    if (Result.isErr(allowedRes)) {
-      return allowedRes;
-    }
+    const monad = resultPromiseMonad<Error>();
 
-    return await this.listRepository.removeListMember(listID, accountID);
+    return Cat.doT(monad)
+      .addM(
+        'list',
+        this.listRepository
+          .fetchList(listID)
+          .then(
+            Result.mapErr(
+              (e) => new ListNotFoundError('List not found', { cause: e }),
+            ),
+          ),
+      )
+      .when(
+        ({ list }) => !this.isAllowed(actorID, list),
+        () =>
+          Promise.resolve(
+            Result.err(
+              new TimelineInsufficientPermissionError(
+                "Account don't have permission to remove member",
+                { cause: null },
+              ),
+            ),
+          ),
+      )
+      .runWith(() =>
+        monad.map(() => [])(
+          this.listRepository.removeListMember(listID, accountID),
+        ),
+      )
+      .finish(() => undefined);
   }
 
-  private verifyActorPermission(
-    actor: AccountID,
-    list: List,
-  ): Result.Result<Error, void> {
-    if (list.getOwnerId() !== actor) {
-      return Result.err(
-        new TimelineInsufficientPermissionError(
-          "Account don't have permission to remove member",
-          { cause: null },
-        ),
-      );
-    }
-
-    return Result.ok(undefined);
+  private isAllowed(actor: AccountID, list: List): boolean {
+    return list.getOwnerId() === actor;
   }
 }
 export const removeListMemberSymbol =
