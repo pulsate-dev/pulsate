@@ -12,12 +12,8 @@ export class FetchSubscribedListService {
    * @returns ListID[] which specified account is assigned
    */
   async handle(accountID: AccountID): Promise<Result.Result<Error, ListID[]>> {
-    const lists =
-      await this.listRepository.fetchListsByMemberAccountID(accountID);
-    if (Result.isErr(lists)) {
-      return lists;
-    }
-    const unwrapped = Result.unwrap(lists);
-    return Result.ok(unwrapped.map((list) => list.getId()));
+    return this.listRepository
+      .fetchListsByMemberAccountID(accountID)
+      .then(Result.map((lists) => lists.map((list) => list.getId())));
   }
 }
