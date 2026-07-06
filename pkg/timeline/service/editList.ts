@@ -1,4 +1,4 @@
-import { Cat, Ether, Promise, Result } from '@mikuroxina/mini-fn';
+import { Cat, Ether, Promise, type Result } from '@mikuroxina/mini-fn';
 import type { ID } from '../../internal/id/type.js';
 import { resultPromiseMonad } from '../../internal/monad/mod.js';
 import type { List } from '../model/list.js';
@@ -16,10 +16,10 @@ export class EditListService {
     return Cat.doT(monad)
       .addM('list', this.listRepository.fetchList(listId))
       .runWith(({ list }) =>
-        Promise.resolve(list.setTitle(title)).then(Result.map(() => [])),
+        monad.map(() => [])(Promise.resolve(list.setTitle(title))),
       )
       .runWith(({ list }) =>
-        this.listRepository.edit(list).then(Result.map(() => [])),
+        monad.map(() => [])(this.listRepository.edit(list)),
       )
       .finish(() => undefined);
   }
@@ -32,12 +32,14 @@ export class EditListService {
     return Cat.doT(monad)
       .addM('list', this.listRepository.fetchList(listId))
       .runWith(({ list }) =>
-        Promise.resolve(
-          publicity === 'PUBLIC' ? list.toPublic() : list.toPrivate(),
-        ).then(Result.map(() => [])),
+        monad.map(() => [])(
+          Promise.resolve(
+            publicity === 'PUBLIC' ? list.toPublic() : list.toPrivate(),
+          ),
+        ),
       )
       .runWith(({ list }) =>
-        this.listRepository.edit(list).then(Result.map(() => [])),
+        monad.map(() => [])(this.listRepository.edit(list)),
       )
       .finish(() => undefined);
   }

@@ -48,9 +48,9 @@ export class RemoveListMemberService {
           ),
       )
       .runWith(() =>
-        this.listRepository
-          .removeListMember(listID, accountID)
-          .then(Result.map(() => [])),
+        monad.map(() => [])(
+          this.listRepository.removeListMember(listID, accountID),
+        ),
       )
       .finish(() => undefined);
   }

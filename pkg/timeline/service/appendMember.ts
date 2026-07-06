@@ -50,10 +50,10 @@ export class AppendListMemberService {
           ),
       )
       .runWith(({ list }) =>
-        Promise.resolve(list.addMember(accountID)).then(Result.map(() => [])),
+        monad.map(() => [])(Promise.resolve(list.addMember(accountID))),
       )
       .runWith(({ list }) =>
-        this.listRepository.appendListMember(list).then(Result.map(() => [])),
+        monad.map(() => [])(this.listRepository.appendListMember(list)),
       )
       .finish(() => undefined);
   }

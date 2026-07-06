@@ -1,4 +1,4 @@
-import { Cat, Ether, Promise, Result } from '@mikuroxina/mini-fn';
+import { Cat, Ether, Promise, type Result } from '@mikuroxina/mini-fn';
 
 import type { AccountID } from '../../accounts/model/account.js';
 import {
@@ -40,7 +40,7 @@ export class CreateListService {
         ),
       )
       .runWith(({ list }) =>
-        this.listRepository.create(list).then(Result.map(() => [])),
+        monad.map(() => [])(this.listRepository.create(list)),
       )
       .finish(({ list }) => list);
   }
