@@ -2,6 +2,14 @@ import { createRoute, z } from '@hono/zod-openapi';
 
 import { AccountNotFound } from '../accounts/adaptor/presenter/errors.js';
 import {
+  bearerAuth,
+  errorResponse,
+  internalErrorResponse,
+  jsonBody,
+  noContentResponse,
+  okResponse,
+} from '../internal/router/helper.js';
+import {
   ListNotFound,
   NoPermission,
   NothingLeft,
@@ -22,10 +30,7 @@ import {
   GetListMemberResponseSchema,
   GetListTimelineResponseSchema,
   GetPublicTimelineResponseSchema,
-} from './adaptor/validator/timeline.js'; /* NOTE: query params must use z.string() \
- cf. https://zenn.dev/loglass/articles/c237d89e238d42 (Japanese)\
- cf. https://github.com/honojs/middleware/issues/200#issuecomment-1773428171 (GitHub Issue)
-*/
+} from './adaptor/validator/timeline.js';
 
 /* NOTE: query params must use z.string() \
  cf. https://zenn.dev/loglass/articles/c237d89e238d42 (Japanese)\
@@ -52,6 +57,15 @@ const timelineFilterQuerySchema = z
   })
   .openapi('TimelineFilterQuerySchema');
 
+const timelineInternalErrorSchema = z
+  .object({ error: TimelineInternalError })
+  .openapi({ description: 'Internal server error' });
+
+const listIDParams = () =>
+  z.object({
+    id: z.string().openapi('List ID'),
+  });
+
 export const GetHomeTimelineRoute = createRoute({
   method: 'get',
   tags: ['timeline'],
@@ -60,34 +74,9 @@ export const GetHomeTimelineRoute = createRoute({
     query: timelineFilterQuerySchema,
   },
   responses: {
-    200: {
-      description: 'OK',
-      content: {
-        'application/json': {
-          schema: GetHomeTimelineResponseSchema,
-        },
-      },
-    },
-    404: {
-      description: 'Nothing left',
-      content: {
-        'application/json': {
-          schema: z.object({
-            error: NothingLeft,
-          }),
-        },
-      },
-    },
-    500: {
-      description: 'Internal error',
-      content: {
-        'application/json': {
-          schema: z.object({
-            error: TimelineInternalError,
-          }),
-        },
-      },
-    },
+    200: okResponse(GetHomeTimelineResponseSchema),
+    404: errorResponse('Nothing left', NothingLeft),
+    500: internalErrorResponse(timelineInternalErrorSchema),
   },
 });
 
@@ -99,34 +88,9 @@ export const GetPublicTimelineRoute = createRoute({
     query: timelineFilterQuerySchema,
   },
   responses: {
-    200: {
-      description: 'OK',
-      content: {
-        'application/json': {
-          schema: GetPublicTimelineResponseSchema,
-        },
-      },
-    },
-    404: {
-      description: 'Nothing left',
-      content: {
-        'application/json': {
-          schema: z.object({
-            error: NothingLeft,
-          }),
-        },
-      },
-    },
-    500: {
-      description: 'Internal error',
-      content: {
-        'application/json': {
-          schema: z.object({
-            error: TimelineInternalError,
-          }),
-        },
-      },
-    },
+    200: okResponse(GetPublicTimelineResponseSchema),
+    404: errorResponse('Nothing left', NothingLeft),
+    500: internalErrorResponse(timelineInternalErrorSchema),
   },
 });
 
@@ -141,55 +105,22 @@ export const GetAccountTimelineRoute = createRoute({
     query: timelineFilterQuerySchema,
   },
   responses: {
-    200: {
-      description: 'OK',
-      content: {
-        'application/json': {
-          schema: GetAccountTimelineResponseSchema,
-        },
-      },
-    },
-    403: {
-      description: 'You are blocked by specified account',
-      content: {
-        'application/json': {
-          schema: z.object({
-            error: YouAreBlocked,
-          }),
-        },
-      },
-    },
+    200: okResponse(GetAccountTimelineResponseSchema),
+    403: errorResponse('You are blocked by specified account', YouAreBlocked),
     404: {
       description: 'Account not found',
       content: {
         'application/json': {
-          schema: z
-            .object({
-              error: z.union([AccountNotFound, NothingLeft]).openapi({
-                description: 'Error codes',
-                example: 'ACCOUNT_NOT_FOUND',
-              }),
-            })
-            .openapi({
-              description: 'Account not found',
+          schema: z.object({
+            error: z.union([AccountNotFound, NothingLeft]).openapi({
+              description: 'Error codes',
+              example: 'ACCOUNT_NOT_FOUND',
             }),
+          }),
         },
       },
     },
-    500: {
-      description: 'Internal error',
-      content: {
-        'application/json': {
-          schema: z
-            .object({
-              error: TimelineInternalError,
-            })
-            .openapi({
-              description: 'Internal server error',
-            }),
-        },
-      },
-    },
+    500: internalErrorResponse(timelineInternalErrorSchema),
   },
 });
 
@@ -198,20 +129,11 @@ export const GetListTimelineRoute = createRoute({
   tags: ['timeline'],
   path: '/v0/lists/:id/notes',
   request: {
-    params: z.object({
-      id: z.string().openapi('List ID'),
-    }),
+    params: listIDParams(),
     query: timelineFilterQuerySchema,
   },
   responses: {
-    200: {
-      description: 'OK',
-      content: {
-        'application/json': {
-          schema: GetListTimelineResponseSchema,
-        },
-      },
-    },
+    200: okResponse(GetListTimelineResponseSchema),
     404: {
       description: 'List not found',
       content: {
@@ -225,20 +147,7 @@ export const GetListTimelineRoute = createRoute({
         },
       },
     },
-    500: {
-      description: 'Internal error',
-      content: {
-        'application/json': {
-          schema: z
-            .object({
-              error: TimelineInternalError,
-            })
-            .openapi({
-              description: 'Internal server error',
-            }),
-        },
-      },
-    },
+    500: internalErrorResponse(timelineInternalErrorSchema),
   },
 });
 
@@ -246,53 +155,14 @@ export const CreateListRoute = createRoute({
   method: 'post',
   tags: ['timeline'],
   path: '/v0/lists',
-  security: [
-    {
-      bearer: [],
-    },
-  ],
+  security: bearerAuth(),
   request: {
-    body: {
-      content: { 'application/json': { schema: CreateListRequestSchema } },
-    },
+    body: jsonBody(CreateListRequestSchema),
   },
   responses: {
-    200: {
-      content: {
-        'application/json': {
-          schema: CreateListResponseSchema,
-        },
-      },
-      description: 'OK',
-    },
-    400: {
-      content: {
-        'application/json': {
-          schema: z
-            .object({
-              error: TitleTooLong,
-            })
-            .openapi({
-              description: 'List title too long',
-            }),
-        },
-      },
-      description: 'Bad request',
-    },
-    500: {
-      description: 'Internal error',
-      content: {
-        'application/json': {
-          schema: z
-            .object({
-              error: TimelineInternalError,
-            })
-            .openapi({
-              description: 'Internal server error',
-            }),
-        },
-      },
-    },
+    200: okResponse(CreateListResponseSchema),
+    400: errorResponse('Bad request', TitleTooLong),
+    500: internalErrorResponse(timelineInternalErrorSchema),
   },
 });
 
@@ -300,66 +170,16 @@ export const EditListRoute = createRoute({
   method: 'patch',
   tags: ['timeline'],
   path: '/v0/lists/:id',
-  security: [
-    {
-      bearer: [],
-    },
-  ],
+  security: bearerAuth(),
   request: {
-    params: z.object({
-      id: z.string().openapi('List ID'),
-    }),
-    body: {
-      content: {
-        'application/json': {
-          schema: EditListRequestSchema,
-        },
-      },
-    },
+    params: listIDParams(),
+    body: jsonBody(EditListRequestSchema),
   },
   responses: {
-    200: {
-      description: 'OK',
-      content: {
-        'application/json': {
-          schema: EditListResponseSchema,
-        },
-      },
-    },
-    404: {
-      description: 'List not found',
-      content: {
-        'application/json': {
-          schema: z.object({
-            error: ListNotFound,
-          }),
-        },
-      },
-    },
-    400: {
-      description: 'List title too long',
-      content: {
-        'application/json': {
-          schema: z.object({ error: TitleTooLong }).openapi({
-            description: 'List title too long',
-          }),
-        },
-      },
-    },
-    500: {
-      description: 'Internal error',
-      content: {
-        'application/json': {
-          schema: z
-            .object({
-              error: TimelineInternalError,
-            })
-            .openapi({
-              description: 'Internal server error',
-            }),
-        },
-      },
-    },
+    200: okResponse(EditListResponseSchema),
+    400: errorResponse('List title too long', TitleTooLong),
+    404: errorResponse('List not found', ListNotFound),
+    500: internalErrorResponse(timelineInternalErrorSchema),
   },
 });
 
@@ -367,53 +187,14 @@ export const FetchListRoute = createRoute({
   method: 'get',
   tags: ['timeline'],
   path: '/v0/lists/:id',
-  security: [
-    {
-      bearer: [],
-    },
-  ],
+  security: bearerAuth(),
   request: {
-    params: z.object({
-      id: z.string().openapi('List ID'),
-    }),
+    params: listIDParams(),
   },
   responses: {
-    200: {
-      description: 'OK',
-      content: {
-        'application/json': {
-          schema: FetchListResponseSchema,
-        },
-      },
-    },
-    404: {
-      content: {
-        'application/json': {
-          schema: z
-            .object({
-              error: ListNotFound,
-            })
-            .openapi({
-              description: 'List not found',
-            }),
-        },
-      },
-      description: 'List not found',
-    },
-    500: {
-      description: 'Internal error',
-      content: {
-        'application/json': {
-          schema: z
-            .object({
-              error: TimelineInternalError,
-            })
-            .openapi({
-              description: 'Internal server error',
-            }),
-        },
-      },
-    },
+    200: okResponse(FetchListResponseSchema),
+    404: errorResponse('List not found', ListNotFound),
+    500: internalErrorResponse(timelineInternalErrorSchema),
   },
 });
 
@@ -421,48 +202,14 @@ export const DeleteListRoute = createRoute({
   method: 'delete',
   tags: ['timeline'],
   path: '/v0/lists',
-  security: [
-    {
-      bearer: [],
-    },
-  ],
+  security: bearerAuth(),
   request: {
-    params: z.object({
-      id: z.string().openapi('List ID'),
-    }),
+    params: listIDParams(),
   },
   responses: {
-    204: {
-      description: 'OK',
-    },
-    404: {
-      content: {
-        'application/json': {
-          schema: z
-            .object({
-              error: ListNotFound,
-            })
-            .openapi({
-              description: 'List not found',
-            }),
-        },
-      },
-      description: 'List not found',
-    },
-    500: {
-      description: 'Internal error',
-      content: {
-        'application/json': {
-          schema: z
-            .object({
-              error: TimelineInternalError,
-            })
-            .openapi({
-              description: 'Internal server error',
-            }),
-        },
-      },
-    },
+    204: noContentResponse('OK'),
+    404: errorResponse('List not found', ListNotFound),
+    500: internalErrorResponse(timelineInternalErrorSchema),
   },
 });
 
@@ -471,42 +218,9 @@ export const GetListMemberRoute = createRoute({
   tags: ['timeline'],
   path: '/v0/lists/:id/members',
   responses: {
-    200: {
-      description: 'OK',
-      content: {
-        'application/json': {
-          schema: GetListMemberResponseSchema,
-        },
-      },
-    },
-    404: {
-      content: {
-        'application/json': {
-          schema: z
-            .object({
-              error: ListNotFound,
-            })
-            .openapi({
-              description: 'List not found',
-            }),
-        },
-      },
-      description: 'List not found',
-    },
-    500: {
-      description: 'Internal error',
-      content: {
-        'application/json': {
-          schema: z
-            .object({
-              error: TimelineInternalError,
-            })
-            .openapi({
-              description: 'Internal server error',
-            }),
-        },
-      },
-    },
+    200: okResponse(GetListMemberResponseSchema),
+    404: errorResponse('List not found', ListNotFound),
+    500: internalErrorResponse(timelineInternalErrorSchema),
   },
 });
 
@@ -514,40 +228,20 @@ export const AppendListMemberRoute = createRoute({
   method: 'post',
   tags: ['timeline'],
   path: '/v0/lists/:id/members',
-  security: [
-    {
-      bearer: [],
-    },
-  ],
+  security: bearerAuth(),
   request: {
-    params: z.object({
-      id: z.string().openapi('List ID'),
-    }),
-    body: {
-      content: {
-        'application/json': {
-          schema: z.object({
-            account_id: z.string().openapi('Account ID'),
-          }),
-        },
-      },
-    },
+    params: listIDParams(),
+    body: jsonBody(
+      z.object({
+        account_id: z.string().openapi('Account ID'),
+      }),
+    ),
   },
   responses: {
-    204: {
-      description: 'OK',
-    },
-    400: {
-      content: {
-        'application/json': {
-          schema: z.object({
-            error: TooManyMembers,
-          }),
-        },
-      },
-      description: 'Too many members',
-    },
+    204: noContentResponse('OK'),
+    400: errorResponse('Too many members', TooManyMembers),
     403: {
+      description: 'You do not have permission to add member to this list',
       content: {
         'application/json': {
           schema: z.object({
@@ -555,9 +249,9 @@ export const AppendListMemberRoute = createRoute({
           }),
         },
       },
-      description: 'You do not have permission to add member to this list',
     },
     404: {
+      description: 'List not found',
       content: {
         'application/json': {
           schema: z.object({
@@ -565,7 +259,6 @@ export const AppendListMemberRoute = createRoute({
           }),
         },
       },
-      description: 'List not found',
     },
   },
 });
@@ -574,30 +267,19 @@ export const DeleteListMemberRoute = createRoute({
   method: 'delete',
   tags: ['timeline'],
   path: '/v0/lists/:id/members',
-  security: [
-    {
-      bearer: [],
-    },
-  ],
+  security: bearerAuth(),
   request: {
-    params: z.object({
-      id: z.string().openapi('List ID'),
-    }),
-    body: {
-      content: {
-        'application/json': {
-          schema: z.object({
-            account_id: z.string().openapi('Account ID'),
-          }),
-        },
-      },
-    },
+    params: listIDParams(),
+    body: jsonBody(
+      z.object({
+        account_id: z.string().openapi('Account ID'),
+      }),
+    ),
   },
   responses: {
-    204: {
-      description: 'OK',
-    },
+    204: noContentResponse('OK'),
     403: {
+      description: 'You do not have permission to remove member to this list',
       content: {
         'application/json': {
           schema: z.object({
@@ -605,9 +287,9 @@ export const DeleteListMemberRoute = createRoute({
           }),
         },
       },
-      description: 'You do not have permission to remove member to this list',
     },
     404: {
+      description: 'List not found',
       content: {
         'application/json': {
           schema: z.object({
@@ -615,7 +297,6 @@ export const DeleteListMemberRoute = createRoute({
           }),
         },
       },
-      description: 'List not found',
     },
   },
 });
@@ -628,34 +309,9 @@ export const GetBookmarkTimelineRoute = createRoute({
     query: timelineFilterQuerySchema,
   },
   responses: {
-    200: {
-      description: 'OK',
-      content: {
-        'application/json': {
-          schema: GetHomeTimelineResponseSchema,
-        },
-      },
-    },
-    404: {
-      description: 'Nothing left',
-      content: {
-        'application/json': {
-          schema: z.object({
-            error: NothingLeft,
-          }),
-        },
-      },
-    },
-    500: {
-      description: 'Internal error',
-      content: {
-        'application/json': {
-          schema: z.object({
-            error: TimelineInternalError,
-          }),
-        },
-      },
-    },
+    200: okResponse(GetHomeTimelineResponseSchema),
+    404: errorResponse('Nothing left', NothingLeft),
+    500: internalErrorResponse(timelineInternalErrorSchema),
   },
 });
 
@@ -665,23 +321,7 @@ export const GetConversationRoute = createRoute({
   path: '/v0/timeline/conversations',
   request: {},
   responses: {
-    200: {
-      description: 'OK',
-      content: {
-        'application/json': {
-          schema: GetConversationsResponseSchema,
-        },
-      },
-    },
-    500: {
-      description: 'Internal error',
-      content: {
-        'application/json': {
-          schema: z.object({
-            error: TimelineInternalError,
-          }),
-        },
-      },
-    },
+    200: okResponse(GetConversationsResponseSchema),
+    500: internalErrorResponse(timelineInternalErrorSchema),
   },
 });
