@@ -1,5 +1,6 @@
-import { Ether, Option, Result } from '@mikuroxina/mini-fn';
+import { Cat, Ether, Option, Promise, Result } from '@mikuroxina/mini-fn';
 
+import { resultPromiseMonad } from '../../internal/monad/mod.js';
 import {
   type PasswordEncoder,
   passwordEncoderSymbol,
@@ -22,34 +23,22 @@ export class EditService {
     nickname: string,
     actorName: AccountName,
   ): Promise<Result.Result<Error, boolean>> {
-    const res = await this.accountRepository.findByName(target);
-    if (Option.isNone(res)) {
-      return Result.err(
-        new AccountNotFoundError('account not found', { cause: null }),
-      );
-    }
-    const account = Option.unwrap(res);
-    const actorRes = await this.accountRepository.findByName(actorName);
-    if (Option.isNone(actorRes)) {
-      return Result.err(
-        new AccountNotFoundError('actor not found', { cause: null }),
-      );
-    }
-    const actor = Option.unwrap(actorRes);
+    const monad = resultPromiseMonad<Error>();
 
-    if (!this.isAllowed('edit', actor, account)) {
-      return Result.err(new Error('not allowed'));
-    }
-
-    const setResult = account.setNickName(nickname);
-    if (Result.isErr(setResult)) {
-      return setResult;
-    }
-    const editResult = await this.accountRepository.edit(account);
-    if (Result.isErr(editResult)) {
-      return editResult;
-    }
-    return Result.ok(true);
+    return Cat.doT(monad)
+      .addM('account', this.findAccount(target, 'account not found'))
+      .addM('actor', this.findAccount(actorName, 'actor not found'))
+      .when(
+        ({ account, actor }) => !this.isAllowed('edit', actor, account),
+        () => Promise.resolve(Result.err(new Error('not allowed'))),
+      )
+      .runWith(({ account }) =>
+        monad.map(() => [])(Promise.resolve(account.setNickName(nickname))),
+      )
+      .runWith(({ account }) =>
+        monad.map(() => [])(this.accountRepository.edit(account)),
+      )
+      .finish(() => true);
   }
 
   async editPassphrase(
@@ -57,48 +46,41 @@ export class EditService {
     newPassphrase: string,
     actorName: AccountName,
   ): Promise<Result.Result<Error, boolean>> {
-    const res = await this.accountRepository.findByName(target);
-    if (Option.isNone(res)) {
-      return Result.err(
-        new AccountNotFoundError('account not found', { cause: null }),
-      );
-    }
-    const account = Option.unwrap(res);
-    const actorRes = await this.accountRepository.findByName(actorName);
-    if (Option.isNone(actorRes)) {
-      return Result.err(
-        new AccountNotFoundError('actor not found', { cause: null }),
-      );
-    }
-    const actor = Option.unwrap(actorRes);
+    const monad = resultPromiseMonad<Error>();
 
-    if (!this.isAllowed('edit', actor, account)) {
-      return Result.err(new Error('not allowed'));
-    }
-
-    const validateResult = Account.validatePassphrase(newPassphrase);
-    if (Result.isErr(validateResult)) {
-      return validateResult;
-    }
-
-    let encoded: string;
-    try {
-      encoded = await this.passwordEncoder.encodePassword(newPassphrase);
-    } catch (e) {
-      return Result.err(
-        new AccountInternalError('failed to encode passphrase', { cause: e }),
-      );
-    }
-
-    const setResult = account.setPassphraseHash(encoded);
-    if (Result.isErr(setResult)) {
-      return setResult;
-    }
-    const editResult = await this.accountRepository.edit(account);
-    if (Result.isErr(editResult)) {
-      return editResult;
-    }
-    return Result.ok(true);
+    return Cat.doT(monad)
+      .addM('account', this.findAccount(target, 'account not found'))
+      .addM('actor', this.findAccount(actorName, 'actor not found'))
+      .when(
+        ({ account, actor }) => !this.isAllowed('edit', actor, account),
+        () => Promise.resolve(Result.err(new Error('not allowed'))),
+      )
+      .runWith(() =>
+        monad.map(() => [])(
+          Promise.resolve(Account.validatePassphrase(newPassphrase)),
+        ),
+      )
+      .addMWith('encoded', () =>
+        this.passwordEncoder
+          .encodePassword(newPassphrase)
+          .then(Result.ok)
+          .catch((e) =>
+            Result.err(
+              new AccountInternalError('failed to encode passphrase', {
+                cause: e,
+              }),
+            ),
+          ),
+      )
+      .runWith(({ account, encoded }) =>
+        monad.map(() => [])(
+          Promise.resolve(account.setPassphraseHash(encoded)),
+        ),
+      )
+      .runWith(({ account }) =>
+        monad.map(() => [])(this.accountRepository.edit(account)),
+      )
+      .finish(() => true);
   }
 
   async editEmail(
@@ -106,36 +88,23 @@ export class EditService {
     newEmail: string,
     actorName: AccountName,
   ): Promise<Result.Result<Error, boolean>> {
-    const res = await this.accountRepository.findByName(target);
-    if (Option.isNone(res)) {
-      return Result.err(
-        new AccountNotFoundError('account not found', { cause: null }),
-      );
-    }
-    const account = Option.unwrap(res);
-    const actorRes = await this.accountRepository.findByName(actorName);
-    if (Option.isNone(actorRes)) {
-      return Result.err(
-        new AccountNotFoundError('actor not found', { cause: null }),
-      );
-    }
-    const actor = Option.unwrap(actorRes);
-
-    if (!this.isAllowed('edit', actor, account)) {
-      return Result.err(new Error('not allowed'));
-    }
+    const monad = resultPromiseMonad<Error>();
 
     // TODO: add a process to check the email is active
-
-    const setResult = account.setMail(newEmail);
-    if (Result.isErr(setResult)) {
-      return setResult;
-    }
-    const editResult = await this.accountRepository.edit(account);
-    if (Result.isErr(editResult)) {
-      return editResult;
-    }
-    return Result.ok(true);
+    return Cat.doT(monad)
+      .addM('account', this.findAccount(target, 'account not found'))
+      .addM('actor', this.findAccount(actorName, 'actor not found'))
+      .when(
+        ({ account, actor }) => !this.isAllowed('edit', actor, account),
+        () => Promise.resolve(Result.err(new Error('not allowed'))),
+      )
+      .runWith(({ account }) =>
+        monad.map(() => [])(Promise.resolve(account.setMail(newEmail))),
+      )
+      .runWith(({ account }) =>
+        monad.map(() => [])(this.accountRepository.edit(account)),
+      )
+      .finish(() => true);
   }
 
   async editBio(
@@ -143,34 +112,33 @@ export class EditService {
     bio: string,
     actorName: AccountName,
   ): Promise<Result.Result<Error, boolean>> {
-    const res = await this.accountRepository.findByName(target);
-    if (Option.isNone(res)) {
-      return Result.err(
-        new AccountNotFoundError('account not found', { cause: null }),
-      );
-    }
-    const account = Option.unwrap(res);
-    const actorRes = await this.accountRepository.findByName(actorName);
-    if (Option.isNone(actorRes)) {
-      return Result.err(
-        new AccountNotFoundError('actor not found', { cause: null }),
-      );
-    }
-    const actor = Option.unwrap(actorRes);
+    const monad = resultPromiseMonad<Error>();
 
-    if (!this.isAllowed('edit', actor, account)) {
-      return Result.err(new Error('not allowed'));
-    }
+    return Cat.doT(monad)
+      .addM('account', this.findAccount(target, 'account not found'))
+      .addM('actor', this.findAccount(actorName, 'actor not found'))
+      .when(
+        ({ account, actor }) => !this.isAllowed('edit', actor, account),
+        () => Promise.resolve(Result.err(new Error('not allowed'))),
+      )
+      .runWith(({ account }) =>
+        monad.map(() => [])(Promise.resolve(account.setBio(bio))),
+      )
+      .runWith(({ account }) =>
+        monad.map(() => [])(this.accountRepository.edit(account)),
+      )
+      .finish(() => true);
+  }
 
-    const setResult = account.setBio(bio);
-    if (Result.isErr(setResult)) {
-      return setResult;
-    }
-    const editResult = await this.accountRepository.edit(account);
-    if (Result.isErr(editResult)) {
-      return editResult;
-    }
-    return Result.ok(true);
+  private findAccount(
+    name: AccountName,
+    notFoundMessage: string,
+  ): Promise<Result.Result<Error, Account>> {
+    return this.accountRepository
+      .findByName(name)
+      .then(
+        Option.okOr(new AccountNotFoundError(notFoundMessage, { cause: null })),
+      );
   }
 
   private isAllowed(
