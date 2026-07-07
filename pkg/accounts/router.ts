@@ -2,6 +2,14 @@ import { createRoute, z } from '@hono/zod-openapi';
 
 import { FileNotFound } from '../drive/adaptor/presenter/errors.js';
 import {
+  bearerAuth,
+  errorResponse,
+  internalErrorResponse,
+  jsonBody,
+  noContentResponse,
+  okResponse,
+} from '../internal/router/helper.js';
+import {
   AccountAlreadyVerified,
   AccountNameInUse,
   AccountNotFound,
@@ -39,34 +47,28 @@ import {
   VerifyEmailRequestSchema,
 } from './adaptor/validator/schema.js';
 
-const InternalErrorResponseSchema = z
-  .object({
-    error: InternalError,
-  })
+const accountInternalErrorSchema = z
+  .object({ error: InternalError })
   .openapi('InternalErrorResponse');
+
+const accountNameParams = () =>
+  z.object({
+    name: z.string().min(3).max(64).openapi({
+      example: 'example_man',
+      description:
+        'Characters must be [A-Za-z0-9-.] The first and last characters must be [A-Za-z0-9-.]',
+    }),
+  });
 
 export const CreateAccountRoute = createRoute({
   method: 'post',
   tags: ['accounts'],
   path: '/v0/accounts',
   request: {
-    body: {
-      content: {
-        'application/json': {
-          schema: CreateAccountRequestSchema,
-        },
-      },
-    },
+    body: jsonBody(CreateAccountRequestSchema),
   },
   responses: {
-    200: {
-      description: 'OK',
-      content: {
-        'application/json': {
-          schema: CreateAccountResponseSchema,
-        },
-      },
-    },
+    200: okResponse(CreateAccountResponseSchema),
     400: {
       description: 'Bad Request',
       content: {
@@ -95,14 +97,7 @@ export const CreateAccountRoute = createRoute({
         },
       },
     },
-    500: {
-      description: 'Internal Server Error',
-      content: {
-        'application/json': {
-          schema: InternalErrorResponseSchema,
-        },
-      },
-    },
+    500: internalErrorResponse(accountInternalErrorSchema),
   },
 });
 
@@ -110,36 +105,13 @@ export const UpdateAccountRoute = createRoute({
   method: 'patch',
   tags: ['accounts'],
   path: '/v0/accounts/:name',
-  security: [
-    {
-      bearer: [],
-    },
-  ],
+  security: bearerAuth(),
   request: {
-    params: z.object({
-      name: z.string().min(3).max(64).openapi({
-        example: 'example_man',
-        description:
-          'Characters must be [A-Za-z0-9-.] The first and last characters must be [A-Za-z0-9-.]',
-      }),
-    }),
-    body: {
-      content: {
-        'application/json': {
-          schema: UpdateAccountRequestSchema,
-        },
-      },
-    },
+    params: accountNameParams(),
+    body: jsonBody(UpdateAccountRequestSchema),
   },
   responses: {
-    200: {
-      description: 'OK',
-      content: {
-        'application/json': {
-          schema: UpdateAccountResponseSchema,
-        },
-      },
-    },
+    200: okResponse(UpdateAccountResponseSchema),
     202: {
       description: 'When email updated',
       content: {
@@ -160,28 +132,8 @@ export const UpdateAccountRoute = createRoute({
         },
       },
     },
-    404: {
-      description: 'Not Found',
-      content: {
-        'application/json': {
-          schema: z
-            .object({
-              error: AccountNotFound,
-            })
-            .openapi({
-              description: 'account not found',
-            }),
-        },
-      },
-    },
-    500: {
-      description: 'Internal Server Error',
-      content: {
-        'application/json': {
-          schema: InternalErrorResponseSchema,
-        },
-      },
-    },
+    404: errorResponse('Not Found', AccountNotFound, 'account not found'),
+    500: internalErrorResponse(accountInternalErrorSchema),
   },
 });
 
@@ -189,74 +141,20 @@ export const FreezeAccountRoute = createRoute({
   method: 'put',
   tags: ['accounts'],
   path: '/v0/accounts/:name/freeze',
-  security: [
-    {
-      bearer: [],
-    },
-  ],
+  security: bearerAuth(),
   request: {
-    params: z.object({
-      name: z.string().min(3).max(64).openapi({
-        example: 'example_man',
-        description:
-          'Characters must be [A-Za-z0-9-.] The first and last characters must be [A-Za-z0-9-.]',
-      }),
-    }),
+    params: accountNameParams(),
   },
   responses: {
-    204: {
-      description: 'No Content',
-    },
-    400: {
-      description: 'Bad Request',
-      content: {
-        'application/json': {
-          schema: z
-            .object({
-              error: AlreadyFrozen,
-            })
-            .openapi({
-              description: 'account already frozen',
-            }),
-        },
-      },
-    },
-    403: {
-      description: 'Forbidden',
-      content: {
-        'application/json': {
-          schema: z
-            .object({
-              error: NoPermission,
-            })
-            .openapi({
-              description: 'You can not do this action.',
-            }),
-        },
-      },
-    },
-    404: {
-      description: 'Not Found',
-      content: {
-        'application/json': {
-          schema: z
-            .object({
-              error: AccountNotFound,
-            })
-            .openapi({
-              description: 'account not found',
-            }),
-        },
-      },
-    },
-    500: {
-      description: 'Internal Server Error',
-      content: {
-        'application/json': {
-          schema: InternalErrorResponseSchema,
-        },
-      },
-    },
+    204: noContentResponse('No Content'),
+    400: errorResponse('Bad Request', AlreadyFrozen, 'account already frozen'),
+    403: errorResponse(
+      'Forbidden',
+      NoPermission,
+      'You can not do this action.',
+    ),
+    404: errorResponse('Not Found', AccountNotFound, 'account not found'),
+    500: internalErrorResponse(accountInternalErrorSchema),
   },
 });
 
@@ -264,60 +162,19 @@ export const UnFreezeAccountRoute = createRoute({
   method: 'delete',
   tags: ['accounts'],
   path: '/v0/accounts/:name/freeze',
-  security: [
-    {
-      bearer: [],
-    },
-  ],
+  security: bearerAuth(),
   request: {
-    params: z.object({
-      name: z.string().min(3).max(64).openapi({
-        example: 'example_man',
-        description:
-          'Characters must be [A-Za-z0-9-.] The first and last characters must be [A-Za-z0-9-.]',
-      }),
-    }),
+    params: accountNameParams(),
   },
   responses: {
-    204: {
-      description: 'No Content',
-    },
-    403: {
-      description: 'Forbidden',
-      content: {
-        'application/json': {
-          schema: z
-            .object({
-              error: NoPermission,
-            })
-            .openapi({
-              description: 'You can not do this action.',
-            }),
-        },
-      },
-    },
-    404: {
-      description: 'Not Found',
-      content: {
-        'application/json': {
-          schema: z
-            .object({
-              error: AccountNotFound,
-            })
-            .openapi({
-              description: 'account not found',
-            }),
-        },
-      },
-    },
-    500: {
-      description: 'Internal Server Error',
-      content: {
-        'application/json': {
-          schema: InternalErrorResponseSchema,
-        },
-      },
-    },
+    204: noContentResponse('No Content'),
+    403: errorResponse(
+      'Forbidden',
+      NoPermission,
+      'You can not do this action.',
+    ),
+    404: errorResponse('Not Found', AccountNotFound, 'account not found'),
+    500: internalErrorResponse(accountInternalErrorSchema),
   },
 });
 
@@ -326,71 +183,23 @@ export const ResendVerificationEmailRoute = createRoute({
   tags: ['accounts'],
   path: '/v0/accounts/:name/resend_verify_email',
   request: {
-    params: z.object({
-      name: z.string().min(3).max(64).openapi({
-        example: 'example_man',
-        description:
-          'Characters must be [A-Za-z0-9-.] The first and last characters must be [A-Za-z0-9-.]',
-      }),
-    }),
-    body: {
-      content: {
-        'application/json': {
-          schema: ResendVerificationEmailRequestSchema,
-        },
-      },
-    },
+    params: accountNameParams(),
+    body: jsonBody(ResendVerificationEmailRequestSchema),
   },
   responses: {
-    204: {
-      description: 'No Content',
-    },
-    400: {
-      description: 'Bad Request',
-      content: {
-        'application/json': {
-          schema: z
-            .object({ error: AccountAlreadyVerified })
-            .openapi({ description: 'account email is already verified.' }),
-        },
-      },
-    },
-    403: {
-      description: 'Forbidden',
-      content: {
-        'application/json': {
-          schema: z
-            .object({
-              error: NoPermission,
-            })
-            .openapi({
-              description: 'You can not do this action.',
-            }),
-        },
-      },
-    },
-    404: {
-      description: 'Not Found',
-      content: {
-        'application/json': {
-          schema: z
-            .object({
-              error: AccountNotFound,
-            })
-            .openapi({
-              description: 'account not found',
-            }),
-        },
-      },
-    },
-    500: {
-      description: 'Internal Server Error',
-      content: {
-        'application/json': {
-          schema: InternalErrorResponseSchema,
-        },
-      },
-    },
+    204: noContentResponse('No Content'),
+    400: errorResponse(
+      'Bad Request',
+      AccountAlreadyVerified,
+      'account email is already verified.',
+    ),
+    403: errorResponse(
+      'Forbidden',
+      NoPermission,
+      'You can not do this action.',
+    ),
+    404: errorResponse('Not Found', AccountNotFound, 'account not found'),
+    500: internalErrorResponse(accountInternalErrorSchema),
   },
 });
 
@@ -399,59 +208,18 @@ export const VerifyEmailRoute = createRoute({
   tags: ['accounts'],
   path: '/v0/accounts/:name/verify_email',
   request: {
-    params: z.object({
-      name: z.string().min(3).max(64).openapi({
-        example: 'example_man',
-        description:
-          'Characters must be [A-Za-z0-9-.] The first and last characters must be [A-Za-z0-9-.]',
-      }),
-    }),
-    body: {
-      content: {
-        'application/json': {
-          schema: VerifyEmailRequestSchema,
-        },
-      },
-    },
+    params: accountNameParams(),
+    body: jsonBody(VerifyEmailRequestSchema),
   },
   responses: {
-    204: {
-      description: 'No Content',
-    },
-    400: {
-      description: 'Bad Request',
-      content: {
-        'application/json': {
-          schema: z
-            .object({
-              error: InvalidEMailVerifyToken,
-            })
-            .openapi({ description: 'email address token is invalid' }),
-        },
-      },
-    },
-    404: {
-      description: 'Not Found',
-      content: {
-        'application/json': {
-          schema: z
-            .object({
-              error: AccountNotFound,
-            })
-            .openapi({
-              description: 'account not found',
-            }),
-        },
-      },
-    },
-    500: {
-      description: 'Internal Server Error',
-      content: {
-        'application/json': {
-          schema: InternalErrorResponseSchema,
-        },
-      },
-    },
+    204: noContentResponse('No Content'),
+    400: errorResponse(
+      'Bad Request',
+      InvalidEMailVerifyToken,
+      'email address token is invalid',
+    ),
+    404: errorResponse('Not Found', AccountNotFound, 'account not found'),
+    500: internalErrorResponse(accountInternalErrorSchema),
   },
 });
 
@@ -460,59 +228,13 @@ export const LoginRoute = createRoute({
   tags: ['accounts'],
   path: '/v0/login',
   request: {
-    body: {
-      content: {
-        'application/json': {
-          schema: LoginRequestSchema,
-        },
-      },
-    },
+    body: jsonBody(LoginRequestSchema),
   },
   responses: {
-    200: {
-      description: 'OK',
-      content: {
-        'application/json': {
-          schema: LoginResponseSchema,
-        },
-      },
-    },
-    400: {
-      description: 'Bad Request',
-      content: {
-        'application/json': {
-          schema: z
-            .object({
-              error: FailedToLogin,
-            })
-            .openapi({
-              description: 'failed to login.',
-            }),
-        },
-      },
-    },
-    403: {
-      description: 'Forbidden',
-      content: {
-        'application/json': {
-          schema: z
-            .object({
-              error: YouAreFrozen,
-            })
-            .openapi({
-              description: 'You can not login.',
-            }),
-        },
-      },
-    },
-    500: {
-      description: 'Internal Server Error',
-      content: {
-        'application/json': {
-          schema: InternalErrorResponseSchema,
-        },
-      },
-    },
+    200: okResponse(LoginResponseSchema),
+    400: errorResponse('Bad Request', FailedToLogin, 'failed to login.'),
+    403: errorResponse('Forbidden', YouAreFrozen, 'You can not login.'),
+    500: internalErrorResponse(accountInternalErrorSchema),
   },
 });
 
@@ -528,14 +250,7 @@ export const RefreshRoute = createRoute({
     }),
   },
   responses: {
-    200: {
-      description: 'OK',
-      content: {
-        'application/json': {
-          schema: RefreshResponseSchema,
-        },
-      },
-    },
+    200: okResponse(RefreshResponseSchema),
     400: {
       description: 'Bad Request',
       content: {
@@ -549,14 +264,7 @@ export const RefreshRoute = createRoute({
         },
       },
     },
-    500: {
-      description: 'Internal Server Error',
-      content: {
-        'application/json': {
-          schema: InternalErrorResponseSchema,
-        },
-      },
-    },
+    500: internalErrorResponse(accountInternalErrorSchema),
   },
 });
 
@@ -584,36 +292,9 @@ export const GetAccountRoute = createRoute({
     }),
   },
   responses: {
-    200: {
-      description: 'OK',
-      content: {
-        'application/json': {
-          schema: GetAccountResponseSchema,
-        },
-      },
-    },
-    404: {
-      description: 'Not Found',
-      content: {
-        'application/json': {
-          schema: z
-            .object({
-              error: AccountNotFound,
-            })
-            .openapi({
-              description: 'account not found',
-            }),
-        },
-      },
-    },
-    500: {
-      description: 'Internal Server Error',
-      content: {
-        'application/json': {
-          schema: InternalErrorResponseSchema,
-        },
-      },
-    },
+    200: okResponse(GetAccountResponseSchema),
+    404: errorResponse('Not Found', AccountNotFound, 'account not found'),
+    500: internalErrorResponse(accountInternalErrorSchema),
   },
 });
 
@@ -621,19 +302,9 @@ export const SilenceAccountRoute = createRoute({
   method: 'put',
   tags: ['accounts'],
   path: '/v0/accounts/:name/silence',
-  security: [
-    {
-      bearer: [],
-    },
-  ],
+  security: bearerAuth(),
   request: {
-    params: z.object({
-      name: z.string().min(3).max(64).openapi({
-        example: 'example_man',
-        description:
-          'Characters must be [A-Za-z0-9-.] The first and last characters must be [A-Za-z0-9-.]',
-      }),
-    }),
+    params: accountNameParams(),
     body: {
       content: {
         'application/json': {
@@ -644,45 +315,14 @@ export const SilenceAccountRoute = createRoute({
     },
   },
   responses: {
-    204: {
-      description: 'No Content',
-    },
-    403: {
-      description: 'Forbidden',
-      content: {
-        'application/json': {
-          schema: z
-            .object({
-              error: NoPermission,
-            })
-            .openapi({
-              description: 'You can not do this action.',
-            }),
-        },
-      },
-    },
-    404: {
-      description: 'Not Found',
-      content: {
-        'application/json': {
-          schema: z
-            .object({
-              error: AccountNotFound,
-            })
-            .openapi({
-              description: 'account not found',
-            }),
-        },
-      },
-    },
-    500: {
-      description: 'Internal Server Error',
-      content: {
-        'application/json': {
-          schema: InternalErrorResponseSchema,
-        },
-      },
-    },
+    204: noContentResponse('No Content'),
+    403: errorResponse(
+      'Forbidden',
+      NoPermission,
+      'You can not do this action.',
+    ),
+    404: errorResponse('Not Found', AccountNotFound, 'account not found'),
+    500: internalErrorResponse(accountInternalErrorSchema),
   },
 });
 
@@ -690,19 +330,9 @@ export const UnSilenceAccountRoute = createRoute({
   method: 'delete',
   tags: ['accounts'],
   path: '/v0/accounts/:name/silence',
-  security: [
-    {
-      bearer: [],
-    },
-  ],
+  security: bearerAuth(),
   request: {
-    params: z.object({
-      name: z.string().min(3).max(64).openapi({
-        example: 'example_man',
-        description:
-          'Characters must be [A-Za-z0-9-.] The first and last characters must be [A-Za-z0-9-.]',
-      }),
-    }),
+    params: accountNameParams(),
     body: {
       content: {
         'application/json': {
@@ -713,45 +343,14 @@ export const UnSilenceAccountRoute = createRoute({
     },
   },
   responses: {
-    204: {
-      description: 'No Content',
-    },
-    403: {
-      description: 'Forbidden',
-      content: {
-        'application/json': {
-          schema: z
-            .object({
-              error: NoPermission,
-            })
-            .openapi({
-              description: 'You can not do this action.',
-            }),
-        },
-      },
-    },
-    404: {
-      description: 'Not Found',
-      content: {
-        'application/json': {
-          schema: z
-            .object({
-              error: AccountNotFound,
-            })
-            .openapi({
-              description: 'account not found',
-            }),
-        },
-      },
-    },
-    500: {
-      description: 'Internal Server Error',
-      content: {
-        'application/json': {
-          schema: InternalErrorResponseSchema,
-        },
-      },
-    },
+    204: noContentResponse('No Content'),
+    403: errorResponse(
+      'Forbidden',
+      NoPermission,
+      'You can not do this action.',
+    ),
+    404: errorResponse('Not Found', AccountNotFound, 'account not found'),
+    500: internalErrorResponse(accountInternalErrorSchema),
   },
 });
 
@@ -759,19 +358,9 @@ export const FollowAccountRoute = createRoute({
   method: 'post',
   tags: ['accounts'],
   path: '/v0/accounts/:name/follow',
-  security: [
-    {
-      bearer: [],
-    },
-  ],
+  security: bearerAuth(),
   request: {
-    params: z.object({
-      name: z.string().min(3).max(64).openapi({
-        example: 'example_man',
-        description:
-          'Characters must be [A-Za-z0-9-.] The first and last characters must be [A-Za-z0-9-.]',
-      }),
-    }),
+    params: accountNameParams(),
     body: {
       content: {
         'application/json': {
@@ -782,9 +371,7 @@ export const FollowAccountRoute = createRoute({
     },
   },
   responses: {
-    204: {
-      description: 'Accepted(No Content)',
-    },
+    204: noContentResponse('Accepted(No Content)'),
     403: {
       description: 'Forbidden',
       content: {
@@ -799,28 +386,8 @@ export const FollowAccountRoute = createRoute({
         },
       },
     },
-    404: {
-      description: 'Not Found',
-      content: {
-        'application/json': {
-          schema: z
-            .object({
-              error: AccountNotFound,
-            })
-            .openapi({
-              description: 'account not found',
-            }),
-        },
-      },
-    },
-    500: {
-      description: 'Internal Server Error',
-      content: {
-        'application/json': {
-          schema: InternalErrorResponseSchema,
-        },
-      },
-    },
+    404: errorResponse('Not Found', AccountNotFound, 'account not found'),
+    500: internalErrorResponse(accountInternalErrorSchema),
   },
 });
 
@@ -828,19 +395,9 @@ export const UnFollowAccountRoute = createRoute({
   method: 'delete',
   tags: ['accounts'],
   path: '/v0/accounts/:name/follow',
-  security: [
-    {
-      bearer: [],
-    },
-  ],
+  security: bearerAuth(),
   request: {
-    params: z.object({
-      name: z.string().min(3).max(64).openapi({
-        example: 'example_man',
-        description:
-          'Characters must be [A-Za-z0-9-.] The first and last characters must be [A-Za-z0-9-.]',
-      }),
-    }),
+    params: accountNameParams(),
     body: {
       content: {
         'application/json': {
@@ -851,45 +408,14 @@ export const UnFollowAccountRoute = createRoute({
     },
   },
   responses: {
-    204: {
-      description: 'No Content',
-    },
-    400: {
-      description: 'Bad request',
-      content: {
-        'application/json': {
-          schema: z
-            .object({
-              error: YouAreNotFollowing,
-            })
-            .openapi({
-              description: 'You are not following specified account.',
-            }),
-        },
-      },
-    },
-    404: {
-      description: 'Not Found',
-      content: {
-        'application/json': {
-          schema: z
-            .object({
-              error: AccountNotFound,
-            })
-            .openapi({
-              description: 'account not found',
-            }),
-        },
-      },
-    },
-    500: {
-      description: 'Internal Server Error',
-      content: {
-        'application/json': {
-          schema: InternalErrorResponseSchema,
-        },
-      },
-    },
+    204: noContentResponse('No Content'),
+    400: errorResponse(
+      'Bad request',
+      YouAreNotFollowing,
+      'You are not following specified account.',
+    ),
+    404: errorResponse('Not Found', AccountNotFound, 'account not found'),
+    500: internalErrorResponse(accountInternalErrorSchema),
   },
 });
 
@@ -907,38 +433,12 @@ export const GetAccountFollowingRoute = createRoute({
     }),
   },
   responses: {
-    200: {
-      description: 'OK',
-      content: {
-        'application/json': {
-          schema: GetAccountFollowingSchema,
-        },
-      },
-    },
-    404: {
-      description: 'Not Found',
-      content: {
-        'application/json': {
-          schema: z
-            .object({
-              error: AccountNotFound,
-            })
-            .openapi({
-              description: 'account not found',
-            }),
-        },
-      },
-    },
-    500: {
-      description: 'Internal Server Error',
-      content: {
-        'application/json': {
-          schema: InternalErrorResponseSchema,
-        },
-      },
-    },
+    200: okResponse(GetAccountFollowingSchema),
+    404: errorResponse('Not Found', AccountNotFound, 'account not found'),
+    500: internalErrorResponse(accountInternalErrorSchema),
   },
 });
+
 export const GetAccountFollowerRoute = createRoute({
   method: 'get',
   tags: ['accounts'],
@@ -953,36 +453,9 @@ export const GetAccountFollowerRoute = createRoute({
     }),
   },
   responses: {
-    200: {
-      description: 'OK',
-      content: {
-        'application/json': {
-          schema: GetAccountFollowingSchema,
-        },
-      },
-    },
-    404: {
-      description: 'Not Found',
-      content: {
-        'application/json': {
-          schema: z
-            .object({
-              error: AccountNotFound,
-            })
-            .openapi({
-              description: 'account not found',
-            }),
-        },
-      },
-    },
-    500: {
-      description: 'Internal Server Error',
-      content: {
-        'application/json': {
-          schema: InternalErrorResponseSchema,
-        },
-      },
-    },
+    200: okResponse(GetAccountFollowingSchema),
+    404: errorResponse('Not Found', AccountNotFound, 'account not found'),
+    500: internalErrorResponse(accountInternalErrorSchema),
   },
 });
 
@@ -990,45 +463,18 @@ export const SetAccountAvatarRoute = createRoute({
   method: 'post',
   tags: ['accounts'],
   path: '/v0/accounts/:name/avatar',
-  security: [
-    {
-      bearer: [],
-    },
-  ],
+  security: bearerAuth(),
   request: {
-    params: z.object({
-      name: z.string().min(3).max(64).openapi({
-        example: 'example_man',
-        description:
-          'Characters must be [A-Za-z0-9-.] The first and last characters must be [A-Za-z0-9-.]',
-      }),
-    }),
-    body: {
-      content: {
-        'application/json': {
-          schema: SetAccountAvatarRequestSchema,
-        },
-      },
-    },
+    params: accountNameParams(),
+    body: jsonBody(SetAccountAvatarRequestSchema),
   },
   responses: {
-    204: {
-      description: 'No Content',
-    },
-    403: {
-      description: 'Forbidden',
-      content: {
-        'application/json': {
-          schema: z
-            .object({
-              error: NoPermission,
-            })
-            .openapi({
-              description: 'You can not do this action.',
-            }),
-        },
-      },
-    },
+    204: noContentResponse('No Content'),
+    403: errorResponse(
+      'Forbidden',
+      NoPermission,
+      'You can not do this action.',
+    ),
     404: {
       description: 'Not Found',
       content: {
@@ -1043,14 +489,7 @@ export const SetAccountAvatarRoute = createRoute({
         },
       },
     },
-    500: {
-      description: 'Internal Server Error',
-      content: {
-        'application/json': {
-          schema: InternalErrorResponseSchema,
-        },
-      },
-    },
+    500: internalErrorResponse(accountInternalErrorSchema),
   },
 });
 
@@ -1058,60 +497,19 @@ export const UnsetAccountAvatarRoute = createRoute({
   method: 'delete',
   tags: ['accounts'],
   path: '/v0/accounts/:name/avatar',
-  security: [
-    {
-      bearer: [],
-    },
-  ],
+  security: bearerAuth(),
   request: {
-    params: z.object({
-      name: z.string().min(3).max(64).openapi({
-        example: 'example_man',
-        description:
-          'Characters must be [A-Za-z0-9-.] The first and last characters must be [A-Za-z0-9-.]',
-      }),
-    }),
+    params: accountNameParams(),
   },
   responses: {
-    204: {
-      description: 'No Content',
-    },
-    403: {
-      description: 'Forbidden',
-      content: {
-        'application/json': {
-          schema: z
-            .object({
-              error: NoPermission,
-            })
-            .openapi({
-              description: 'You can not do this action.',
-            }),
-        },
-      },
-    },
-    404: {
-      description: 'Not Found',
-      content: {
-        'application/json': {
-          schema: z
-            .object({
-              error: AccountNotFound,
-            })
-            .openapi({
-              description: 'account not found',
-            }),
-        },
-      },
-    },
-    500: {
-      description: 'Internal Server Error',
-      content: {
-        'application/json': {
-          schema: InternalErrorResponseSchema,
-        },
-      },
-    },
+    204: noContentResponse('No Content'),
+    403: errorResponse(
+      'Forbidden',
+      NoPermission,
+      'You can not do this action.',
+    ),
+    404: errorResponse('Not Found', AccountNotFound, 'account not found'),
+    500: internalErrorResponse(accountInternalErrorSchema),
   },
 });
 
@@ -1119,45 +517,18 @@ export const SetAccountHeaderRoute = createRoute({
   method: 'post',
   tags: ['accounts'],
   path: '/v0/accounts/:name/header',
-  security: [
-    {
-      bearer: [],
-    },
-  ],
+  security: bearerAuth(),
   request: {
-    params: z.object({
-      name: z.string().min(3).max(64).openapi({
-        example: 'example_man',
-        description:
-          'Characters must be [A-Za-z0-9-.] The first and last characters must be [A-Za-z0-9-.]',
-      }),
-    }),
-    body: {
-      content: {
-        'application/json': {
-          schema: SetAccountAvatarRequestSchema,
-        },
-      },
-    },
+    params: accountNameParams(),
+    body: jsonBody(SetAccountAvatarRequestSchema),
   },
   responses: {
-    204: {
-      description: 'No Content',
-    },
-    403: {
-      description: 'Forbidden',
-      content: {
-        'application/json': {
-          schema: z
-            .object({
-              error: NoPermission,
-            })
-            .openapi({
-              description: 'You can not do this action.',
-            }),
-        },
-      },
-    },
+    204: noContentResponse('No Content'),
+    403: errorResponse(
+      'Forbidden',
+      NoPermission,
+      'You can not do this action.',
+    ),
     404: {
       description: 'Not Found',
       content: {
@@ -1172,14 +543,7 @@ export const SetAccountHeaderRoute = createRoute({
         },
       },
     },
-    500: {
-      description: 'Internal Server Error',
-      content: {
-        'application/json': {
-          schema: InternalErrorResponseSchema,
-        },
-      },
-    },
+    500: internalErrorResponse(accountInternalErrorSchema),
   },
 });
 
@@ -1187,60 +551,19 @@ export const UnsetAccountHeaderRoute = createRoute({
   method: 'delete',
   tags: ['accounts'],
   path: '/v0/accounts/:name/header',
-  security: [
-    {
-      bearer: [],
-    },
-  ],
+  security: bearerAuth(),
   request: {
-    params: z.object({
-      name: z.string().min(3).max(64).openapi({
-        example: 'example_man',
-        description:
-          'Characters must be [A-Za-z0-9-.] The first and last characters must be [A-Za-z0-9-.]',
-      }),
-    }),
+    params: accountNameParams(),
   },
   responses: {
-    204: {
-      description: 'No Content',
-    },
-    403: {
-      description: 'Forbidden',
-      content: {
-        'application/json': {
-          schema: z
-            .object({
-              error: NoPermission,
-            })
-            .openapi({
-              description: 'You can not do this action.',
-            }),
-        },
-      },
-    },
-    404: {
-      description: 'Not Found',
-      content: {
-        'application/json': {
-          schema: z
-            .object({
-              error: AccountNotFound,
-            })
-            .openapi({
-              description: 'account not found',
-            }),
-        },
-      },
-    },
-    500: {
-      description: 'Internal Server Error',
-      content: {
-        'application/json': {
-          schema: InternalErrorResponseSchema,
-        },
-      },
-    },
+    204: noContentResponse('No Content'),
+    403: errorResponse(
+      'Forbidden',
+      NoPermission,
+      'You can not do this action.',
+    ),
+    404: errorResponse('Not Found', AccountNotFound, 'account not found'),
+    500: internalErrorResponse(accountInternalErrorSchema),
   },
 });
 
@@ -1248,11 +571,7 @@ export const GetAccountRelationshipsRoute = createRoute({
   method: 'get',
   tags: ['accounts'],
   path: '/v0/accounts/:id/relationships',
-  security: [
-    {
-      bearer: [],
-    },
-  ],
+  security: bearerAuth(),
   request: {
     params: z.object({
       id: z.string().openapi({
@@ -1262,35 +581,8 @@ export const GetAccountRelationshipsRoute = createRoute({
     }),
   },
   responses: {
-    200: {
-      description: 'OK',
-      content: {
-        'application/json': {
-          schema: GetAccountRelationshipsResponseSchema,
-        },
-      },
-    },
-    404: {
-      description: 'Not Found',
-      content: {
-        'application/json': {
-          schema: z
-            .object({
-              error: AccountNotFound,
-            })
-            .openapi({
-              description: 'account not found',
-            }),
-        },
-      },
-    },
-    500: {
-      description: 'Internal Server Error',
-      content: {
-        'application/json': {
-          schema: InternalErrorResponseSchema,
-        },
-      },
-    },
+    200: okResponse(GetAccountRelationshipsResponseSchema),
+    404: errorResponse('Not Found', AccountNotFound, 'account not found'),
+    500: internalErrorResponse(accountInternalErrorSchema),
   },
 });

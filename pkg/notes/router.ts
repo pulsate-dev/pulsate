@@ -2,6 +2,14 @@ import { createRoute, z } from '@hono/zod-openapi';
 
 import { AccountNotFound } from '../accounts/adaptor/presenter/errors.js';
 import {
+  bearerAuth,
+  errorResponse,
+  internalErrorResponse,
+  jsonBody,
+  noContentResponse,
+  okResponse,
+} from '../internal/router/helper.js';
+import {
   AlreadyReacted,
   AttachmentNotFound,
   EmojiNotFound,
@@ -25,33 +33,28 @@ import {
   RenoteResponseSchema,
 } from './adaptor/validator/schema.js';
 
+const noteInternalErrorSchema = z
+  .object({ error: NoteInternal })
+  .openapi({ description: 'Internal Error' });
+
+const noteIDParams = () =>
+  z.object({
+    id: z.string().openapi({
+      description: 'Note ID',
+      example: '1',
+    }),
+  });
+
 export const CreateNoteRoute = createRoute({
   method: 'post',
   tags: ['notes'],
   path: '/v0/notes',
-  security: [
-    {
-      bearer: [],
-    },
-  ],
+  security: bearerAuth(),
   request: {
-    body: {
-      content: {
-        'application/json': {
-          schema: CreateNoteRequestSchema,
-        },
-      },
-    },
+    body: jsonBody(CreateNoteRequestSchema),
   },
   responses: {
-    200: {
-      description: 'OK',
-      content: {
-        'application/json': {
-          schema: CreateNoteResponseSchema,
-        },
-      },
-    },
+    200: okResponse(CreateNoteResponseSchema),
     400: {
       description: 'Bad Request',
       content: {
@@ -99,20 +102,7 @@ export const CreateNoteRoute = createRoute({
         },
       },
     },
-    500: {
-      description: 'Internal Server Error',
-      content: {
-        'application/json': {
-          schema: z
-            .object({
-              error: NoteInternal,
-            })
-            .openapi({
-              description: 'Internal Error',
-            }),
-        },
-      },
-    },
+    500: internalErrorResponse(noteInternalErrorSchema),
   },
 });
 
@@ -121,50 +111,12 @@ export const GetNoteRoute = createRoute({
   tags: ['notes'],
   path: '/v0/notes/:id',
   request: {
-    params: z.object({
-      id: z.string().openapi({
-        description: 'Note ID',
-        example: '1',
-      }),
-    }),
+    params: noteIDParams(),
   },
   responses: {
-    200: {
-      description: 'OK',
-      content: {
-        'application/json': {
-          schema: GetNoteResponseSchema,
-        },
-      },
-    },
-    404: {
-      description: 'Note not found',
-      content: {
-        'application/json': {
-          schema: z
-            .object({
-              error: NoteNotFound,
-            })
-            .openapi({
-              description: 'Note not found',
-            }),
-        },
-      },
-    },
-    500: {
-      description: 'Internal Server Error',
-      content: {
-        'application/json': {
-          schema: z
-            .object({
-              error: NoteInternal,
-            })
-            .openapi({
-              description: 'Internal Error',
-            }),
-        },
-      },
-    },
+    200: okResponse(GetNoteResponseSchema),
+    404: errorResponse('Note not found', NoteNotFound, 'Note not found'),
+    500: internalErrorResponse(noteInternalErrorSchema),
   },
 });
 
@@ -172,35 +124,13 @@ export const RenoteRoute = createRoute({
   method: 'post',
   tags: ['notes'],
   path: '/v0/notes/:id/renote',
-  security: [
-    {
-      bearer: [],
-    },
-  ],
+  security: bearerAuth(),
   request: {
-    params: z.object({
-      id: z.string().openapi({
-        description: 'Note ID',
-        example: '1',
-      }),
-    }),
-    body: {
-      content: {
-        'application/json': {
-          schema: RenoteRequestSchema,
-        },
-      },
-    },
+    params: noteIDParams(),
+    body: jsonBody(RenoteRequestSchema),
   },
   responses: {
-    200: {
-      description: 'OK',
-      content: {
-        'application/json': {
-          schema: RenoteResponseSchema,
-        },
-      },
-    },
+    200: okResponse(RenoteResponseSchema),
     400: {
       description: 'Bad Request',
       content: {
@@ -248,20 +178,7 @@ export const RenoteRoute = createRoute({
         },
       },
     },
-    500: {
-      description: 'Internal Server Error',
-      content: {
-        'application/json': {
-          schema: z
-            .object({
-              error: NoteInternal,
-            })
-            .openapi({
-              description: 'Internal Error',
-            }),
-        },
-      },
-    },
+    500: internalErrorResponse(noteInternalErrorSchema),
   },
 });
 
@@ -269,35 +186,13 @@ export const CreateReactionRoute = createRoute({
   method: 'post',
   tags: ['reaction'],
   path: '/v0/notes/:id/reaction',
-  security: [
-    {
-      bearer: [],
-    },
-  ],
+  security: bearerAuth(),
   request: {
-    params: z.object({
-      id: z.string().openapi({
-        description: 'Note ID',
-        example: '1',
-      }),
-    }),
-    body: {
-      content: {
-        'application/json': {
-          schema: CreateReactionRequestSchema,
-        },
-      },
-    },
+    params: noteIDParams(),
+    body: jsonBody(CreateReactionRequestSchema),
   },
   responses: {
-    200: {
-      description: 'OK',
-      content: {
-        'application/json': {
-          schema: CreateReactionResponseSchema,
-        },
-      },
-    },
+    200: okResponse(CreateReactionResponseSchema),
     400: {
       description: 'Bad Request',
       content: {
@@ -311,30 +206,8 @@ export const CreateReactionRoute = createRoute({
         },
       },
     },
-    404: {
-      description: 'Not Found',
-      content: {
-        'application/json': {
-          schema: z.object({
-            error: NoteNotFound,
-          }),
-        },
-      },
-    },
-    500: {
-      description: 'Internal Server Error',
-      content: {
-        'application/json': {
-          schema: z
-            .object({
-              error: NoteInternal,
-            })
-            .openapi({
-              description: 'Internal Error',
-            }),
-        },
-      },
-    },
+    404: errorResponse('Not Found', NoteNotFound),
+    500: internalErrorResponse(noteInternalErrorSchema),
   },
 });
 
@@ -342,47 +215,14 @@ export const DeleteReactionRoute = createRoute({
   method: 'delete',
   tags: ['reaction'],
   path: '/v0/notes/:id/reaction',
-  security: [
-    {
-      bearer: [],
-    },
-  ],
+  security: bearerAuth(),
   request: {
-    params: z.object({
-      id: z.string().openapi({
-        description: 'Note ID',
-        example: '1',
-      }),
-    }),
+    params: noteIDParams(),
   },
   responses: {
-    204: {
-      description: 'OK',
-    },
-    404: {
-      description: 'Reaction not found',
-      content: {
-        'application/json': {
-          schema: z.object({
-            error: NotReacted,
-          }),
-        },
-      },
-    },
-    500: {
-      description: 'Internal Server Error',
-      content: {
-        'application/json': {
-          schema: z
-            .object({
-              error: NoteInternal,
-            })
-            .openapi({
-              description: 'Internal Error',
-            }),
-        },
-      },
-    },
+    204: noContentResponse('OK'),
+    404: errorResponse('Reaction not found', NotReacted),
+    500: internalErrorResponse(noteInternalErrorSchema),
   },
 });
 
@@ -390,56 +230,14 @@ export const CreateBookmarkRoute = createRoute({
   method: 'post',
   tags: ['bookmark'],
   path: '/v0/notes/:id/bookmark',
-  security: [
-    {
-      bearer: [],
-    },
-  ],
+  security: bearerAuth(),
   request: {
-    params: z.object({
-      id: z.string().openapi({
-        description: 'Note ID',
-        example: '1',
-      }),
-    }),
+    params: noteIDParams(),
   },
   responses: {
-    200: {
-      description: 'OK',
-      content: {
-        'application/json': {
-          schema: CreateBookmarkResponseSchema,
-        },
-      },
-    },
-    404: {
-      description: 'Note not found',
-      content: {
-        'application/json': {
-          schema: z
-            .object({
-              error: NoteNotFound,
-            })
-            .openapi({
-              description: 'Note not found',
-            }),
-        },
-      },
-    },
-    500: {
-      description: 'Internal Server Error',
-      content: {
-        'application/json': {
-          schema: z
-            .object({
-              error: NoteInternal,
-            })
-            .openapi({
-              description: 'Internal Error',
-            }),
-        },
-      },
-    },
+    200: okResponse(CreateBookmarkResponseSchema),
+    404: errorResponse('Note not found', NoteNotFound, 'Note not found'),
+    500: internalErrorResponse(noteInternalErrorSchema),
   },
 });
 
@@ -447,46 +245,13 @@ export const DeleteBookmarkRoute = createRoute({
   method: 'delete',
   tags: ['bookmark'],
   path: '/v0/notes/:id/bookmark',
-  security: [
-    {
-      bearer: [],
-    },
-  ],
+  security: bearerAuth(),
   request: {
-    params: z.object({
-      id: z.string().openapi({
-        description: 'Note ID',
-        example: '1',
-      }),
-    }),
+    params: noteIDParams(),
   },
   responses: {
-    204: {
-      description: 'OK',
-    },
-    404: {
-      description: 'Bookmark not found',
-      content: {
-        'application/json': {
-          schema: z.object({
-            error: NoteNotFound,
-          }),
-        },
-      },
-    },
-    500: {
-      description: 'Internal Server Error',
-      content: {
-        'application/json': {
-          schema: z
-            .object({
-              error: NoteInternal,
-            })
-            .openapi({
-              description: 'Internal Error',
-            }),
-        },
-      },
-    },
+    204: noContentResponse('OK'),
+    404: errorResponse('Bookmark not found', NoteNotFound),
+    500: internalErrorResponse(noteInternalErrorSchema),
   },
 });
