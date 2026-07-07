@@ -1,6 +1,7 @@
-import { Ether, Option, Result } from '@mikuroxina/mini-fn';
+import { Cat, Ether, Option, Result } from '@mikuroxina/mini-fn';
 
 import { type Clock, clockSymbol } from '../../internal/id/mod.js';
+import { resultPromiseMonad } from '../../internal/monad/mod.js';
 import type { AccountName } from '../model/account.js';
 import { AccountNotFoundError } from '../model/errors.js';
 import { AccountFollow } from '../model/follow.js';
@@ -22,34 +23,42 @@ export class FollowService {
     from: AccountName,
     target: AccountName,
   ): Promise<Result.Result<Error, AccountFollow>> {
-    const fromAccount = await this.accountRepository.findByName(from);
-    if (Option.isNone(fromAccount)) {
-      return Result.err(
-        new AccountNotFoundError('account not found', { cause: null }),
-      );
-    }
-    const targetAccount = await this.accountRepository.findByName(target);
-    if (Option.isNone(targetAccount)) {
-      return Result.err(
-        new AccountNotFoundError('account not found', { cause: null }),
-      );
-    }
+    const monad = resultPromiseMonad<Error>();
 
-    const now = this.clock.now();
-    const follow = Result.unwrap(
-      AccountFollow.new({
-        fromID: fromAccount[1].getID(),
-        targetID: targetAccount[1].getID(),
-        createdAt: new Date(Number(now)),
-      }),
-    );
-
-    const res = await this.followRepository.follow(follow);
-    if (Result.isErr(res)) {
-      return Result.err(res[1]);
-    }
-
-    return Result.ok(follow);
+    return Cat.doT(monad)
+      .addM(
+        'fromAccount',
+        this.accountRepository
+          .findByName(from)
+          .then(
+            Option.okOr(
+              new AccountNotFoundError('account not found', { cause: null }),
+            ),
+          ),
+      )
+      .addM(
+        'targetAccount',
+        this.accountRepository
+          .findByName(target)
+          .then(
+            Option.okOr(
+              new AccountNotFoundError('account not found', { cause: null }),
+            ),
+          ),
+      )
+      .addWith('follow', ({ fromAccount, targetAccount }) =>
+        Result.unwrap(
+          AccountFollow.new({
+            fromID: fromAccount.getID(),
+            targetID: targetAccount.getID(),
+            createdAt: new Date(Number(this.clock.now())),
+          }),
+        ),
+      )
+      .runWith(({ follow }) =>
+        monad.map(() => [])(this.followRepository.follow(follow)),
+      )
+      .finish(({ follow }) => follow);
   }
 }
 

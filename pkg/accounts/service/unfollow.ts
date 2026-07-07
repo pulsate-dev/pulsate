@@ -1,5 +1,6 @@
-import { Ether, Option, Result } from '@mikuroxina/mini-fn';
+import { Cat, Ether, Option, Result } from '@mikuroxina/mini-fn';
 
+import { resultPromiseMonad } from '../../internal/monad/mod.js';
 import type { AccountName } from '../model/account.js';
 import { AccountNotFoundError } from '../model/errors.js';
 import {
@@ -19,28 +20,37 @@ export class UnfollowService {
     from: AccountName,
     target: AccountName,
   ): Promise<Option.Option<Error>> {
-    const fromAccount = await this.accountRepository.findByName(from);
-    if (Option.isNone(fromAccount)) {
-      return Option.some(
-        new AccountNotFoundError('from account not found', { cause: null }),
-      );
-    }
-    const targetAccount = await this.accountRepository.findByName(target);
-    if (Option.isNone(targetAccount)) {
-      return Option.some(
-        new AccountNotFoundError('target account not found', { cause: null }),
-      );
-    }
+    const monad = resultPromiseMonad<Error>();
 
-    const res = await this.followRepository.unfollow(
-      fromAccount[1].getID(),
-      targetAccount[1].getID(),
-    );
-    if (Result.isErr(res)) {
-      return Option.some(res[1]);
-    }
+    const res = await Cat.doT(monad)
+      .addM(
+        'fromAccount',
+        this.accountRepository.findByName(from).then(
+          Option.okOr(
+            new AccountNotFoundError('from account not found', {
+              cause: null,
+            }),
+          ),
+        ),
+      )
+      .addM(
+        'targetAccount',
+        this.accountRepository.findByName(target).then(
+          Option.okOr(
+            new AccountNotFoundError('target account not found', {
+              cause: null,
+            }),
+          ),
+        ),
+      )
+      .finishM(({ fromAccount, targetAccount }) =>
+        this.followRepository.unfollow(
+          fromAccount.getID(),
+          targetAccount.getID(),
+        ),
+      );
 
-    return Option.none();
+    return Result.isErr(res) ? Option.some(res[1]) : Option.none();
   }
 }
 

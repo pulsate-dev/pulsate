@@ -1,5 +1,6 @@
-import { Ether, Option, Result } from '@mikuroxina/mini-fn';
+import { Cat, Ether, Option, type Result } from '@mikuroxina/mini-fn';
 
+import { resultPromiseMonad } from '../../internal/monad/mod.js';
 import type { AccountID } from '../model/account.js';
 import { AccountNotFoundError } from '../model/errors.js';
 import { isFollowedBy, isFollowing } from '../model/followDomainService.js';
@@ -27,36 +28,34 @@ export class FetchRelationshipService {
     targetAccountID: AccountID,
     fromAccountID: AccountID,
   ): Promise<Result.Result<Error, AccountRelationships>> {
-    // Check if target account exists
-    const targetAccount =
-      await this.accountRepository.findByID(targetAccountID);
-    if (Option.isNone(targetAccount)) {
-      return Result.err(
-        new AccountNotFoundError('target account not found', { cause: null }),
-      );
-    }
+    const monad = resultPromiseMonad<Error>();
 
-    const followersResult =
-      await this.accountFollowRepository.fetchAllFollowers(fromAccountID);
-    if (Result.isErr(followersResult)) {
-      return Result.err(Result.unwrapErr(followersResult));
-    }
-    const followers = Result.unwrap(followersResult);
-
-    const followingResult =
-      await this.accountFollowRepository.fetchAllFollowing(fromAccountID);
-    if (Result.isErr(followingResult)) {
-      return Result.err(Result.unwrapErr(followingResult));
-    }
-    const following = Result.unwrap(followingResult);
-
-    return Result.ok({
-      id: targetAccountID,
-      isFollowed: isFollowedBy(followers, targetAccountID),
-      isFollowing: isFollowing(following, targetAccountID),
-      // ToDo: implement follow request feature
-      isFollowRequesting: false,
-    });
+    return Cat.doT(monad)
+      .addM(
+        'targetAccount',
+        this.accountRepository.findByID(targetAccountID).then(
+          Option.okOr(
+            new AccountNotFoundError('target account not found', {
+              cause: null,
+            }),
+          ),
+        ),
+      )
+      .addM(
+        'followers',
+        this.accountFollowRepository.fetchAllFollowers(fromAccountID),
+      )
+      .addM(
+        'following',
+        this.accountFollowRepository.fetchAllFollowing(fromAccountID),
+      )
+      .finish(({ followers, following }) => ({
+        id: targetAccountID,
+        isFollowed: isFollowedBy(followers, targetAccountID),
+        isFollowing: isFollowing(following, targetAccountID),
+        // ToDo: implement follow request feature
+        isFollowRequesting: false,
+      }));
   }
 }
 

@@ -1,5 +1,6 @@
-import { Cat, Ether, Option, Result } from '@mikuroxina/mini-fn';
+import { Cat, Ether, Option, type Result } from '@mikuroxina/mini-fn';
 
+import { resultPromiseMonad } from '../../internal/monad/mod.js';
 import type { AccountID, AccountName } from '../model/account.js';
 import { AccountNotFoundError } from '../model/errors.js';
 import type { AccountFollow } from '../model/follow.js';
@@ -26,19 +27,20 @@ export class FetchFollowService {
   async fetchFollowingsByName(
     name: AccountName,
   ): Promise<Result.Result<Error, AccountFollow[]>> {
-    const resId = Cat.cat(await this.accountRepository.findByName(name))
-      .feed(
-        Option.okOr(
-          new AccountNotFoundError('account not found', { cause: null }),
-        ),
+    const monad = resultPromiseMonad<Error>();
+
+    return Cat.doT(monad)
+      .addM(
+        'account',
+        this.accountRepository
+          .findByName(name)
+          .then(
+            Option.okOr(
+              new AccountNotFoundError('account not found', { cause: null }),
+            ),
+          ),
       )
-      .feed(Result.map((a) => a.getID())).value;
-
-    if (Result.isErr(resId)) {
-      return resId;
-    }
-
-    return this.fetchFollowingsByID(resId[1]);
+      .finishM(({ account }) => this.fetchFollowingsByID(account.getID()));
   }
 
   async fetchFollowersByID(
@@ -50,19 +52,20 @@ export class FetchFollowService {
   async fetchFollowersByName(
     name: AccountName,
   ): Promise<Result.Result<Error, AccountFollow[]>> {
-    const resId = Cat.cat(await this.accountRepository.findByName(name))
-      .feed(
-        Option.okOr(
-          new AccountNotFoundError('account not found', { cause: null }),
-        ),
+    const monad = resultPromiseMonad<Error>();
+
+    return Cat.doT(monad)
+      .addM(
+        'account',
+        this.accountRepository
+          .findByName(name)
+          .then(
+            Option.okOr(
+              new AccountNotFoundError('account not found', { cause: null }),
+            ),
+          ),
       )
-      .feed(Result.map((a) => a.getID())).value;
-
-    if (Result.isErr(resId)) {
-      return resId;
-    }
-
-    return this.fetchFollowersByID(resId[1]);
+      .finishM(({ account }) => this.fetchFollowersByID(account.getID()));
   }
 
   async fetchFollowCount(
