@@ -1,8 +1,9 @@
-import { Ether, Option, Result } from '@mikuroxina/mini-fn';
+import { Cat, Ether, Option, Result } from '@mikuroxina/mini-fn';
 import {
   type NotificationModuleFacade,
   notificationModuleFacadeSymbol,
 } from '../../intermodule/notification.js';
+import { resultPromiseMonad } from '../../internal/monad/mod.js';
 import type { AccountName } from '../model/account.js';
 import { AccountNotFoundError } from '../model/errors.js';
 import {
@@ -30,29 +31,34 @@ export class ResendVerifyTokenService {
   }
 
   async handle(name: AccountName): Promise<Option.Option<Error>> {
-    const accountRes = await this.inactiveAccountRepository.findByName(name);
-    if (Option.isNone(accountRes)) {
-      return Option.some(
-        new AccountNotFoundError('account not found', { cause: null }),
-      );
-    }
-    const account = Option.unwrap(accountRes);
+    const monad = resultPromiseMonad<Error>();
 
-    const tokenRes = await this.verifyAccountTokenService.generate(
-      account.getName(),
-    );
-    if (Result.isErr(tokenRes)) {
-      return Option.some(Result.unwrapErr(tokenRes));
-    }
-    const token = Result.unwrap(tokenRes);
+    const res = await Cat.doT(monad)
+      .addM(
+        'account',
+        this.inactiveAccountRepository
+          .findByName(name)
+          .then(
+            Option.okOr(
+              new AccountNotFoundError('account not found', { cause: null }),
+            ),
+          ),
+      )
+      .addMWith('token', ({ account }) =>
+        this.verifyAccountTokenService.generate(account.getName()),
+      )
+      .runWith(({ account, token }) =>
+        this.notificationModule
+          .sendEmailNotification({
+            to: account.getMail(),
+            subject: 'Verify your email address',
+            body: `Please verify your email address using the following token: ${token}`,
+          })
+          .then(() => Result.ok([])),
+      )
+      .finish(() => undefined);
 
-    await this.notificationModule.sendEmailNotification({
-      to: account.getMail(),
-      subject: 'Verify your email address',
-      body: `Please verify your email address using the following token: ${token}`,
-    });
-
-    return Option.none();
+    return Result.isErr(res) ? Option.some(res[1]) : Option.none();
   }
 }
 

@@ -1,5 +1,6 @@
-import { Ether, Option, Result } from '@mikuroxina/mini-fn';
+import { Cat, Ether, Option, Promise, Result } from '@mikuroxina/mini-fn';
 
+import { resultPromiseMonad } from '../../internal/monad/mod.js';
 import {
   type PasswordEncoder,
   passwordEncoderSymbol,
@@ -38,40 +39,48 @@ export class AuthenticateService {
     email: string,
     passphrase: string,
   ): Promise<Result.Result<Error, AuthenticationToken>> {
-    const account = await this.accountRepository.findByMail(email);
-    if (Option.isNone(account)) {
-      return Result.err(
-        new AccountNotFoundError('account not found', { cause: null }),
-      );
-    }
+    const monad = resultPromiseMonad<Error>();
 
-    const isMatch = await this.passwordEncoder.isMatchPassword(
-      passphrase,
-      Option.unwrap(account).getPassphraseHash() ?? '',
-    );
-    if (!isMatch) {
-      return Result.err(
-        new AccountAuthenticationFailedError('Password is incorrect', {
-          cause: null,
-        }),
-      );
-    }
-
-    const authorizationTokenRes =
-      await this.authenticationTokenService.generate(
-        Option.unwrap(account).getID(),
-        Option.unwrap(account).getName(),
-      );
-
-    if (Option.isNone(authorizationTokenRes)) {
-      return Result.err(
-        new AccountInternalError('Failed to generate authorization token', {
-          cause: null,
-        }),
-      );
-    }
-
-    return Result.ok(Option.unwrap(authorizationTokenRes));
+    return Cat.doT(monad)
+      .addM(
+        'account',
+        this.accountRepository
+          .findByMail(email)
+          .then(
+            Option.okOr(
+              new AccountNotFoundError('account not found', { cause: null }),
+            ),
+          ),
+      )
+      .addMWith('isMatch', ({ account }) =>
+        this.passwordEncoder
+          .isMatchPassword(passphrase, account.getPassphraseHash() ?? '')
+          .then(Result.ok),
+      )
+      .when(
+        ({ isMatch }) => !isMatch,
+        () =>
+          Promise.resolve(
+            Result.err(
+              new AccountAuthenticationFailedError('Password is incorrect', {
+                cause: null,
+              }),
+            ),
+          ),
+      )
+      .addMWith('token', ({ account }) =>
+        this.authenticationTokenService
+          .generate(account.getID(), account.getName())
+          .then(
+            Option.okOr(
+              new AccountInternalError(
+                'Failed to generate authorization token',
+                { cause: null },
+              ),
+            ),
+          ),
+      )
+      .finish(({ token }) => token);
   }
 }
 
