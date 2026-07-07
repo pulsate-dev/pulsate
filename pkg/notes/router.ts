@@ -115,7 +115,7 @@ export const GetNoteRoute = createRoute({
   },
   responses: {
     200: okResponse(GetNoteResponseSchema),
-    404: errorResponse('Note not found', NoteNotFound),
+    404: errorResponse('Note not found', NoteNotFound, 'Note not found'),
     500: internalErrorResponse(noteInternalErrorSchema),
   },
 });
@@ -236,7 +236,7 @@ export const CreateBookmarkRoute = createRoute({
   },
   responses: {
     200: okResponse(CreateBookmarkResponseSchema),
-    404: errorResponse('Note not found', NoteNotFound),
+    404: errorResponse('Note not found', NoteNotFound, 'Note not found'),
     500: internalErrorResponse(noteInternalErrorSchema),
   },
 });

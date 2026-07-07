@@ -49,7 +49,7 @@ import {
 
 const accountInternalErrorSchema = z
   .object({ error: InternalError })
-  .openapi('AccountInternalErrorResponse');
+  .openapi('InternalErrorResponse');
 
 const accountNameParams = () =>
   z.object({
@@ -132,7 +132,7 @@ export const UpdateAccountRoute = createRoute({
         },
       },
     },
-    404: errorResponse('Not Found', AccountNotFound),
+    404: errorResponse('Not Found', AccountNotFound, 'account not found'),
     500: internalErrorResponse(accountInternalErrorSchema),
   },
 });
@@ -147,9 +147,13 @@ export const FreezeAccountRoute = createRoute({
   },
   responses: {
     204: noContentResponse('No Content'),
-    400: errorResponse('Bad Request', AlreadyFrozen),
-    403: errorResponse('Forbidden', NoPermission),
-    404: errorResponse('Not Found', AccountNotFound),
+    400: errorResponse('Bad Request', AlreadyFrozen, 'account already frozen'),
+    403: errorResponse(
+      'Forbidden',
+      NoPermission,
+      'You can not do this action.',
+    ),
+    404: errorResponse('Not Found', AccountNotFound, 'account not found'),
     500: internalErrorResponse(accountInternalErrorSchema),
   },
 });
@@ -164,8 +168,12 @@ export const UnFreezeAccountRoute = createRoute({
   },
   responses: {
     204: noContentResponse('No Content'),
-    403: errorResponse('Forbidden', NoPermission),
-    404: errorResponse('Not Found', AccountNotFound),
+    403: errorResponse(
+      'Forbidden',
+      NoPermission,
+      'You can not do this action.',
+    ),
+    404: errorResponse('Not Found', AccountNotFound, 'account not found'),
     500: internalErrorResponse(accountInternalErrorSchema),
   },
 });
@@ -180,9 +188,17 @@ export const ResendVerificationEmailRoute = createRoute({
   },
   responses: {
     204: noContentResponse('No Content'),
-    400: errorResponse('Bad Request', AccountAlreadyVerified),
-    403: errorResponse('Forbidden', NoPermission),
-    404: errorResponse('Not Found', AccountNotFound),
+    400: errorResponse(
+      'Bad Request',
+      AccountAlreadyVerified,
+      'account email is already verified.',
+    ),
+    403: errorResponse(
+      'Forbidden',
+      NoPermission,
+      'You can not do this action.',
+    ),
+    404: errorResponse('Not Found', AccountNotFound, 'account not found'),
     500: internalErrorResponse(accountInternalErrorSchema),
   },
 });
@@ -197,8 +213,12 @@ export const VerifyEmailRoute = createRoute({
   },
   responses: {
     204: noContentResponse('No Content'),
-    400: errorResponse('Bad Request', InvalidEMailVerifyToken),
-    404: errorResponse('Not Found', AccountNotFound),
+    400: errorResponse(
+      'Bad Request',
+      InvalidEMailVerifyToken,
+      'email address token is invalid',
+    ),
+    404: errorResponse('Not Found', AccountNotFound, 'account not found'),
     500: internalErrorResponse(accountInternalErrorSchema),
   },
 });
@@ -212,8 +232,8 @@ export const LoginRoute = createRoute({
   },
   responses: {
     200: okResponse(LoginResponseSchema),
-    400: errorResponse('Bad Request', FailedToLogin),
-    403: errorResponse('Forbidden', YouAreFrozen),
+    400: errorResponse('Bad Request', FailedToLogin, 'failed to login.'),
+    403: errorResponse('Forbidden', YouAreFrozen, 'You can not login.'),
     500: internalErrorResponse(accountInternalErrorSchema),
   },
 });
@@ -273,7 +293,7 @@ export const GetAccountRoute = createRoute({
   },
   responses: {
     200: okResponse(GetAccountResponseSchema),
-    404: errorResponse('Not Found', AccountNotFound),
+    404: errorResponse('Not Found', AccountNotFound, 'account not found'),
     500: internalErrorResponse(accountInternalErrorSchema),
   },
 });
@@ -285,12 +305,23 @@ export const SilenceAccountRoute = createRoute({
   security: bearerAuth(),
   request: {
     params: accountNameParams(),
-    body: jsonBody(z.object({})),
+    body: {
+      content: {
+        'application/json': {
+          // empty body
+          schema: {},
+        },
+      },
+    },
   },
   responses: {
     204: noContentResponse('No Content'),
-    403: errorResponse('Forbidden', NoPermission),
-    404: errorResponse('Not Found', AccountNotFound),
+    403: errorResponse(
+      'Forbidden',
+      NoPermission,
+      'You can not do this action.',
+    ),
+    404: errorResponse('Not Found', AccountNotFound, 'account not found'),
     500: internalErrorResponse(accountInternalErrorSchema),
   },
 });
@@ -302,12 +333,23 @@ export const UnSilenceAccountRoute = createRoute({
   security: bearerAuth(),
   request: {
     params: accountNameParams(),
-    body: jsonBody(z.object({})),
+    body: {
+      content: {
+        'application/json': {
+          // empty body
+          schema: {},
+        },
+      },
+    },
   },
   responses: {
     204: noContentResponse('No Content'),
-    403: errorResponse('Forbidden', NoPermission),
-    404: errorResponse('Not Found', AccountNotFound),
+    403: errorResponse(
+      'Forbidden',
+      NoPermission,
+      'You can not do this action.',
+    ),
+    404: errorResponse('Not Found', AccountNotFound, 'account not found'),
     500: internalErrorResponse(accountInternalErrorSchema),
   },
 });
@@ -319,7 +361,14 @@ export const FollowAccountRoute = createRoute({
   security: bearerAuth(),
   request: {
     params: accountNameParams(),
-    body: jsonBody(z.object({})),
+    body: {
+      content: {
+        'application/json': {
+          // empty body
+          schema: {},
+        },
+      },
+    },
   },
   responses: {
     204: noContentResponse('Accepted(No Content)'),
@@ -337,7 +386,7 @@ export const FollowAccountRoute = createRoute({
         },
       },
     },
-    404: errorResponse('Not Found', AccountNotFound),
+    404: errorResponse('Not Found', AccountNotFound, 'account not found'),
     500: internalErrorResponse(accountInternalErrorSchema),
   },
 });
@@ -349,12 +398,23 @@ export const UnFollowAccountRoute = createRoute({
   security: bearerAuth(),
   request: {
     params: accountNameParams(),
-    body: jsonBody(z.object({})),
+    body: {
+      content: {
+        'application/json': {
+          // empty body
+          schema: {},
+        },
+      },
+    },
   },
   responses: {
     204: noContentResponse('No Content'),
-    400: errorResponse('Bad request', YouAreNotFollowing),
-    404: errorResponse('Not Found', AccountNotFound),
+    400: errorResponse(
+      'Bad request',
+      YouAreNotFollowing,
+      'You are not following specified account.',
+    ),
+    404: errorResponse('Not Found', AccountNotFound, 'account not found'),
     500: internalErrorResponse(accountInternalErrorSchema),
   },
 });
@@ -374,7 +434,7 @@ export const GetAccountFollowingRoute = createRoute({
   },
   responses: {
     200: okResponse(GetAccountFollowingSchema),
-    404: errorResponse('Not Found', AccountNotFound),
+    404: errorResponse('Not Found', AccountNotFound, 'account not found'),
     500: internalErrorResponse(accountInternalErrorSchema),
   },
 });
@@ -394,7 +454,7 @@ export const GetAccountFollowerRoute = createRoute({
   },
   responses: {
     200: okResponse(GetAccountFollowingSchema),
-    404: errorResponse('Not Found', AccountNotFound),
+    404: errorResponse('Not Found', AccountNotFound, 'account not found'),
     500: internalErrorResponse(accountInternalErrorSchema),
   },
 });
@@ -410,7 +470,11 @@ export const SetAccountAvatarRoute = createRoute({
   },
   responses: {
     204: noContentResponse('No Content'),
-    403: errorResponse('Forbidden', NoPermission),
+    403: errorResponse(
+      'Forbidden',
+      NoPermission,
+      'You can not do this action.',
+    ),
     404: {
       description: 'Not Found',
       content: {
@@ -439,8 +503,12 @@ export const UnsetAccountAvatarRoute = createRoute({
   },
   responses: {
     204: noContentResponse('No Content'),
-    403: errorResponse('Forbidden', NoPermission),
-    404: errorResponse('Not Found', AccountNotFound),
+    403: errorResponse(
+      'Forbidden',
+      NoPermission,
+      'You can not do this action.',
+    ),
+    404: errorResponse('Not Found', AccountNotFound, 'account not found'),
     500: internalErrorResponse(accountInternalErrorSchema),
   },
 });
@@ -456,7 +524,11 @@ export const SetAccountHeaderRoute = createRoute({
   },
   responses: {
     204: noContentResponse('No Content'),
-    403: errorResponse('Forbidden', NoPermission),
+    403: errorResponse(
+      'Forbidden',
+      NoPermission,
+      'You can not do this action.',
+    ),
     404: {
       description: 'Not Found',
       content: {
@@ -485,8 +557,12 @@ export const UnsetAccountHeaderRoute = createRoute({
   },
   responses: {
     204: noContentResponse('No Content'),
-    403: errorResponse('Forbidden', NoPermission),
-    404: errorResponse('Not Found', AccountNotFound),
+    403: errorResponse(
+      'Forbidden',
+      NoPermission,
+      'You can not do this action.',
+    ),
+    404: errorResponse('Not Found', AccountNotFound, 'account not found'),
     500: internalErrorResponse(accountInternalErrorSchema),
   },
 });
@@ -506,7 +582,7 @@ export const GetAccountRelationshipsRoute = createRoute({
   },
   responses: {
     200: okResponse(GetAccountRelationshipsResponseSchema),
-    404: errorResponse('Not Found', AccountNotFound),
+    404: errorResponse('Not Found', AccountNotFound, 'account not found'),
     500: internalErrorResponse(accountInternalErrorSchema),
   },
 });

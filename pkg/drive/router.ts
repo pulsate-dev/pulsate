@@ -21,6 +21,9 @@ export const GetMediaRoute = createRoute({
   responses: {
     200: okResponse(GetDriveMediaResponseSchema),
     404: errorResponse('Not found', FileNotFound),
-    500: internalErrorResponse(driveInternalErrorSchema),
+    500: internalErrorResponse(
+      driveInternalErrorSchema,
+      'Internal server error',
+    ),
   },
 });

@@ -186,7 +186,7 @@
           "token": {
             "type": "string",
             "description": "Verification token",
-            "example": "vq34rvyanho10q9hbc98ydbvaervna43r0varhj"
+            "example": "123456"
           }
         },
         "required": [
@@ -436,16 +436,8 @@
                 "type": "object",
                 "properties": {
                   "emoji": {
-                    "anyOf": [
-                      {
-                        "type": "string",
-                        "pattern": "[\\u2700-\\u27BF]|[\\uE000-\\uF8FF]|\\uD83C[\\uDC00-\\uDFFF]|\\uD83D[\\uDC00-\\uDFFF]|[\\u2011-\\u26FF]|\\uD83E[\\uDD10-\\uDDFF]"
-                      },
-                      {
-                        "type": "string",
-                        "pattern": "<:(\\w+):(\\d+)>"
-                      }
-                    ],
+                    "type": "string",
+                    "pattern": "[\\u2700-\\u27BF]|[\\uE000-\\uF8FF]|\\uD83C[\\uDC00-\\uDFFF]|\\uD83D[\\uDC00-\\uDFFF]|[\\u2011-\\u26FF]|\\uD83E[\\uDD10-\\uDDFF]|<:(\\w+):(\\d+)>",
                     "description": "Reaction Emoji (Unicode or Custom Emoji)",
                     "examples": [
                       "🎉",
@@ -674,16 +666,8 @@
                 "type": "object",
                 "properties": {
                   "emoji": {
-                    "anyOf": [
-                      {
-                        "type": "string",
-                        "pattern": "[\\u2700-\\u27BF]|[\\uE000-\\uF8FF]|\\uD83C[\\uDC00-\\uDFFF]|\\uD83D[\\uDC00-\\uDFFF]|[\\u2011-\\u26FF]|\\uD83E[\\uDD10-\\uDDFF]"
-                      },
-                      {
-                        "type": "string",
-                        "pattern": "<:(\\w+):(\\d+)>"
-                      }
-                    ],
+                    "type": "string",
+                    "pattern": "[\\u2700-\\u27BF]|[\\uE000-\\uF8FF]|\\uD83C[\\uDC00-\\uDFFF]|\\uD83D[\\uDC00-\\uDFFF]|[\\u2011-\\u26FF]|\\uD83E[\\uDD10-\\uDDFF]|<:(\\w+):(\\d+)>",
                     "description": "Reaction Emoji (Unicode or Custom Emoji)",
                     "examples": [
                       "🎉",
@@ -1015,16 +999,8 @@
                 "type": "object",
                 "properties": {
                   "emoji": {
-                    "anyOf": [
-                      {
-                        "type": "string",
-                        "pattern": "[\\u2700-\\u27BF]|[\\uE000-\\uF8FF]|\\uD83C[\\uDC00-\\uDFFF]|\\uD83D[\\uDC00-\\uDFFF]|[\\u2011-\\u26FF]|\\uD83E[\\uDD10-\\uDDFF]"
-                      },
-                      {
-                        "type": "string",
-                        "pattern": "<:(\\w+):(\\d+)>"
-                      }
-                    ],
+                    "type": "string",
+                    "pattern": "[\\u2700-\\u27BF]|[\\uE000-\\uF8FF]|\\uD83C[\\uDC00-\\uDFFF]|\\uD83D[\\uDC00-\\uDFFF]|[\\u2011-\\u26FF]|\\uD83E[\\uDD10-\\uDDFF]|<:(\\w+):(\\d+)>",
                     "description": "Reaction Emoji (Unicode or Custom Emoji)",
                     "examples": [
                       "🎉",
@@ -3471,16 +3447,8 @@
                         "type": "object",
                         "properties": {
                           "emoji": {
-                            "anyOf": [
-                              {
-                                "type": "string",
-                                "pattern": "[\\u2700-\\u27BF]|[\\uE000-\\uF8FF]|\\uD83C[\\uDC00-\\uDFFF]|\\uD83D[\\uDC00-\\uDFFF]|[\\u2011-\\u26FF]|\\uD83E[\\uDD10-\\uDDFF]"
-                              },
-                              {
-                                "type": "string",
-                                "pattern": "<:(\\w+):(\\d+)>"
-                              }
-                            ],
+                            "type": "string",
+                            "pattern": "[\\u2700-\\u27BF]|[\\uE000-\\uF8FF]|\\uD83C[\\uDC00-\\uDFFF]|\\uD83D[\\uDC00-\\uDFFF]|[\\u2011-\\u26FF]|\\uD83E[\\uDD10-\\uDDFF]|<:(\\w+):(\\d+)>",
                             "description": "Reaction Emoji (Unicode or Custom Emoji)",
                             "examples": [
                               "🎉",
@@ -3681,17 +3649,11 @@
                         "enum": [
                           "HOME"
                         ]
-                      },
-                      {
-                        "type": "string",
-                        "enum": [
-                          "FOLLOWERS"
-                        ]
                       }
                     ],
                     "default": "PUBLIC",
                     "example": "PUBLIC",
-                    "description": "Note visibility (PUBLIC/HOME/FOLLOWERS)"
+                    "description": "Note visibility (PUBLIC/HOME)"
                   },
                   "attachment_file_ids": {
                     "type": "array",
@@ -4762,16 +4724,8 @@
                           "type": "object",
                           "properties": {
                             "emoji": {
-                              "anyOf": [
-                                {
-                                  "type": "string",
-                                  "pattern": "[\\u2700-\\u27BF]|[\\uE000-\\uF8FF]|\\uD83C[\\uDC00-\\uDFFF]|\\uD83D[\\uDC00-\\uDFFF]|[\\u2011-\\u26FF]|\\uD83E[\\uDD10-\\uDDFF]"
-                                },
-                                {
-                                  "type": "string",
-                                  "pattern": "<:(\\w+):(\\d+)>"
-                                }
-                              ],
+                              "type": "string",
+                              "pattern": "[\\u2700-\\u27BF]|[\\uE000-\\uF8FF]|\\uD83C[\\uDC00-\\uDFFF]|\\uD83D[\\uDC00-\\uDFFF]|[\\u2011-\\u26FF]|\\uD83E[\\uDD10-\\uDDFF]|<:(\\w+):(\\d+)>",
                               "description": "Reaction Emoji (Unicode or Custom Emoji)",
                               "examples": [
                                 "🎉",
@@ -5974,16 +5928,8 @@
                           "type": "object",
                           "properties": {
                             "emoji": {
-                              "anyOf": [
-                                {
-                                  "type": "string",
-                                  "pattern": "[\\u2700-\\u27BF]|[\\uE000-\\uF8FF]|\\uD83C[\\uDC00-\\uDFFF]|\\uD83D[\\uDC00-\\uDFFF]|[\\u2011-\\u26FF]|\\uD83E[\\uDD10-\\uDDFF]"
-                                },
-                                {
-                                  "type": "string",
-                                  "pattern": "<:(\\w+):(\\d+)>"
-                                }
-                              ],
+                              "type": "string",
+                              "pattern": "[\\u2700-\\u27BF]|[\\uE000-\\uF8FF]|\\uD83C[\\uDC00-\\uDFFF]|\\uD83D[\\uDC00-\\uDFFF]|[\\u2011-\\u26FF]|\\uD83E[\\uDD10-\\uDDFF]|<:(\\w+):(\\d+)>",
                               "description": "Reaction Emoji (Unicode or Custom Emoji)",
                               "examples": [
                                 "🎉",

@@ -57,7 +57,8 @@ const timelineFilterQuerySchema = z
   })
   .openapi('TimelineFilterQuerySchema');
 
-const timelineInternalErrorSchema = z
+const timelineInternalErrorSchema = z.object({ error: TimelineInternalError });
+const timelineInternalErrorSchemaWithDesc = z
   .object({ error: TimelineInternalError })
   .openapi({ description: 'Internal server error' });
 
@@ -76,7 +77,7 @@ export const GetHomeTimelineRoute = createRoute({
   responses: {
     200: okResponse(GetHomeTimelineResponseSchema),
     404: errorResponse('Nothing left', NothingLeft),
-    500: internalErrorResponse(timelineInternalErrorSchema),
+    500: internalErrorResponse(timelineInternalErrorSchema, 'Internal error'),
   },
 });
 
@@ -90,7 +91,7 @@ export const GetPublicTimelineRoute = createRoute({
   responses: {
     200: okResponse(GetPublicTimelineResponseSchema),
     404: errorResponse('Nothing left', NothingLeft),
-    500: internalErrorResponse(timelineInternalErrorSchema),
+    500: internalErrorResponse(timelineInternalErrorSchema, 'Internal error'),
   },
 });
 
@@ -111,16 +112,23 @@ export const GetAccountTimelineRoute = createRoute({
       description: 'Account not found',
       content: {
         'application/json': {
-          schema: z.object({
-            error: z.union([AccountNotFound, NothingLeft]).openapi({
-              description: 'Error codes',
-              example: 'ACCOUNT_NOT_FOUND',
+          schema: z
+            .object({
+              error: z.union([AccountNotFound, NothingLeft]).openapi({
+                description: 'Error codes',
+                example: 'ACCOUNT_NOT_FOUND',
+              }),
+            })
+            .openapi({
+              description: 'Account not found',
             }),
-          }),
         },
       },
     },
-    500: internalErrorResponse(timelineInternalErrorSchema),
+    500: internalErrorResponse(
+      timelineInternalErrorSchemaWithDesc,
+      'Internal error',
+    ),
   },
 });
 
@@ -147,7 +155,10 @@ export const GetListTimelineRoute = createRoute({
         },
       },
     },
-    500: internalErrorResponse(timelineInternalErrorSchema),
+    500: internalErrorResponse(
+      timelineInternalErrorSchemaWithDesc,
+      'Internal error',
+    ),
   },
 });
 
@@ -161,8 +172,11 @@ export const CreateListRoute = createRoute({
   },
   responses: {
     200: okResponse(CreateListResponseSchema),
-    400: errorResponse('Bad request', TitleTooLong),
-    500: internalErrorResponse(timelineInternalErrorSchema),
+    400: errorResponse('Bad request', TitleTooLong, 'List title too long'),
+    500: internalErrorResponse(
+      timelineInternalErrorSchemaWithDesc,
+      'Internal error',
+    ),
   },
 });
 
@@ -177,9 +191,16 @@ export const EditListRoute = createRoute({
   },
   responses: {
     200: okResponse(EditListResponseSchema),
-    400: errorResponse('List title too long', TitleTooLong),
     404: errorResponse('List not found', ListNotFound),
-    500: internalErrorResponse(timelineInternalErrorSchema),
+    400: errorResponse(
+      'List title too long',
+      TitleTooLong,
+      'List title too long',
+    ),
+    500: internalErrorResponse(
+      timelineInternalErrorSchemaWithDesc,
+      'Internal error',
+    ),
   },
 });
 
@@ -193,8 +214,11 @@ export const FetchListRoute = createRoute({
   },
   responses: {
     200: okResponse(FetchListResponseSchema),
-    404: errorResponse('List not found', ListNotFound),
-    500: internalErrorResponse(timelineInternalErrorSchema),
+    404: errorResponse('List not found', ListNotFound, 'List not found'),
+    500: internalErrorResponse(
+      timelineInternalErrorSchemaWithDesc,
+      'Internal error',
+    ),
   },
 });
 
@@ -208,8 +232,11 @@ export const DeleteListRoute = createRoute({
   },
   responses: {
     204: noContentResponse('OK'),
-    404: errorResponse('List not found', ListNotFound),
-    500: internalErrorResponse(timelineInternalErrorSchema),
+    404: errorResponse('List not found', ListNotFound, 'List not found'),
+    500: internalErrorResponse(
+      timelineInternalErrorSchemaWithDesc,
+      'Internal error',
+    ),
   },
 });
 
@@ -219,8 +246,11 @@ export const GetListMemberRoute = createRoute({
   path: '/v0/lists/:id/members',
   responses: {
     200: okResponse(GetListMemberResponseSchema),
-    404: errorResponse('List not found', ListNotFound),
-    500: internalErrorResponse(timelineInternalErrorSchema),
+    404: errorResponse('List not found', ListNotFound, 'List not found'),
+    500: internalErrorResponse(
+      timelineInternalErrorSchemaWithDesc,
+      'Internal error',
+    ),
   },
 });
 
@@ -311,7 +341,7 @@ export const GetBookmarkTimelineRoute = createRoute({
   responses: {
     200: okResponse(GetHomeTimelineResponseSchema),
     404: errorResponse('Nothing left', NothingLeft),
-    500: internalErrorResponse(timelineInternalErrorSchema),
+    500: internalErrorResponse(timelineInternalErrorSchema, 'Internal error'),
   },
 });
 
@@ -322,6 +352,6 @@ export const GetConversationRoute = createRoute({
   request: {},
   responses: {
     200: okResponse(GetConversationsResponseSchema),
-    500: internalErrorResponse(timelineInternalErrorSchema),
+    500: internalErrorResponse(timelineInternalErrorSchema, 'Internal error'),
   },
 });

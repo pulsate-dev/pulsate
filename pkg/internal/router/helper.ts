@@ -29,17 +29,19 @@ export const noContentResponse = (
 
 export const internalErrorResponse = <S>(
   internalErrorSchema: S,
+  description = 'Internal Server Error',
 ): {
   description: string;
   content: { 'application/json': { schema: S } };
 } => ({
-  description: 'Internal Server Error',
+  description,
   content: { 'application/json': { schema: internalErrorSchema } },
 });
 
 export const errorResponse = <E>(
   description: string,
   error: E,
+  schemaDescription?: string,
 ): {
   description: string;
   content: { 'application/json': { schema: ReturnType<typeof z.object> } };
@@ -47,7 +49,10 @@ export const errorResponse = <E>(
   description,
   content: {
     'application/json': {
-      schema: z.object({ error }),
+      schema:
+        schemaDescription !== undefined
+          ? z.object({ error }).openapi({ description: schemaDescription })
+          : z.object({ error }),
     },
   },
 });
