@@ -58,7 +58,7 @@ export class ResendVerifyTokenService {
       )
       .finish(() => undefined);
 
-    return Result.isErr(res) ? Option.some(res[1]) : Option.none();
+    return Result.optionErr(res);
   }
 }
 
