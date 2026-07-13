@@ -1,6 +1,7 @@
-import { Ether, Option, Result } from '@mikuroxina/mini-fn';
+import { Cat, Ether, Option, Promise, Result } from '@mikuroxina/mini-fn';
 
 import { type Clock, clockSymbol } from '../../internal/id/mod.js';
+import { resultPromiseMonad } from '../../internal/monad/mod.js';
 import type { AccountName } from '../model/account.js';
 import {
   AccountMailAddressVerificationTokenInvalidError,
@@ -27,98 +28,107 @@ export class VerifyAccountTokenService {
   async generate(
     accountName: AccountName,
   ): Promise<Result.Result<Error, string>> {
+    const monad = resultPromiseMonad<Error>();
     // expireDate: After 7 days
     const expireDate = new Date(
       Number(this.clock.now()) + 7 * 24 * 60 * 60 * 1000,
     );
 
-    const account =
-      await this.inactiveAccountRepository.findByName(accountName);
-    if (Option.isNone(account)) {
-      return Result.err(
-        new AccountNotFoundError('account not found', { cause: null }),
-      );
-    }
-
-    const token = VerifyToken.new(account[1].getID(), expireDate);
-
-    const res = await this.repository.create(
-      token.getAccountID(),
-      token.getToken(),
-      token.getExpire(),
-    );
-    if (Result.isErr(res)) {
-      return Result.err(res[1]);
-    }
-
-    return Result.ok(token.getToken());
+    return Cat.doT(monad)
+      .addM(
+        'account',
+        this.inactiveAccountRepository
+          .findByName(accountName)
+          .then(
+            Option.okOr(
+              new AccountNotFoundError('account not found', { cause: null }),
+            ),
+          ),
+      )
+      .addWith('token', ({ account }) =>
+        VerifyToken.new(account.getID(), expireDate),
+      )
+      .runWith(({ token }) =>
+        monad.map(() => [])(
+          this.repository.create(
+            token.getAccountID(),
+            token.getToken(),
+            token.getExpire(),
+          ),
+        ),
+      )
+      .finish(({ token }) => token.getToken());
   }
 
   async verify(
     accountName: AccountName,
     token: string,
   ): Promise<Result.Result<Error, void>> {
-    const inactiveAccountRes =
-      await this.inactiveAccountRepository.findByName(accountName);
-    if (Option.isNone(inactiveAccountRes)) {
-      return Result.err(
-        new AccountNotFoundError('account not found', { cause: null }),
-      );
-    }
-    const inactiveAccount = Option.unwrap(inactiveAccountRes);
+    const monad = resultPromiseMonad<Error>();
 
-    const tokenRes = await this.repository.findByID(inactiveAccount.getID());
-    if (Option.isNone(tokenRes)) {
-      return Result.err(
-        new AccountNotFoundError('account not found', { cause: null }),
-      );
-    }
-    const verifyToken = Option.unwrap(tokenRes);
-
-    if (verifyToken.isExpired(new Date())) {
-      return Result.err(
-        new AccountMailAddressVerificationTokenInvalidError('Token expired', {
-          cause: null,
-        }),
-      );
-    }
-
-    if (!verifyToken.matches(token)) {
-      return Result.err(
-        new AccountMailAddressVerificationTokenInvalidError('Token not match', {
-          cause: null,
-        }),
-      );
-    }
-
-    const deleteTokenRes = await this.repository.delete(
-      inactiveAccount.getID(),
-    );
-    if (Result.isErr(deleteTokenRes)) {
-      return deleteTokenRes;
-    }
-
-    const activateRes = inactiveAccount.activate({
-      createdAt: new Date(Number(this.clock.now())),
-    });
-    if (Result.isErr(activateRes)) {
-      return Result.err(activateRes[1]);
-    }
-    const account = Result.unwrap(activateRes);
-
-    const createRes = await this.accountRepository.create(account);
-    if (Result.isErr(createRes)) {
-      return createRes;
-    }
-
-    const deleteInactiveRes = await this.inactiveAccountRepository.delete(
-      inactiveAccount.getID(),
-    );
-    if (Result.isErr(deleteInactiveRes)) {
-      return deleteInactiveRes;
-    }
-
-    return Result.ok(undefined);
+    return Cat.doT(monad)
+      .addM(
+        'inactiveAccount',
+        this.inactiveAccountRepository
+          .findByName(accountName)
+          .then(
+            Option.okOr(
+              new AccountNotFoundError('account not found', { cause: null }),
+            ),
+          ),
+      )
+      .addMWith('verifyToken', ({ inactiveAccount }) =>
+        this.repository
+          .findByID(inactiveAccount.getID())
+          .then(
+            Option.okOr(
+              new AccountNotFoundError('account not found', { cause: null }),
+            ),
+          ),
+      )
+      .when(
+        ({ verifyToken }) => verifyToken.isExpired(new Date()),
+        () =>
+          Promise.resolve(
+            Result.err(
+              new AccountMailAddressVerificationTokenInvalidError(
+                'Token expired',
+                { cause: null },
+              ),
+            ),
+          ),
+      )
+      .when(
+        ({ verifyToken }) => !verifyToken.matches(token),
+        () =>
+          Promise.resolve(
+            Result.err(
+              new AccountMailAddressVerificationTokenInvalidError(
+                'Token not match',
+                { cause: null },
+              ),
+            ),
+          ),
+      )
+      .runWith(({ inactiveAccount }) =>
+        monad.map(() => [])(this.repository.delete(inactiveAccount.getID())),
+      )
+      .addMWith('account', ({ inactiveAccount }) =>
+        Promise.resolve(
+          inactiveAccount.activate({
+            createdAt: new Date(Number(this.clock.now())),
+          }),
+        ),
+      )
+      .runWith(({ account }) =>
+        monad.map(() => [])(this.accountRepository.create(account)),
+      )
+      .runWith(({ inactiveAccount }) =>
+        monad.map(() => [])(
+          this.inactiveAccountRepository.delete(inactiveAccount.getID()),
+        ),
+      )
+      .finish(() => undefined);
   }
 }
 

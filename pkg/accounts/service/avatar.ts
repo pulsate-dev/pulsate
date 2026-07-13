@@ -1,9 +1,10 @@
-import { Ether, Result } from '@mikuroxina/mini-fn';
+import { Cat, Ether, Promise, Result } from '@mikuroxina/mini-fn';
 import type { Medium, MediumID } from '../../drive/model/medium.js';
 import {
   type MediaModuleFacade,
   mediaModuleFacadeSymbol,
 } from '../../intermodule/media.js';
+import { resultPromiseMonad } from '../../internal/monad/mod.js';
 import type { AccountID } from '../model/account.js';
 import { AccountInsufficientPermissionError } from '../model/errors.js';
 import {
@@ -34,35 +35,37 @@ export class AccountAvatarService {
     mediumID: MediumID,
     actorID: AccountID,
   ): Promise<Result.Result<Error, void>> {
-    const mediumRes = await this.mediaModule.fetchMedia(mediumID);
-    if (Result.isErr(mediumRes)) {
-      return mediumRes;
-    }
-    const medium = Result.unwrap(mediumRes);
-    if (medium.isNsfw()) {
-      return Result.err(
-        new AccountInsufficientPermissionError(
-          "NSFW media can't be used as avatar image",
-          { cause: null },
-        ),
-      );
-    }
+    const monad = resultPromiseMonad<Error>();
+
     // ToDo: Check media type
-
-    const isAllowedRes = this.isAllowed('set', actorID, {
-      targetAccount: accountID,
-      medium,
-    });
-    if (Result.isErr(isAllowedRes)) {
-      return isAllowedRes;
-    }
-
-    const res = await this.avatarRepository.create(accountID, mediumID);
-    if (Result.isErr(res)) {
-      return res;
-    }
-
-    return Result.ok(undefined);
+    return Cat.doT(monad)
+      .addM('medium', this.mediaModule.fetchMedia(mediumID))
+      .when(
+        ({ medium }) => medium.isNsfw(),
+        () =>
+          Promise.resolve(
+            Result.err(
+              new AccountInsufficientPermissionError(
+                "NSFW media can't be used as avatar image",
+                { cause: null },
+              ),
+            ),
+          ),
+      )
+      .runWith(({ medium }) =>
+        monad.map(() => [])(
+          Promise.resolve(
+            this.isAllowed('set', actorID, {
+              targetAccount: accountID,
+              medium,
+            }),
+          ),
+        ),
+      )
+      .runWith(() =>
+        monad.map(() => [])(this.avatarRepository.create(accountID, mediumID)),
+      )
+      .finish(() => undefined);
   }
 
   /**
@@ -74,19 +77,20 @@ export class AccountAvatarService {
     accountID: AccountID,
     actorID: AccountID,
   ): Promise<Result.Result<Error, void>> {
-    const isAllowedRes = this.isAllowed('unset', actorID, {
-      targetAccount: accountID,
-    });
-    if (Result.isErr(isAllowedRes)) {
-      return isAllowedRes;
-    }
+    const monad = resultPromiseMonad<Error>();
 
-    const res = await this.avatarRepository.delete(accountID);
-    if (Result.isErr(res)) {
-      return res;
-    }
-
-    return Result.ok(undefined);
+    return Cat.doT(monad)
+      .runWith(() =>
+        monad.map(() => [])(
+          Promise.resolve(
+            this.isAllowed('unset', actorID, { targetAccount: accountID }),
+          ),
+        ),
+      )
+      .runWith(() =>
+        monad.map(() => [])(this.avatarRepository.delete(accountID)),
+      )
+      .finish(() => undefined);
   }
 
   /**

@@ -1,5 +1,6 @@
-import { Ether, Option, Result } from '@mikuroxina/mini-fn';
+import { Cat, Ether, Option, Promise, Result } from '@mikuroxina/mini-fn';
 
+import { resultPromiseMonad } from '../../internal/monad/mod.js';
 import type { Account, AccountName } from '../model/account.js';
 import { AccountNotFoundError } from '../model/errors.js';
 import {
@@ -14,68 +15,55 @@ export class FreezeService {
     targetName: AccountName,
     actorName: AccountName,
   ): Promise<Result.Result<Error, boolean>> {
-    const accountRes = await this.accountRepository.findByName(targetName);
-    if (Option.isNone(accountRes)) {
-      return Result.err(
-        new AccountNotFoundError('account not found', { cause: null }),
-      );
-    }
-    const account = Option.unwrap(accountRes);
-    const actorRes = await this.accountRepository.findByName(actorName);
-    if (Option.isNone(actorRes)) {
-      return Result.err(
-        new AccountNotFoundError('actor not found', { cause: null }),
-      );
-    }
-    const actor = Option.unwrap(actorRes);
+    const monad = resultPromiseMonad<Error>();
 
-    if (!this.isAllowed('freeze', actor, account)) {
-      return Result.err(new Error('not allowed'));
-    }
-
-    const setResult = account.setFreeze();
-    if (Result.isErr(setResult)) {
-      return setResult;
-    }
-    const saveResult = await this.accountRepository.edit(account);
-    if (Result.isErr(saveResult)) {
-      return saveResult;
-    }
-    return Result.ok(true);
+    return Cat.doT(monad)
+      .addM('account', this.findAccount(targetName, 'account not found'))
+      .addM('actor', this.findAccount(actorName, 'actor not found'))
+      .when(
+        ({ account, actor }) => !this.isAllowed('freeze', actor, account),
+        () => Promise.resolve(Result.err(new Error('not allowed'))),
+      )
+      .runWith(({ account }) =>
+        monad.map(() => [])(Promise.resolve(account.setFreeze())),
+      )
+      .runWith(({ account }) =>
+        monad.map(() => [])(this.accountRepository.edit(account)),
+      )
+      .finish(() => true);
   }
 
   async undoFreeze(
     targetName: AccountName,
     actorName: AccountName,
   ): Promise<Result.Result<Error, boolean>> {
-    const accountRes = await this.accountRepository.findByName(targetName);
-    if (Option.isNone(accountRes)) {
-      return Result.err(
-        new AccountNotFoundError('account not found', { cause: null }),
-      );
-    }
-    const account = Option.unwrap(accountRes);
-    const actorRes = await this.accountRepository.findByName(actorName);
-    if (Option.isNone(actorRes)) {
-      return Result.err(
-        new AccountNotFoundError('actor not found', { cause: null }),
-      );
-    }
-    const actor = Option.unwrap(actorRes);
+    const monad = resultPromiseMonad<Error>();
 
-    if (!this.isAllowed('unFreeze', actor, account)) {
-      return Result.err(new Error('not allowed'));
-    }
+    return Cat.doT(monad)
+      .addM('account', this.findAccount(targetName, 'account not found'))
+      .addM('actor', this.findAccount(actorName, 'actor not found'))
+      .when(
+        ({ account, actor }) => !this.isAllowed('unFreeze', actor, account),
+        () => Promise.resolve(Result.err(new Error('not allowed'))),
+      )
+      .runWith(({ account }) =>
+        monad.map(() => [])(Promise.resolve(account.setUnfreeze())),
+      )
+      .runWith(({ account }) =>
+        monad.map(() => [])(this.accountRepository.edit(account)),
+      )
+      .finish(() => true);
+  }
 
-    const setResult = account.setUnfreeze();
-    if (Result.isErr(setResult)) {
-      return setResult;
-    }
-    const saveResult = await this.accountRepository.edit(account);
-    if (Result.isErr(saveResult)) {
-      return saveResult;
-    }
-    return Result.ok(true);
+  private findAccount(
+    name: AccountName,
+    notFoundMessage: string,
+  ): Promise<Result.Result<Error, Account>> {
+    return this.accountRepository
+      .findByName(name)
+      .then(
+        Option.okOr(new AccountNotFoundError(notFoundMessage, { cause: null })),
+      );
   }
 
   private isAllowed(

@@ -1,4 +1,4 @@
-import { Ether, Option, Result } from '@mikuroxina/mini-fn';
+import { Cat, Ether, Option, Promise, Result } from '@mikuroxina/mini-fn';
 import {
   type NotificationModuleFacade,
   notificationModuleFacadeSymbol,
@@ -7,6 +7,7 @@ import {
   type SnowflakeIDGenerator,
   snowflakeIDGeneratorSymbol,
 } from '../../internal/id/mod.js';
+import { resultPromiseMonad } from '../../internal/monad/mod.js';
 import {
   type PasswordEncoder,
   passwordEncoderSymbol,
@@ -61,58 +62,57 @@ export class RegisterService {
     passphrase: string,
     role: AccountRole,
   ): Promise<Result.Result<Error, InactiveAccount>> {
-    if (await this.isExists(mail, name)) {
-      return Result.err(
-        new AccountAlreadyExistsError('account already exists'),
-      );
-    }
-
-    const validateResult = Account.validatePassphrase(passphrase);
-    if (Result.isErr(validateResult)) {
-      return validateResult;
-    }
-
-    const passphraseHash =
-      await this.passwordEncoder.encodePassword(passphrase);
-    const generatedIDRes = this.snowflakeIDGenerator.generate<Account>();
-    if (Result.isErr(generatedIDRes)) {
-      return generatedIDRes;
-    }
-    const generatedID = Result.unwrap(generatedIDRes);
-
-    const accountRes = InactiveAccount.new({
-      id: generatedID,
-      name,
-      mail,
-      passphraseHash,
-      role,
-    });
-    if (Result.isErr(accountRes)) {
-      return accountRes;
-    }
-    const account = Result.unwrap(accountRes);
-
-    const res = await this.inactiveAccountRepository.create(account);
-    if (Result.isErr(res)) {
-      return res;
-    }
-
-    const tokenRes = await this.verifyAccountTokenService.generate(
-      account.getName(),
-    );
-    if (Result.isErr(tokenRes)) {
-      return tokenRes;
-    }
-    const token = Result.unwrap(tokenRes);
+    const monad = resultPromiseMonad<Error>();
 
     // ToDo: Notification Body
-    await this.notificationModule.sendEmailNotification({
-      to: mail,
-      subject: 'Verify your email address',
-      body: `token: ${token}`,
-    });
-
-    return Result.ok(account);
+    return Cat.doT(monad)
+      .addMWith('exists', () => this.isExists(mail, name).then(Result.ok))
+      .when(
+        ({ exists }) => exists,
+        () =>
+          Promise.resolve(
+            Result.err(new AccountAlreadyExistsError('account already exists')),
+          ),
+      )
+      .runWith(() =>
+        monad.map(() => [])(
+          Promise.resolve(Account.validatePassphrase(passphrase)),
+        ),
+      )
+      .addMWith('passphraseHash', () =>
+        this.passwordEncoder.encodePassword(passphrase).then(Result.ok),
+      )
+      .addM(
+        'generatedID',
+        Promise.resolve(this.snowflakeIDGenerator.generate<Account>()),
+      )
+      .addMWith('account', ({ generatedID, passphraseHash }) =>
+        Promise.resolve(
+          InactiveAccount.new({
+            id: generatedID,
+            name,
+            mail,
+            passphraseHash,
+            role,
+          }),
+        ),
+      )
+      .runWith(({ account }) =>
+        monad.map(() => [])(this.inactiveAccountRepository.create(account)),
+      )
+      .addMWith('token', ({ account }) =>
+        this.verifyAccountTokenService.generate(account.getName()),
+      )
+      .runWith(({ token }) =>
+        this.notificationModule
+          .sendEmailNotification({
+            to: mail,
+            subject: 'Verify your email address',
+            body: `token: ${token}`,
+          })
+          .then(() => Result.ok([])),
+      )
+      .finish(({ account }) => account);
   }
 
   private async isExists(mail: string, name: string): Promise<boolean> {
