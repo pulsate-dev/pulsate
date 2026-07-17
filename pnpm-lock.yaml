@@ -33,8 +33,8 @@ importers:
         specifier: 0.5.0
         version: 0.5.0
       '@upyo/smtp':
-        specifier: 0.4.0
-        version: 0.4.0(@upyo/core@0.5.0)
+        specifier: 0.5.0
+        version: 0.5.0(@upyo/core@0.5.0)
       argon2:
         specifier: 0.44.0
         version: 0.44.0
@@ -1077,11 +1077,11 @@ packages:
     resolution: {integrity: sha512-i7uwJtiQiUQ4cYx2BGy4hA3iM9Fh7XHEb6s2BxBDbNj8LAkcQYWF2o1rca/mIZP/rgbeGhCVNPY9tKYEBNUV+g==}
     engines: {bun: '>=1.2.0', deno: '>=2.3.0', node: '>=20.0.0'}
 
-  '@upyo/smtp@0.4.0':
-    resolution: {integrity: sha512-YOlbWilM7j6gn3AW0dVIknS6RWmPIxnPc1g6iBCXLh3MylRVGrjXtmCJwS/ueCLXTQRoVv6TRd39a+kiImE6dw==}
+  '@upyo/smtp@0.5.0':
+    resolution: {integrity: sha512-NjRHQN8n9AnyKYLQFOTe/c1ODd58Vv++423RAWnj6GbhGweqM1RatxvwJF4GZCwSM/Z/L0Ef7bmmLFb+gqjjZQ==}
     engines: {bun: '>=1.2.0', deno: '>=2.3.0', node: '>=20.0.0'}
     peerDependencies:
-      '@upyo/core': 0.4.0
+      '@upyo/core': 0.5.0
 
   '@vitest/coverage-v8@4.1.10':
     resolution: {integrity: sha512-IM49HmthevbgAO4anp1hwtoT9wYe59w0LR00gr+eagHE+ZJ5lK4sLPeO0ubgoJcwLk6dehU3R24N+FbEEKDc8g==}
@@ -2527,7 +2527,7 @@ snapshots:
 
   '@upyo/core@0.5.0': {}
 
-  '@upyo/smtp@0.4.0(@upyo/core@0.5.0)':
+  '@upyo/smtp@0.5.0(@upyo/core@0.5.0)':
     dependencies:
       '@upyo/core': 0.5.0
 
