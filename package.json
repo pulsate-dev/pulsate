@@ -60,10 +60,12 @@
     "@biomejs/biome": "^2.0.0",
     "@ls-lint/ls-lint": "^2.2.3",
     "@types/node": "^26.0.0",
+    "@types/pacote": "^11.1.8",
     "@types/pg": "^8.15.6",
     "@vitest/coverage-v8": "^4.0.0",
     "esbuild": "^0.28.0",
     "lefthook": "^2.0.0",
+    "pacote": "^22.0.0",
     "typescript": "^6.0.0",
     "vitest": "^4.0.0"
   }
