@@ -12,3 +12,4 @@ coverage/
 drive/*.jpg
 drive/*.webp
 pkg/adaptors/prisma/
+resources/api-schema/schema.json
