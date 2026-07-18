@@ -17,7 +17,7 @@
   "scripts": {
     "start": "node --env-file=.env --enable-source-maps ./build/main.js",
     "build": "esbuild main.ts --outdir=build --bundle --format=esm --platform=node --packages=external",
-    "build:api": "node ./build/scripts/apidoc.js",
+    "build:api": "mkdir -p build/scripts && cp scripts/apidoc.ts build/scripts/apidoc.ts && node build/scripts/apidoc.ts",
     "build:prisma": "prisma generate",
     "clean": "rm -r ./build",
     "format": "biome format --write .",
@@ -60,10 +60,12 @@
     "@biomejs/biome": "^2.0.0",
     "@ls-lint/ls-lint": "^2.2.3",
     "@types/node": "^26.0.0",
+    "@types/pacote": "^11.1.8",
     "@types/pg": "^8.15.6",
     "@vitest/coverage-v8": "^4.0.0",
     "esbuild": "^0.28.0",
     "lefthook": "^2.0.0",
+    "pacote": "^22.0.0",
     "typescript": "^6.0.0",
     "vitest": "^4.0.0"
   }

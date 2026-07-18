@@ -1,0 +1,80 @@
+name: Publish API Schema
+
+on:
+  pull_request:
+  workflow_dispatch:
+
+# Serialize runs: two concurrent runs could read the same "latest published
+# version", compute the same next patch, and race on `npm publish`.
+concurrency:
+  group: publish-api-schema
+
+# NOTE: id-token/attestations are required for npm Trusted Publishing and
+# provenance. GitHub only grants these to same-repo pull_request runs; forked
+# PRs are downgraded to read-only regardless of this block, so this workflow
+# cannot publish from an untrusted fork.
+permissions:
+  contents: read
+  id-token: write
+  attestations: write
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@0ebf47130e4866e96fce0953f49152a61190b271 # v6.0.9
+
+      - name: Setup Node.js
+        uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38 # v6.5.0
+        with:
+          node-version-file: '.tool-versions'
+          cache: 'pnpm'
+          registry-url: 'https://registry.npmjs.org'
+          scope: '@pulsate-dev'
+
+      # setup-node's `registry-url` always writes an `_authToken` line to
+      # .npmrc, even when no NODE_AUTH_TOKEN is set. An empty token line
+      # makes npm think auth is already configured and it skips the OIDC
+      # Trusted Publishing exchange entirely (actions/setup-node#1551).
+      - name: Remove empty npm auth token placeholder
+        run: sed -i '/_authToken/d' "${NPM_CONFIG_USERCONFIG:-$HOME/.npmrc}"
+
+      - name: Run install
+        run: pnpm i --frozen-lockfile
+
+      - name: Run build
+        run: pnpm build
+
+      - name: Generate API schema
+        run: pnpm run build:api
+
+      - name: Check for schema changes
+        id: diff
+        run: node scripts/checkApiSchemaChanged.ts
+
+      - name: Bump patch version
+        if: steps.diff.outputs.changed == 'true'
+        id: version
+        env:
+          LATEST_VERSION: ${{ steps.diff.outputs.latest_version }}
+        run: node scripts/bumpApiSchemaVersion.ts
+
+      # Auth is via npm Trusted Publishing (OIDC): no NPM_TOKEN/NODE_AUTH_TOKEN
+      # secret is used, so there is no long-lived publish credential to leak.
+      # Requires the package's "Trusted Publisher" to be configured on
+      # npmjs.com to this repo + this workflow file beforehand.
+      - name: Publish
+        if: steps.diff.outputs.changed == 'true'
+        id: publish
+        working-directory: resources/api-schema
+        run: npm publish --provenance
+
+      - name: Attest build provenance
+        if: steps.diff.outputs.changed == 'true'
+        uses: actions/attest-build-provenance@0f67c3f4856b2e3261c31976d6725780e5e4c373 # v4.1.1
+        with:
+          subject-path: resources/api-schema/schema.json

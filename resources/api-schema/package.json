@@ -1,0 +1,20 @@
+{
+  "name": "@pulsate-dev/api-schema",
+  "version": "0.1.0",
+  "description": "OpenAPI schema for the Pulsate API",
+  "license": "Apache-2.0",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/pulsate-dev/pulsate.git",
+    "directory": "resources/api-schema"
+  },
+  "publishConfig": {
+    "access": "public",
+    "registry": "https://registry.npmjs.org",
+    "provenance": true
+  },
+  "files": [
+    "schema.json",
+    "README.md"
+  ]
+}
