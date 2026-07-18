@@ -11,22 +11,19 @@ describe('checkVisibilityForSilencedActor', () => {
     expect(Result.unwrapErr(res)).toBeInstanceOf(NoteAccountSilencedError);
   });
 
-  it.each([
-    'HOME',
-    'FOLLOWERS',
-    'DIRECT',
-  ] as const)('allows %s visibility for a silenced actor', (visibility) => {
-    const res = checkVisibilityForSilencedActor(true, visibility);
-    expect(Result.isOk(res)).toBe(true);
-  });
+  it.each(['HOME', 'FOLLOWERS', 'DIRECT'] as const)(
+    'allows %s visibility for a silenced actor',
+    (visibility) => {
+      const res = checkVisibilityForSilencedActor(true, visibility);
+      expect(Result.isOk(res)).toBe(true);
+    },
+  );
 
-  it.each([
-    'PUBLIC',
-    'HOME',
-    'FOLLOWERS',
-    'DIRECT',
-  ] as const)('allows %s visibility for a non-silenced actor', (visibility) => {
-    const res = checkVisibilityForSilencedActor(false, visibility);
-    expect(Result.isOk(res)).toBe(true);
-  });
+  it.each(['PUBLIC', 'HOME', 'FOLLOWERS', 'DIRECT'] as const)(
+    'allows %s visibility for a non-silenced actor',
+    (visibility) => {
+      const res = checkVisibilityForSilencedActor(false, visibility);
+      expect(Result.isOk(res)).toBe(true);
+    },
+  );
 });

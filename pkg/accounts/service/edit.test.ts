@@ -79,17 +79,17 @@ describe('EditService', () => {
         name: '@foo@example.com' as const,
         nickname: 'new nickname',
       },
-    ])('should be fail to update nickname when $title', async ({
-      name,
-      nickname,
-    }) => {
-      const updateRes = await editService.editNickname(
-        name ?? '@john@example.com',
-        nickname,
-        name ?? '@john@example.com',
-      );
-      expect(Result.isErr(updateRes)).toBe(true);
-    });
+    ])(
+      'should be fail to update nickname when $title',
+      async ({ name, nickname }) => {
+        const updateRes = await editService.editNickname(
+          name ?? '@john@example.com',
+          nickname,
+          name ?? '@john@example.com',
+        );
+        expect(Result.isErr(updateRes)).toBe(true);
+      },
+    );
   });
 
   describe('passphrase', () => {
@@ -140,18 +140,18 @@ describe('EditService', () => {
         name: '@foo@example.com' as const,
         passphrase: 'new password',
       },
-    ])('should be failed to update passphrase when $title', async ({
-      name,
-      passphrase,
-    }) => {
-      const updateRes = await editService.editPassphrase(
-        name ?? '@john@example.com',
-        passphrase,
-        name ?? '@john@example.com',
-      );
+    ])(
+      'should be failed to update passphrase when $title',
+      async ({ name, passphrase }) => {
+        const updateRes = await editService.editPassphrase(
+          name ?? '@john@example.com',
+          passphrase,
+          name ?? '@john@example.com',
+        );
 
-      expect(Result.isErr(updateRes)).toBe(true);
-    });
+        expect(Result.isErr(updateRes)).toBe(true);
+      },
+    );
   });
 
   describe('email', () => {
@@ -197,17 +197,17 @@ describe('EditService', () => {
         title: 'too long',
         email: 'a'.repeat(320),
       },
-    ])('should be fail to update email when $title', async ({
-      name,
-      email,
-    }) => {
-      const updateRes = await editService.editEmail(
-        name ?? '@john@example.com',
-        email,
-        name ?? '@john@example.com',
-      );
-      expect(Result.isErr(updateRes)).toBe(true);
-    });
+    ])(
+      'should be fail to update email when $title',
+      async ({ name, email }) => {
+        const updateRes = await editService.editEmail(
+          name ?? '@john@example.com',
+          email,
+          name ?? '@john@example.com',
+        );
+        expect(Result.isErr(updateRes)).toBe(true);
+      },
+    );
   });
 
   describe('bio', () => {
