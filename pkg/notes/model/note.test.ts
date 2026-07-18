@@ -258,34 +258,34 @@ describe('Note', () => {
       );
     });
 
-    it.each([
-      'FOLLOWERS',
-      'DIRECT',
-    ] as const)('renote/quote visibility must be PUBLIC or HOME (rejects %s)', (visibility) => {
-      const res = Note.new({
-        ...exampleInput,
-        visibility,
-        sendTo:
-          visibility === 'DIRECT'
-            ? Option.some('999' as AccountID)
-            : Option.none(),
-        originalNoteID: Option.some('100' as NoteID),
-      });
+    it.each(['FOLLOWERS', 'DIRECT'] as const)(
+      'renote/quote visibility must be PUBLIC or HOME (rejects %s)',
+      (visibility) => {
+        const res = Note.new({
+          ...exampleInput,
+          visibility,
+          sendTo:
+            visibility === 'DIRECT'
+              ? Option.some('999' as AccountID)
+              : Option.none(),
+          originalNoteID: Option.some('100' as NoteID),
+        });
 
-      expect(Result.isErr(res)).toBe(true);
-    });
+        expect(Result.isErr(res)).toBe(true);
+      },
+    );
   });
 
   describe('canBeRenotedBy', () => {
     const author = '2' as AccountID;
 
-    it.each([
-      'PUBLIC',
-      'HOME',
-    ] as const)('%s note can be renoted by anyone', (visibility) => {
-      const note = Result.unwrap(Note.new({ ...exampleInput, visibility }));
-      expect(Result.isOk(note.canBeRenotedBy('999' as AccountID))).toBe(true);
-    });
+    it.each(['PUBLIC', 'HOME'] as const)(
+      '%s note can be renoted by anyone',
+      (visibility) => {
+        const note = Result.unwrap(Note.new({ ...exampleInput, visibility }));
+        expect(Result.isOk(note.canBeRenotedBy('999' as AccountID))).toBe(true);
+      },
+    );
 
     it('FOLLOWERS note can be renoted by its author', () => {
       const note = Result.unwrap(
