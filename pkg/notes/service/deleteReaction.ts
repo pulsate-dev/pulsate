@@ -11,10 +11,15 @@ import {
 } from '../model/repository.js';
 
 export class DeleteReactionService {
+  readonly #reactionRepository: ReactionRepository;
+  readonly #noteRepository: NoteRepository;
   constructor(
-    private readonly reactionRepository: ReactionRepository,
-    private readonly noteRepository: NoteRepository,
-  ) {}
+    reactionRepository: ReactionRepository,
+    noteRepository: NoteRepository,
+  ) {
+    this.#reactionRepository = reactionRepository;
+    this.#noteRepository = noteRepository;
+  }
 
   async handle(
     noteID: NoteID,
@@ -23,7 +28,7 @@ export class DeleteReactionService {
     return Cat.doT(resultPromiseMonad<Error>())
       .addM(
         'note',
-        this.noteRepository
+        this.#noteRepository
           .findByID(noteID)
           .then(
             Option.okOrElse(
@@ -32,13 +37,13 @@ export class DeleteReactionService {
           ),
       )
       .addMWith('reaction', ({ note }) =>
-        this.reactionRepository.findByCompositeID({
+        this.#reactionRepository.findByCompositeID({
           noteID: note.getReactionTargetNoteID(),
           accountID,
         }),
       )
       .finishM(({ reaction }) =>
-        this.reactionRepository.deleteByID(reaction.getID()),
+        this.#reactionRepository.deleteByID(reaction.getID()),
       );
   }
 }

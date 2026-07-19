@@ -17,7 +17,16 @@ describe('Instance', () => {
       firstContact: new Date('2023-09-10T00:00:00.000Z'),
     });
 
-    expect(res).toMatchSnapshot();
+    expect(res.getID()).toBe('1');
+    expect(res.getName()).toBe('Pulsate social');
+    expect(res.getFQDN()).toBe('social.example.com:3000');
+    expect(res.getSoftwareName()).toBe('Pulsate');
+    expect(res.getSoftwareVersion()).toBe('0.1.0');
+    expect(res.getExtentions()).toStrictEqual(['quote', 'emoji_reaction']);
+    expect(res.getAdminName()).toBe('Pulsate project');
+    expect(res.getAdminContact()).toBe('https://example.com/contact');
+    expect(res.isLocalInstance()).toBeTruthy();
+    expect(res.getFirstContact()).toEqual(new Date('2023-09-10T00:00:00.000Z'));
   });
 
   it('should set Unknown/Unknwon if software version or name empty', () => {

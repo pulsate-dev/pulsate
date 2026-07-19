@@ -45,17 +45,17 @@ export class CreateService {
       );
     }
 
-    const now = this.deps.clock.now();
+    const now = this.#deps.clock.now();
 
     return (
       Cat.doT(resultPromiseMonad<Error>())
-        .addM('actor', fetchActor(this.deps.accountModule, authorID))
+        .addM('actor', fetchActor(this.#deps.accountModule, authorID))
         .runWith(({ actor }) =>
           Promise.resolve(
             checkVisibilityForSilencedActor(actor.isSilenced(), visibility),
           ).then(Result.map(() => [])),
         )
-        .addM('id', Promise.resolve(this.deps.idGenerator.generate<Note>()))
+        .addM('id', Promise.resolve(this.#deps.idGenerator.generate<Note>()))
         .addMWith('note', ({ id }) =>
           Promise.resolve(
             Note.new({
@@ -72,17 +72,17 @@ export class CreateService {
           ),
         )
         .runWith(({ note }) =>
-          this.deps.noteRepository.create(note).then(Result.map(() => [])),
+          this.#deps.noteRepository.create(note).then(Result.map(() => [])),
         )
         .runWith(({ note }) =>
-          this.deps.noteAttachmentRepository
+          this.#deps.noteAttachmentRepository
             .create(note.getID(), note.getAttachmentFileID())
             .then(Result.map(() => [])),
         )
         // ToDo: Even if the note cannot be pushed to the timeline, the note is created successfully, so there is no error here.
         // ToDo: use job queue to push note to timeline
         .runWith(({ note }) =>
-          this.deps.timelineModule
+          this.#deps.timelineModule
             .pushNoteToTimeline(note)
             .then(() => Result.ok([])),
         )
@@ -93,29 +93,37 @@ export class CreateService {
         .finish(({ note }) => note)
     );
   }
-  constructor(
-    private readonly deps: {
-      noteRepository: NoteRepository;
-      idGenerator: SnowflakeIDGenerator;
-      noteAttachmentRepository: NoteAttachmentRepository;
-      accountModule: AccountModuleFacade;
-      timelineModule: TimelineModuleFacade;
-      clock: Clock;
-    },
-  ) {}
+  readonly #deps: {
+    noteRepository: NoteRepository;
+    idGenerator: SnowflakeIDGenerator;
+    noteAttachmentRepository: NoteAttachmentRepository;
+    accountModule: AccountModuleFacade;
+    timelineModule: TimelineModuleFacade;
+    clock: Clock;
+  };
+  constructor(deps: {
+    noteRepository: NoteRepository;
+    idGenerator: SnowflakeIDGenerator;
+    noteAttachmentRepository: NoteAttachmentRepository;
+    accountModule: AccountModuleFacade;
+    timelineModule: TimelineModuleFacade;
+    clock: Clock;
+  }) {
+    this.#deps = deps;
+  }
 
-  private subscribers: Array<(note: Note) => Promise<void>> = [];
+  #subscribers: Array<(note: Note) => Promise<void>> = [];
 
   /**
    * @description Subscribe to note creation events (for development use only)
    * @param callBack
    */
   subscribeNoteCreated(callBack: (note: Note) => Promise<void>) {
-    this.subscribers.push(callBack);
+    this.#subscribers.push(callBack);
   }
 
   private async notifyToSubscribers(note: Note) {
-    await Promise.allSettled(this.subscribers.map((s) => s(note)));
+    await Promise.allSettled(this.#subscribers.map((s) => s(note)));
   }
 }
 export const createServiceSymbol = Ether.newEtherSymbol<CreateService>();

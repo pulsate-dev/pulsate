@@ -25,7 +25,10 @@ type RawDirectNoteAttachment = Awaited<
 >;
 
 export class PrismaDirectNoteRepository implements DirectNoteRepository {
-  constructor(private readonly client: PrismaClient) {}
+  readonly #client: PrismaClient;
+  constructor(client: PrismaClient) {
+    this.#client = client;
+  }
 
   private deserialize(data: RawDirectNote): DirectNote {
     if (!data) {
@@ -46,7 +49,7 @@ export class PrismaDirectNoteRepository implements DirectNoteRepository {
 
   async create(note: DirectNote): Promise<Result.Result<Error, void>> {
     try {
-      await this.client.directNote.create({
+      await this.#client.directNote.create({
         data: {
           id: note.getID(),
           text: note.getContent(),
@@ -68,7 +71,7 @@ export class PrismaDirectNoteRepository implements DirectNoteRepository {
     id: DirectNoteID,
   ): Promise<Result.Result<Error, Option.Option<DirectNote>>> {
     try {
-      const res = await this.client.directNote.findUnique({
+      const res = await this.#client.directNote.findUnique({
         where: { id, deletedAt: null },
       });
       if (!res) return Result.ok(Option.none());
@@ -82,7 +85,7 @@ export class PrismaDirectNoteRepository implements DirectNoteRepository {
     recipientID: AccountID,
   ): Promise<Result.Result<Error, DirectNote[]>> {
     try {
-      const res = await this.client.directNote.findMany({
+      const res = await this.#client.directNote.findMany({
         where: { recipientId: recipientID, deletedAt: null },
         orderBy: { createdAt: 'desc' },
       });
@@ -94,7 +97,7 @@ export class PrismaDirectNoteRepository implements DirectNoteRepository {
 
   async deleteByID(id: DirectNoteID): Promise<Result.Result<Error, void>> {
     try {
-      await this.client.directNote.update({
+      await this.#client.directNote.update({
         where: { id },
         data: { deletedAt: new Date() },
       });
@@ -114,7 +117,10 @@ export const prismaDirectNoteRepo = (client: PrismaClient) =>
 export class PrismaDirectNoteAttachmentRepository
   implements DirectNoteAttachmentRepository
 {
-  constructor(private readonly client: PrismaClient) {}
+  readonly #client: PrismaClient;
+  constructor(client: PrismaClient) {
+    this.#client = client;
+  }
 
   private deserialize(data: RawDirectNoteAttachment): Medium[] {
     return data.map((v) => {
@@ -144,7 +150,7 @@ export class PrismaDirectNoteAttachmentRepository
       alt: '',
     }));
     try {
-      await this.client.directNoteAttachment.createMany({ data });
+      await this.#client.directNoteAttachment.createMany({ data });
       return Result.ok(undefined);
     } catch (e) {
       return Result.err(e as Error);
@@ -155,7 +161,7 @@ export class PrismaDirectNoteAttachmentRepository
     directNoteID: DirectNoteID,
   ): Promise<Result.Result<Error, Medium[]>> {
     try {
-      const res = await this.client.directNoteAttachment.findMany({
+      const res = await this.#client.directNoteAttachment.findMany({
         where: { directNoteId: directNoteID },
         include: { medium: true },
       });

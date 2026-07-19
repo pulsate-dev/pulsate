@@ -8,13 +8,16 @@ import {
 } from '../model/repository.js';
 
 export class DeleteBookmarkService {
-  constructor(private readonly bookmarkRepository: BookmarkRepository) {}
+  readonly #bookmarkRepository: BookmarkRepository;
+  constructor(bookmarkRepository: BookmarkRepository) {
+    this.#bookmarkRepository = bookmarkRepository;
+  }
 
   async handle(
     noteID: NoteID,
     accountID: AccountID,
   ): Promise<Result.Result<Error, void>> {
-    return await this.bookmarkRepository.deleteByID({ noteID, accountID });
+    return await this.#bookmarkRepository.deleteByID({ noteID, accountID });
   }
 }
 export const deleteBookmarkServiceSymbol =

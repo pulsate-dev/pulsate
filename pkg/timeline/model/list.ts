@@ -29,20 +29,20 @@ export const listTitleSchema = v.pipe(
 const MEMBER_LIMIT = 250;
 
 export class List {
-  private readonly id: ListID;
-  private title: string;
-  private publicity: 'PUBLIC' | 'PRIVATE';
-  private readonly ownerId: AccountID;
-  private readonly memberIds: Set<AccountID>;
-  private readonly createdAt: Date;
+  readonly #id: ListID;
+  #title: string;
+  #publicity: 'PUBLIC' | 'PRIVATE';
+  readonly #ownerId: AccountID;
+  readonly #memberIds: Set<AccountID>;
+  readonly #createdAt: Date;
 
   private constructor(args: CreateListArgs) {
-    this.id = args.id;
-    this.title = args.title;
-    this.publicity = args.publicity;
-    this.ownerId = args.ownerId;
-    this.memberIds = new Set<AccountID>(args.memberIds);
-    this.createdAt = args.createdAt;
+    this.#id = args.id;
+    this.#title = args.title;
+    this.#publicity = args.publicity;
+    this.#ownerId = args.ownerId;
+    this.#memberIds = new Set<AccountID>(args.memberIds);
+    this.#createdAt = args.createdAt;
   }
 
   static new(
@@ -72,17 +72,17 @@ export class List {
   }
 
   getId(): ListID {
-    return this.id;
+    return this.#id;
   }
 
   getTitle(): string {
-    return this.title;
+    return this.#title;
   }
 
   setTitle(title: string): Result.Result<ListTitleLengthInvalidError, void> {
     const parsed = v.safeParse(listTitleSchema, title);
     if (parsed.success) {
-      this.title = title;
+      this.#title = title;
       return Result.ok(undefined);
     }
     return Result.err(
@@ -93,29 +93,29 @@ export class List {
   }
 
   isPublic(): boolean {
-    return this.publicity === 'PUBLIC';
+    return this.#publicity === 'PUBLIC';
   }
 
   toPublic(): Result.Result<never, void> {
-    this.publicity = 'PUBLIC';
+    this.#publicity = 'PUBLIC';
     return Result.ok(undefined);
   }
 
   toPrivate(): Result.Result<never, void> {
-    this.publicity = 'PRIVATE';
+    this.#publicity = 'PRIVATE';
     return Result.ok(undefined);
   }
 
   getOwnerId(): AccountID {
-    return this.ownerId;
+    return this.#ownerId;
   }
 
   getMemberIds(): AccountID[] {
-    return [...this.memberIds];
+    return [...this.#memberIds];
   }
 
   getCreatedAt(): Date {
-    return this.createdAt;
+    return this.#createdAt;
   }
 
   addMember(
@@ -124,23 +124,23 @@ export class List {
     ListTooManyMembersError | ListMemberAlreadyExistsError,
     void
   > {
-    if (this.memberIds.has(memberId)) {
+    if (this.#memberIds.has(memberId)) {
       return Result.err(
         new ListMemberAlreadyExistsError('member already exists', {
           cause: null,
         }),
       );
     }
-    if (this.memberIds.size >= MEMBER_LIMIT) {
+    if (this.#memberIds.size >= MEMBER_LIMIT) {
       return Result.err(
         new ListTooManyMembersError('too many members', { cause: null }),
       );
     }
-    this.memberIds.add(memberId);
+    this.#memberIds.add(memberId);
     return Result.ok(undefined);
   }
 
   removeMember(memberId: AccountID): void {
-    this.memberIds.delete(memberId);
+    this.#memberIds.delete(memberId);
   }
 }

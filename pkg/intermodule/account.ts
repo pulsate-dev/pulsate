@@ -44,21 +44,30 @@ export interface PartialAccount {
 }
 
 export class AccountModuleFacade {
+  readonly #fetchService: FetchService;
+  readonly #fetchFollowService: FetchFollowService;
+  readonly #avatarService: AccountAvatarService;
+  readonly #headerService: AccountHeaderService;
   constructor(
-    private readonly fetchService: FetchService,
-    private readonly fetchFollowService: FetchFollowService,
-    private readonly avatarService: AccountAvatarService,
-    private readonly headerService: AccountHeaderService,
-  ) {}
+    fetchService: FetchService,
+    fetchFollowService: FetchFollowService,
+    avatarService: AccountAvatarService,
+    headerService: AccountHeaderService,
+  ) {
+    this.#fetchService = fetchService;
+    this.#fetchFollowService = fetchFollowService;
+    this.#avatarService = avatarService;
+    this.#headerService = headerService;
+  }
 
   async fetchAccount(id: AccountID): Promise<Result.Result<Error, Account>> {
-    return await this.fetchService.fetchAccountByID(id);
+    return await this.#fetchService.fetchAccountByID(id);
   }
 
   async fetchAccounts(
     id: AccountID[],
   ): Promise<Result.Result<Error, Account[]>> {
-    return await this.fetchService.fetchManyAccountsByID(id);
+    return await this.#fetchService.fetchManyAccountsByID(id);
   }
 
   async fetchFollowings(
@@ -66,13 +75,13 @@ export class AccountModuleFacade {
   ): Promise<Result.Result<Error, PartialAccount[]>> {
     const followings = Result.map((v: AccountFollow[]) =>
       v.map((v) => v.getTargetID()),
-    )(await this.fetchFollowService.fetchFollowingsByID(id));
+    )(await this.#fetchFollowService.fetchFollowingsByID(id));
 
     if (Result.isErr(followings)) {
       return followings;
     }
 
-    const accounts = await this.fetchService.fetchManyAccountsByID(
+    const accounts = await this.#fetchService.fetchManyAccountsByID(
       Result.unwrap(followings),
     );
 
@@ -95,14 +104,14 @@ export class AccountModuleFacade {
   async fetchFollowers(
     id: AccountID,
   ): Promise<Result.Result<Error, PartialAccount[]>> {
-    const res = await this.fetchFollowService.fetchFollowersByID(id);
+    const res = await this.#fetchFollowService.fetchFollowersByID(id);
     if (Result.isErr(res)) {
       return res;
     }
 
     const accounts = await Promise.all(
       Result.unwrap(res).map((v) =>
-        this.fetchService.fetchAccountByID(v.getFromID()),
+        this.#fetchService.fetchAccountByID(v.getFromID()),
       ),
     );
 
@@ -124,7 +133,7 @@ export class AccountModuleFacade {
   async fetchAccountAvatar(
     id: AccountID,
   ): Promise<Result.Result<Error, string>> {
-    const res = await this.avatarService.fetchByAccountID(id);
+    const res = await this.#avatarService.fetchByAccountID(id);
     const avatar = Cat.cat(res)
       .feed(Result.optionOk)
       .feed(Option.andThen((avatarImage: Medium) => avatarImage.getUrl()))
@@ -135,7 +144,7 @@ export class AccountModuleFacade {
   async fetchAccountHeader(
     id: AccountID,
   ): Promise<Result.Result<Error, string>> {
-    const res = await this.headerService.fetchByAccountID(id);
+    const res = await this.#headerService.fetchByAccountID(id);
     const header = Cat.cat(res)
       .feed(Result.optionOk)
       .feed(Option.andThen((headerImage: Medium) => headerImage.getUrl()))
@@ -151,13 +160,13 @@ export class AccountModuleFacade {
       Map<AccountID, { avatarURL: string; headerURL: string }>
     >
   > {
-    const avatarRes = await this.avatarService.fetchByAccountIDs(ids);
+    const avatarRes = await this.#avatarService.fetchByAccountIDs(ids);
     if (Result.isErr(avatarRes)) {
       return avatarRes;
     }
     const avatar = Result.unwrap(avatarRes);
 
-    const headerRes = await this.headerService.fetchByAccountIDs(ids);
+    const headerRes = await this.#headerService.fetchByAccountIDs(ids);
     if (Result.isErr(headerRes)) {
       return headerRes;
     }
@@ -189,7 +198,7 @@ export class AccountModuleFacade {
   async fetchFollowCount(
     id: AccountID,
   ): Promise<Result.Result<Error, { followers: number; following: number }>> {
-    return await this.fetchFollowService.fetchFollowCount(id);
+    return await this.#fetchFollowService.fetchFollowCount(id);
   }
 }
 

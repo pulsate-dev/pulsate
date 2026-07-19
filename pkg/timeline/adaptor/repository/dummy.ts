@@ -30,16 +30,16 @@ import {
 } from '../../model/repository.js';
 
 export class InMemoryTimelineRepository implements TimelineRepository {
-  private data: Map<NoteID, Note>;
+  #data: Map<NoteID, Note>;
 
   constructor(data: readonly Note[] = [], noteModuleFacade?: NoteModuleFacade) {
-    this.data = new Map(data.map((v) => [v.getID(), v]));
+    this.#data = new Map(data.map((v) => [v.getID(), v]));
 
     if (!noteModuleFacade) {
       return;
     }
     noteModuleFacade.subscribeNoteCreation(async (note: Note) => {
-      this.data.set(note.getID(), note);
+      this.#data.set(note.getID(), note);
     });
   }
 
@@ -56,7 +56,7 @@ export class InMemoryTimelineRepository implements TimelineRepository {
       );
     }
 
-    const accountNotes = [...this.data].filter(
+    const accountNotes = [...this.#data].filter(
       ([_, note]) => note.getAuthorID() === accountId,
     );
 
@@ -106,7 +106,7 @@ export class InMemoryTimelineRepository implements TimelineRepository {
 
     const notes: Note[] = [];
     for (const noteID of noteIDs) {
-      const n = this.data.get(noteID);
+      const n = this.#data.get(noteID);
       if (!n) {
         // ToDo: return NoteNotFoundError
         return Result.err(new Error('Not found'));
@@ -159,7 +159,7 @@ export class InMemoryTimelineRepository implements TimelineRepository {
       );
     }
 
-    const publicNotes = [...this.data.values()]
+    const publicNotes = [...this.#data.values()]
       .filter((note) => note.getVisibility() === 'PUBLIC')
       .sort((a, b) => b.getCreatedAt().getTime() - a.getCreatedAt().getTime());
 
@@ -202,7 +202,7 @@ export class InMemoryTimelineRepository implements TimelineRepository {
     }
     const notes: Note[] = [];
     for (const noteID of noteId) {
-      const n = this.data.get(noteID);
+      const n = this.#data.get(noteID);
       if (!n) {
         // ToDo: return NoteNotFoundError
         return Result.err(new Error('Not found'));
@@ -233,8 +233,8 @@ export class InMemoryTimelineRepository implements TimelineRepository {
   }
 
   reset(data: readonly Note[] = []) {
-    this.data.clear();
-    this.data = new Map(data.map((v) => [v.getID(), v]));
+    this.#data.clear();
+    this.#data = new Map(data.map((v) => [v.getID(), v]));
   }
 }
 export const inMemoryTimelineRepo = (
@@ -247,31 +247,31 @@ export const inMemoryTimelineRepo = (
   );
 
 export class InMemoryListRepository implements ListRepository {
-  private listData: Map<ListID, List>;
-  private notes: Map<NoteID, Note>;
+  #listData: Map<ListID, List>;
+  #notes: Map<NoteID, Note>;
 
   constructor(data: readonly List[] = [], notes: readonly Note[] = []) {
-    this.listData = new Map(data.map((v) => [v.getId(), v]));
-    this.notes = new Map(notes.map((v) => [v.getID(), v]));
+    this.#listData = new Map(data.map((v) => [v.getId(), v]));
+    this.#notes = new Map(notes.map((v) => [v.getID(), v]));
   }
 
   async create(list: List): Promise<Result.Result<Error, void>> {
-    if (this.listData.has(list.getId())) {
+    if (this.#listData.has(list.getId())) {
       return Result.err(
         new ListInternalError('List already exists', { cause: null }),
       );
     }
-    this.listData.set(list.getId(), list);
+    this.#listData.set(list.getId(), list);
     return Result.ok(undefined);
   }
 
   async edit(list: List): Promise<Result.Result<Error, void>> {
-    this.listData.set(list.getId(), list);
+    this.#listData.set(list.getId(), list);
     return Result.ok(undefined);
   }
 
   async deleteById(listId: ListID): Promise<Result.Result<Error, void>> {
-    if (!this.listData.delete(listId)) {
+    if (!this.#listData.delete(listId)) {
       return Result.err(
         new ListNotFoundError('List not found', { cause: null }),
       );
@@ -280,7 +280,7 @@ export class InMemoryListRepository implements ListRepository {
   }
 
   async fetchList(listId: ListID): Promise<Result.Result<Error, List>> {
-    const list = this.listData.get(listId);
+    const list = this.#listData.get(listId);
     if (!list) {
       return Result.err(new ListNotFoundError('Not found', { cause: null }));
     }
@@ -290,7 +290,7 @@ export class InMemoryListRepository implements ListRepository {
   async fetchListsByMemberAccountID(
     accountID: AccountID,
   ): Promise<Result.Result<Error, List[]>> {
-    const lists = [...this.listData.values()].filter((list) =>
+    const lists = [...this.#listData.values()].filter((list) =>
       list.getMemberIds().includes(accountID),
     );
     return Result.ok(lists);
@@ -299,7 +299,7 @@ export class InMemoryListRepository implements ListRepository {
   async fetchListsByOwnerId(
     ownerId: AccountID,
   ): Promise<Result.Result<Error, List[]>> {
-    const lists = [...this.listData].filter(
+    const lists = [...this.#listData].filter(
       (list) => list[1].getOwnerId() === ownerId,
     );
     return Result.ok(lists.map((list) => list[1]));
@@ -308,7 +308,7 @@ export class InMemoryListRepository implements ListRepository {
   async fetchListMembers(
     listId: ListID,
   ): Promise<Result.Result<Error, AccountID[]>> {
-    const list = this.listData.get(listId);
+    const list = this.#listData.get(listId);
     if (!list) {
       return Result.err(new ListNotFoundError('Not found', { cause: null }));
     }
@@ -316,10 +316,10 @@ export class InMemoryListRepository implements ListRepository {
   }
 
   async appendListMember(list: List): Promise<Result.Result<Error, void>> {
-    if (!this.listData.has(list.getId())) {
+    if (!this.#listData.has(list.getId())) {
       return Result.err(new ListNotFoundError('Not found', { cause: null }));
     }
-    this.listData.set(list.getId(), list);
+    this.#listData.set(list.getId(), list);
     return Result.ok(undefined);
   }
 
@@ -327,7 +327,7 @@ export class InMemoryListRepository implements ListRepository {
     listID: ListID,
     accountID: AccountID,
   ): Promise<Result.Result<Error, void>> {
-    const list = this.listData.get(listID);
+    const list = this.#listData.get(listID);
     if (!list) {
       return Result.err(new ListNotFoundError('Not found', { cause: null }));
     }
@@ -343,10 +343,10 @@ export class InMemoryListRepository implements ListRepository {
   }
 
   reset(data: readonly List[] = [], notes: readonly Note[] = []) {
-    this.listData.clear();
-    this.notes.clear();
-    this.listData = new Map(data.map((v) => [v.getId(), v]));
-    this.notes = new Map(notes.map((v) => [v.getID(), v]));
+    this.#listData.clear();
+    this.#notes.clear();
+    this.#listData = new Map(data.map((v) => [v.getId(), v]));
+    this.#notes = new Map(notes.map((v) => [v.getID(), v]));
   }
 }
 export const inMemoryListRepo = (data?: List[], notes?: Note[]) =>
@@ -355,10 +355,10 @@ export const inMemoryListRepo = (data?: List[], notes?: Note[]) =>
 export class InMemoryBookmarkTimelineRepository
   implements BookmarkTimelineRepository
 {
-  private data: Map<`${AccountID}_${NoteID}`, Bookmark>;
+  #data: Map<`${AccountID}_${NoteID}`, Bookmark>;
 
   constructor(data: readonly Bookmark[] = []) {
-    this.data = new Map(
+    this.#data = new Map(
       data.map((v) => [`${v.getAccountID()}_${v.getNoteID()}`, v]),
     );
   }
@@ -376,7 +376,7 @@ export class InMemoryBookmarkTimelineRepository
       );
     }
 
-    const accountNotes = [...this.data].filter(
+    const accountNotes = [...this.#data].filter(
       ([_, note]) => note.getAccountID() === id,
     );
 
@@ -419,16 +419,16 @@ const sortDirectNoteByCreatedAtDesc = (a: DirectNote, b: DirectNote): number =>
   b.getCreatedAt().getTime() - a.getCreatedAt().getTime();
 
 export class InMemoryConversationRepository implements ConversationRepository {
-  private data: DirectNote[];
+  #data: DirectNote[];
 
   constructor(data?: DirectNote[]) {
-    this.data = data ?? [];
+    this.#data = data ?? [];
   }
 
   async findByAccountID(
     id: AccountID,
   ): Promise<Result.Result<Error, ConversationRecipient[]>> {
-    const notes = this.data.filter(
+    const notes = this.#data.filter(
       (v) => v.getAuthorID() === id || v.getRecipientID() === id,
     );
 
@@ -464,7 +464,7 @@ export class InMemoryConversationRepository implements ConversationRepository {
     recipientID: AccountID,
     filter: ConversationNotesFilter,
   ): Promise<Result.Result<Error, DirectNote[]>> {
-    const notes = this.data
+    const notes = this.#data
       .filter(
         (v) =>
           (v.getAuthorID() === accountID &&

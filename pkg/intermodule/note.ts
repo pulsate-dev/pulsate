@@ -15,10 +15,15 @@ import type { Reaction } from '../notes/model/reaction.js';
 import type { RenoteStatus } from '../notes/model/renoteStatus.js';
 
 export class NoteModuleFacade {
+  readonly #fetchService: typeof noteFetchServiceInstance;
+  readonly #createNoteService: typeof noteCreateServiceInstance;
   constructor(
-    private readonly fetchService: typeof noteFetchServiceInstance,
-    private readonly createNoteService: typeof noteCreateServiceInstance,
-  ) {}
+    fetchService: typeof noteFetchServiceInstance,
+    createNoteService: typeof noteCreateServiceInstance,
+  ) {
+    this.#fetchService = fetchService;
+    this.#createNoteService = createNoteService;
+  }
 
   /**
    * @description Fetch note reactions
@@ -28,7 +33,7 @@ export class NoteModuleFacade {
   async fetchReactions(
     noteID: NoteID,
   ): Promise<Result.Result<Error, Reaction[]>> {
-    return await this.fetchService.fetchNoteReactions(noteID);
+    return await this.#fetchService.fetchNoteReactions(noteID);
   }
 
   /**
@@ -39,7 +44,7 @@ export class NoteModuleFacade {
   async fetchAttachments(
     noteID: NoteID,
   ): Promise<Result.Result<Error, Medium[]>> {
-    return await this.fetchService.fetchNoteAttachments(noteID);
+    return await this.#fetchService.fetchNoteAttachments(noteID);
   }
 
   /**
@@ -52,13 +57,13 @@ export class NoteModuleFacade {
     accountID: AccountID,
     noteIDs: NoteID[],
   ): Promise<RenoteStatus[]> {
-    return await this.fetchService.fetchRenoteStatus(accountID, noteIDs);
+    return await this.#fetchService.fetchRenoteStatus(accountID, noteIDs);
   }
 
   // NOTE: The following section is used only in development mode to synchronize Note data between the Note and Timeline modules. Calls from production mode or from modules other than Timeline are prohibited.
 
   subscribeNoteCreation(callback: (note: Note) => Promise<void>): void {
-    this.createNoteService.subscribeNoteCreated(callback);
+    this.#createNoteService.subscribeNoteCreated(callback);
   }
 }
 

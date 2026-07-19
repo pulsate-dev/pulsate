@@ -10,10 +10,13 @@ import { FetchMediaService } from '../drive/service/fetch.js';
  * Media Module facade.
  */
 export class MediaModuleFacade {
-  constructor(private readonly fetchMediaService: FetchMediaService) {}
+  readonly #fetchMediaService: FetchMediaService;
+  constructor(fetchMediaService: FetchMediaService) {
+    this.#fetchMediaService = fetchMediaService;
+  }
 
   async fetchMedia(mediumID: MediumID): Promise<Result.Result<Error, Medium>> {
-    return await this.fetchMediaService.fetchMediaByID(mediumID);
+    return await this.#fetchMediaService.fetchMediaByID(mediumID);
   }
 }
 export const mediaModuleFacadeSymbol =

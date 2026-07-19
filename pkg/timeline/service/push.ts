@@ -14,17 +14,28 @@ import type { FetchSubscribedListService } from './fetchSubscribed.js';
 import type { NoteVisibilityService } from './noteVisibility.js';
 
 export class PushTimelineService {
+  readonly #accountModule: AccountModuleFacade;
+  readonly #noteVisibility: NoteVisibilityService;
+  readonly #timelineNotesCacheRepository: TimelineNotesCacheRepository;
+  readonly #fetchSubscribedListService: FetchSubscribedListService;
+  readonly #TIMELINE_CACHE_LIMIT: number;
   constructor(
-    private readonly accountModule: AccountModuleFacade,
-    private readonly noteVisibility: NoteVisibilityService,
-    private readonly timelineNotesCacheRepository: TimelineNotesCacheRepository,
-    private readonly fetchSubscribedListService: FetchSubscribedListService,
+    accountModule: AccountModuleFacade,
+    noteVisibility: NoteVisibilityService,
+    timelineNotesCacheRepository: TimelineNotesCacheRepository,
+    fetchSubscribedListService: FetchSubscribedListService,
     /**
      * @description Limit length of timeline caches
      * @private
      */
-    private readonly TIMELINE_CACHE_LIMIT = 300,
-  ) {}
+    TIMELINE_CACHE_LIMIT = 300,
+  ) {
+    this.#accountModule = accountModule;
+    this.#noteVisibility = noteVisibility;
+    this.#timelineNotesCacheRepository = timelineNotesCacheRepository;
+    this.#fetchSubscribedListService = fetchSubscribedListService;
+    this.#TIMELINE_CACHE_LIMIT = TIMELINE_CACHE_LIMIT;
+  }
 
   /**
    * @description Check the number of cached timelines and delete old ones if the limit is reached
@@ -36,16 +47,16 @@ export class PushTimelineService {
   ): Promise<Result.Result<Error, void>> {
     if (timelineType === 'home') {
       const timelineRes =
-        await this.timelineNotesCacheRepository.getHomeTimeline(
+        await this.#timelineNotesCacheRepository.getHomeTimeline(
           timelineID as AccountID,
         );
       if (Result.isErr(timelineRes)) {
         return timelineRes;
       }
       const timeline = Result.unwrap(timelineRes);
-      if (timeline.length >= this.TIMELINE_CACHE_LIMIT) {
-        const oldNotes = timeline.slice(this.TIMELINE_CACHE_LIMIT - 1);
-        return this.timelineNotesCacheRepository.deleteNotesFromHomeTimeline(
+      if (timeline.length >= this.#TIMELINE_CACHE_LIMIT) {
+        const oldNotes = timeline.slice(this.#TIMELINE_CACHE_LIMIT - 1);
+        return this.#timelineNotesCacheRepository.deleteNotesFromHomeTimeline(
           timelineID as AccountID,
           oldNotes,
         );
@@ -55,17 +66,17 @@ export class PushTimelineService {
 
     if (timelineType === 'list') {
       const timelineRes =
-        await this.timelineNotesCacheRepository.getListTimeline(
+        await this.#timelineNotesCacheRepository.getListTimeline(
           timelineID as ListID,
         );
       if (Result.isErr(timelineRes)) {
         return timelineRes;
       }
       const timeline = Result.unwrap(timelineRes);
-      if (timeline.length >= this.TIMELINE_CACHE_LIMIT) {
-        const oldNotes = timeline.slice(this.TIMELINE_CACHE_LIMIT - 1);
+      if (timeline.length >= this.#TIMELINE_CACHE_LIMIT) {
+        const oldNotes = timeline.slice(this.#TIMELINE_CACHE_LIMIT - 1);
 
-        return this.timelineNotesCacheRepository.deleteNotesFromListTimeline(
+        return this.#timelineNotesCacheRepository.deleteNotesFromListTimeline(
           timelineID as ListID,
           oldNotes,
         );
@@ -94,7 +105,7 @@ export class PushTimelineService {
   private async pushToHomeTimeline(
     note: Note,
   ): Promise<Result.Result<Error, void>> {
-    const followers = await this.accountModule.fetchFollowers(
+    const followers = await this.#accountModule.fetchFollowers(
       note.getAuthorID(),
     );
     if (Result.isErr(followers)) {
@@ -112,12 +123,12 @@ export class PushTimelineService {
     // ToDo: bulk insert
     const res = await Promise.all([
       ...unwrappedFollowers.map((v) => {
-        return this.timelineNotesCacheRepository.addNotesToHomeTimeline(v.id, [
+        return this.#timelineNotesCacheRepository.addNotesToHomeTimeline(v.id, [
           note,
         ]);
       }),
       // NOTE: add note to author's home timeline
-      this.timelineNotesCacheRepository.addNotesToHomeTimeline(
+      this.#timelineNotesCacheRepository.addNotesToHomeTimeline(
         note.getAuthorID(),
         [note],
       ),
@@ -130,7 +141,7 @@ export class PushTimelineService {
    * @param note
    */
   private async pushToList(note: Note): Promise<Result.Result<Error, void>> {
-    const lists = await this.fetchSubscribedListService.handle(
+    const lists = await this.#fetchSubscribedListService.handle(
       note.getAuthorID(),
     );
     if (Result.isErr(lists)) {
@@ -142,7 +153,7 @@ export class PushTimelineService {
     PUBLIC, HOME: OK
     FOLLOWERS: reject
      */
-    const visible = await this.noteVisibility.isVisibleNoteInList({
+    const visible = await this.#noteVisibility.isVisibleNoteInList({
       accountID: note.getAuthorID(),
       note,
     });
@@ -161,7 +172,7 @@ export class PushTimelineService {
 
     const res = await Promise.all(
       unwrappedLists.map((v) => {
-        return this.timelineNotesCacheRepository.addNotesToList(v, [note]);
+        return this.#timelineNotesCacheRepository.addNotesToList(v, [note]);
       }),
     );
     return res.find(Result.isErr) ?? Result.ok(undefined);

@@ -21,7 +21,10 @@ type InactiveAccountPrismaArgs = Awaited<
 export class PrismaInactiveAccountRepository
   implements InactiveAccountRepository
 {
-  constructor(private readonly prisma: PrismaClient) {}
+  readonly #prisma: PrismaClient;
+  constructor(prisma: PrismaClient) {
+    this.#prisma = prisma;
+  }
 
   async create(account: InactiveAccount): Promise<Result.Result<Error, void>> {
     const role = (
@@ -33,7 +36,7 @@ export class PrismaInactiveAccountRepository
     )[account.getRole()];
 
     try {
-      await this.prisma.inactiveAccount.create({
+      await this.#prisma.inactiveAccount.create({
         data: {
           id: account.getID(),
           name: account.getName(),
@@ -49,7 +52,7 @@ export class PrismaInactiveAccountRepository
   }
 
   async findByName(name: string): Promise<Option.Option<InactiveAccount>> {
-    const res = await this.prisma.inactiveAccount.findUnique({
+    const res = await this.#prisma.inactiveAccount.findUnique({
       where: { name },
     });
     if (!res) {
@@ -59,7 +62,7 @@ export class PrismaInactiveAccountRepository
   }
 
   async findByMail(mail: string): Promise<Option.Option<InactiveAccount>> {
-    const res = await this.prisma.inactiveAccount.findUnique({
+    const res = await this.#prisma.inactiveAccount.findUnique({
       where: { mail },
     });
     if (!res) {
@@ -70,7 +73,7 @@ export class PrismaInactiveAccountRepository
 
   async delete(id: AccountID): Promise<Result.Result<Error, void>> {
     try {
-      await this.prisma.inactiveAccount.delete({
+      await this.#prisma.inactiveAccount.delete({
         where: { id },
       });
     } catch (e) {

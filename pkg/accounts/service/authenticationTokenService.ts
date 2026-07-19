@@ -13,9 +13,9 @@ export type AuthenticationToken = string & {
 };
 
 export class AuthenticationTokenService {
-  private readonly privateKey: CryptoKey;
-  private readonly publicKey: CryptoKey;
-  private readonly clock: Clock;
+  readonly #privateKey: CryptoKey;
+  readonly #publicKey: CryptoKey;
+  readonly #clock: Clock;
 
   static async new(clock: Clock) {
     // generate ECDSA P-256 Private/Public Key (For JWT alg: "ES256")
@@ -33,16 +33,16 @@ export class AuthenticationTokenService {
     publicKey: CryptoKey,
     clock: Clock,
   ) {
-    this.privateKey = privateKey;
-    this.publicKey = publicKey;
-    this.clock = clock;
+    this.#privateKey = privateKey;
+    this.#publicKey = publicKey;
+    this.#clock = clock;
   }
 
   public async generate(
     subject: string,
     accountName: string,
   ): Promise<Option.Option<AuthenticationToken>> {
-    const currentTime = this.clock.now();
+    const currentTime = this.#clock.now();
 
     const refreshToken = await new jose.SignJWT({
       accountName: accountName,
@@ -52,7 +52,7 @@ export class AuthenticationTokenService {
       .setSubject(subject)
       // Note: 2592000s = 30days
       .setExpirationTime(Number(currentTime / 1000n) + 60 * 60 * 24 * 30)
-      .sign(this.privateKey);
+      .sign(this.#privateKey);
 
     const authToken = await new jose.SignJWT({
       accountName: accountName,
@@ -63,7 +63,7 @@ export class AuthenticationTokenService {
       .setSubject(subject)
       // Note: 900s = 15min
       .setExpirationTime(Number(currentTime / 1000n) + 60 * 15)
-      .sign(this.privateKey);
+      .sign(this.#privateKey);
 
     return Option.some(authToken as AuthenticationToken);
   }
@@ -82,7 +82,7 @@ export class AuthenticationTokenService {
       return refreshTokenVerifyRes;
     }
 
-    const currentTime = this.clock.now();
+    const currentTime = this.#clock.now();
 
     const authToken = (await new jose.SignJWT({
       accountName,
@@ -93,14 +93,14 @@ export class AuthenticationTokenService {
       .setSubject(sub ?? '')
       // Note: 900s = 15min
       .setExpirationTime(Number(currentTime / 1000n) + 60 * 15)
-      .sign(this.privateKey)) as AuthenticationToken;
+      .sign(this.#privateKey)) as AuthenticationToken;
 
     return Result.ok(authToken as AuthenticationToken);
   }
 
   public async verify(token: string): Promise<Result.Result<Error, void>> {
     try {
-      await jose.jwtVerify(token, this.publicKey);
+      await jose.jwtVerify(token, this.#publicKey);
       return Result.ok(undefined);
     } catch (e) {
       if (e instanceof jose.errors.JWTInvalid) {

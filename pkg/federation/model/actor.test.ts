@@ -38,6 +38,16 @@ describe('Actor', () => {
       ],
     });
 
-    expect(res).toMatchSnapshot();
+    expect(res.getID()).toBe('1');
+    expect(res.getInstanceID()).toBe('31415926535');
+    expect(res.getAccountID()).toBe('141421356');
+    expect(res.getProfileURL()).toEqual(
+      new URL('https://social.example.com/accounts/@john@example.com'),
+    );
+    expect(res.getInboxURL()).toEqual(
+      new URL('https://social.example.com/accounts/31415926535/inbox'),
+    );
+    expect(res.getActorKeyPair()).toHaveLength(1);
+    expect(res.getActorKeyPair()[0]?.getID()).toBe('10');
   });
 });

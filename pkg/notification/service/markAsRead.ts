@@ -12,10 +12,12 @@ import {
 } from '../model/repository/notification.js';
 
 export class MarkAsReadNotificationService {
-  constructor(
-    private readonly notificationRepository: NotificationRepository,
-    private readonly clock: Clock,
-  ) {}
+  readonly #notificationRepository: NotificationRepository;
+  readonly #clock: Clock;
+  constructor(notificationRepository: NotificationRepository, clock: Clock) {
+    this.#notificationRepository = notificationRepository;
+    this.#clock = clock;
+  }
 
   async handle(
     notificationID: NotificationID,
@@ -26,7 +28,7 @@ export class MarkAsReadNotificationService {
     return Cat.doT(monad)
       .addM(
         'notification',
-        this.notificationRepository.findByID(notificationID),
+        this.#notificationRepository.findByID(notificationID),
       )
       .when(
         ({ notification }) => !this.isAllowed(notification, actorID),
@@ -34,11 +36,11 @@ export class MarkAsReadNotificationService {
       )
       .runWith(({ notification }) =>
         Promise.resolve(
-          notification.markAsRead(new Date(Number(this.clock.now()))),
+          notification.markAsRead(new Date(Number(this.#clock.now()))),
         ).then(Result.map(() => [])),
       )
       .runWith(({ notification }) =>
-        this.notificationRepository
+        this.#notificationRepository
           .updateReadAt(notification)
           .then(Result.map(() => [])),
       )

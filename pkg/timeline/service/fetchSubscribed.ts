@@ -5,7 +5,10 @@ import type { List, ListID } from '../model/list.js';
 import type { ListRepository } from '../model/repository.js';
 
 export class FetchSubscribedListService {
-  constructor(private readonly listRepository: ListRepository) {}
+  readonly #listRepository: ListRepository;
+  constructor(listRepository: ListRepository) {
+    this.#listRepository = listRepository;
+  }
 
   /**
    * @description Fetch list by member(assignee) account ID
@@ -15,7 +18,7 @@ export class FetchSubscribedListService {
   async handle(accountID: AccountID): Promise<Result.Result<Error, ListID[]>> {
     const monad = resultPromiseMonad<Error>();
     return monad.map((lists: List[]) => lists.map((list) => list.getId()))(
-      this.listRepository.fetchListsByMemberAccountID(accountID),
+      this.#listRepository.fetchListsByMemberAccountID(accountID),
     );
   }
 }

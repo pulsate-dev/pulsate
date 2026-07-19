@@ -6,12 +6,15 @@ import type { Medium, MediumID } from '../model/medium.js';
 import { type MediaRepository, mediaRepoSymbol } from '../model/repository.js';
 
 export class FetchMediaService {
-  constructor(private readonly mediaRepository: MediaRepository) {}
+  readonly #mediaRepository: MediaRepository;
+  constructor(mediaRepository: MediaRepository) {
+    this.#mediaRepository = mediaRepository;
+  }
 
   async fetchMediaByAuthorID(
     authorID: AccountID,
   ): Promise<Result.Result<Error, Medium[]>> {
-    const res = await this.mediaRepository.findByAuthor(authorID);
+    const res = await this.#mediaRepository.findByAuthor(authorID);
     return Option.okOrElse(
       () => new MediaNotFoundError('Failed to fetch media', { cause: null }),
     )(res);
@@ -20,7 +23,7 @@ export class FetchMediaService {
   async fetchMediaByID(
     mediumID: MediumID,
   ): Promise<Result.Result<Error, Medium>> {
-    const res = await this.mediaRepository.findById(mediumID);
+    const res = await this.#mediaRepository.findById(mediumID);
     return Option.okOrElse(
       () => new MediaNotFoundError('Failed to fetch media', { cause: null }),
     )(res);

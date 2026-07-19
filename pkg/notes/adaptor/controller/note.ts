@@ -15,12 +15,21 @@ import type {
 } from '../validator/schema.js';
 
 export class NoteController {
+  readonly #createService: CreateService;
+  readonly #fetchService: FetchService;
+  readonly #renoteService: RenoteService;
+  readonly #accountModule: AccountModuleFacade;
   constructor(
-    private readonly createService: CreateService,
-    private readonly fetchService: FetchService,
-    private readonly renoteService: RenoteService,
-    private readonly accountModule: AccountModuleFacade,
-  ) {}
+    createService: CreateService,
+    fetchService: FetchService,
+    renoteService: RenoteService,
+    accountModule: AccountModuleFacade,
+  ) {
+    this.#createService = createService;
+    this.#fetchService = fetchService;
+    this.#renoteService = renoteService;
+    this.#accountModule = accountModule;
+  }
 
   async createNote(args: {
     authorID: string;
@@ -29,7 +38,7 @@ export class NoteController {
     contentsWarningComment: string;
     attachmentFileID: string[];
   }): Promise<Result.Result<Error, z.infer<typeof CreateNoteResponseSchema>>> {
-    const noteRes = await this.createService.handle(
+    const noteRes = await this.#createService.handle(
       args.content,
       args.contentsWarningComment,
       args.authorID as AccountID,
@@ -41,7 +50,7 @@ export class NoteController {
     }
 
     const note = Result.unwrap(noteRes);
-    const attachmentsRes = await this.fetchService.fetchNoteAttachments(
+    const attachmentsRes = await this.#fetchService.fetchNoteAttachments(
       note.getID(),
     );
     if (Result.isErr(attachmentsRes)) {
@@ -75,13 +84,13 @@ export class NoteController {
     noteID: string,
     accountID: Option.Option<AccountID>,
   ): Promise<Result.Result<Error, z.infer<typeof GetNoteResponseSchema>>> {
-    const noteRes = await this.fetchService.fetchNoteByID(noteID as NoteID);
+    const noteRes = await this.#fetchService.fetchNoteByID(noteID as NoteID);
     if (Option.isNone(noteRes)) {
       return Result.err(new Error('Note not found'));
     }
     const note = Option.unwrap(noteRes);
 
-    const authorAccountRes = await this.accountModule.fetchAccount(
+    const authorAccountRes = await this.#accountModule.fetchAccount(
       note.getAuthorID(),
     );
     if (Result.isErr(authorAccountRes)) {
@@ -89,7 +98,7 @@ export class NoteController {
     }
     const author = Result.unwrap(authorAccountRes);
 
-    const attachmentsRes = await this.fetchService.fetchNoteAttachments(
+    const attachmentsRes = await this.#fetchService.fetchNoteAttachments(
       note.getID(),
     );
     if (Result.isErr(attachmentsRes)) {
@@ -97,7 +106,7 @@ export class NoteController {
     }
     const attachments = Result.unwrap(attachmentsRes);
 
-    const reactionsRes = await this.fetchService.fetchNoteReactions(
+    const reactionsRes = await this.#fetchService.fetchNoteReactions(
       note.getID(),
     );
     if (Result.isErr(reactionsRes)) {
@@ -108,7 +117,7 @@ export class NoteController {
     // FIXME: complex 3ternary operator
     const isRenoted = Option.isSome(accountID)
       ? (
-          await this.fetchService.fetchRenoteStatus(Option.unwrap(accountID), [
+          await this.#fetchService.fetchRenoteStatus(Option.unwrap(accountID), [
             note.getID(),
           ])
         )[0]?.getIsRenoted() || false
@@ -161,7 +170,7 @@ export class NoteController {
     contentsWarningComment: string;
     attachmentFileID: string[];
   }): Promise<Result.Result<Error, z.infer<typeof RenoteResponseSchema>>> {
-    const renoteRes = await this.renoteService.handle(
+    const renoteRes = await this.#renoteService.handle(
       args.originalNoteID as NoteID,
       args.content,
       args.contentsWarningComment,
@@ -174,7 +183,7 @@ export class NoteController {
     }
     const renote = Result.unwrap(renoteRes);
 
-    const attachmentsRes = await this.fetchService.fetchNoteAttachments(
+    const attachmentsRes = await this.#fetchService.fetchNoteAttachments(
       renote.getID(),
     );
     if (Result.isErr(attachmentsRes)) {

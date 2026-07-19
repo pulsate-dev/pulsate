@@ -3,14 +3,14 @@ import { type ConfigStore, configStoreSymbol } from '../mod.js';
 import type { Config } from '../model/config.js';
 
 export class DummyConfigStore implements ConfigStore {
-  private readonly config: Config;
+  readonly #config: Config;
 
   constructor(config: Config) {
-    this.config = config;
+    this.#config = config;
   }
 
   fetch(): Config {
-    return this.config;
+    return this.#config;
   }
 }
 

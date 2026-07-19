@@ -13,15 +13,20 @@ import {
 } from '../model/repository.js';
 
 export class FetchFollowService {
+  readonly #accountFollowRepository: AccountFollowRepository;
+  readonly #accountRepository: AccountRepository;
   constructor(
-    private readonly accountFollowRepository: AccountFollowRepository,
-    private readonly accountRepository: AccountRepository,
-  ) {}
+    accountFollowRepository: AccountFollowRepository,
+    accountRepository: AccountRepository,
+  ) {
+    this.#accountFollowRepository = accountFollowRepository;
+    this.#accountRepository = accountRepository;
+  }
 
   async fetchFollowingsByID(
     id: AccountID,
   ): Promise<Result.Result<Error, AccountFollow[]>> {
-    return this.accountFollowRepository.fetchAllFollowing(id);
+    return this.#accountFollowRepository.fetchAllFollowing(id);
   }
 
   async fetchFollowingsByName(
@@ -32,7 +37,7 @@ export class FetchFollowService {
     return Cat.doT(monad)
       .addM(
         'account',
-        this.accountRepository
+        this.#accountRepository
           .findByName(name)
           .then(
             Option.okOr(
@@ -46,7 +51,7 @@ export class FetchFollowService {
   async fetchFollowersByID(
     id: AccountID,
   ): Promise<Result.Result<Error, AccountFollow[]>> {
-    return this.accountFollowRepository.fetchAllFollowers(id);
+    return this.#accountFollowRepository.fetchAllFollowers(id);
   }
 
   async fetchFollowersByName(
@@ -57,7 +62,7 @@ export class FetchFollowService {
     return Cat.doT(monad)
       .addM(
         'account',
-        this.accountRepository
+        this.#accountRepository
           .findByName(name)
           .then(
             Option.okOr(
@@ -71,7 +76,7 @@ export class FetchFollowService {
   async fetchFollowCount(
     accountID: AccountID,
   ): Promise<Result.Result<Error, AccountFollowCount>> {
-    return this.accountFollowRepository.followCount(accountID);
+    return this.#accountFollowRepository.followCount(accountID);
   }
 }
 

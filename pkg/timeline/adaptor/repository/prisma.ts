@@ -35,12 +35,15 @@ import {
 } from '../../model/repository.js';
 
 export class PrismaTimelineRepository implements TimelineRepository {
-  private readonly TIMELINE_NOTE_LIMIT = 20;
-  constructor(private readonly prisma: PrismaClient) {}
+  readonly #TIMELINE_NOTE_LIMIT = 20;
+  readonly #prisma: PrismaClient;
+  constructor(prisma: PrismaClient) {
+    this.#prisma = prisma;
+  }
 
   private buildCursorFilter(
     filter: Pick<FetchHomeTimelineFilter, 'beforeId' | 'afterId'>,
-    limit: number = this.TIMELINE_NOTE_LIMIT,
+    limit: number = this.#TIMELINE_NOTE_LIMIT,
   ) {
     return {
       orderBy: {
@@ -67,7 +70,7 @@ export class PrismaTimelineRepository implements TimelineRepository {
   }
 
   private deserialize(
-    data: Awaited<ReturnType<typeof this.prisma.note.findMany & {}>>,
+    data: Awaited<ReturnType<PrismaClient['note']['findMany']> & {}>,
   ): Note[] {
     return data.map((v) => {
       const visibility = (): NoteVisibility => {
@@ -116,7 +119,7 @@ export class PrismaTimelineRepository implements TimelineRepository {
       );
     }
 
-    const accountNotes = await this.prisma.note.findMany({
+    const accountNotes = await this.#prisma.note.findMany({
       where: {
         authorId: accountId,
       },
@@ -140,7 +143,7 @@ export class PrismaTimelineRepository implements TimelineRepository {
     }
 
     // ToDo: filter hasAttachment, noNSFW
-    const homeNotes = await this.prisma.note.findMany({
+    const homeNotes = await this.#prisma.note.findMany({
       where: {
         id: {
           in: noteIDs as NoteID[],
@@ -164,7 +167,7 @@ export class PrismaTimelineRepository implements TimelineRepository {
       );
     }
 
-    const publicNotes = await this.prisma.note.findMany({
+    const publicNotes = await this.#prisma.note.findMany({
       where: {
         visibility: 0, // NOTE: PUBLIC
         deletedAt: null,
@@ -188,7 +191,7 @@ export class PrismaTimelineRepository implements TimelineRepository {
       );
     }
 
-    const listNotes = await this.prisma.note.findMany({
+    const listNotes = await this.#prisma.note.findMany({
       where: {
         id: {
           // NOTE: prisma requires non-readonly Array in here
@@ -234,7 +237,10 @@ type DeserializeListArgs =
   | null;
 
 export class PrismaListRepository implements ListRepository {
-  constructor(private readonly prisma: PrismaClient) {}
+  readonly #prisma: PrismaClient;
+  constructor(prisma: PrismaClient) {
+    this.#prisma = prisma;
+  }
 
   private parsePrismaError(e: unknown): Error {
     // NOTE: cf. prisma error reference: https://www.prisma.io/docs/orm/reference/error-reference
@@ -270,7 +276,7 @@ export class PrismaListRepository implements ListRepository {
 
   async create(list: List): Promise<Result.Result<Error, void>> {
     try {
-      await this.prisma.list.create({
+      await this.#prisma.list.create({
         data: {
           id: list.getId(),
           title: list.getTitle(),
@@ -293,7 +299,7 @@ export class PrismaListRepository implements ListRepository {
     ownerId: AccountID,
   ): Promise<Result.Result<Error, List[]>> {
     try {
-      const res = await this.prisma.list.findMany({
+      const res = await this.#prisma.list.findMany({
         where: {
           accountId: ownerId,
           deletedAt: undefined,
@@ -320,7 +326,7 @@ export class PrismaListRepository implements ListRepository {
 
   async fetchList(listId: ListID): Promise<Result.Result<Error, List>> {
     try {
-      const res = await this.prisma.list.findUnique({
+      const res = await this.#prisma.list.findUnique({
         where: {
           id: listId,
           deletedAt: undefined,
@@ -346,7 +352,7 @@ export class PrismaListRepository implements ListRepository {
     listId: ListID,
   ): Promise<Result.Result<Error, AccountID[]>> {
     try {
-      const res = await this.prisma.listMember.findMany({
+      const res = await this.#prisma.listMember.findMany({
         where: {
           listId: listId,
           deletedAt: undefined,
@@ -366,7 +372,7 @@ export class PrismaListRepository implements ListRepository {
     accountID: AccountID,
   ): Promise<Result.Result<Error, List[]>> {
     try {
-      const res = await this.prisma.list.findMany({
+      const res = await this.#prisma.list.findMany({
         where: {
           deletedAt: undefined,
           listMember: {
@@ -395,7 +401,7 @@ export class PrismaListRepository implements ListRepository {
 
   async edit(list: List): Promise<Result.Result<Error, void>> {
     try {
-      await this.prisma.list.update({
+      await this.#prisma.list.update({
         where: {
           id: list.getId(),
         },
@@ -414,7 +420,7 @@ export class PrismaListRepository implements ListRepository {
   async deleteById(listId: ListID): Promise<Result.Result<Error, void>> {
     try {
       // NOTE: delete list
-      await this.prisma.list.updateMany({
+      await this.#prisma.list.updateMany({
         where: {
           id: listId,
         },
@@ -423,7 +429,7 @@ export class PrismaListRepository implements ListRepository {
         },
       });
       // NOTE: then delete list members
-      await this.prisma.listMember.updateMany({
+      await this.#prisma.listMember.updateMany({
         where: {
           listId: listId,
         },
@@ -440,7 +446,7 @@ export class PrismaListRepository implements ListRepository {
 
   async appendListMember(list: List): Promise<Result.Result<Error, void>> {
     try {
-      await this.prisma.listMember.createMany({
+      await this.#prisma.listMember.createMany({
         data: list.getMemberIds().map((memberId) => ({
           listId: list.getId(),
           memberId,
@@ -459,7 +465,7 @@ export class PrismaListRepository implements ListRepository {
     accountID: AccountID,
   ): Promise<Result.Result<Error, void>> {
     try {
-      await this.prisma.listMember.delete({
+      await this.#prisma.listMember.delete({
         where: {
           listId_memberId: {
             listId: listID,
@@ -484,9 +490,12 @@ type DeserializeBookmarkArgs = Awaited<
 export class PrismaBookmarkTimelineRepository
   implements BookmarkTimelineRepository
 {
-  private readonly TIMELINE_NOTE_LIMIT = 20;
+  readonly #TIMELINE_NOTE_LIMIT = 20;
 
-  constructor(private readonly prisma: PrismaClient) {}
+  readonly #prisma: PrismaClient;
+  constructor(prisma: PrismaClient) {
+    this.#prisma = prisma;
+  }
 
   private deserialize(data: DeserializeBookmarkArgs): NoteID[] {
     return data.map((v) => v.noteId as NoteID);
@@ -505,7 +514,7 @@ export class PrismaBookmarkTimelineRepository
       );
     }
 
-    const bookmarks = await this.prisma.bookmark.findMany({
+    const bookmarks = await this.#prisma.bookmark.findMany({
       where: {
         accountId: id,
       },
@@ -535,7 +544,7 @@ export class PrismaBookmarkTimelineRepository
             skip: 1,
           }
         : {}),
-      take: this.TIMELINE_NOTE_LIMIT,
+      take: this.#TIMELINE_NOTE_LIMIT,
     });
 
     return Result.ok(this.deserialize(bookmarks));
@@ -553,7 +562,10 @@ type RawConversationDirectNote = Awaited<
 >[number];
 
 export class PrismaConversationRepository implements ConversationRepository {
-  constructor(private readonly prisma: PrismaClient) {}
+  readonly #prisma: PrismaClient;
+  constructor(prisma: PrismaClient) {
+    this.#prisma = prisma;
+  }
 
   private deserializeDirectNote(data: RawConversationDirectNote): DirectNote {
     return DirectNote.reconstruct({
@@ -584,7 +596,7 @@ export class PrismaConversationRepository implements ConversationRepository {
     // For 'before' cursor or no cursor: query desc directly.
     const isAfter = filter.cursor?.type === 'after';
     try {
-      const res = await this.prisma.directNote.findMany({
+      const res = await this.#prisma.directNote.findMany({
         where: {
           deletedAt: null,
           OR: [

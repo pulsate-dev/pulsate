@@ -13,22 +13,22 @@ import {
 } from './noteVisibility.js';
 
 export class AccountTimelineService {
-  private readonly noteVisibilityService: NoteVisibilityService;
-  private readonly timelineRepository: TimelineRepository;
+  readonly #noteVisibilityService: NoteVisibilityService;
+  readonly #timelineRepository: TimelineRepository;
 
   constructor(args: {
     noteVisibilityService: NoteVisibilityService;
     timelineRepository: TimelineRepository;
   }) {
-    this.noteVisibilityService = args.noteVisibilityService;
-    this.timelineRepository = args.timelineRepository;
+    this.#noteVisibilityService = args.noteVisibilityService;
+    this.#timelineRepository = args.timelineRepository;
   }
 
   async handle(
     targetId: AccountID,
     filter: FetchAccountTimelineFilter,
   ): Promise<Result.Result<Error, Note[]>> {
-    const res = await this.timelineRepository.getAccountTimeline(
+    const res = await this.#timelineRepository.getAccountTimeline(
       targetId,
       filter,
     );
@@ -40,7 +40,7 @@ export class AccountTimelineService {
     const directFiltered = res[1].filter((v) => v.getVisibility() !== 'DIRECT');
     const filtered: Note[] = [];
     for (const v of directFiltered) {
-      const isVisible = await this.noteVisibilityService.handle({
+      const isVisible = await this.#noteVisibilityService.handle({
         accountID: filter.id,
         note: v,
       });

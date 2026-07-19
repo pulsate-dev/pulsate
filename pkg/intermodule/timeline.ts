@@ -13,14 +13,17 @@ import { PushTimelineService } from '../timeline/service/push.js';
 import { accountModule, dummyAccountModuleFacade } from './account.js';
 
 export class TimelineModuleFacade {
-  constructor(private readonly pushTimelineService: PushTimelineService) {}
+  readonly #pushTimelineService: PushTimelineService;
+  constructor(pushTimelineService: PushTimelineService) {
+    this.#pushTimelineService = pushTimelineService;
+  }
 
   /*
    * @description Push note to timeline
    * @param note to be pushed
    * */
   async pushNoteToTimeline(note: Note): Promise<Result.Result<Error, void>> {
-    const res = await this.pushTimelineService.handle(note);
+    const res = await this.#pushTimelineService.handle(note);
     if (Result.isErr(res)) {
       return res;
     }

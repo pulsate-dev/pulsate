@@ -21,18 +21,18 @@ import {
 } from './authenticationTokenService.js';
 
 export class AuthenticateService {
-  private readonly accountRepository: AccountRepository;
-  private readonly authenticationTokenService: AuthenticationTokenService;
-  private readonly passwordEncoder: PasswordEncoder;
+  readonly #accountRepository: AccountRepository;
+  readonly #authenticationTokenService: AuthenticationTokenService;
+  readonly #passwordEncoder: PasswordEncoder;
 
   constructor(args: {
     accountRepository: AccountRepository;
     authenticationTokenService: AuthenticationTokenService;
     passwordEncoder: PasswordEncoder;
   }) {
-    this.accountRepository = args.accountRepository;
-    this.authenticationTokenService = args.authenticationTokenService;
-    this.passwordEncoder = args.passwordEncoder;
+    this.#accountRepository = args.accountRepository;
+    this.#authenticationTokenService = args.authenticationTokenService;
+    this.#passwordEncoder = args.passwordEncoder;
   }
 
   async handle(
@@ -44,7 +44,7 @@ export class AuthenticateService {
     return Cat.doT(monad)
       .addM(
         'account',
-        this.accountRepository
+        this.#accountRepository
           .findByMail(email)
           .then(
             Option.okOr(
@@ -53,7 +53,7 @@ export class AuthenticateService {
           ),
       )
       .addMWith('isMatch', ({ account }) =>
-        this.passwordEncoder
+        this.#passwordEncoder
           .isMatchPassword(passphrase, account.getPassphraseHash() ?? '')
           .then(Result.ok),
       )
@@ -69,7 +69,7 @@ export class AuthenticateService {
           ),
       )
       .addMWith('token', ({ account }) =>
-        this.authenticationTokenService
+        this.#authenticationTokenService
           .generate(account.getID(), account.getName())
           .then(
             Option.okOr(

@@ -8,12 +8,15 @@ import {
 } from '../model/repository.js';
 
 export class PublicTimelineService {
-  constructor(private readonly timelineRepository: TimelineRepository) {}
+  readonly #timelineRepository: TimelineRepository;
+  constructor(timelineRepository: TimelineRepository) {
+    this.#timelineRepository = timelineRepository;
+  }
 
   async fetchPublicTimeline(
     filter: FetchHomeTimelineFilter,
   ): Promise<Result.Result<Error, Note[]>> {
-    return await this.timelineRepository.getPublicTimeline(filter);
+    return await this.#timelineRepository.getPublicTimeline(filter);
   }
 }
 export const publicTimelineSymbol =

@@ -5,17 +5,20 @@ import path from 'node:path';
 import type { Storage } from '../../model/storage.js';
 
 export class LocalStorage implements Storage {
-  constructor(private readonly basePath: string = './drive') {}
+  readonly #basePath: string;
+  constructor(basePath = './drive') {
+    this.#basePath = basePath;
+  }
 
   async upload(name: string, file: Uint8Array) {
     try {
-      await fs.statfs(this.basePath);
+      await fs.statfs(this.#basePath);
     } catch {
-      await fs.mkdir(this.basePath, { recursive: true });
+      await fs.mkdir(this.#basePath, { recursive: true });
     }
 
     const baseName = path.basename(name);
-    const savePath = path.join(this.basePath, baseName);
+    const savePath = path.join(this.#basePath, baseName);
     await writeFile(savePath, file);
   }
 }

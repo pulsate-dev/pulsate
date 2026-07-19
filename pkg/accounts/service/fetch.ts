@@ -8,14 +8,14 @@ import {
 } from '../model/repository.js';
 
 export class FetchService {
-  private accountRepository: AccountRepository;
+  #accountRepository: AccountRepository;
 
   constructor(accountRepository: AccountRepository) {
-    this.accountRepository = accountRepository;
+    this.#accountRepository = accountRepository;
   }
 
   async fetchAccount(name: string): Promise<Result.Result<Error, Account>> {
-    const res = await this.accountRepository.findByName(name);
+    const res = await this.#accountRepository.findByName(name);
     if (Option.isNone(res)) {
       return Result.err(
         new AccountNotFoundError('account not found', { cause: null }),
@@ -28,7 +28,7 @@ export class FetchService {
   async fetchAccountByID(
     id: AccountID,
   ): Promise<Result.Result<Error, Account>> {
-    const res = await this.accountRepository.findByID(id);
+    const res = await this.#accountRepository.findByID(id);
     return Option.okOr(
       new AccountNotFoundError('account not found', { cause: null }),
     )(res);
@@ -37,7 +37,7 @@ export class FetchService {
   async fetchManyAccountsByID(
     id: AccountID[],
   ): Promise<Result.Result<Error, Account[]>> {
-    return await this.accountRepository.findManyByID(id);
+    return await this.#accountRepository.findManyByID(id);
   }
 }
 

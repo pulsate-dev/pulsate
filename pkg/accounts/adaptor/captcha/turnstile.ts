@@ -4,7 +4,10 @@ import { type Captcha, captchaSymbol } from '../../model/captcha.js';
 import { AccountCaptchaTokenInvalidError } from '../../model/errors.js';
 
 export class TurnstileCaptchaValidator implements Captcha {
-  constructor(private readonly secret: string) {}
+  readonly #secret: string;
+  constructor(secret: string) {
+    this.#secret = secret;
+  }
 
   async validate(token: string): Promise<Option.Option<Error>> {
     const res = await fetch(
@@ -12,7 +15,7 @@ export class TurnstileCaptchaValidator implements Captcha {
       {
         body: JSON.stringify({
           // ToDo: load settings from config file
-          secret: this.secret,
+          secret: this.#secret,
           response: token,
         }),
         headers: {

@@ -4,10 +4,13 @@ import type { List } from '../model/list.js';
 import { type ListRepository, listRepoSymbol } from '../model/repository.js';
 
 export class DeleteListService {
-  constructor(private readonly listRepository: ListRepository) {}
+  readonly #listRepository: ListRepository;
+  constructor(listRepository: ListRepository) {
+    this.#listRepository = listRepository;
+  }
 
   async handle(listId: ID<List>): Promise<Result.Result<Error, void>> {
-    const res = await this.listRepository.deleteById(listId);
+    const res = await this.#listRepository.deleteById(listId);
 
     if (Result.isErr(res)) {
       return res;

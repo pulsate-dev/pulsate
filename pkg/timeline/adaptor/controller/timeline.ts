@@ -39,21 +39,21 @@ import type {
 } from '../validator/timeline.js';
 
 export class TimelineController {
-  private readonly accountTimelineService: AccountTimelineService;
-  private readonly accountModule: AccountModuleFacade;
-  private readonly createListService: CreateListService;
-  private readonly editListService: EditListService;
-  private readonly fetchListService: FetchListService;
-  private readonly deleteListService: DeleteListService;
-  private readonly fetchMemberService: FetchListMemberService;
-  private readonly listTimelineService: ListTimelineService;
-  private readonly noteModule: NoteModuleFacade;
-  private readonly homeTimeline: HomeTimelineService;
-  private readonly appendListMemberService: AppendListMemberService;
-  private readonly removeListMemberService: RemoveListMemberService;
-  private readonly fetchBookmarkTimelineService: FetchBookmarkService;
-  private readonly fetchConversationService: FetchConversationService;
-  private readonly publicTimelineService: PublicTimelineService;
+  readonly #accountTimelineService: AccountTimelineService;
+  readonly #accountModule: AccountModuleFacade;
+  readonly #createListService: CreateListService;
+  readonly #editListService: EditListService;
+  readonly #fetchListService: FetchListService;
+  readonly #deleteListService: DeleteListService;
+  readonly #fetchMemberService: FetchListMemberService;
+  readonly #listTimelineService: ListTimelineService;
+  readonly #noteModule: NoteModuleFacade;
+  readonly #homeTimeline: HomeTimelineService;
+  readonly #appendListMemberService: AppendListMemberService;
+  readonly #removeListMemberService: RemoveListMemberService;
+  readonly #fetchBookmarkTimelineService: FetchBookmarkService;
+  readonly #fetchConversationService: FetchConversationService;
+  readonly #publicTimelineService: PublicTimelineService;
 
   constructor(args: {
     accountTimelineService: AccountTimelineService;
@@ -72,21 +72,21 @@ export class TimelineController {
     fetchConversationService: FetchConversationService;
     publicTimelineService: PublicTimelineService;
   }) {
-    this.accountTimelineService = args.accountTimelineService;
-    this.accountModule = args.accountModule;
-    this.createListService = args.createListService;
-    this.editListService = args.editListService;
-    this.fetchListService = args.fetchListService;
-    this.deleteListService = args.deleteListService;
-    this.fetchMemberService = args.fetchMemberService;
-    this.listTimelineService = args.listTimelineService;
-    this.noteModule = args.noteModule;
-    this.homeTimeline = args.homeTimeline;
-    this.appendListMemberService = args.appendListMemberService;
-    this.removeListMemberService = args.removeListMemberService;
-    this.fetchBookmarkTimelineService = args.fetchBookmarkTimelineService;
-    this.fetchConversationService = args.fetchConversationService;
-    this.publicTimelineService = args.publicTimelineService;
+    this.#accountTimelineService = args.accountTimelineService;
+    this.#accountModule = args.accountModule;
+    this.#createListService = args.createListService;
+    this.#editListService = args.editListService;
+    this.#fetchListService = args.fetchListService;
+    this.#deleteListService = args.deleteListService;
+    this.#fetchMemberService = args.fetchMemberService;
+    this.#listTimelineService = args.listTimelineService;
+    this.#noteModule = args.noteModule;
+    this.#homeTimeline = args.homeTimeline;
+    this.#appendListMemberService = args.appendListMemberService;
+    this.#removeListMemberService = args.removeListMemberService;
+    this.#fetchBookmarkTimelineService = args.fetchBookmarkTimelineService;
+    this.#fetchConversationService = args.fetchConversationService;
+    this.#publicTimelineService = args.publicTimelineService;
   }
 
   private async getNoteAdditionalData(notes: readonly Note[]): Promise<
@@ -106,7 +106,7 @@ export class TimelineController {
       }[]
     >
   > {
-    const accountData = await this.accountModule.fetchAccounts(
+    const accountData = await this.#accountModule.fetchAccounts(
       notes.map((v) => v.getAuthorID()),
     );
     if (Result.isErr(accountData)) {
@@ -118,7 +118,7 @@ export class TimelineController {
     );
 
     const headerAvatarImagesRes =
-      await this.accountModule.fetchAccountAvatarHeaders(
+      await this.#accountModule.fetchAccountAvatarHeaders(
         accounts.map((v) => v.getID()),
       );
     if (Result.isErr(headerAvatarImagesRes)) {
@@ -131,7 +131,7 @@ export class TimelineController {
       { following: number; followers: number }
     >();
     for (const id of accountsMap.keys()) {
-      const followCountRes = await this.accountModule.fetchFollowCount(id);
+      const followCountRes = await this.#accountModule.fetchFollowCount(id);
       const followCount = Result.unwrapOr({ following: 0, followers: 0 })(
         followCountRes,
       );
@@ -141,9 +141,9 @@ export class TimelineController {
     const attachmentsMap = new Map<NoteID, Medium[]>();
     const reactionsMap = new Map<NoteID, Reaction[]>();
     for (const v of notes) {
-      const attachmentsRes = await this.noteModule.fetchAttachments(v.getID());
+      const attachmentsRes = await this.#noteModule.fetchAttachments(v.getID());
       attachmentsMap.set(v.getID(), Result.unwrap(attachmentsRes));
-      const reactionsRes = await this.noteModule.fetchReactions(v.getID());
+      const reactionsRes = await this.#noteModule.fetchReactions(v.getID());
       reactionsMap.set(v.getID(), Result.unwrap(reactionsRes));
     }
 
@@ -191,7 +191,7 @@ export class TimelineController {
   ): Promise<
     Result.Result<Error, z.infer<typeof GetHomeTimelineResponseSchema>>
   > {
-    const res = await this.homeTimeline.fetchHomeTimeline(
+    const res = await this.#homeTimeline.fetchHomeTimeline(
       actorID as AccountID,
       {
         hasAttachment,
@@ -214,7 +214,7 @@ export class TimelineController {
 
     // Check renoted status for all notes
     const noteIDs = noteAdditionalData.map((v) => v.note.getID());
-    const renotedStatuses = await this.noteModule.fetchRenoteStatus(
+    const renotedStatuses = await this.#noteModule.fetchRenoteStatus(
       actorID as AccountID,
       noteIDs,
     );
@@ -273,7 +273,7 @@ export class TimelineController {
   ): Promise<
     Result.Result<Error, z.infer<typeof GetAccountTimelineResponseSchema>>
   > {
-    const res = await this.accountTimelineService.handle(
+    const res = await this.#accountTimelineService.handle(
       targetId as AccountID,
       {
         id: fromId as AccountID,
@@ -296,7 +296,7 @@ export class TimelineController {
 
     // Check renoted status for all notes
     const noteIDs = noteAdditionalData.map((v) => v.note.getID());
-    const renotedStatuses = await this.noteModule.fetchRenoteStatus(
+    const renotedStatuses = await this.#noteModule.fetchRenoteStatus(
       fromId as AccountID,
       noteIDs,
     );
@@ -354,7 +354,7 @@ export class TimelineController {
   ): Promise<
     Result.Result<Error, z.infer<typeof GetListTimelineResponseSchema>>
   > {
-    const notesRes = await this.listTimelineService.handle(listID as ListID, {
+    const notesRes = await this.#listTimelineService.handle(listID as ListID, {
       hasAttachment,
       noNsfw,
       beforeId: beforeId as NoteID,
@@ -420,7 +420,7 @@ export class TimelineController {
     isPublic: boolean,
     ownerId: string,
   ): Promise<Result.Result<Error, z.infer<typeof CreateListResponseSchema>>> {
-    const res = await this.createListService.handle(
+    const res = await this.#createListService.handle(
       title,
       isPublic,
       ownerId as AccountID,
@@ -442,7 +442,7 @@ export class TimelineController {
     data: z.infer<typeof EditListRequestSchema>,
   ): Promise<Result.Result<Error, z.infer<typeof EditListResponseSchema>>> {
     if (data.title) {
-      const res = await this.editListService.editTitle(
+      const res = await this.#editListService.editTitle(
         id as ListID,
         data.title,
       );
@@ -453,7 +453,7 @@ export class TimelineController {
     }
 
     if (data.public !== undefined) {
-      const res = await this.editListService.editPublicity(
+      const res = await this.#editListService.editPublicity(
         id as ListID,
         data.public ? 'PUBLIC' : 'PRIVATE',
       );
@@ -463,7 +463,7 @@ export class TimelineController {
       }
     }
 
-    const res = await this.fetchListService.handle(id as ListID);
+    const res = await this.#fetchListService.handle(id as ListID);
 
     if (Result.isErr(res)) {
       return res;
@@ -481,7 +481,7 @@ export class TimelineController {
   async fetchList(
     id: string,
   ): Promise<Result.Result<Error, z.infer<typeof FetchListResponseSchema>>> {
-    const res = await this.fetchListService.handle(id as ListID);
+    const res = await this.#fetchListService.handle(id as ListID);
     if (Result.isErr(res)) {
       return res;
     }
@@ -496,7 +496,7 @@ export class TimelineController {
   }
 
   async deleteList(id: string): Promise<Result.Result<Error, void>> {
-    return await this.deleteListService.handle(id as ListID);
+    return await this.#deleteListService.handle(id as ListID);
   }
 
   async getListMembers(
@@ -504,7 +504,7 @@ export class TimelineController {
   ): Promise<
     Result.Result<Error, z.infer<typeof GetListMemberResponseSchema>>
   > {
-    const accounts = await this.fetchMemberService.handle(id as ListID);
+    const accounts = await this.#fetchMemberService.handle(id as ListID);
     if (Result.isErr(accounts)) {
       return accounts;
     }
@@ -528,7 +528,7 @@ export class TimelineController {
     memberID: string,
     actorID: string,
   ): Promise<Result.Result<Error, void>> {
-    return this.appendListMemberService.handle(
+    return this.#appendListMemberService.handle(
       listID as ListID,
       memberID as AccountID,
       actorID as AccountID,
@@ -540,7 +540,7 @@ export class TimelineController {
     memberID: string,
     actorID: string,
   ): Promise<Result.Result<Error, void>> {
-    return this.removeListMemberService.handle(
+    return this.#removeListMemberService.handle(
       listID as ListID,
       memberID as AccountID,
       actorID as AccountID,
@@ -557,7 +557,7 @@ export class TimelineController {
     Result.Result<Error, z.infer<typeof GetAccountTimelineResponseSchema>>
   > {
     const res =
-      await this.fetchBookmarkTimelineService.fetchBookmarkByAccountID(
+      await this.#fetchBookmarkTimelineService.fetchBookmarkByAccountID(
         accountID as AccountID,
         {
           hasAttachment,
@@ -573,7 +573,7 @@ export class TimelineController {
     const noteIDs = Result.unwrap(res);
 
     const notesRes =
-      await this.fetchBookmarkTimelineService.fetchBookmarkNotes(noteIDs);
+      await this.#fetchBookmarkTimelineService.fetchBookmarkNotes(noteIDs);
     if (Result.isErr(notesRes)) {
       return notesRes;
     }
@@ -588,7 +588,7 @@ export class TimelineController {
 
     // Check renoted status for all notes
     const noteIDsToCheck = noteAdditionalData.map((v) => v.note.getID());
-    const renotedStatuses = await this.noteModule.fetchRenoteStatus(
+    const renotedStatuses = await this.#noteModule.fetchRenoteStatus(
       accountID as AccountID,
       noteIDsToCheck,
     );
@@ -640,7 +640,7 @@ export class TimelineController {
   ): Promise<
     Result.Result<Error, z.infer<typeof GetConversationsResponseSchema>>
   > {
-    const res = await this.fetchConversationService.fetchConversation(
+    const res = await this.#fetchConversationService.fetchConversation(
       accountID as AccountID,
     );
     if (Result.isErr(res)) {
@@ -648,7 +648,7 @@ export class TimelineController {
     }
     const conversations = Result.unwrap(res);
 
-    const accountRes = await this.accountModule.fetchAccounts(
+    const accountRes = await this.#accountModule.fetchAccounts(
       conversations.map((value) => value.id),
     );
     if (Result.isErr(accountRes)) {
@@ -657,7 +657,7 @@ export class TimelineController {
     const account = Result.unwrap(accountRes);
 
     const accountProfileImagesRes =
-      await this.accountModule.fetchAccountAvatarHeaders(
+      await this.#accountModule.fetchAccountAvatarHeaders(
         conversations.map((value) => value.id),
       );
     if (Result.isErr(accountProfileImagesRes)) {
@@ -698,7 +698,7 @@ export class TimelineController {
   ): Promise<
     Result.Result<Error, z.infer<typeof GetPublicTimelineResponseSchema>>
   > {
-    const res = await this.publicTimelineService.fetchPublicTimeline({
+    const res = await this.#publicTimelineService.fetchPublicTimeline({
       hasAttachment,
       noNsfw,
       beforeId: beforeId as NoteID | undefined,
@@ -717,7 +717,7 @@ export class TimelineController {
 
     // Check renoted status if user is logged in
     const renotedStatuses: RenoteStatus[] = Option.isSome(accountID)
-      ? await this.noteModule.fetchRenoteStatus(
+      ? await this.#noteModule.fetchRenoteStatus(
           Option.unwrap(accountID),
           noteAdditionalData.map((v) => v.note.getID()),
         )

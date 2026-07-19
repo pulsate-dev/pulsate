@@ -9,11 +9,18 @@ import type { FetchService } from '../../service/fetch.js';
 import type { CreateBookmarkResponseSchema } from '../validator/schema.js';
 
 export class BookmarkController {
+  readonly #createBookmarkService: CreateBookmarkService;
+  readonly #deleteBookmarkService: DeleteBookmarkService;
+  readonly #fetchNoteService: FetchService;
   constructor(
-    private readonly createBookmarkService: CreateBookmarkService,
-    private readonly deleteBookmarkService: DeleteBookmarkService,
-    private readonly fetchNoteService: FetchService,
-  ) {}
+    createBookmarkService: CreateBookmarkService,
+    deleteBookmarkService: DeleteBookmarkService,
+    fetchNoteService: FetchService,
+  ) {
+    this.#createBookmarkService = createBookmarkService;
+    this.#deleteBookmarkService = deleteBookmarkService;
+    this.#fetchNoteService = fetchNoteService;
+  }
 
   async createBookmark(
     noteID: string,
@@ -21,7 +28,7 @@ export class BookmarkController {
   ): Promise<
     Result.Result<Error, z.infer<typeof CreateBookmarkResponseSchema>>
   > {
-    const bookmarkRes = await this.createBookmarkService.handle(
+    const bookmarkRes = await this.#createBookmarkService.handle(
       noteID as NoteID,
       accountID as AccountID,
     );
@@ -30,7 +37,7 @@ export class BookmarkController {
     }
     const bookmark = Result.unwrap(bookmarkRes);
 
-    const attachmetsRes = await this.fetchNoteService.fetchNoteAttachments(
+    const attachmetsRes = await this.#fetchNoteService.fetchNoteAttachments(
       bookmark.getID(),
     );
     if (Result.isErr(attachmetsRes)) {
@@ -64,7 +71,7 @@ export class BookmarkController {
     noteID: string,
     accountID: string,
   ): Promise<Result.Result<Error, void>> {
-    const res = await this.deleteBookmarkService.handle(
+    const res = await this.#deleteBookmarkService.handle(
       noteID as NoteID,
       accountID as AccountID,
     );

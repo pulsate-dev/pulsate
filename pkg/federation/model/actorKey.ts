@@ -35,34 +35,34 @@ export interface CreateActorKeyPairArgs {
  * @see https://docs.joinmastodon.org/spec/activitypub/#publicKey
  */
 export class ActorKeyPair {
-  private readonly id: ActorKeyPairID;
+  readonly #id: ActorKeyPairID;
   /**
    * Actor ID who owns this key pair
    */
-  private readonly actorID: ActorID;
+  readonly #actorID: ActorID;
 
   /**
    * Public key ID URL
    * @example `https://example.com/users/1#main-key`
    */
-  private readonly publicKeyID: URL;
+  readonly #publicKeyID: URL;
   /**
    * Public key for verify ActivityPub activity objects (PEM Format)
    */
-  private readonly publicKey: PEMKey;
+  readonly #publicKey: PEMKey;
 
   /**
    * Private key for sign ActivityPub activity objects (PEM Format)\
    * NOTE: if actor is remote account, this field is `Option.None`.
    */
-  private readonly privateKey: Option.Option<PEMKey>;
+  readonly #privateKey: Option.Option<PEMKey>;
 
   private constructor(args: CreateActorKeyPairArgs) {
-    this.id = args.id;
-    this.actorID = args.actorID;
-    this.publicKeyID = args.publicKeyID;
-    this.publicKey = args.publicKey;
-    this.privateKey = args.privateKey;
+    this.#id = args.id;
+    this.#actorID = args.actorID;
+    this.#publicKeyID = args.publicKeyID;
+    this.#publicKey = args.publicKey;
+    this.#privateKey = args.privateKey;
   }
 
   static new(args: CreateActorKeyPairArgs) {
@@ -74,7 +74,7 @@ export class ActorKeyPair {
    * @returns ActorKeyPair ID
    */
   getID(): ActorKeyPairID {
-    return this.id;
+    return this.#id;
   }
 
   /**
@@ -82,7 +82,7 @@ export class ActorKeyPair {
    * @returns Actor ID
    */
   getActorID(): ActorID {
-    return this.actorID;
+    return this.#actorID;
   }
 
   /**
@@ -91,7 +91,7 @@ export class ActorKeyPair {
    * @example `https://example.com/users/1#main-key`
    */
   getPublicKeyID(): URL {
-    return this.publicKeyID;
+    return this.#publicKeyID;
   }
 
   /**
@@ -99,7 +99,7 @@ export class ActorKeyPair {
    * @returns Public key
    */
   getPublicKeyString(): PEMKey {
-    return this.publicKey;
+    return this.#publicKey;
   }
 
   /**
@@ -107,7 +107,7 @@ export class ActorKeyPair {
    * @returns CryptoKey https://developer.mozilla.org/en-US/docs/Web/API/CryptoKey
    */
   async getPublicKeyObject(): Promise<Result.Result<Error, CryptoKey>> {
-    return importRSAKey('public', this.publicKey);
+    return importRSAKey('public', this.#publicKey);
   }
 
   /**
@@ -116,7 +116,7 @@ export class ActorKeyPair {
    * @returns Private key
    */
   getPrivateKeyString(): Option.Option<PEMKey> {
-    return this.privateKey;
+    return this.#privateKey;
   }
 
   /**
@@ -124,11 +124,11 @@ export class ActorKeyPair {
    * @returns CryptoKey https://developer.mozilla.org/en-US/docs/Web/API/CryptoKey
    */
   async getPrivateKeyObject(): Promise<Result.Result<Error, CryptoKey>> {
-    if (Option.isNone(this.privateKey)) {
+    if (Option.isNone(this.#privateKey)) {
       // ToDo: Replace Error type
       return Result.err(new Error('Private key is not set'));
     }
-    const privateKey = Option.unwrap(this.privateKey);
+    const privateKey = Option.unwrap(this.#privateKey);
 
     return importRSAKey('private', privateKey);
   }

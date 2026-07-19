@@ -23,15 +23,22 @@ import {
 } from '../model/repository.js';
 
 export class CreateDirectNoteService {
-  constructor(
-    private readonly deps: {
-      directNoteRepository: DirectNoteRepository;
-      directNoteAttachmentRepository: DirectNoteAttachmentRepository;
-      idGenerator: SnowflakeIDGenerator;
-      clock: Clock;
-      accountModule: AccountModuleFacade;
-    },
-  ) {}
+  readonly #deps: {
+    directNoteRepository: DirectNoteRepository;
+    directNoteAttachmentRepository: DirectNoteAttachmentRepository;
+    idGenerator: SnowflakeIDGenerator;
+    clock: Clock;
+    accountModule: AccountModuleFacade;
+  };
+  constructor(deps: {
+    directNoteRepository: DirectNoteRepository;
+    directNoteAttachmentRepository: DirectNoteAttachmentRepository;
+    idGenerator: SnowflakeIDGenerator;
+    clock: Clock;
+    accountModule: AccountModuleFacade;
+  }) {
+    this.#deps = deps;
+  }
 
   async handle(
     content: string,
@@ -40,11 +47,11 @@ export class CreateDirectNoteService {
     recipientID: AccountID,
     attachmentFileID: MediumID[],
   ): Promise<Result.Result<Error, DirectNote>> {
-    const now = this.deps.clock.now();
+    const now = this.#deps.clock.now();
 
     return Cat.doT(resultPromiseMonad<Error>())
       .runWith(() =>
-        this.deps.accountModule
+        this.#deps.accountModule
           .fetchAccount(authorID)
           .then(
             Result.mapErr(
@@ -55,7 +62,7 @@ export class CreateDirectNoteService {
           .then(Result.map(() => [])),
       )
       .runWith(() =>
-        this.deps.accountModule
+        this.#deps.accountModule
           .fetchAccount(recipientID)
           .then(
             Result.mapErr(
@@ -67,7 +74,10 @@ export class CreateDirectNoteService {
           )
           .then(Result.map(() => [])),
       )
-      .addM('id', Promise.resolve(this.deps.idGenerator.generate<DirectNote>()))
+      .addM(
+        'id',
+        Promise.resolve(this.#deps.idGenerator.generate<DirectNote>()),
+      )
       .addMWith('note', ({ id }) =>
         Promise.resolve(
           DirectNote.new({
@@ -82,12 +92,12 @@ export class CreateDirectNoteService {
         ),
       )
       .runWith(({ note }) =>
-        this.deps.directNoteRepository.create(note).then(Result.map(() => [])),
+        this.#deps.directNoteRepository.create(note).then(Result.map(() => [])),
       )
       .when(
         () => attachmentFileID.length !== 0,
         ({ note }) =>
-          this.deps.directNoteAttachmentRepository
+          this.#deps.directNoteAttachmentRepository
             .create(note.getID(), note.getAttachmentFileID())
             .then(Result.map(() => [])),
       )

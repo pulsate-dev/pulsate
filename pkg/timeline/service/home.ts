@@ -12,10 +12,15 @@ import {
 } from '../model/repository.js';
 
 export class HomeTimelineService {
+  readonly #timelineCacheRepository: TimelineNotesCacheRepository;
+  readonly #timelineRepository: TimelineRepository;
   constructor(
-    private readonly timelineCacheRepository: TimelineNotesCacheRepository,
-    private readonly timelineRepository: TimelineRepository,
-  ) {}
+    timelineCacheRepository: TimelineNotesCacheRepository,
+    timelineRepository: TimelineRepository,
+  ) {
+    this.#timelineCacheRepository = timelineCacheRepository;
+    this.#timelineRepository = timelineRepository;
+  }
 
   async fetchHomeTimeline(
     accountID: AccountID,
@@ -23,7 +28,7 @@ export class HomeTimelineService {
   ): Promise<Result.Result<Error, Note[]>> {
     // ToDo: get note IDs from cache repository
     const noteIDsRes =
-      await this.timelineCacheRepository.getHomeTimeline(accountID);
+      await this.#timelineCacheRepository.getHomeTimeline(accountID);
     if (Result.isErr(noteIDsRes)) {
       timelineModuleLogger.warn(
         'Failed to get home timeline cache',
@@ -33,7 +38,7 @@ export class HomeTimelineService {
     }
     const noteIDs = Result.unwrap(noteIDsRes);
 
-    return await this.timelineRepository.getHomeTimeline(noteIDs, filter);
+    return await this.#timelineRepository.getHomeTimeline(noteIDs, filter);
   }
 }
 export const homeTimelineSymbol = Ether.newEtherSymbol<HomeTimelineService>();

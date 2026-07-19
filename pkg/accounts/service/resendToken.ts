@@ -16,18 +16,18 @@ import {
 } from './verifyToken.js';
 
 export class ResendVerifyTokenService {
-  private readonly inactiveAccountRepository: InactiveAccountRepository;
-  private readonly verifyAccountTokenService: VerifyAccountTokenService;
-  private readonly notificationModule: NotificationModuleFacade;
+  readonly #inactiveAccountRepository: InactiveAccountRepository;
+  readonly #verifyAccountTokenService: VerifyAccountTokenService;
+  readonly #notificationModule: NotificationModuleFacade;
 
   constructor(
     inactiveAccountRepository: InactiveAccountRepository,
     verifyAccountTokenService: VerifyAccountTokenService,
     notificationModule: NotificationModuleFacade,
   ) {
-    this.inactiveAccountRepository = inactiveAccountRepository;
-    this.verifyAccountTokenService = verifyAccountTokenService;
-    this.notificationModule = notificationModule;
+    this.#inactiveAccountRepository = inactiveAccountRepository;
+    this.#verifyAccountTokenService = verifyAccountTokenService;
+    this.#notificationModule = notificationModule;
   }
 
   async handle(name: AccountName): Promise<Option.Option<Error>> {
@@ -36,7 +36,7 @@ export class ResendVerifyTokenService {
     const res = await Cat.doT(monad)
       .addM(
         'account',
-        this.inactiveAccountRepository
+        this.#inactiveAccountRepository
           .findByName(name)
           .then(
             Option.okOr(
@@ -45,10 +45,10 @@ export class ResendVerifyTokenService {
           ),
       )
       .addMWith('token', ({ account }) =>
-        this.verifyAccountTokenService.generate(account.getName()),
+        this.#verifyAccountTokenService.generate(account.getName()),
       )
       .runWith(({ account, token }) =>
-        this.notificationModule
+        this.#notificationModule
           .sendEmailNotification({
             to: account.getMail(),
             subject: 'Verify your email address',

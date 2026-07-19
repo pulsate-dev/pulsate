@@ -12,11 +12,18 @@ import { List } from '../model/list.js';
 import { type ListRepository, listRepoSymbol } from '../model/repository.js';
 
 export class CreateListService {
+  readonly #idGenerator: SnowflakeIDGenerator;
+  readonly #listRepository: ListRepository;
+  readonly #clock: Clock;
   constructor(
-    private readonly idGenerator: SnowflakeIDGenerator,
-    private readonly listRepository: ListRepository,
-    private readonly clock: Clock,
-  ) {}
+    idGenerator: SnowflakeIDGenerator,
+    listRepository: ListRepository,
+    clock: Clock,
+  ) {
+    this.#idGenerator = idGenerator;
+    this.#listRepository = listRepository;
+    this.#clock = clock;
+  }
 
   async handle(
     title: string,
@@ -26,7 +33,7 @@ export class CreateListService {
     const monad = resultPromiseMonad<Error>();
 
     return Cat.doT(monad)
-      .addM('id', Promise.resolve(this.idGenerator.generate<List>()))
+      .addM('id', Promise.resolve(this.#idGenerator.generate<List>()))
       .addMWith('list', ({ id }) =>
         Promise.resolve(
           List.new({
@@ -35,12 +42,12 @@ export class CreateListService {
             publicity: isPublic ? 'PUBLIC' : 'PRIVATE',
             ownerId,
             memberIds: [] as const,
-            createdAt: new Date(Number(this.clock.now())),
+            createdAt: new Date(Number(this.#clock.now())),
           }),
         ),
       )
       .runWith(({ list }) =>
-        monad.map(() => [])(this.listRepository.create(list)),
+        monad.map(() => [])(this.#listRepository.create(list)),
       )
       .finish(({ list }) => list);
   }

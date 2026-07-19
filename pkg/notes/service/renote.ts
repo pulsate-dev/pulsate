@@ -33,16 +33,24 @@ import {
 import { fetchActor } from './fetchActor.js';
 
 export class RenoteService {
-  constructor(
-    private readonly deps: {
-      noteRepository: NoteRepository;
-      idGenerator: SnowflakeIDGenerator;
-      noteAttachmentRepository: NoteAttachmentRepository;
-      accountModule: AccountModuleFacade;
-      timelineModule: TimelineModuleFacade;
-      clock: Clock;
-    },
-  ) {}
+  readonly #deps: {
+    noteRepository: NoteRepository;
+    idGenerator: SnowflakeIDGenerator;
+    noteAttachmentRepository: NoteAttachmentRepository;
+    accountModule: AccountModuleFacade;
+    timelineModule: TimelineModuleFacade;
+    clock: Clock;
+  };
+  constructor(deps: {
+    noteRepository: NoteRepository;
+    idGenerator: SnowflakeIDGenerator;
+    noteAttachmentRepository: NoteAttachmentRepository;
+    accountModule: AccountModuleFacade;
+    timelineModule: TimelineModuleFacade;
+    clock: Clock;
+  }) {
+    this.#deps = deps;
+  }
 
   /**
    * Renote a note
@@ -56,10 +64,10 @@ export class RenoteService {
     attachmentFileID: MediumID[],
     visibility: NoteVisibility,
   ): Promise<Result.Result<Error, Note>> {
-    const now = this.deps.clock.now();
+    const now = this.#deps.clock.now();
 
     const res = await Cat.doT(resultPromiseMonad<Error>())
-      .addM('actor', fetchActor(this.deps.accountModule, authorID))
+      .addM('actor', fetchActor(this.#deps.accountModule, authorID))
       .runWith(({ actor }) =>
         Promise.resolve(
           this.isAllowed(actor, visibility)
@@ -77,7 +85,7 @@ export class RenoteService {
           Result.map(() => []),
         ),
       )
-      .addM('id', Promise.resolve(this.deps.idGenerator.generate<Note>()))
+      .addM('id', Promise.resolve(this.#deps.idGenerator.generate<Note>()))
       .addMWith('renote', ({ id, originalNote }) =>
         Promise.resolve(
           Note.new({
@@ -96,12 +104,12 @@ export class RenoteService {
       .when(
         () => attachmentFileID.length !== 0,
         ({ renote }) =>
-          this.deps.noteAttachmentRepository
+          this.#deps.noteAttachmentRepository
             .create(renote.getID(), renote.getAttachmentFileID())
             .then(Result.map(() => [])),
       )
       .runWith(({ renote }) =>
-        this.deps.noteRepository.create(renote).then(Result.map(() => [])),
+        this.#deps.noteRepository.create(renote).then(Result.map(() => [])),
       )
       .finish(({ renote }) => renote);
 
@@ -112,7 +120,7 @@ export class RenoteService {
 
     // ToDo: Even if the note cannot be pushed to the timeline, the note is created successfully, so there is no error here.
     // ToDo: use job queue to push note to timeline
-    await this.deps.timelineModule.pushNoteToTimeline(renote);
+    await this.#deps.timelineModule.pushNoteToTimeline(renote);
 
     return Result.ok(renote);
   }
@@ -126,7 +134,7 @@ export class RenoteService {
     return Cat.doT(resultPromiseMonad<Error>())
       .addM(
         'note',
-        this.deps.noteRepository
+        this.#deps.noteRepository
           .findByID(originalID)
           .then(Option.okOrElse(notFound)),
       )
@@ -138,7 +146,7 @@ export class RenoteService {
         if (Option.isNone(chainRootID)) {
           return Result.ok(note);
         }
-        return this.deps.noteRepository
+        return this.#deps.noteRepository
           .findByID(Option.unwrap(chainRootID))
           .then(Option.okOrElse(notFound));
       })

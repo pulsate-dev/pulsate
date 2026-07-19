@@ -2,13 +2,16 @@ import { Ether, type Result } from '@mikuroxina/mini-fn';
 import { type EmailSender, emailSenderSymbol } from '../model/emailSender.js';
 
 export class SendEmailNotificationService {
-  constructor(private readonly emailSender: EmailSender) {}
+  readonly #emailSender: EmailSender;
+  constructor(emailSender: EmailSender) {
+    this.#emailSender = emailSender;
+  }
   async handle(
     to: string,
     subject: string,
     body: string,
   ): Promise<Result.Result<Error, void>> {
-    return await this.emailSender.send(to, subject, body);
+    return await this.#emailSender.send(to, subject, body);
   }
 }
 

@@ -15,7 +15,10 @@ export interface SmtpConfig {
 }
 
 export class SmtpEmailSender implements EmailSender {
-  constructor(private readonly smtpConfig: SmtpConfig) {}
+  readonly #smtpConfig: SmtpConfig;
+  constructor(smtpConfig: SmtpConfig) {
+    this.#smtpConfig = smtpConfig;
+  }
 
   async send(
     to: string,
@@ -23,7 +26,7 @@ export class SmtpEmailSender implements EmailSender {
     body: string,
   ): Promise<Result.Result<Error, void>> {
     const message = createMessage({
-      from: this.smtpConfig.from,
+      from: this.#smtpConfig.from,
       to: to,
       subject: subject,
       content: {
@@ -32,12 +35,12 @@ export class SmtpEmailSender implements EmailSender {
     });
 
     const res = await new SmtpTransport({
-      host: this.smtpConfig.host,
-      port: this.smtpConfig.port,
+      host: this.#smtpConfig.host,
+      port: this.#smtpConfig.port,
       secure: false,
       auth: {
-        user: this.smtpConfig.user,
-        pass: this.smtpConfig.pass,
+        user: this.#smtpConfig.user,
+        pass: this.#smtpConfig.pass,
       },
     }).send(message);
 

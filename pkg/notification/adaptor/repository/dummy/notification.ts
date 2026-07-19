@@ -13,10 +13,10 @@ import {
 } from '../../../model/repository/notification.js';
 
 export class InMemoryNotificationRepository implements NotificationRepository {
-  private readonly data: Map<NotificationID, Notification>;
+  readonly #data: Map<NotificationID, Notification>;
 
   constructor(data: Notification[] = []) {
-    this.data = new Map(
+    this.#data = new Map(
       data.map((notification) => [notification.getID(), notification]),
     );
   }
@@ -24,14 +24,14 @@ export class InMemoryNotificationRepository implements NotificationRepository {
   async create(
     notification: Notification,
   ): Promise<Result.Result<Error, void>> {
-    this.data.set(notification.getID(), notification);
+    this.#data.set(notification.getID(), notification);
     return Result.ok(undefined);
   }
 
   async findByID(
     id: NotificationID,
   ): Promise<Result.Result<Error, Notification>> {
-    const res = this.data.get(id);
+    const res = this.#data.get(id);
     if (!res) {
       return Result.err(new Error('notification not found'));
     }
@@ -42,7 +42,7 @@ export class InMemoryNotificationRepository implements NotificationRepository {
     recipientID: AccountID,
     filter: NotificationFilter,
   ): Promise<Result.Result<Error, Notification[]>> {
-    const res = [...this.data.values()].filter(
+    const res = [...this.#data.values()].filter(
       (notification) => notification.getRecipientID() === recipientID,
     );
 
@@ -82,7 +82,7 @@ export class InMemoryNotificationRepository implements NotificationRepository {
   async updateReadAt(
     notification: Notification,
   ): Promise<Result.Result<Error, void>> {
-    const target = this.data.get(notification.getID());
+    const target = this.#data.get(notification.getID());
     if (!target) {
       return Result.err(new Error('notification not found'));
     }
@@ -94,7 +94,7 @@ export class InMemoryNotificationRepository implements NotificationRepository {
       return Result.err(new Error('notification not read yet'));
     }
 
-    this.data.set(notification.getID(), notification);
+    this.#data.set(notification.getID(), notification);
     return Result.ok(undefined);
   }
 }

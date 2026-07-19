@@ -11,14 +11,14 @@ import {
 export class InMemoryAccountAvatarRepository
   implements AccountAvatarRepository
 {
-  private media: Map<MediumID, Medium>;
-  private data: Map<AccountID, MediumID>;
+  #media: Map<MediumID, Medium>;
+  #data: Map<AccountID, MediumID>;
   constructor(
     media: Medium[] = [],
     accountAvatar: { accountID: AccountID; mediumID: MediumID }[] = [],
   ) {
-    this.media = new Map(media.map((m) => [m.getId(), m]));
-    this.data = new Map(
+    this.#media = new Map(media.map((m) => [m.getId(), m]));
+    this.#data = new Map(
       accountAvatar.map(({ accountID, mediumID }) => [accountID, mediumID]),
     );
   }
@@ -27,8 +27,8 @@ export class InMemoryAccountAvatarRepository
     media: Medium[] = [],
     accountAvatar: { accountID: AccountID; mediumID: MediumID }[] = [],
   ) {
-    this.media = new Map(media.map((m) => [m.getId(), m]));
-    this.data = new Map(
+    this.#media = new Map(media.map((m) => [m.getId(), m]));
+    this.#data = new Map(
       accountAvatar.map(({ accountID, mediumID }) => [accountID, mediumID]),
     );
   }
@@ -37,44 +37,44 @@ export class InMemoryAccountAvatarRepository
     accountID: AccountID,
     mediumID: MediumID,
   ): Promise<Result.Result<Error, void>> {
-    if (this.data.has(accountID)) {
+    if (this.#data.has(accountID)) {
       // ToDo: Define AccountHeaderAlreadyExistsError
       return Result.err(new Error('Account already exists'));
     }
 
-    this.data.set(accountID, mediumID);
+    this.#data.set(accountID, mediumID);
 
     return Result.ok(undefined);
   }
 
   async delete(accountID: AccountID): Promise<Result.Result<Error, void>> {
-    if (!this.data.has(accountID)) {
+    if (!this.#data.has(accountID)) {
       return Result.err(
         new AccountNotFoundError('Account not found', { cause: null }),
       );
     }
-    this.data.delete(accountID);
+    this.#data.delete(accountID);
     return Result.ok(undefined);
   }
 
   async findByID(accountID: AccountID): Promise<Result.Result<Error, Medium>> {
-    const mediumID = this.data.get(accountID);
+    const mediumID = this.#data.get(accountID);
     if (!mediumID) {
       return Result.err(
         new MediaNotFoundError('medium not found', { cause: null }),
       );
     }
 
-    return Result.ok(this.media.get(mediumID) as Medium);
+    return Result.ok(this.#media.get(mediumID) as Medium);
   }
 
   async findByIDs(
     accountIDs: readonly AccountID[],
   ): Promise<Result.Result<Error, Medium[]>> {
     const media = accountIDs
-      .map((accountID) => this.data.get(accountID))
+      .map((accountID) => this.#data.get(accountID))
       .filter((mediumID): mediumID is MediumID => mediumID !== undefined)
-      .map((mediumID) => this.media.get(mediumID))
+      .map((mediumID) => this.#media.get(mediumID))
       .filter((medium): medium is Medium => medium !== undefined);
 
     return Result.ok(media);

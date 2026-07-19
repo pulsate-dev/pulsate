@@ -11,23 +11,28 @@ import {
 } from '../model/repository.js';
 
 export class FetchBookmarkService {
+  readonly #bookmarkRepository: BookmarkTimelineRepository;
+  readonly #timelineRepository: TimelineRepository;
   constructor(
-    private readonly bookmarkRepository: BookmarkTimelineRepository,
-    private readonly timelineRepository: TimelineRepository,
-  ) {}
+    bookmarkRepository: BookmarkTimelineRepository,
+    timelineRepository: TimelineRepository,
+  ) {
+    this.#bookmarkRepository = bookmarkRepository;
+    this.#timelineRepository = timelineRepository;
+  }
 
   async fetchBookmarkByAccountID(
     accountID: AccountID,
     filter: BookmarkTimelineFilter,
   ): Promise<Result.Result<Error, NoteID[]>> {
-    return await this.bookmarkRepository.findByAccountID(accountID, filter);
+    return await this.#bookmarkRepository.findByAccountID(accountID, filter);
   }
 
   async fetchBookmarkNotes(
     noteIDs: NoteID[],
   ): Promise<Result.Result<Error, Note[]>> {
     // NOTE: This function is simply used to fetch multiple posts by retrieving Notes from the IDs obtained in fetchBookmarkByAccountID.
-    return await this.timelineRepository.getHomeTimeline(noteIDs, {
+    return await this.#timelineRepository.getHomeTimeline(noteIDs, {
       hasAttachment: false,
       noNsfw: false,
     });
