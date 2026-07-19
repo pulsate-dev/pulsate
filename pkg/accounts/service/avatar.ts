@@ -13,10 +13,15 @@ import {
 } from '../model/repository.js';
 
 export class AccountAvatarService {
+  readonly #avatarRepository: AccountAvatarRepository;
+  readonly #mediaModule: MediaModuleFacade;
   constructor(
-    private readonly avatarRepository: AccountAvatarRepository,
-    private readonly mediaModule: MediaModuleFacade,
-  ) {}
+    avatarRepository: AccountAvatarRepository,
+    mediaModule: MediaModuleFacade,
+  ) {
+    this.#avatarRepository = avatarRepository;
+    this.#mediaModule = mediaModule;
+  }
 
   /**
    * @description Set account avatar image.
@@ -39,7 +44,7 @@ export class AccountAvatarService {
 
     // ToDo: Check media type
     return Cat.doT(monad)
-      .addM('medium', this.mediaModule.fetchMedia(mediumID))
+      .addM('medium', this.#mediaModule.fetchMedia(mediumID))
       .when(
         ({ medium }) => medium.isNsfw(),
         () =>
@@ -63,7 +68,7 @@ export class AccountAvatarService {
         ),
       )
       .runWith(() =>
-        monad.map(() => [])(this.avatarRepository.create(accountID, mediumID)),
+        monad.map(() => [])(this.#avatarRepository.create(accountID, mediumID)),
       )
       .finish(() => undefined);
   }
@@ -88,7 +93,7 @@ export class AccountAvatarService {
         ),
       )
       .runWith(() =>
-        monad.map(() => [])(this.avatarRepository.delete(accountID)),
+        monad.map(() => [])(this.#avatarRepository.delete(accountID)),
       )
       .finish(() => undefined);
   }
@@ -100,7 +105,7 @@ export class AccountAvatarService {
   async fetchByAccountID(
     accountID: AccountID,
   ): Promise<Result.Result<Error, Medium>> {
-    return await this.avatarRepository.findByID(accountID);
+    return await this.#avatarRepository.findByID(accountID);
   }
 
   /**
@@ -110,7 +115,7 @@ export class AccountAvatarService {
   async fetchByAccountIDs(
     accountIDs: readonly AccountID[],
   ): Promise<Result.Result<Error, Medium[]>> {
-    return await this.avatarRepository.findByIDs(accountIDs);
+    return await this.#avatarRepository.findByIDs(accountIDs);
   }
 
   private isAllowed(

@@ -14,7 +14,10 @@ export interface NoteVisibilityCheckArgs {
 }
 
 export class NoteVisibilityService {
-  constructor(private readonly accountModule: AccountModuleFacade) {}
+  readonly #accountModule: AccountModuleFacade;
+  constructor(accountModule: AccountModuleFacade) {
+    this.#accountModule = accountModule;
+  }
 
   public async handle(args: NoteVisibilityCheckArgs): Promise<boolean> {
     if (args.accountID === args.note.getAuthorID()) {
@@ -27,7 +30,7 @@ export class NoteVisibilityService {
       return true;
     }
     if (args.note.getVisibility() === 'FOLLOWERS') {
-      const followers = await this.accountModule.fetchFollowers(
+      const followers = await this.#accountModule.fetchFollowers(
         args.note.getAuthorID(),
       );
       if (Result.isErr(followers)) {

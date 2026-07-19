@@ -8,28 +8,28 @@ import {
 } from '../../model/repository.js';
 
 export class InMemoryMediaRepository implements MediaRepository {
-  private readonly data: Map<string, Medium> = new Map();
+  readonly #data: Map<string, Medium> = new Map();
 
   constructor(media: Medium[]) {
     for (const medium of media) {
-      this.data.set(medium.getId(), medium);
+      this.#data.set(medium.getId(), medium);
     }
   }
 
   async create(medium: Medium): Promise<Result.Result<Error, Medium>> {
-    this.data.set(medium.getId(), medium);
+    this.#data.set(medium.getId(), medium);
     return Result.ok(medium);
   }
 
   async findByAuthor(authorId: AccountID): Promise<Option.Option<Medium[]>> {
-    const res = [...this.data]
+    const res = [...this.#data]
       .filter((m) => m[1].getAuthorId() === authorId)
       .map((v) => v[1]);
     return Option.some(res);
   }
 
   async findById(id: MediumID): Promise<Option.Option<Medium>> {
-    const res = this.data.get(id);
+    const res = this.#data.get(id);
     if (!res) {
       return Option.none();
     }

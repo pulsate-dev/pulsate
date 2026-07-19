@@ -18,12 +18,21 @@ import {
 import { VerifyToken } from '../model/verifyToken.js';
 
 export class VerifyAccountTokenService {
+  readonly #repository: AccountVerifyTokenRepository;
+  readonly #inactiveAccountRepository: InactiveAccountRepository;
+  readonly #accountRepository: AccountRepository;
+  readonly #clock: Clock;
   constructor(
-    private readonly repository: AccountVerifyTokenRepository,
-    private readonly inactiveAccountRepository: InactiveAccountRepository,
-    private readonly accountRepository: AccountRepository,
-    private readonly clock: Clock,
-  ) {}
+    repository: AccountVerifyTokenRepository,
+    inactiveAccountRepository: InactiveAccountRepository,
+    accountRepository: AccountRepository,
+    clock: Clock,
+  ) {
+    this.#repository = repository;
+    this.#inactiveAccountRepository = inactiveAccountRepository;
+    this.#accountRepository = accountRepository;
+    this.#clock = clock;
+  }
 
   async generate(
     accountName: AccountName,
@@ -31,13 +40,13 @@ export class VerifyAccountTokenService {
     const monad = resultPromiseMonad<Error>();
     // expireDate: After 7 days
     const expireDate = new Date(
-      Number(this.clock.now()) + 7 * 24 * 60 * 60 * 1000,
+      Number(this.#clock.now()) + 7 * 24 * 60 * 60 * 1000,
     );
 
     return Cat.doT(monad)
       .addM(
         'account',
-        this.inactiveAccountRepository
+        this.#inactiveAccountRepository
           .findByName(accountName)
           .then(
             Option.okOr(
@@ -50,7 +59,7 @@ export class VerifyAccountTokenService {
       )
       .runWith(({ token }) =>
         monad.map(() => [])(
-          this.repository.create(
+          this.#repository.create(
             token.getAccountID(),
             token.getToken(),
             token.getExpire(),
@@ -69,7 +78,7 @@ export class VerifyAccountTokenService {
     return Cat.doT(monad)
       .addM(
         'inactiveAccount',
-        this.inactiveAccountRepository
+        this.#inactiveAccountRepository
           .findByName(accountName)
           .then(
             Option.okOr(
@@ -78,7 +87,7 @@ export class VerifyAccountTokenService {
           ),
       )
       .addMWith('verifyToken', ({ inactiveAccount }) =>
-        this.repository
+        this.#repository
           .findByID(inactiveAccount.getID())
           .then(
             Option.okOr(
@@ -111,21 +120,21 @@ export class VerifyAccountTokenService {
           ),
       )
       .runWith(({ inactiveAccount }) =>
-        monad.map(() => [])(this.repository.delete(inactiveAccount.getID())),
+        monad.map(() => [])(this.#repository.delete(inactiveAccount.getID())),
       )
       .addMWith('account', ({ inactiveAccount }) =>
         Promise.resolve(
           inactiveAccount.activate({
-            createdAt: new Date(Number(this.clock.now())),
+            createdAt: new Date(Number(this.#clock.now())),
           }),
         ),
       )
       .runWith(({ account }) =>
-        monad.map(() => [])(this.accountRepository.create(account)),
+        monad.map(() => [])(this.#accountRepository.create(account)),
       )
       .runWith(({ inactiveAccount }) =>
         monad.map(() => [])(
-          this.inactiveAccountRepository.delete(inactiveAccount.getID()),
+          this.#inactiveAccountRepository.delete(inactiveAccount.getID()),
         ),
       )
       .finish(() => undefined);

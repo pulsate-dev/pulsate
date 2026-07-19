@@ -9,7 +9,10 @@ import type { List, ListID } from '../model/list.js';
 import { type ListRepository, listRepoSymbol } from '../model/repository.js';
 
 export class RemoveListMemberService {
-  constructor(private readonly listRepository: ListRepository) {}
+  readonly #listRepository: ListRepository;
+  constructor(listRepository: ListRepository) {
+    this.#listRepository = listRepository;
+  }
 
   /**
    * @description Remove member from list.
@@ -27,7 +30,7 @@ export class RemoveListMemberService {
     return Cat.doT(monad)
       .addM(
         'list',
-        this.listRepository
+        this.#listRepository
           .fetchList(listID)
           .then(
             Result.mapErr(
@@ -49,7 +52,7 @@ export class RemoveListMemberService {
       )
       .runWith(() =>
         monad.map(() => [])(
-          this.listRepository.removeListMember(listID, accountID),
+          this.#listRepository.removeListMember(listID, accountID),
         ),
       )
       .finish(() => undefined);

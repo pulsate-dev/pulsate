@@ -19,18 +19,27 @@ import {
 } from '../model/repository.js';
 
 export class FetchService {
+  readonly #noteRepository: NoteRepository;
+  readonly #accountModule: AccountModuleFacade;
+  readonly #noteAttachmentRepository: NoteAttachmentRepository;
+  readonly #reactionRepository: ReactionRepository;
   constructor(
-    private readonly noteRepository: NoteRepository,
-    private readonly accountModule: AccountModuleFacade,
-    private readonly noteAttachmentRepository: NoteAttachmentRepository,
-    private readonly reactionRepository: ReactionRepository,
-  ) {}
+    noteRepository: NoteRepository,
+    accountModule: AccountModuleFacade,
+    noteAttachmentRepository: NoteAttachmentRepository,
+    reactionRepository: ReactionRepository,
+  ) {
+    this.#noteRepository = noteRepository;
+    this.#accountModule = accountModule;
+    this.#noteAttachmentRepository = noteAttachmentRepository;
+    this.#reactionRepository = reactionRepository;
+  }
 
   async fetchNoteByID(noteID: NoteID): Promise<Option.Option<Note>> {
     return Cat.doT(Promise.monadT(Option.traversableMonad))
       .addM(
         'note',
-        this.noteRepository
+        this.#noteRepository
           .findByID(noteID)
           .then(
             Option.andThen((note) =>
@@ -41,7 +50,7 @@ export class FetchService {
           ),
       )
       .addMWith('account', ({ note }) =>
-        this.accountModule
+        this.#accountModule
           .fetchAccount(note.getAuthorID())
           .then(Result.optionOk),
       )
@@ -55,26 +64,26 @@ export class FetchService {
   async fetchNotesByID(
     noteIDs: NoteID[],
   ): Promise<Result.Result<Error, Note[]>> {
-    return await this.noteRepository.findManyByIDs(noteIDs);
+    return await this.#noteRepository.findManyByIDs(noteIDs);
   }
 
   async fetchNoteAttachments(
     noteID: NoteID,
   ): Promise<Result.Result<Error, Medium[]>> {
-    return await this.noteAttachmentRepository.findByNoteID(noteID);
+    return await this.#noteAttachmentRepository.findByNoteID(noteID);
   }
 
   async fetchNoteReactions(
     noteID: NoteID,
   ): Promise<Result.Result<Error, Reaction[]>> {
-    return await this.reactionRepository.findByNoteID(noteID);
+    return await this.#reactionRepository.findByNoteID(noteID);
   }
 
   async fetchRenoteStatus(
     accountID: AccountID,
     noteIDs: NoteID[],
   ): Promise<RenoteStatus[]> {
-    return await this.noteRepository.fetchRenoteStatus(accountID, noteIDs);
+    return await this.#noteRepository.fetchRenoteStatus(accountID, noteIDs);
   }
 }
 

@@ -14,10 +14,13 @@ type MediumPrismaArgs = Awaited<
 >;
 
 export class PrismaMediaRepository implements MediaRepository {
-  constructor(private readonly prisma: PrismaClient) {}
+  readonly #prisma: PrismaClient;
+  constructor(prisma: PrismaClient) {
+    this.#prisma = prisma;
+  }
   async create(medium: Medium): Promise<Result.Result<Error, Medium>> {
     try {
-      await this.prisma.medium.create({
+      await this.#prisma.medium.create({
         data: {
           ...this.toPrismaArgs(medium),
         },
@@ -30,7 +33,7 @@ export class PrismaMediaRepository implements MediaRepository {
   }
 
   async findById(id: MediumID): Promise<Option.Option<Medium>> {
-    const res = await this.prisma.medium.findUnique({
+    const res = await this.#prisma.medium.findUnique({
       where: {
         id,
       },
@@ -45,7 +48,7 @@ export class PrismaMediaRepository implements MediaRepository {
 
   async findByAuthor(authorId: AccountID): Promise<Option.Option<Medium[]>> {
     try {
-      const res = await this.prisma.medium.findMany({
+      const res = await this.#prisma.medium.findMany({
         where: {
           authorId,
         },

@@ -36,11 +36,11 @@ export class AccountAlreadyExistsError extends Error {
 }
 
 export class RegisterService {
-  private readonly inactiveAccountRepository: InactiveAccountRepository;
-  private readonly snowflakeIDGenerator: SnowflakeIDGenerator;
-  private readonly passwordEncoder: PasswordEncoder;
-  private readonly notificationModule: NotificationModuleFacade;
-  private readonly verifyAccountTokenService: VerifyAccountTokenService;
+  readonly #inactiveAccountRepository: InactiveAccountRepository;
+  readonly #snowflakeIDGenerator: SnowflakeIDGenerator;
+  readonly #passwordEncoder: PasswordEncoder;
+  readonly #notificationModule: NotificationModuleFacade;
+  readonly #verifyAccountTokenService: VerifyAccountTokenService;
 
   constructor(arg: {
     repository: InactiveAccountRepository;
@@ -49,11 +49,11 @@ export class RegisterService {
     notificationModule: NotificationModuleFacade;
     verifyAccountTokenService: VerifyAccountTokenService;
   }) {
-    this.inactiveAccountRepository = arg.repository;
-    this.snowflakeIDGenerator = arg.idGenerator;
-    this.passwordEncoder = arg.passwordEncoder;
-    this.notificationModule = arg.notificationModule;
-    this.verifyAccountTokenService = arg.verifyAccountTokenService;
+    this.#inactiveAccountRepository = arg.repository;
+    this.#snowflakeIDGenerator = arg.idGenerator;
+    this.#passwordEncoder = arg.passwordEncoder;
+    this.#notificationModule = arg.notificationModule;
+    this.#verifyAccountTokenService = arg.verifyAccountTokenService;
   }
 
   public async handle(
@@ -80,11 +80,11 @@ export class RegisterService {
         ),
       )
       .addMWith('passphraseHash', () =>
-        this.passwordEncoder.encodePassword(passphrase).then(Result.ok),
+        this.#passwordEncoder.encodePassword(passphrase).then(Result.ok),
       )
       .addM(
         'generatedID',
-        Promise.resolve(this.snowflakeIDGenerator.generate<Account>()),
+        Promise.resolve(this.#snowflakeIDGenerator.generate<Account>()),
       )
       .addMWith('account', ({ generatedID, passphraseHash }) =>
         Promise.resolve(
@@ -98,13 +98,13 @@ export class RegisterService {
         ),
       )
       .runWith(({ account }) =>
-        monad.map(() => [])(this.inactiveAccountRepository.create(account)),
+        monad.map(() => [])(this.#inactiveAccountRepository.create(account)),
       )
       .addMWith('token', ({ account }) =>
-        this.verifyAccountTokenService.generate(account.getName()),
+        this.#verifyAccountTokenService.generate(account.getName()),
       )
       .runWith(({ token }) =>
-        this.notificationModule
+        this.#notificationModule
           .sendEmailNotification({
             to: mail,
             subject: 'Verify your email address',
@@ -116,8 +116,8 @@ export class RegisterService {
   }
 
   private async isExists(mail: string, name: string): Promise<boolean> {
-    const byName = await this.inactiveAccountRepository.findByName(name);
-    const byMail = await this.inactiveAccountRepository.findByMail(mail);
+    const byName = await this.#inactiveAccountRepository.findByName(name);
+    const byMail = await this.#inactiveAccountRepository.findByMail(mail);
 
     return Option.isSome(byName) || Option.isSome(byMail);
   }

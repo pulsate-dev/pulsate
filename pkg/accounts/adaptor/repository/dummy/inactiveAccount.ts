@@ -9,23 +9,23 @@ import {
 export class InMemoryInactiveAccountRepository
   implements InactiveAccountRepository
 {
-  private data: Set<InactiveAccount>;
+  #data: Set<InactiveAccount>;
 
   constructor() {
-    this.data = new Set();
+    this.#data = new Set();
   }
 
   create(account: InactiveAccount): Promise<Result.Result<Error, void>> {
-    this.data.add(account);
+    this.#data.add(account);
     return Promise.resolve(Result.ok(undefined));
   }
 
   reset(): void {
-    this.data.clear();
+    this.#data.clear();
   }
 
   findByName(name: string): Promise<Option.Option<InactiveAccount>> {
-    const account = Array.from(this.data).find((a) => a.getName() === name);
+    const account = Array.from(this.#data).find((a) => a.getName() === name);
     if (!account) {
       return Promise.resolve(Option.none());
     }
@@ -33,7 +33,7 @@ export class InMemoryInactiveAccountRepository
   }
 
   findByMail(mail: string): Promise<Option.Option<InactiveAccount>> {
-    const account = Array.from(this.data).find((a) => a.getMail() === mail);
+    const account = Array.from(this.#data).find((a) => a.getMail() === mail);
     if (!account) {
       return Promise.resolve(Option.none());
     }
@@ -42,11 +42,11 @@ export class InMemoryInactiveAccountRepository
   }
 
   delete(id: AccountID): Promise<Result.Result<Error, void>> {
-    const account = Array.from(this.data).find((a) => a.getID() === id);
+    const account = Array.from(this.#data).find((a) => a.getID() === id);
     if (!account) {
       return Promise.resolve(Result.ok(undefined));
     }
-    this.data.delete(account);
+    this.#data.delete(account);
     return Promise.resolve(Result.ok(undefined));
   }
 }

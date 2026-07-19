@@ -18,12 +18,21 @@ type ProcessedImage = {
 };
 
 export class UploadMediaService {
+  readonly #idGenerator: SnowflakeIDGenerator;
+  readonly #repository: MediaRepository;
+  readonly #storage: Storage;
+  readonly #MAX_MEDIA_SIZE: number;
   constructor(
-    private readonly idGenerator: SnowflakeIDGenerator,
-    private readonly repository: MediaRepository,
-    private readonly storage: Storage,
-    private readonly MAX_MEDIA_SIZE: number,
-  ) {}
+    idGenerator: SnowflakeIDGenerator,
+    repository: MediaRepository,
+    storage: Storage,
+    MAX_MEDIA_SIZE: number,
+  ) {
+    this.#idGenerator = idGenerator;
+    this.#repository = repository;
+    this.#storage = storage;
+    this.#MAX_MEDIA_SIZE = MAX_MEDIA_SIZE;
+  }
 
   /**
    * @description Specification:
@@ -48,7 +57,7 @@ export class UploadMediaService {
           'mime',
           this.detectFileType(args.file).then(Option.okOrElse(invalidType)),
         )
-        .addM('id', Promise.resolve(this.idGenerator.generate<Medium>()))
+        .addM('id', Promise.resolve(this.#idGenerator.generate<Medium>()))
         // NOTE: imageProcessing runs before size validation, but the hash it
         // produces is only used by Medium.new. When processing fails, the empty
         // hash is harmless: an invalid source is rejected by Medium.new, and a
@@ -74,7 +83,7 @@ export class UploadMediaService {
               thumbnailUrl: Option.none(),
               sourceMime: mime,
               size: args.file.length,
-              maxSize: this.MAX_MEDIA_SIZE,
+              maxSize: this.#MAX_MEDIA_SIZE,
             }),
           ),
         )
@@ -91,16 +100,16 @@ export class UploadMediaService {
             ),
         )
         .runWith(({ id, processed }) =>
-          this.storage
+          this.#storage
             .upload(`${id}.webp`, Option.unwrap(processed).resized)
             .then(() => Result.ok([])),
         )
         .runWith(({ id, processed }) =>
-          this.storage
+          this.#storage
             .upload(`thumbnail-${id}.webp`, Option.unwrap(processed).thumbnail)
             .then(() => Result.ok([])),
         )
-        .addMWith('result', ({ medium }) => this.repository.create(medium))
+        .addMWith('result', ({ medium }) => this.#repository.create(medium))
         .finish(({ result }) => result)
     );
   }

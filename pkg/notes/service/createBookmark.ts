@@ -15,10 +15,15 @@ import {
 } from '../model/repository.js';
 
 export class CreateBookmarkService {
+  readonly #bookmarkRepository: BookmarkRepository;
+  readonly #noteRepository: NoteRepository;
   constructor(
-    private readonly bookmarkRepository: BookmarkRepository,
-    private readonly noteRepository: NoteRepository,
-  ) {}
+    bookmarkRepository: BookmarkRepository,
+    noteRepository: NoteRepository,
+  ) {
+    this.#bookmarkRepository = bookmarkRepository;
+    this.#noteRepository = noteRepository;
+  }
 
   async handle(
     noteID: NoteID,
@@ -27,7 +32,7 @@ export class CreateBookmarkService {
     return Cat.doT(resultPromiseMonad<Error>())
       .addM(
         'result',
-        this.noteRepository
+        this.#noteRepository
           .findByID(noteID)
           .then(
             Option.okOrElse(
@@ -36,7 +41,7 @@ export class CreateBookmarkService {
           ),
       )
       .runWith(() =>
-        this.bookmarkRepository
+        this.#bookmarkRepository
           .findByID({ noteID, accountID })
           .then(
             Option.mapOrElse<Result.Result<Error, never[]>>(() =>
@@ -52,7 +57,7 @@ export class CreateBookmarkService {
           ),
       )
       .runWith(() =>
-        this.bookmarkRepository
+        this.#bookmarkRepository
           .create({ noteID, accountID })
           .then(Result.map(() => [])),
       )

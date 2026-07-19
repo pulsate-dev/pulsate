@@ -19,14 +19,14 @@ import {
 } from '../../model/repository.js';
 
 export class InMemoryNoteRepository implements NoteRepository {
-  private readonly notes: Map<NoteID, Note>;
+  readonly #notes: Map<NoteID, Note>;
 
   constructor(notes: Note[] = []) {
-    this.notes = new Map(notes.map((note) => [note.getID(), note]));
+    this.#notes = new Map(notes.map((note) => [note.getID(), note]));
   }
 
   async create(note: Note): Promise<Result.Result<Error, void>> {
-    this.notes.set(note.getID(), note);
+    this.#notes.set(note.getID(), note);
     return Result.ok(undefined);
   }
 
@@ -36,7 +36,7 @@ export class InMemoryNoteRepository implements NoteRepository {
       return Result.err(new Error('note not found'));
     }
 
-    this.notes.delete(Option.unwrap(target).getID());
+    this.#notes.delete(Option.unwrap(target).getID());
     return Result.ok(undefined);
   }
 
@@ -44,7 +44,7 @@ export class InMemoryNoteRepository implements NoteRepository {
     authorID: AccountID,
     limit: number,
   ): Promise<Option.Option<Note[]>> {
-    const res = [...this.notes.values()].filter(
+    const res = [...this.#notes.values()].filter(
       (note) => note.getAuthorID() === authorID,
     );
     if (res.length === 0) {
@@ -60,7 +60,7 @@ export class InMemoryNoteRepository implements NoteRepository {
   }
 
   findByID(id: NoteID): Promise<Option.Option<Note>> {
-    const res = this.notes.get(id);
+    const res = this.#notes.get(id);
     if (!res) {
       return Promise.resolve(Option.none());
     }
@@ -69,7 +69,7 @@ export class InMemoryNoteRepository implements NoteRepository {
 
   async findManyByIDs(ids: NoteID[]): Promise<Result.Result<Error, Note[]>> {
     const notes = [...new Set(ids)]
-      .map((id) => this.notes.get(id))
+      .map((id) => this.#notes.get(id))
       .filter((v) => v !== undefined);
     if (notes.length === 0) {
       return Result.err(new Error('note not found'));
@@ -88,7 +88,7 @@ export class InMemoryNoteRepository implements NoteRepository {
       return RenoteStatus.new(
         accountId,
         noteID,
-        [...this.notes.values()].some(
+        [...this.#notes.values()].some(
           (note) =>
             note.getAuthorID() === accountId &&
             Option.isSome(note.getOriginalNoteID()) &&
@@ -102,14 +102,14 @@ export const inMemoryNoteRepo = (note: Note[]) =>
   Ether.newEther(noteRepoSymbol, () => new InMemoryNoteRepository(note));
 
 export class InMemoryBookmarkRepository implements BookmarkRepository {
-  private readonly bookmarks: Map<[NoteID, AccountID], Bookmark>;
+  readonly #bookmarks: Map<[NoteID, AccountID], Bookmark>;
 
   private equalID(a: [NoteID, AccountID], b: [NoteID, AccountID]): boolean {
     return a[0] === b[0] && a[1] === b[1];
   }
 
   constructor(bookmarks: Bookmark[] = []) {
-    this.bookmarks = new Map(
+    this.#bookmarks = new Map(
       bookmarks.map((bookmark) => [
         [bookmark.getNoteID(), bookmark.getAccountID()],
         bookmark,
@@ -122,7 +122,7 @@ export class InMemoryBookmarkRepository implements BookmarkRepository {
     accountID: AccountID;
   }): Promise<Result.Result<Error, void>> {
     const bookmark = Bookmark.new(id);
-    this.bookmarks.set([id.noteID, id.accountID], bookmark);
+    this.#bookmarks.set([id.noteID, id.accountID], bookmark);
     return Result.ok(undefined);
   }
 
@@ -130,7 +130,7 @@ export class InMemoryBookmarkRepository implements BookmarkRepository {
     noteID: NoteID;
     accountID: AccountID;
   }): Promise<Result.Result<Error, void>> {
-    const key = Array.from(this.bookmarks.keys()).find((k) =>
+    const key = Array.from(this.#bookmarks.keys()).find((k) =>
       this.equalID(k, [id.noteID, id.accountID]),
     );
 
@@ -138,7 +138,7 @@ export class InMemoryBookmarkRepository implements BookmarkRepository {
       return Result.err(new Error('bookmark not found'));
     }
 
-    this.bookmarks.delete(key);
+    this.#bookmarks.delete(key);
     return Result.ok(undefined);
   }
 
@@ -146,7 +146,7 @@ export class InMemoryBookmarkRepository implements BookmarkRepository {
     noteID: NoteID;
     accountID: AccountID;
   }): Promise<Option.Option<Bookmark>> {
-    const bookmark = Array.from(this.bookmarks.entries()).find((v) =>
+    const bookmark = Array.from(this.#bookmarks.entries()).find((v) =>
       this.equalID(v[0], [id.noteID, id.accountID]),
     );
     if (!bookmark) {
@@ -156,7 +156,7 @@ export class InMemoryBookmarkRepository implements BookmarkRepository {
   }
 
   async findByAccountID(id: AccountID): Promise<Option.Option<Bookmark[]>> {
-    const bookmarks = Array.from(this.bookmarks.entries())
+    const bookmarks = Array.from(this.#bookmarks.entries())
       .filter((v) => v[0][1] === id)
       .map((v) => v[1]);
 
@@ -176,28 +176,28 @@ export const inMemoryBookmarkRepo = (bookmarks: Bookmark[]) =>
 export class InMemoryNoteAttachmentRepository
   implements NoteAttachmentRepository
 {
-  private readonly attachments: Map<NoteID, MediumID[]>;
-  private readonly medium: Map<MediumID, Medium>;
+  readonly #attachments: Map<NoteID, MediumID[]>;
+  readonly #medium: Map<MediumID, Medium>;
 
   constructor(medium: Medium[], attachments: [NoteID, MediumID[]][]) {
-    this.attachments = new Map(attachments);
-    this.medium = new Map(medium.map((m) => [m.getId(), m]));
+    this.#attachments = new Map(attachments);
+    this.#medium = new Map(medium.map((m) => [m.getId(), m]));
   }
 
   async create(
     noteID: NoteID,
     attachmentFileID: MediumID[],
   ): Promise<Result.Result<Error, void>> {
-    if (!attachmentFileID.every((v) => this.medium.has(v))) {
+    if (!attachmentFileID.every((v) => this.#medium.has(v))) {
       return Result.err(new Error('medium not found'));
     }
 
-    this.attachments.set(noteID, attachmentFileID);
+    this.#attachments.set(noteID, attachmentFileID);
     return Result.ok(undefined);
   }
 
   async findByNoteID(noteID: NoteID): Promise<Result.Result<Error, Medium[]>> {
-    const attachment = this.attachments.get(noteID);
+    const attachment = this.#attachments.get(noteID);
     if (!attachment) {
       // NOTE: If no attachment exists, return an empty array
       return Result.ok([]);
@@ -205,7 +205,7 @@ export class InMemoryNoteAttachmentRepository
 
     // ToDo: make filter more safe (may be fix at TypeScript 5.4)
     const res = attachment
-      .map((id) => this.medium.get(id))
+      .map((id) => this.#medium.get(id))
       .filter((v): v is Medium => Boolean(v));
     return Result.ok(res);
   }
@@ -220,10 +220,10 @@ export const inMemoryNoteAttachmentRepo = (
   );
 
 export class InMemoryReactionRepository implements ReactionRepository {
-  private readonly reactions: Map<ReactionID, Reaction>;
+  readonly #reactions: Map<ReactionID, Reaction>;
 
   constructor(reactions: Reaction[] = []) {
-    this.reactions = new Map(
+    this.#reactions = new Map(
       reactions.map((reaction) => [reaction.getID(), reaction]),
     );
   }
@@ -240,7 +240,7 @@ export class InMemoryReactionRepository implements ReactionRepository {
       return Result.err(new Error('already reacted'));
     }
 
-    this.reactions.set(reaction.getID(), reaction);
+    this.#reactions.set(reaction.getID(), reaction);
     return Result.ok(undefined);
   }
 
@@ -248,7 +248,7 @@ export class InMemoryReactionRepository implements ReactionRepository {
     accountID: AccountID;
     noteID: NoteID;
   }): Promise<Result.Result<Error, Reaction>> {
-    const reaction = Array.from(this.reactions.entries()).find(
+    const reaction = Array.from(this.#reactions.entries()).find(
       (v) =>
         v[1].getAccountID() === id.accountID && v[1].getNoteID() === id.noteID,
     );
@@ -262,7 +262,7 @@ export class InMemoryReactionRepository implements ReactionRepository {
   }
 
   async findByID(id: ReactionID): Promise<Result.Result<Error, Reaction>> {
-    const reaction = this.reactions.get(id);
+    const reaction = this.#reactions.get(id);
     if (!reaction) {
       return Result.err(
         new NoteNotReactedYetError('reaction not found', { cause: null }),
@@ -274,25 +274,25 @@ export class InMemoryReactionRepository implements ReactionRepository {
   async reactionsByAccount(
     id: AccountID,
   ): Promise<Result.Result<Error, Reaction[]>> {
-    const reactions = Array.from(this.reactions.entries())
+    const reactions = Array.from(this.#reactions.entries())
       .filter((v) => v[1].getAccountID() === id)
       .map((v) => v[1]);
 
     return Result.ok(reactions);
   }
   async findByNoteID(id: NoteID): Promise<Result.Result<Error, Reaction[]>> {
-    const reactions = [...this.reactions.entries()]
+    const reactions = [...this.#reactions.entries()]
       .filter((v) => v[1].getNoteID() === id)
       .map((v) => v[1]);
     return Result.ok(reactions);
   }
   async deleteByID(id: ReactionID): Promise<Result.Result<Error, void>> {
-    if (!this.reactions.has(id))
+    if (!this.#reactions.has(id))
       return Result.err(
         new NoteNotReactedYetError('reaction not found', { cause: null }),
       );
 
-    this.reactions.delete(id);
+    this.#reactions.delete(id);
 
     return Result.ok(undefined);
   }

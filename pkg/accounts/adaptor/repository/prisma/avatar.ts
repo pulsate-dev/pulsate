@@ -17,14 +17,17 @@ type AccountAvatarData = Awaited<
 >;
 
 export class PrismaAccountAvatarRepository implements AccountAvatarRepository {
-  constructor(private readonly prisma: PrismaClient) {}
+  readonly #prisma: PrismaClient;
+  constructor(prisma: PrismaClient) {
+    this.#prisma = prisma;
+  }
 
   async create(
     accountID: AccountID,
     mediumID: MediumID,
   ): Promise<Result.Result<Error, void>> {
     try {
-      await this.prisma.accountAvatar.create({
+      await this.#prisma.accountAvatar.create({
         data: {
           accountId: accountID,
           mediumId: mediumID,
@@ -38,7 +41,7 @@ export class PrismaAccountAvatarRepository implements AccountAvatarRepository {
 
   async delete(accountID: AccountID): Promise<Result.Result<Error, void>> {
     try {
-      await this.prisma.accountAvatar.delete({
+      await this.#prisma.accountAvatar.delete({
         where: {
           accountId: accountID,
         },
@@ -51,7 +54,7 @@ export class PrismaAccountAvatarRepository implements AccountAvatarRepository {
 
   async findByID(accountID: AccountID): Promise<Result.Result<Error, Medium>> {
     try {
-      const res = await this.prisma.accountAvatar.findUniqueOrThrow({
+      const res = await this.#prisma.accountAvatar.findUniqueOrThrow({
         where: {
           accountId: accountID,
         },
@@ -70,7 +73,7 @@ export class PrismaAccountAvatarRepository implements AccountAvatarRepository {
     accountIDs: readonly AccountID[],
   ): Promise<Result.Result<Error, Medium[]>> {
     try {
-      const res = await this.prisma.accountAvatar.findMany({
+      const res = await this.#prisma.accountAvatar.findMany({
         where: {
           accountId: {
             in: accountIDs as AccountID[],

@@ -19,10 +19,15 @@ export interface AccountRelationships {
 }
 
 export class FetchRelationshipService {
+  readonly #accountFollowRepository: AccountFollowRepository;
+  readonly #accountRepository: AccountRepository;
   constructor(
-    private readonly accountFollowRepository: AccountFollowRepository,
-    private readonly accountRepository: AccountRepository,
-  ) {}
+    accountFollowRepository: AccountFollowRepository,
+    accountRepository: AccountRepository,
+  ) {
+    this.#accountFollowRepository = accountFollowRepository;
+    this.#accountRepository = accountRepository;
+  }
 
   async checkRelationships(
     targetAccountID: AccountID,
@@ -33,7 +38,7 @@ export class FetchRelationshipService {
     return Cat.doT(monad)
       .addM(
         'targetAccount',
-        this.accountRepository.findByID(targetAccountID).then(
+        this.#accountRepository.findByID(targetAccountID).then(
           Option.okOr(
             new AccountNotFoundError('target account not found', {
               cause: null,
@@ -43,11 +48,11 @@ export class FetchRelationshipService {
       )
       .addM(
         'followers',
-        this.accountFollowRepository.fetchAllFollowers(fromAccountID),
+        this.#accountFollowRepository.fetchAllFollowers(fromAccountID),
       )
       .addM(
         'following',
-        this.accountFollowRepository.fetchAllFollowing(fromAccountID),
+        this.#accountFollowRepository.fetchAllFollowing(fromAccountID),
       )
       .finish(({ followers, following }) => ({
         id: targetAccountID,

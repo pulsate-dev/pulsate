@@ -9,10 +9,10 @@ import { VerifyToken } from '../../../model/verifyToken.js';
 export class InMemoryAccountVerifyTokenRepository
   implements AccountVerifyTokenRepository
 {
-  private data: Map<string, { token: string; expire: Date }>;
+  #data: Map<string, { token: string; expire: Date }>;
 
   constructor() {
-    this.data = new Map();
+    this.#data = new Map();
   }
 
   async create(
@@ -20,12 +20,12 @@ export class InMemoryAccountVerifyTokenRepository
     token: string,
     expire: Date,
   ): Promise<Result.Result<Error, void>> {
-    this.data.set(accountID.toString(), { token, expire });
+    this.#data.set(accountID.toString(), { token, expire });
     return Result.ok(undefined);
   }
 
   async findByID(id: AccountID): Promise<Option.Option<VerifyToken>> {
-    const data = this.data.get(id);
+    const data = this.#data.get(id);
     if (!data) {
       return Option.none();
     }
@@ -40,7 +40,7 @@ export class InMemoryAccountVerifyTokenRepository
   }
 
   async delete(id: AccountID): Promise<Result.Result<Error, void>> {
-    this.data.delete(id);
+    this.#data.delete(id);
     return Result.ok(undefined);
   }
 }

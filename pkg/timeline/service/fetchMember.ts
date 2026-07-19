@@ -9,18 +9,23 @@ import type { ListID } from '../model/list.js';
 import { type ListRepository, listRepoSymbol } from '../model/repository.js';
 
 export class FetchListMemberService {
+  readonly #listRepository: ListRepository;
+  readonly #accountModule: AccountModuleFacade;
   constructor(
-    private readonly listRepository: ListRepository,
-    private readonly accountModule: AccountModuleFacade,
-  ) {}
+    listRepository: ListRepository,
+    accountModule: AccountModuleFacade,
+  ) {
+    this.#listRepository = listRepository;
+    this.#accountModule = accountModule;
+  }
 
   async handle(listID: ListID): Promise<Result.Result<Error, Account[]>> {
     const monad = resultPromiseMonad<Error>();
 
     return Cat.doT(monad)
-      .addM('memberIDs', this.listRepository.fetchListMembers(listID))
+      .addM('memberIDs', this.#listRepository.fetchListMembers(listID))
       .addMWith('accounts', ({ memberIDs }) =>
-        this.accountModule.fetchAccounts(memberIDs),
+        this.#accountModule.fetchAccounts(memberIDs),
       )
       .finish(({ accounts }) => accounts);
   }

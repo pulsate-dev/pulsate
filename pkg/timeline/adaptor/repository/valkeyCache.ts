@@ -17,7 +17,10 @@ import {
 export class ValkeyTimelineCacheRepository
   implements TimelineNotesCacheRepository
 {
-  constructor(private readonly redisClient: Redis) {}
+  readonly #redisClient: Redis;
+  constructor(redisClient: Redis) {
+    this.#redisClient = redisClient;
+  }
 
   private generateObjectKey(
     id: AccountID | ListID,
@@ -34,7 +37,7 @@ export class ValkeyTimelineCacheRepository
       // ToDo: replace with bulk insert
       await Promise.all(
         notes.map((v) =>
-          this.redisClient.zadd(
+          this.#redisClient.zadd(
             this.generateObjectKey(accountID, 'home'),
             v.getCreatedAt().getTime(),
             v.getID(),
@@ -56,7 +59,7 @@ export class ValkeyTimelineCacheRepository
     try {
       await Promise.all(
         notes.map((v) =>
-          this.redisClient.zadd(
+          this.#redisClient.zadd(
             this.generateObjectKey(listID, 'list'),
             v.getCreatedAt().getTime(),
             v.getID(),
@@ -76,7 +79,7 @@ export class ValkeyTimelineCacheRepository
   ): Promise<Result.Result<Error, NoteID[]>> {
     try {
       const objectKey = this.generateObjectKey(accountID, 'home');
-      const isKeyExists = await this.redisClient.exists(objectKey);
+      const isKeyExists = await this.#redisClient.exists(objectKey);
       if (!isKeyExists) {
         return Result.err(
           new TimelineCacheNotFoundError('timeline cache not found', {
@@ -88,7 +91,7 @@ export class ValkeyTimelineCacheRepository
         );
       }
 
-      const fetched = await this.redisClient.zrange(objectKey, 0, -1);
+      const fetched = await this.#redisClient.zrange(objectKey, 0, -1);
       return Result.ok(fetched as NoteID[]);
     } catch (e) {
       return Result.err(
@@ -102,7 +105,7 @@ export class ValkeyTimelineCacheRepository
   ): Promise<Result.Result<Error, NoteID[]>> {
     try {
       const objectKey = this.generateObjectKey(listID, 'list');
-      const isKeyExists = await this.redisClient.exists(objectKey);
+      const isKeyExists = await this.#redisClient.exists(objectKey);
       if (!isKeyExists) {
         return Result.err(
           new TimelineCacheNotFoundError('timeline cache not found', {
@@ -114,7 +117,7 @@ export class ValkeyTimelineCacheRepository
         );
       }
 
-      const fetched = await this.redisClient.zrange(
+      const fetched = await this.#redisClient.zrange(
         this.generateObjectKey(listID, 'list'),
         0,
         -1,
@@ -132,7 +135,7 @@ export class ValkeyTimelineCacheRepository
     noteIDs: NoteID[],
   ): Promise<Result.Result<Error, void>> {
     try {
-      await this.redisClient.zrem(
+      await this.#redisClient.zrem(
         this.generateObjectKey(accountID, 'home'),
         ...noteIDs,
       );
@@ -149,7 +152,7 @@ export class ValkeyTimelineCacheRepository
     noteIDs: NoteID[],
   ): Promise<Result.Result<Error, void>> {
     try {
-      await this.redisClient.zrem(
+      await this.#redisClient.zrem(
         this.generateObjectKey(listID, 'list'),
         ...noteIDs,
       );

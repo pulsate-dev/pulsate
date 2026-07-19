@@ -28,49 +28,49 @@ export class Actor {
    * Actor ID
    * @example 31415926535
    */
-  private readonly id: ActorID;
+  readonly #id: ActorID;
   /**
    * InstanceID
    * @example 27182818284
    */
-  private readonly instanceID: InstanceID;
+  readonly #instanceID: InstanceID;
   /**
    * Account ID
    * @example 141421356
    */
-  private readonly accountID: AccountID;
+  readonly #accountID: AccountID;
   /**
    * Actor profile URL
    * @example `https://social.example.com/accounts/@john@example.com`
    */
-  private readonly profileURL: URL;
+  readonly #profileURL: URL;
 
   /**
    * Actor Inbox URL
    * @example `https://social.example.com/accounts/31415926535/inbox`
    */
-  private inboxURL: URL;
+  #inboxURL: URL;
   /**
    * Actor Outbox URL
    * @example `https://social.example.com/accounts/31415926535/outbox`
    */
-  private outboxURL: URL;
+  #outboxURL: URL;
   /**
    * Actor Followers URL
    * @example `https://social.example.com/accounts/31415926535/followers`
    */
-  private followersURL: URL;
+  #followersURL: URL;
   /**
    * Actor following URL
    * @example `https://social.example.com/accounts/31415926535/following`
    */
-  private followingURL: URL;
+  #followingURL: URL;
   /**
    * Actor SharedInbox URL
    * @see https://www.w3.org/TR/activitypub/#shared-inbox-delivery
    * @example `https://social.example.com/shared`
    */
-  private sharedInboxURL: URL;
+  #sharedInboxURL: URL;
 
   /**
    * Actor KeyPairs for activity signing / verifying
@@ -78,20 +78,20 @@ export class Actor {
    * @see https://codeberg.org/fediverse/fep/src/branch/main/fep/521a/fep-521a.md
    * @see https://w3c.github.io/vc-data-integrity/vocab/security/vocabulary.html#Multikey
    */
-  private readonly actorKeyPair: readonly ActorKeyPair[];
+  readonly #actorKeyPair: readonly ActorKeyPair[];
 
   private constructor(args: CreateActorArgs) {
-    this.id = args.id;
-    this.instanceID = args.instanceID;
-    this.accountID = args.accountID;
-    this.profileURL = args.profileURL;
+    this.#id = args.id;
+    this.#instanceID = args.instanceID;
+    this.#accountID = args.accountID;
+    this.#profileURL = args.profileURL;
 
-    this.inboxURL = args.inboxURL;
-    this.outboxURL = args.outboxURL;
-    this.followersURL = args.followersURL;
-    this.followingURL = args.followingURL;
-    this.sharedInboxURL = args.sharedInboxURL;
-    this.actorKeyPair = args.actorKeyPair;
+    this.#inboxURL = args.inboxURL;
+    this.#outboxURL = args.outboxURL;
+    this.#followersURL = args.followersURL;
+    this.#followingURL = args.followingURL;
+    this.#sharedInboxURL = args.sharedInboxURL;
+    this.#actorKeyPair = args.actorKeyPair;
   }
 
   static new(args: CreateActorArgs) {
@@ -103,7 +103,7 @@ export class Actor {
    * @example 31415926535
    */
   getID(): ActorID {
-    return this.id;
+    return this.#id;
   }
 
   /**
@@ -111,7 +111,7 @@ export class Actor {
    * @example 27182818284
    */
   getInstanceID(): InstanceID {
-    return this.instanceID;
+    return this.#instanceID;
   }
 
   /**
@@ -119,7 +119,7 @@ export class Actor {
    * @example 141421356
    */
   getAccountID(): AccountID {
-    return this.accountID;
+    return this.#accountID;
   }
 
   /**
@@ -127,7 +127,7 @@ export class Actor {
    * @example `https://social.example.com/accounts/@john@example.com`
    */
   getProfileURL(): URL {
-    return this.profileURL;
+    return this.#profileURL;
   }
 
   /**
@@ -135,7 +135,7 @@ export class Actor {
    * @example `https://social.example.com/accounts/31415926535/inbox`
    */
   getInboxURL(): URL {
-    return this.inboxURL;
+    return this.#inboxURL;
   }
 
   /**
@@ -143,7 +143,7 @@ export class Actor {
    * @param url Inbox URL
    */
   setInboxURL(url: URL) {
-    this.inboxURL = url;
+    this.#inboxURL = url;
   }
 
   /**
@@ -151,7 +151,7 @@ export class Actor {
    * @example `https://social.example.com/accounts/31415926535/outbox`
    */
   getOutboxURL(): URL {
-    return this.outboxURL;
+    return this.#outboxURL;
   }
 
   /**
@@ -159,7 +159,7 @@ export class Actor {
    * @param url Outbox URL
    */
   setOutboxURL(url: URL) {
-    this.outboxURL = url;
+    this.#outboxURL = url;
   }
 
   /**
@@ -167,7 +167,7 @@ export class Actor {
    * @example `https://social.example.com/accounts/31415926535/followers`
    */
   getFollowersURL(): URL {
-    return this.followersURL;
+    return this.#followersURL;
   }
 
   /**
@@ -175,7 +175,7 @@ export class Actor {
    * @param url Followers URL
    */
   setFollowersURL(url: URL) {
-    this.followersURL = url;
+    this.#followersURL = url;
   }
 
   /**
@@ -183,7 +183,7 @@ export class Actor {
    * @example `https://social.example.com/accounts/31415926535/following`
    */
   getFollowingURL(): URL {
-    return this.followingURL;
+    return this.#followingURL;
   }
 
   /**
@@ -191,7 +191,7 @@ export class Actor {
    * @param url Following URL
    */
   setFollowingURL(url: URL) {
-    this.followingURL = url;
+    this.#followingURL = url;
   }
 
   /**
@@ -200,7 +200,7 @@ export class Actor {
    * @example `https://social.example.com/shared`
    */
   getSharedInboxURL(): URL {
-    return this.sharedInboxURL;
+    return this.#sharedInboxURL;
   }
 
   /**
@@ -208,7 +208,7 @@ export class Actor {
    * @param url Shared Inbox URL
    */
   setSharedInboxURL(url: URL) {
-    this.sharedInboxURL = url;
+    this.#sharedInboxURL = url;
   }
 
   /**
@@ -218,6 +218,6 @@ export class Actor {
    * @see https://w3c.github.io/vc-data-integrity/vocab/security/vocabulary.html#Multikey
    */
   getActorKeyPair(): readonly ActorKeyPair[] {
-    return this.actorKeyPair;
+    return this.#actorKeyPair;
   }
 }

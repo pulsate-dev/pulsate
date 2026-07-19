@@ -23,9 +23,10 @@ export interface FetchConversationNotesArgs {
 }
 
 export class FetchConversationService {
-  constructor(
-    private readonly conversationRepository: ConversationRepository,
-  ) {}
+  readonly #conversationRepository: ConversationRepository;
+  constructor(conversationRepository: ConversationRepository) {
+    this.#conversationRepository = conversationRepository;
+  }
 
   /**
    * @returns {@link ConversationRecipient} - The list of conversation recipients.
@@ -36,7 +37,7 @@ export class FetchConversationService {
   async fetchConversation(
     accountID: AccountID,
   ): Promise<Result.Result<Error, ConversationRecipient[]>> {
-    const res = await this.conversationRepository.findByAccountID(accountID);
+    const res = await this.#conversationRepository.findByAccountID(accountID);
     if (Result.isErr(res)) return res;
 
     return Result.ok(
@@ -92,7 +93,7 @@ export class FetchConversationService {
       cursor,
     };
 
-    return await this.conversationRepository.findConversationNotes(
+    return await this.#conversationRepository.findConversationNotes(
       accountID,
       recipientID,
       filter,

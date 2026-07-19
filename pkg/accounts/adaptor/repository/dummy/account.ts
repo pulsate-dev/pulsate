@@ -6,24 +6,24 @@ import {
 } from '../../../model/repository.js';
 
 export class InMemoryAccountRepository implements AccountRepository {
-  private data: Set<Account>;
+  #data: Set<Account>;
 
   constructor(accounts: Account[] = []) {
-    this.data = new Set(accounts);
+    this.#data = new Set(accounts);
   }
 
   create(account: Account): Promise<Result.Result<Error, void>> {
-    this.data.add(account);
+    this.#data.add(account);
     return Promise.resolve(Result.ok(undefined));
   }
 
   reset(data: Account[] = []): void {
-    this.data.clear();
-    data.map((v) => this.data.add(v));
+    this.#data.clear();
+    data.map((v) => this.#data.add(v));
   }
 
   findByID(id: AccountID): Promise<Option.Option<Account>> {
-    const account = Array.from(this.data).find((a) => a.getID() === id);
+    const account = Array.from(this.#data).find((a) => a.getID() === id);
     if (!account) {
       return Promise.resolve(Option.none());
     }
@@ -32,7 +32,7 @@ export class InMemoryAccountRepository implements AccountRepository {
   }
 
   findByName(name: string): Promise<Option.Option<Account>> {
-    const account = Array.from(this.data).find((a) => a.getName() === name);
+    const account = Array.from(this.#data).find((a) => a.getName() === name);
     if (!account) {
       return Promise.resolve(Option.none());
     }
@@ -43,12 +43,12 @@ export class InMemoryAccountRepository implements AccountRepository {
     id: readonly AccountID[],
   ): Promise<Result.Result<Error, Account[]>> {
     const set = new Set(id);
-    const accounts = Array.from(this.data).filter((a) => set.has(a.getID()));
+    const accounts = Array.from(this.#data).filter((a) => set.has(a.getID()));
     return Promise.resolve(Result.ok(accounts));
   }
 
   findByMail(mail: string): Promise<Option.Option<Account>> {
-    const account = Array.from(this.data).find((a) => a.getMail() === mail);
+    const account = Array.from(this.#data).find((a) => a.getMail() === mail);
     if (!account) {
       return Promise.resolve(Option.none());
     }
@@ -57,13 +57,13 @@ export class InMemoryAccountRepository implements AccountRepository {
   }
 
   async edit(account: Account): Promise<Result.Result<Error, void>> {
-    const oldAccount = Array.from(this.data).find(
+    const oldAccount = Array.from(this.#data).find(
       (a) => a.getName() === account.getName(),
     );
     if (oldAccount) {
-      this.data.delete(oldAccount);
+      this.#data.delete(oldAccount);
     }
-    this.data.add(account);
+    this.#data.add(account);
 
     return Result.ok(undefined);
   }

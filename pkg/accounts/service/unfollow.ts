@@ -11,10 +11,15 @@ import {
 } from '../model/repository.js';
 
 export class UnfollowService {
+  readonly #followRepository: AccountFollowRepository;
+  readonly #accountRepository: AccountRepository;
   constructor(
-    private readonly followRepository: AccountFollowRepository,
-    private readonly accountRepository: AccountRepository,
-  ) {}
+    followRepository: AccountFollowRepository,
+    accountRepository: AccountRepository,
+  ) {
+    this.#followRepository = followRepository;
+    this.#accountRepository = accountRepository;
+  }
 
   async handle(
     from: AccountName,
@@ -25,7 +30,7 @@ export class UnfollowService {
     const res = await Cat.doT(monad)
       .addM(
         'fromAccount',
-        this.accountRepository.findByName(from).then(
+        this.#accountRepository.findByName(from).then(
           Option.okOr(
             new AccountNotFoundError('from account not found', {
               cause: null,
@@ -35,7 +40,7 @@ export class UnfollowService {
       )
       .addM(
         'targetAccount',
-        this.accountRepository.findByName(target).then(
+        this.#accountRepository.findByName(target).then(
           Option.okOr(
             new AccountNotFoundError('target account not found', {
               cause: null,
@@ -44,7 +49,7 @@ export class UnfollowService {
         ),
       )
       .finishM(({ fromAccount, targetAccount }) =>
-        this.followRepository.unfollow(
+        this.#followRepository.unfollow(
           fromAccount.getID(),
           targetAccount.getID(),
         ),

@@ -24,11 +24,18 @@ import {
 } from '../model/repository/notification.js';
 
 export class CreateNotificationService {
+  readonly #idGenerator: SnowflakeIDGenerator;
+  readonly #clock: Clock;
+  readonly #notificationRepository: NotificationRepository;
   constructor(
-    private readonly idGenerator: SnowflakeIDGenerator,
-    private readonly clock: Clock,
-    private readonly notificationRepository: NotificationRepository,
-  ) {}
+    idGenerator: SnowflakeIDGenerator,
+    clock: Clock,
+    notificationRepository: NotificationRepository,
+  ) {
+    this.#idGenerator = idGenerator;
+    this.#clock = clock;
+    this.#notificationRepository = notificationRepository;
+  }
 
   async createFollowed(args: {
     recipientID: AccountID;
@@ -39,7 +46,7 @@ export class CreateNotificationService {
     return Cat.doT(monad)
       .addM(
         'id',
-        Promise.resolve(this.idGenerator.generate<NotificationBase>()),
+        Promise.resolve(this.#idGenerator.generate<NotificationBase>()),
       )
       .addWith('notification', ({ id }) =>
         FollowedNotification.new({
@@ -48,11 +55,11 @@ export class CreateNotificationService {
           recipientID: args.recipientID,
           actorID: args.actorID,
           actorType: 'account',
-          createdAt: new Date(Number(this.clock.now())),
+          createdAt: new Date(Number(this.#clock.now())),
         }),
       )
       .runWith(({ notification }) =>
-        this.notificationRepository
+        this.#notificationRepository
           .create(notification)
           .then(Result.map(() => [])),
       )
@@ -68,7 +75,7 @@ export class CreateNotificationService {
     return Cat.doT(monad)
       .addM(
         'id',
-        Promise.resolve(this.idGenerator.generate<NotificationBase>()),
+        Promise.resolve(this.#idGenerator.generate<NotificationBase>()),
       )
       .addWith('notification', ({ id }) =>
         FollowRequestedNotification.new({
@@ -77,11 +84,11 @@ export class CreateNotificationService {
           recipientID: args.recipientID,
           actorID: args.actorID,
           actorType: 'account',
-          createdAt: new Date(Number(this.clock.now())),
+          createdAt: new Date(Number(this.#clock.now())),
         }),
       )
       .runWith(({ notification }) =>
-        this.notificationRepository
+        this.#notificationRepository
           .create(notification)
           .then(Result.map(() => [])),
       )
@@ -97,7 +104,7 @@ export class CreateNotificationService {
     return Cat.doT(monad)
       .addM(
         'id',
-        Promise.resolve(this.idGenerator.generate<NotificationBase>()),
+        Promise.resolve(this.#idGenerator.generate<NotificationBase>()),
       )
       .addWith('notification', ({ id }) =>
         FollowAcceptedNotification.new({
@@ -106,11 +113,11 @@ export class CreateNotificationService {
           recipientID: args.recipientID,
           actorID: args.actorID,
           actorType: 'account',
-          createdAt: new Date(Number(this.clock.now())),
+          createdAt: new Date(Number(this.#clock.now())),
         }),
       )
       .runWith(({ notification }) =>
-        this.notificationRepository
+        this.#notificationRepository
           .create(notification)
           .then(Result.map(() => [])),
       )
@@ -127,7 +134,7 @@ export class CreateNotificationService {
     return Cat.doT(monad)
       .addM(
         'id',
-        Promise.resolve(this.idGenerator.generate<NotificationBase>()),
+        Promise.resolve(this.#idGenerator.generate<NotificationBase>()),
       )
       .addWith('notification', ({ id }) =>
         MentionedNotification.new({
@@ -137,11 +144,11 @@ export class CreateNotificationService {
           actorID: args.actorID,
           actorType: 'account',
           activityID: args.activityID,
-          createdAt: new Date(Number(this.clock.now())),
+          createdAt: new Date(Number(this.#clock.now())),
         }),
       )
       .runWith(({ notification }) =>
-        this.notificationRepository
+        this.#notificationRepository
           .create(notification)
           .then(Result.map(() => [])),
       )
@@ -159,7 +166,7 @@ export class CreateNotificationService {
     return Cat.doT(monad)
       .addM(
         'id',
-        Promise.resolve(this.idGenerator.generate<NotificationBase>()),
+        Promise.resolve(this.#idGenerator.generate<NotificationBase>()),
       )
       .addWith('notification', ({ id }) =>
         RenotedNotification.new({
@@ -170,11 +177,11 @@ export class CreateNotificationService {
           actorType: 'account',
           sourceID: args.sourceID,
           activityID: args.activityID,
-          createdAt: new Date(Number(this.clock.now())),
+          createdAt: new Date(Number(this.#clock.now())),
         }),
       )
       .runWith(({ notification }) =>
-        this.notificationRepository
+        this.#notificationRepository
           .create(notification)
           .then(Result.map(() => [])),
       )
@@ -192,7 +199,7 @@ export class CreateNotificationService {
     return Cat.doT(monad)
       .addM(
         'id',
-        Promise.resolve(this.idGenerator.generate<NotificationBase>()),
+        Promise.resolve(this.#idGenerator.generate<NotificationBase>()),
       )
       .addWith('notification', ({ id }) =>
         ReactedNotification.new({
@@ -203,11 +210,11 @@ export class CreateNotificationService {
           actorType: 'account',
           sourceID: args.sourceID,
           activityID: args.activityID,
-          createdAt: new Date(Number(this.clock.now())),
+          createdAt: new Date(Number(this.#clock.now())),
         }),
       )
       .runWith(({ notification }) =>
-        this.notificationRepository
+        this.#notificationRepository
           .create(notification)
           .then(Result.map(() => [])),
       )

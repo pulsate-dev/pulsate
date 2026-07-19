@@ -6,14 +6,17 @@ import type { FetchMediaService } from '../../service/fetch.js';
 import type { GetDriveMediaResponseSchema } from '../validator/schema.js';
 
 export class DriveController {
-  constructor(private readonly fetchService: FetchMediaService) {}
+  readonly #fetchService: FetchMediaService;
+  constructor(fetchService: FetchMediaService) {
+    this.#fetchService = fetchService;
+  }
 
   async getMediaByAuthorId(
     authorId: string,
   ): Promise<
     Result.Result<Error, z.infer<typeof GetDriveMediaResponseSchema>>
   > {
-    const res = await this.fetchService.fetchMediaByAuthorID(
+    const res = await this.#fetchService.fetchMediaByAuthorID(
       authorId as AccountID,
     );
     if (Result.isErr(res)) {

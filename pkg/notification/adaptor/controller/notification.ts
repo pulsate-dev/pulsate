@@ -21,25 +21,25 @@ import type {
 } from '../validator/schemas.js';
 
 export class NotificationController {
-  private readonly markAsReadService: MarkAsReadNotificationService;
-  private readonly fetchNotificationService: FetchNotificationService;
-  private readonly accountModule: AccountModuleFacade;
+  readonly #markAsReadService: MarkAsReadNotificationService;
+  readonly #fetchNotificationService: FetchNotificationService;
+  readonly #accountModule: AccountModuleFacade;
 
   constructor(args: {
     markAsReadService: MarkAsReadNotificationService;
     fetchNotificationService: FetchNotificationService;
     accountModule: AccountModuleFacade;
   }) {
-    this.markAsReadService = args.markAsReadService;
-    this.fetchNotificationService = args.fetchNotificationService;
-    this.accountModule = args.accountModule;
+    this.#markAsReadService = args.markAsReadService;
+    this.#fetchNotificationService = args.fetchNotificationService;
+    this.#accountModule = args.accountModule;
   }
 
   async markAsRead(
     id: string,
     actorID: string,
   ): Promise<Result.Result<Error, void>> {
-    const res = await this.markAsReadService.handle(
+    const res = await this.#markAsReadService.handle(
       id as NotificationID,
       actorID as AccountID,
     );
@@ -63,7 +63,7 @@ export class NotificationController {
     }
 
     const notificationsRes =
-      await this.fetchNotificationService.fetchByRecipientID(
+      await this.#fetchNotificationService.fetchByRecipientID(
         actorID as AccountID,
         {
           limit: !options.limit ? Option.none() : Option.some(options.limit),
@@ -91,7 +91,7 @@ export class NotificationController {
     }
     const notifications = Result.unwrap(notificationsRes);
 
-    const accountsRes = await this.accountModule.fetchAccounts(
+    const accountsRes = await this.#accountModule.fetchAccounts(
       notifications.map((v) => v.getActorID()),
     );
     if (Result.isErr(accountsRes)) {
@@ -101,7 +101,7 @@ export class NotificationController {
       Result.unwrap(accountsRes).map((v) => [v.getID(), v]),
     );
 
-    const avatarRes = await this.accountModule.fetchAccountAvatarHeaders(
+    const avatarRes = await this.#accountModule.fetchAccountAvatarHeaders(
       notifications.map((v) => v.getActorID()),
     );
     if (Result.isErr(avatarRes)) {

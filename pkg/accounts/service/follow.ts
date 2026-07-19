@@ -13,11 +13,18 @@ import {
 } from '../model/repository.js';
 
 export class FollowService {
+  readonly #followRepository: AccountFollowRepository;
+  readonly #accountRepository: AccountRepository;
+  readonly #clock: Clock;
   constructor(
-    private readonly followRepository: AccountFollowRepository,
-    private readonly accountRepository: AccountRepository,
-    private readonly clock: Clock,
-  ) {}
+    followRepository: AccountFollowRepository,
+    accountRepository: AccountRepository,
+    clock: Clock,
+  ) {
+    this.#followRepository = followRepository;
+    this.#accountRepository = accountRepository;
+    this.#clock = clock;
+  }
 
   async handle(
     from: AccountName,
@@ -28,7 +35,7 @@ export class FollowService {
     return Cat.doT(monad)
       .addM(
         'fromAccount',
-        this.accountRepository
+        this.#accountRepository
           .findByName(from)
           .then(
             Option.okOr(
@@ -38,7 +45,7 @@ export class FollowService {
       )
       .addM(
         'targetAccount',
-        this.accountRepository
+        this.#accountRepository
           .findByName(target)
           .then(
             Option.okOr(
@@ -51,12 +58,12 @@ export class FollowService {
           AccountFollow.new({
             fromID: fromAccount.getID(),
             targetID: targetAccount.getID(),
-            createdAt: new Date(Number(this.clock.now())),
+            createdAt: new Date(Number(this.#clock.now())),
           }),
         ),
       )
       .runWith(({ follow }) =>
-        monad.map(() => [])(this.followRepository.follow(follow)),
+        monad.map(() => [])(this.#followRepository.follow(follow)),
       )
       .finish(({ follow }) => follow);
   }

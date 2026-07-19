@@ -40,12 +40,12 @@ export class Instance {
    * @type {@link InstanceID}
    * @example "30840483483726295"
    */
-  private readonly id: InstanceID;
+  readonly #id: InstanceID;
   /**
    * Instance name
    * @example "Pulsate social"
    */
-  private name: string;
+  #name: string;
   /**
    * Instance description
    * @example
@@ -53,22 +53,22 @@ export class Instance {
    * Pulsate official instance
    * ```
    */
-  private description: string;
+  #description: string;
   /**
    * Instance FQDN(Fully Qualified Domain Name)
    * @example "pulsate.social"
    */
-  private readonly fqdn: string;
+  readonly #fqdn: string;
   /**
    * Software name
    * @example "Pulsate"
    */
-  private readonly softwareName: string;
+  readonly #softwareName: string;
   /**
    * Software version
    * @example "1.0.0"
    */
-  private softwareVersion: string;
+  #softwareVersion: string;
   /**
    * Instance software extentions list
    * @example
@@ -76,55 +76,55 @@ export class Instance {
    * ["quote", "emoji_reaction"]
    * ```
    */
-  private extentions: string[];
+  #extentions: string[];
 
   /**
    * Instance admin name
    * @example "Pulsate project"
    */
-  private adminName: string;
+  #adminName: string;
   /**
    * Instance admin contact
    * @example "admin@pulsate.dev"
    * @example "https://pulsate.dev/contact"
    */
-  private adminContact: string;
+  #adminContact: string;
   /**
    * Instance state
    * - `normal` - Instance is active
    * - `blocked` - Instance is blocked(reject all activity)
    */
-  private state: InstanceBlocking;
+  #state: InstanceBlocking;
   /**
    * Instance silenced state
    * - `normal` - Instance is not silenced
    * - `silenced` - Instance is silenced (all PUBLIC notes visibility sets to HOME)
    */
-  private silenced: InstanceSilenced;
+  #silenced: InstanceSilenced;
   /**
    * Instance deliver state
    * - `normal` - Instance is delivering notes
    * - `stopped` - Instance is not delivering notes
    */
-  private deliverState: InstanceDelivering;
+  #deliverState: InstanceDelivering;
   /**
    * Instance isLocal flag
    * - `true` - Instance is local
    * - `false` - Instance is remote
    */
-  private readonly isLocal: boolean;
+  readonly #isLocal: boolean;
 
   /**
    * Instance first contact date
    */
-  private readonly firstContact: Date;
+  readonly #firstContact: Date;
 
   /**
    * Instance ID
    * @returns Instance ID
    */
   getID(): InstanceID {
-    return this.id;
+    return this.#id;
   }
 
   /**
@@ -132,7 +132,7 @@ export class Instance {
    * @returns Instance name
    */
   getName(): string {
-    return this.name;
+    return this.#name;
   }
 
   /**
@@ -140,7 +140,7 @@ export class Instance {
    * @param name Instance name
    */
   setName(name: string) {
-    this.name = name;
+    this.#name = name;
   }
 
   /**
@@ -148,7 +148,7 @@ export class Instance {
    * @returns Instance description
    */
   getDescription(): string {
-    return this.description;
+    return this.#description;
   }
 
   /**
@@ -156,7 +156,7 @@ export class Instance {
    * @param description Instance description
    */
   setDescription(description: string) {
-    this.description = description;
+    this.#description = description;
   }
 
   /**
@@ -166,7 +166,7 @@ export class Instance {
    * @example "social.example.com:3000"
    */
   getFQDN(): string {
-    return this.fqdn;
+    return this.#fqdn;
   }
 
   /**
@@ -174,7 +174,7 @@ export class Instance {
    * @returns Software name
    */
   getSoftwareName(): string {
-    return this.softwareName;
+    return this.#softwareName;
   }
 
   /**
@@ -182,7 +182,7 @@ export class Instance {
    * @returns Software version
    */
   getSoftwareVersion(): string {
-    return this.softwareVersion;
+    return this.#softwareVersion;
   }
 
   /**
@@ -190,7 +190,7 @@ export class Instance {
    * @param version Software version
    */
   setSoftwareVersion(version: string) {
-    this.softwareVersion = version;
+    this.#softwareVersion = version;
   }
 
   /**
@@ -198,7 +198,7 @@ export class Instance {
    * @returns Instance software extentions list
    */
   getExtentions(): string[] {
-    return this.extentions;
+    return this.#extentions;
   }
 
   /**
@@ -206,7 +206,7 @@ export class Instance {
    * @param extentions Software extentions list
    */
   setExtentions(extentions: string[]) {
-    this.extentions = extentions;
+    this.#extentions = extentions;
   }
 
   /**
@@ -214,7 +214,7 @@ export class Instance {
    * @returns Instance admin name
    */
   getAdminName(): string {
-    return this.adminName;
+    return this.#adminName;
   }
 
   /**
@@ -222,7 +222,7 @@ export class Instance {
    * @param name Admin name
    */
   setAdminName(name: string) {
-    this.adminName = name;
+    this.#adminName = name;
   }
 
   /**
@@ -230,7 +230,7 @@ export class Instance {
    * @returns Instance admin contact
    */
   getAdminContact(): string {
-    return this.adminContact;
+    return this.#adminContact;
   }
 
   /**
@@ -238,44 +238,44 @@ export class Instance {
    * @param contact Admin contact
    */
   setAdminContact(contact: string) {
-    this.adminContact = contact;
+    this.#adminContact = contact;
   }
 
   isBlocking(): boolean {
-    return this.state === 'blocking';
+    return this.#state === 'blocking';
   }
 
   /**
    * Set instance state
    */
   setInstanceState(state: InstanceBlocking) {
-    this.state = state;
+    this.#state = state;
   }
 
   isSilenced(): boolean {
-    return this.silenced === 'silenced';
+    return this.#silenced === 'silenced';
   }
 
   /**
    * Set instance silenced state
    */
   setSilencedState(silenced: InstanceSilenced) {
-    this.silenced = silenced;
+    this.#silenced = silenced;
   }
 
   isDeliverStopped(): boolean {
-    return this.deliverState === 'stopped';
+    return this.#deliverState === 'stopped';
   }
 
   /**
    * Set instance deliver state
    */
   setDeliverState(state: InstanceDelivering) {
-    this.deliverState = state;
+    this.#deliverState = state;
   }
 
   isLocalInstance(): boolean {
-    return this.isLocal;
+    return this.#isLocal;
   }
 
   /**
@@ -283,24 +283,24 @@ export class Instance {
    * @returns Instance first contact date
    */
   getFirstContact(): Date {
-    return this.firstContact;
+    return this.#firstContact;
   }
 
   private constructor(arg: CreateInstanceArgs) {
-    this.id = arg.id;
-    this.name = arg.name;
-    this.description = arg.description;
-    this.fqdn = arg.fqdn.host;
-    this.softwareName = arg.softwareName;
-    this.softwareVersion = arg.softwareVersion;
-    this.extentions = arg.extentions;
-    this.adminName = arg.adminName;
-    this.adminContact = arg.adminContact;
-    this.isLocal = arg.isLocal;
-    this.firstContact = arg.firstContact;
-    this.state = arg.blocking;
-    this.silenced = arg.silenced;
-    this.deliverState = arg.delivering;
+    this.#id = arg.id;
+    this.#name = arg.name;
+    this.#description = arg.description;
+    this.#fqdn = arg.fqdn.host;
+    this.#softwareName = arg.softwareName;
+    this.#softwareVersion = arg.softwareVersion;
+    this.#extentions = arg.extentions;
+    this.#adminName = arg.adminName;
+    this.#adminContact = arg.adminContact;
+    this.#isLocal = arg.isLocal;
+    this.#firstContact = arg.firstContact;
+    this.#state = arg.blocking;
+    this.#silenced = arg.silenced;
+    this.#deliverState = arg.delivering;
   }
 
   public static new(

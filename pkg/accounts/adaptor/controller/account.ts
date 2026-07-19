@@ -35,21 +35,21 @@ import type {
 } from '../validator/schema.js';
 
 export class AccountController {
-  private readonly registerService: RegisterService;
-  private readonly editService: EditService;
-  private readonly fetchService: FetchService;
-  private readonly freezeService: FreezeService;
-  private readonly verifyAccountTokenService: VerifyAccountTokenService;
-  private readonly authenticateService: AuthenticateService;
-  private readonly silenceService: SilenceService;
-  private readonly followService: FollowService;
-  private readonly unFollowService: UnfollowService;
-  private readonly fetchFollowService: FetchFollowService;
-  private readonly resendTokenService: ResendVerifyTokenService;
-  private readonly headerService: AccountHeaderService;
-  private readonly avatarService: AccountAvatarService;
-  private readonly authenticationTokenService: AuthenticationTokenService;
-  private readonly fetchRelationshipService: FetchRelationshipService;
+  readonly #registerService: RegisterService;
+  readonly #editService: EditService;
+  readonly #fetchService: FetchService;
+  readonly #freezeService: FreezeService;
+  readonly #verifyAccountTokenService: VerifyAccountTokenService;
+  readonly #authenticateService: AuthenticateService;
+  readonly #silenceService: SilenceService;
+  readonly #followService: FollowService;
+  readonly #unFollowService: UnfollowService;
+  readonly #fetchFollowService: FetchFollowService;
+  readonly #resendTokenService: ResendVerifyTokenService;
+  readonly #headerService: AccountHeaderService;
+  readonly #avatarService: AccountAvatarService;
+  readonly #authenticationTokenService: AuthenticationTokenService;
+  readonly #fetchRelationshipService: FetchRelationshipService;
 
   constructor(args: {
     registerService: RegisterService;
@@ -68,21 +68,21 @@ export class AccountController {
     authenticationTokenService: AuthenticationTokenService;
     fetchRelationshipService: FetchRelationshipService;
   }) {
-    this.registerService = args.registerService;
-    this.editService = args.editService;
-    this.fetchService = args.fetchService;
-    this.freezeService = args.freezeService;
-    this.verifyAccountTokenService = args.verifyAccountTokenService;
-    this.authenticateService = args.authenticateService;
-    this.silenceService = args.silenceService;
-    this.followService = args.followService;
-    this.unFollowService = args.unFollowService;
-    this.fetchFollowService = args.fetchFollowService;
-    this.resendTokenService = args.resendTokenService;
-    this.headerService = args.headerService;
-    this.avatarService = args.avatarService;
-    this.authenticationTokenService = args.authenticationTokenService;
-    this.fetchRelationshipService = args.fetchRelationshipService;
+    this.#registerService = args.registerService;
+    this.#editService = args.editService;
+    this.#fetchService = args.fetchService;
+    this.#freezeService = args.freezeService;
+    this.#verifyAccountTokenService = args.verifyAccountTokenService;
+    this.#authenticateService = args.authenticateService;
+    this.#silenceService = args.silenceService;
+    this.#followService = args.followService;
+    this.#unFollowService = args.unFollowService;
+    this.#fetchFollowService = args.fetchFollowService;
+    this.#resendTokenService = args.resendTokenService;
+    this.#headerService = args.headerService;
+    this.#avatarService = args.avatarService;
+    this.#authenticationTokenService = args.authenticationTokenService;
+    this.#fetchRelationshipService = args.fetchRelationshipService;
   }
 
   async createAccount(
@@ -92,7 +92,7 @@ export class AccountController {
   ): Promise<
     Result.Result<Error, z.infer<typeof CreateAccountResponseSchema>>
   > {
-    const res = await this.registerService.handle(
+    const res = await this.#registerService.handle(
       name as AccountName,
       email,
       passphrase,
@@ -123,7 +123,7 @@ export class AccountController {
     Result.Result<Error, z.infer<typeof UpdateAccountResponseSchema>>
   > {
     if (args.nickname) {
-      const res = await this.editService.editNickname(
+      const res = await this.#editService.editNickname(
         target as AccountName,
         args.nickname,
         actorName as AccountName,
@@ -133,7 +133,7 @@ export class AccountController {
       }
     }
     if (args.passphrase) {
-      const res = await this.editService.editPassphrase(
+      const res = await this.#editService.editPassphrase(
         target as AccountName,
         args.passphrase,
         actorName as AccountName,
@@ -143,7 +143,7 @@ export class AccountController {
       }
     }
     if (args.email) {
-      const res = await this.editService.editEmail(
+      const res = await this.#editService.editEmail(
         target as AccountName,
         args.email,
         actorName as AccountName,
@@ -153,7 +153,7 @@ export class AccountController {
       }
     }
 
-    const editedBioResp = await this.editService.editBio(
+    const editedBioResp = await this.#editService.editBio(
       target as AccountName,
       args.bio,
       actorName as AccountName,
@@ -162,7 +162,7 @@ export class AccountController {
       return Result.err(editedBioResp[1]);
     }
 
-    const res = await this.fetchService.fetchAccount(target as AccountName);
+    const res = await this.#fetchService.fetchAccount(target as AccountName);
     if (Result.isErr(res)) {
       return res;
     }
@@ -180,7 +180,7 @@ export class AccountController {
     target: string,
     actor: string,
   ): Promise<Result.Result<Error, void>> {
-    const res = await this.freezeService.setFreeze(
+    const res = await this.#freezeService.setFreeze(
       target as AccountName,
       actor as AccountName,
     );
@@ -195,7 +195,7 @@ export class AccountController {
     name: string,
     actor: string,
   ): Promise<Result.Result<Error, void>> {
-    const res = await this.freezeService.undoFreeze(
+    const res = await this.#freezeService.undoFreeze(
       name as AccountName,
       actor as AccountName,
     );
@@ -210,7 +210,7 @@ export class AccountController {
     name: string,
     token: string,
   ): Promise<Result.Result<Error, void>> {
-    const res = await this.verifyAccountTokenService.verify(
+    const res = await this.#verifyAccountTokenService.verify(
       name as AccountName,
       token,
     );
@@ -224,16 +224,16 @@ export class AccountController {
   async getAccount(
     id: string,
   ): Promise<Result.Result<Error, z.infer<typeof GetAccountResponseSchema>>> {
-    const res = await this.fetchService.fetchAccountByID(id as AccountID);
+    const res = await this.#fetchService.fetchAccountByID(id as AccountID);
     if (Result.isErr(res)) {
       return res;
     }
     const account = Result.unwrap(res);
 
-    const avatarRes = await this.avatarService.fetchByAccountID(
+    const avatarRes = await this.#avatarService.fetchByAccountID(
       account.getID(),
     );
-    const headerRes = await this.headerService.fetchByAccountID(
+    const headerRes = await this.#headerService.fetchByAccountID(
       account.getID(),
     );
     const avatar = Cat.cat(avatarRes)
@@ -244,7 +244,7 @@ export class AccountController {
       .feed(Result.optionOk)
       .feed(Option.andThen((headerImage: Medium) => headerImage.getUrl()))
       .feed(Option.unwrapOr('')).value;
-    const followCountRes = await this.fetchFollowService.fetchFollowCount(
+    const followCountRes = await this.#fetchFollowService.fetchFollowCount(
       account.getID(),
     );
     const followingCount = Result.mapOr(0)(
@@ -277,16 +277,16 @@ export class AccountController {
   async getAccountByName(
     name: string,
   ): Promise<Result.Result<Error, z.infer<typeof GetAccountResponseSchema>>> {
-    const res = await this.fetchService.fetchAccount(name as AccountName);
+    const res = await this.#fetchService.fetchAccount(name as AccountName);
     if (Result.isErr(res)) {
       return res;
     }
     const account = Result.unwrap(res);
 
-    const avatarRes = await this.avatarService.fetchByAccountID(
+    const avatarRes = await this.#avatarService.fetchByAccountID(
       account.getID(),
     );
-    const headerRes = await this.headerService.fetchByAccountID(
+    const headerRes = await this.#headerService.fetchByAccountID(
       account.getID(),
     );
     const avatar = Cat.cat(avatarRes)
@@ -297,7 +297,7 @@ export class AccountController {
       .feed(Result.optionOk)
       .feed(Option.andThen((headerImage: Medium) => headerImage.getUrl()))
       .feed(Option.unwrapOr('')).value;
-    const followCountRes = await this.fetchFollowService.fetchFollowCount(
+    const followCountRes = await this.#fetchFollowService.fetchFollowCount(
       account.getID(),
     );
     const followingCount = Result.mapOr(0)(
@@ -331,7 +331,7 @@ export class AccountController {
     email: string,
     passphrase: string,
   ): Promise<Result.Result<Error, z.infer<typeof LoginResponseSchema>>> {
-    const res = await this.authenticateService.handle(email, passphrase);
+    const res = await this.#authenticateService.handle(email, passphrase);
     if (Result.isErr(res)) {
       return res;
     }
@@ -344,7 +344,7 @@ export class AccountController {
   async refresh(
     token: string,
   ): Promise<Result.Result<Error, z.infer<typeof RefreshResponseSchema>>> {
-    const res = await this.authenticationTokenService.renewAuthToken(
+    const res = await this.#authenticationTokenService.renewAuthToken(
       token as AuthenticationToken,
     );
     if (Result.isErr(res)) {
@@ -360,7 +360,7 @@ export class AccountController {
     targetName: string,
     actorName: string,
   ): Promise<Result.Result<Error, void>> {
-    const res = await this.silenceService.setSilence(
+    const res = await this.#silenceService.setSilence(
       targetName as AccountName,
       actorName as AccountName,
     );
@@ -376,7 +376,7 @@ export class AccountController {
     actorName: string,
   ): Promise<Result.Result<Error, void>> {
     // ToDo: check user's permission
-    const res = await this.silenceService.undoSilence(
+    const res = await this.#silenceService.undoSilence(
       targetName as AccountName,
       actorName as AccountName,
     );
@@ -391,7 +391,7 @@ export class AccountController {
     fromName: string,
     targetName: string,
   ): Promise<Result.Result<Error, void>> {
-    const res = await this.followService.handle(
+    const res = await this.#followService.handle(
       fromName as AccountName,
       targetName as AccountName,
     );
@@ -406,7 +406,7 @@ export class AccountController {
     fromName: string,
     targetName: string,
   ): Promise<Result.Result<Error, void>> {
-    const res = await this.unFollowService.handle(
+    const res = await this.#unFollowService.handle(
       fromName as AccountName,
       targetName as AccountName,
     );
@@ -421,7 +421,7 @@ export class AccountController {
   async resendVerificationEmail(
     name: string,
   ): Promise<Result.Result<Error, void>> {
-    const res = await this.resendTokenService.handle(name as AccountName);
+    const res = await this.#resendTokenService.handle(name as AccountName);
     if (Option.isSome(res)) {
       return Result.err(res[1]);
     }
@@ -434,13 +434,13 @@ export class AccountController {
   ): Promise<Result.Result<Error, z.infer<typeof GetAccountFollowingSchema>>> {
     const followings = Result.map((v: AccountFollow[]) =>
       v.map((v) => v.getTargetID()),
-    )(await this.fetchFollowService.fetchFollowingsByID(id as AccountID));
+    )(await this.#fetchFollowService.fetchFollowingsByID(id as AccountID));
 
     if (Result.isErr(followings)) {
       return followings;
     }
 
-    const accountsRes = await this.fetchService.fetchManyAccountsByID(
+    const accountsRes = await this.#fetchService.fetchManyAccountsByID(
       Result.unwrap(followings),
     );
     if (Result.isErr(accountsRes)) {
@@ -455,19 +455,20 @@ export class AccountController {
     const followCounts = new Map<AccountID, AccountFollowCount>();
 
     for (const id of accountIDs) {
-      const avatarRes = await this.avatarService.fetchByAccountID(id);
+      const avatarRes = await this.#avatarService.fetchByAccountID(id);
       const avatar = Cat.cat(avatarRes)
         .feed(Result.optionOk)
         .feed(Option.andThen((avatarImage: Medium) => avatarImage.getUrl()))
         .feed(Option.unwrapOr('')).value;
-      const headerRes = await this.headerService.fetchByAccountID(id);
+      const headerRes = await this.#headerService.fetchByAccountID(id);
       const header = Cat.cat(headerRes)
         .feed(Result.optionOk)
         .feed(Option.andThen((headerImage: Medium) => headerImage.getUrl()))
         .feed(Option.unwrapOr('')).value;
       headerAvatarImages.set(id, [header, avatar]);
 
-      const followCountRes = await this.fetchFollowService.fetchFollowCount(id);
+      const followCountRes =
+        await this.#fetchFollowService.fetchFollowCount(id);
       const followingCount = Result.mapOr(0)(
         (v: AccountFollowCount) => v.following,
       )(followCountRes);
@@ -515,13 +516,13 @@ export class AccountController {
   ): Promise<Result.Result<Error, z.infer<typeof GetAccountFollowerSchema>>> {
     const followers = Result.map((v: AccountFollow[]) =>
       v.map((v) => v.getFromID()),
-    )(await this.fetchFollowService.fetchFollowersByID(id as AccountID));
+    )(await this.#fetchFollowService.fetchFollowersByID(id as AccountID));
 
     if (Result.isErr(followers)) {
       return followers;
     }
 
-    const accountsRes = await this.fetchService.fetchManyAccountsByID(
+    const accountsRes = await this.#fetchService.fetchManyAccountsByID(
       Result.unwrap(followers),
     );
     if (Result.isErr(accountsRes)) {
@@ -535,19 +536,20 @@ export class AccountController {
     const followCounts = new Map<AccountID, AccountFollowCount>();
 
     for (const id of accountIDs) {
-      const avatarRes = await this.avatarService.fetchByAccountID(id);
+      const avatarRes = await this.#avatarService.fetchByAccountID(id);
       const avatar = Cat.cat(avatarRes)
         .feed(Result.optionOk)
         .feed(Option.andThen((avatarImage: Medium) => avatarImage.getUrl()))
         .feed(Option.unwrapOr('')).value;
-      const headerRes = await this.headerService.fetchByAccountID(id);
+      const headerRes = await this.#headerService.fetchByAccountID(id);
       const header = Cat.cat(headerRes)
         .feed(Result.optionOk)
         .feed(Option.andThen((headerImage: Medium) => headerImage.getUrl()))
         .feed(Option.unwrapOr('')).value;
       headerAvatarImages.set(id, [header, avatar]);
 
-      const followCountRes = await this.fetchFollowService.fetchFollowCount(id);
+      const followCountRes =
+        await this.#fetchFollowService.fetchFollowCount(id);
       const followingCount = Result.mapOr(0)(
         (v: AccountFollowCount) => v.following,
       )(followCountRes);
@@ -595,7 +597,7 @@ export class AccountController {
     actorID: string,
     medium: string,
   ): Promise<Result.Result<Error, void>> {
-    const accountRes = await this.fetchService.fetchAccount(
+    const accountRes = await this.#fetchService.fetchAccount(
       targetAccountName as AccountName,
     );
     if (Result.isErr(accountRes)) {
@@ -603,7 +605,7 @@ export class AccountController {
     }
     const account = Result.unwrap(accountRes);
 
-    return await this.avatarService.create(
+    return await this.#avatarService.create(
       account.getID(),
       medium as MediumID,
       actorID as AccountID,
@@ -615,7 +617,7 @@ export class AccountController {
     actorID: string,
     medium: string,
   ): Promise<Result.Result<Error, void>> {
-    const accountRes = await this.fetchService.fetchAccount(
+    const accountRes = await this.#fetchService.fetchAccount(
       targetAccountName as AccountName,
     );
     if (Result.isErr(accountRes)) {
@@ -623,7 +625,7 @@ export class AccountController {
     }
     const account = Result.unwrap(accountRes);
 
-    return await this.headerService.create(
+    return await this.#headerService.create(
       account.getID(),
       medium as MediumID,
       actorID as AccountID,
@@ -634,7 +636,7 @@ export class AccountController {
     targetAccountName: string,
     actorID: string,
   ): Promise<Result.Result<Error, void>> {
-    const accountRes = await this.fetchService.fetchAccount(
+    const accountRes = await this.#fetchService.fetchAccount(
       targetAccountName as AccountName,
     );
     if (Result.isErr(accountRes)) {
@@ -642,7 +644,7 @@ export class AccountController {
     }
     const account = Result.unwrap(accountRes);
 
-    return await this.avatarService.delete(
+    return await this.#avatarService.delete(
       account.getID(),
       actorID as AccountID,
     );
@@ -652,7 +654,7 @@ export class AccountController {
     targetAccountName: string,
     actorID: string,
   ): Promise<Result.Result<Error, void>> {
-    const accountRes = await this.fetchService.fetchAccount(
+    const accountRes = await this.#fetchService.fetchAccount(
       targetAccountName as AccountID,
     );
     if (Result.isErr(accountRes)) {
@@ -660,14 +662,14 @@ export class AccountController {
     }
     const account = Result.unwrap(accountRes);
 
-    return await this.headerService.delete(
+    return await this.#headerService.delete(
       account.getID(),
       actorID as AccountID,
     );
   }
 
   async verifyAuthToken(token: string): Promise<Result.Result<Error, void>> {
-    return this.authenticationTokenService.verify(token);
+    return this.#authenticationTokenService.verify(token);
   }
 
   async getAccountRelationships(
@@ -677,7 +679,7 @@ export class AccountController {
     Result.Result<Error, z.infer<typeof GetAccountRelationshipsResponseSchema>>
   > {
     const relationships =
-      await this.fetchRelationshipService.checkRelationships(
+      await this.#fetchRelationshipService.checkRelationships(
         targetAccountID as AccountID,
         fromAccountID as AccountID,
       );

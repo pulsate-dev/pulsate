@@ -12,9 +12,10 @@ import {
 } from '../model/repository/notification.js';
 
 export class FetchNotificationService {
-  constructor(
-    private readonly notificationRepository: NotificationRepository,
-  ) {}
+  readonly #notificationRepository: NotificationRepository;
+  constructor(notificationRepository: NotificationRepository) {
+    this.#notificationRepository = notificationRepository;
+  }
 
   async fetchByID(
     id: NotificationID,
@@ -24,7 +25,7 @@ export class FetchNotificationService {
     const notAllowed = () => new Error('not allowed');
 
     return Cat.doT(monad)
-      .addM('notification', this.notificationRepository.findByID(id))
+      .addM('notification', this.#notificationRepository.findByID(id))
       .when(
         ({ notification }) => !this.isAllowed(notification, actorID),
         () => Promise.resolve(Result.err(notAllowed())),
@@ -42,7 +43,7 @@ export class FetchNotificationService {
     return Cat.doT(monad)
       .addM(
         'notifications',
-        this.notificationRepository.findByRecipientID(recipientID, filter),
+        this.#notificationRepository.findByRecipientID(recipientID, filter),
       )
       .when(
         ({ notifications }) =>

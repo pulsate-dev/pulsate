@@ -5,7 +5,10 @@ import type { List } from '../model/list.js';
 import { type ListRepository, listRepoSymbol } from '../model/repository.js';
 
 export class EditListService {
-  constructor(private readonly listRepository: ListRepository) {}
+  readonly #listRepository: ListRepository;
+  constructor(listRepository: ListRepository) {
+    this.#listRepository = listRepository;
+  }
 
   async editTitle(
     listId: ID<List>,
@@ -14,12 +17,12 @@ export class EditListService {
     const monad = resultPromiseMonad<Error>();
 
     return Cat.doT(monad)
-      .addM('list', this.listRepository.fetchList(listId))
+      .addM('list', this.#listRepository.fetchList(listId))
       .runWith(({ list }) =>
         monad.map(() => [])(Promise.resolve(list.setTitle(title))),
       )
       .runWith(({ list }) =>
-        monad.map(() => [])(this.listRepository.edit(list)),
+        monad.map(() => [])(this.#listRepository.edit(list)),
       )
       .finish(() => undefined);
   }
@@ -30,7 +33,7 @@ export class EditListService {
     const monad = resultPromiseMonad<Error>();
 
     return Cat.doT(monad)
-      .addM('list', this.listRepository.fetchList(listId))
+      .addM('list', this.#listRepository.fetchList(listId))
       .runWith(({ list }) =>
         monad.map(() => [])(
           Promise.resolve(
@@ -39,7 +42,7 @@ export class EditListService {
         ),
       )
       .runWith(({ list }) =>
-        monad.map(() => [])(this.listRepository.edit(list)),
+        monad.map(() => [])(this.#listRepository.edit(list)),
       )
       .finish(() => undefined);
   }

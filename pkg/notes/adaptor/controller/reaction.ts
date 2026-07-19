@@ -8,11 +8,18 @@ import type { FetchService } from '../../service/fetch.js';
 import type { CreateReactionResponseSchema } from '../validator/schema.js';
 
 export class ReactionController {
+  readonly #createReactionService: CreateReactionService;
+  readonly #fetchNoteService: FetchService;
+  readonly #deleteReactionService: DeleteReactionService;
   constructor(
-    private readonly createReactionService: CreateReactionService,
-    private readonly fetchNoteService: FetchService,
-    private readonly deleteReactionService: DeleteReactionService,
-  ) {}
+    createReactionService: CreateReactionService,
+    fetchNoteService: FetchService,
+    deleteReactionService: DeleteReactionService,
+  ) {
+    this.#createReactionService = createReactionService;
+    this.#fetchNoteService = fetchNoteService;
+    this.#deleteReactionService = deleteReactionService;
+  }
 
   async create(
     noteID: string,
@@ -21,7 +28,7 @@ export class ReactionController {
   ): Promise<
     Result.Result<Error, z.infer<typeof CreateReactionResponseSchema>>
   > {
-    const reactionRes = await this.createReactionService.handle(
+    const reactionRes = await this.#createReactionService.handle(
       noteID as NoteID,
       accountID as AccountID,
       body,
@@ -33,7 +40,7 @@ export class ReactionController {
 
     const note = Result.unwrap(reactionRes);
 
-    const attachmentsRes = await this.fetchNoteService.fetchNoteAttachments(
+    const attachmentsRes = await this.#fetchNoteService.fetchNoteAttachments(
       note.getID(),
     );
 
@@ -66,7 +73,7 @@ export class ReactionController {
     noteID: string,
     accountID: string,
   ): Promise<Result.Result<Error, void>> {
-    return this.deleteReactionService.handle(
+    return this.#deleteReactionService.handle(
       noteID as NoteID,
       accountID as AccountID,
     );

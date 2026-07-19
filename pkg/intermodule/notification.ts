@@ -21,24 +21,29 @@ import {
 } from '../notification/service/sendEmailNotification.js';
 
 export class NotificationModuleFacade {
+  readonly #createService: CreateNotificationService;
+  readonly #sendEmailNotificationService: SendEmailNotificationService;
   constructor(
-    private readonly createService: CreateNotificationService,
-    private readonly sendEmailNotificationService: SendEmailNotificationService,
-  ) {}
+    createService: CreateNotificationService,
+    sendEmailNotificationService: SendEmailNotificationService,
+  ) {
+    this.#createService = createService;
+    this.#sendEmailNotificationService = sendEmailNotificationService;
+  }
 
   async createFollowed(args: { recipientID: AccountID; actorID: AccountID }) {
-    return await this.createService.createFollowed(args);
+    return await this.#createService.createFollowed(args);
   }
 
   async createFollowRequested(args: {
     recipientID: AccountID;
     actorID: AccountID;
   }) {
-    return await this.createService.createFollowRequested(args);
+    return await this.#createService.createFollowRequested(args);
   }
 
   async createAccepted(args: { recipientID: AccountID; actorID: AccountID }) {
-    return await this.createService.createFollowAccepted(args);
+    return await this.#createService.createFollowAccepted(args);
   }
 
   async createMentioned(args: {
@@ -46,7 +51,7 @@ export class NotificationModuleFacade {
     actorID: AccountID;
     activityID: NoteID;
   }) {
-    return await this.createService.createMentioned(args);
+    return await this.#createService.createMentioned(args);
   }
 
   async createReacted(args: {
@@ -55,7 +60,7 @@ export class NotificationModuleFacade {
     sourceID: NoteID;
     activityID: ReactionID;
   }) {
-    return await this.createService.createReacted(args);
+    return await this.#createService.createReacted(args);
   }
 
   async createRenoted(args: {
@@ -64,7 +69,7 @@ export class NotificationModuleFacade {
     sourceID: NoteID;
     activityID: NoteID;
   }) {
-    return await this.createService.createRenoted(args);
+    return await this.#createService.createRenoted(args);
   }
 
   async sendEmailNotification(args: {
@@ -72,7 +77,7 @@ export class NotificationModuleFacade {
     subject: string;
     body: string;
   }) {
-    return await this.sendEmailNotificationService.handle(
+    return await this.#sendEmailNotificationService.handle(
       args.to,
       args.subject,
       args.body,

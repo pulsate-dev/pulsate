@@ -9,7 +9,10 @@ import {
 } from '../model/repository.js';
 
 export class FreezeService {
-  constructor(private readonly accountRepository: AccountRepository) {}
+  readonly #accountRepository: AccountRepository;
+  constructor(accountRepository: AccountRepository) {
+    this.#accountRepository = accountRepository;
+  }
 
   async setFreeze(
     targetName: AccountName,
@@ -28,7 +31,7 @@ export class FreezeService {
         monad.map(() => [])(Promise.resolve(account.setFreeze())),
       )
       .runWith(({ account }) =>
-        monad.map(() => [])(this.accountRepository.edit(account)),
+        monad.map(() => [])(this.#accountRepository.edit(account)),
       )
       .finish(() => true);
   }
@@ -50,7 +53,7 @@ export class FreezeService {
         monad.map(() => [])(Promise.resolve(account.setUnfreeze())),
       )
       .runWith(({ account }) =>
-        monad.map(() => [])(this.accountRepository.edit(account)),
+        monad.map(() => [])(this.#accountRepository.edit(account)),
       )
       .finish(() => true);
   }
@@ -59,7 +62,7 @@ export class FreezeService {
     name: AccountName,
     notFoundMessage: string,
   ): Promise<Result.Result<Error, Account>> {
-    return this.accountRepository
+    return this.#accountRepository
       .findByName(name)
       .then(
         Option.okOr(new AccountNotFoundError(notFoundMessage, { cause: null })),

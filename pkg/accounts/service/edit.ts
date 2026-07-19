@@ -13,10 +13,15 @@ import {
 } from '../model/repository.js';
 
 export class EditService {
+  #accountRepository: AccountRepository;
+  #passwordEncoder: PasswordEncoder;
   constructor(
-    private accountRepository: AccountRepository,
-    private passwordEncoder: PasswordEncoder,
-  ) {}
+    accountRepository: AccountRepository,
+    passwordEncoder: PasswordEncoder,
+  ) {
+    this.#accountRepository = accountRepository;
+    this.#passwordEncoder = passwordEncoder;
+  }
 
   async editNickname(
     target: AccountName,
@@ -36,7 +41,7 @@ export class EditService {
         monad.map(() => [])(Promise.resolve(account.setNickName(nickname))),
       )
       .runWith(({ account }) =>
-        monad.map(() => [])(this.accountRepository.edit(account)),
+        monad.map(() => [])(this.#accountRepository.edit(account)),
       )
       .finish(() => true);
   }
@@ -61,7 +66,7 @@ export class EditService {
         ),
       )
       .addMWith('encoded', () =>
-        this.passwordEncoder
+        this.#passwordEncoder
           .encodePassword(newPassphrase)
           .then(Result.ok)
           .catch((e) =>
@@ -78,7 +83,7 @@ export class EditService {
         ),
       )
       .runWith(({ account }) =>
-        monad.map(() => [])(this.accountRepository.edit(account)),
+        monad.map(() => [])(this.#accountRepository.edit(account)),
       )
       .finish(() => true);
   }
@@ -102,7 +107,7 @@ export class EditService {
         monad.map(() => [])(Promise.resolve(account.setMail(newEmail))),
       )
       .runWith(({ account }) =>
-        monad.map(() => [])(this.accountRepository.edit(account)),
+        monad.map(() => [])(this.#accountRepository.edit(account)),
       )
       .finish(() => true);
   }
@@ -125,7 +130,7 @@ export class EditService {
         monad.map(() => [])(Promise.resolve(account.setBio(bio))),
       )
       .runWith(({ account }) =>
-        monad.map(() => [])(this.accountRepository.edit(account)),
+        monad.map(() => [])(this.#accountRepository.edit(account)),
       )
       .finish(() => true);
   }
@@ -134,7 +139,7 @@ export class EditService {
     name: AccountName,
     notFoundMessage: string,
   ): Promise<Result.Result<Error, Account>> {
-    return this.accountRepository
+    return this.#accountRepository
       .findByName(name)
       .then(
         Option.okOr(new AccountNotFoundError(notFoundMessage, { cause: null })),

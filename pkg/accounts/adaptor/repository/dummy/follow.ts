@@ -11,28 +11,28 @@ import {
 export class InMemoryAccountFollowRepository
   implements AccountFollowRepository
 {
-  private readonly data: Set<AccountFollow>;
+  readonly #data: Set<AccountFollow>;
 
   constructor(data?: AccountFollow[]) {
-    this.data = new Set(data);
+    this.#data = new Set(data);
   }
 
   async fetchAllFollowers(
     accountID: AccountID,
   ): Promise<Result.Result<Error, AccountFollow[]>> {
-    const res = [...this.data].filter((f) => f.getTargetID() === accountID);
+    const res = [...this.#data].filter((f) => f.getTargetID() === accountID);
     return Result.ok(res);
   }
 
   async fetchAllFollowing(
     accountID: AccountID,
   ): Promise<Result.Result<Error, AccountFollow[]>> {
-    const res = [...this.data].filter((f) => f.getFromID() === accountID);
+    const res = [...this.#data].filter((f) => f.getFromID() === accountID);
     return Result.ok(res);
   }
 
   async follow(follow: AccountFollow): Promise<Result.Result<Error, void>> {
-    this.data.add(follow);
+    this.#data.add(follow);
     return Result.ok(undefined);
   }
 
@@ -40,14 +40,14 @@ export class InMemoryAccountFollowRepository
     accountID: AccountID,
     targetID: AccountID,
   ): Promise<Result.Result<Error, void>> {
-    const follow = [...this.data].find(
+    const follow = [...this.#data].find(
       (f) => f.getFromID() === accountID && f.getTargetID() === targetID,
     );
     if (!follow) {
       return Result.err(new AccountNotFoundError('not found', { cause: null }));
     }
 
-    this.data.delete(follow);
+    this.#data.delete(follow);
     return Result.ok(undefined);
   }
 
@@ -56,7 +56,7 @@ export class InMemoryAccountFollowRepository
     limit: number,
   ): Promise<Result.Result<Error, AccountFollow[]>> {
     return Result.ok(
-      [...this.data]
+      [...this.#data]
         .filter((f) => f.getTargetID() === accountID)
         .sort((a, b) => {
           return a.getCreatedAt().getTime() - b.getCreatedAt().getTime();
@@ -70,7 +70,7 @@ export class InMemoryAccountFollowRepository
     limit: number,
   ): Promise<Result.Result<Error, AccountFollow[]>> {
     return Result.ok(
-      [...this.data]
+      [...this.#data]
         .filter((f) => f.getFromID() === accountID)
         .sort((a, b) => {
           return a.getCreatedAt().getTime() - b.getCreatedAt().getTime();
@@ -87,7 +87,7 @@ export class InMemoryAccountFollowRepository
       following: 0,
     };
 
-    for (const v of this.data) {
+    for (const v of this.#data) {
       if (v.getTargetID() === accountID) {
         count.followers += 1;
       }

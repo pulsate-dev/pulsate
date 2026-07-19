@@ -60,10 +60,10 @@ for (const [k, v] of Object.entries(NOTIFICATION_TYPE_MAP)) {
 Object.freeze(NOTIFICATION_TYPE_CODE_MAP);
 
 export class PrismaNotificationRepository implements NotificationRepository {
-  private readonly prisma: PrismaClient;
+  readonly #prisma: PrismaClient;
 
   constructor(prisma: PrismaClient) {
-    this.prisma = prisma;
+    this.#prisma = prisma;
   }
 
   private serialize(
@@ -160,7 +160,7 @@ export class PrismaNotificationRepository implements NotificationRepository {
 
   private deserialize(
     notification: Awaited<
-      ReturnType<typeof this.prisma.notification.findUnique>
+      ReturnType<PrismaClient['notification']['findUnique']>
     >,
   ): Result.Result<Error, Notification> {
     if (!notification) {
@@ -242,7 +242,7 @@ export class PrismaNotificationRepository implements NotificationRepository {
     notification: NotificationBase,
   ): Promise<Result.Result<Error, void>> {
     try {
-      await this.prisma.notification.create({
+      await this.#prisma.notification.create({
         data: this.serialize(notification),
       });
       return Result.ok(undefined);
@@ -255,7 +255,7 @@ export class PrismaNotificationRepository implements NotificationRepository {
     id: NotificationID,
   ): Promise<Result.Result<Error, Notification>> {
     try {
-      const res = await this.prisma.notification.findUnique({
+      const res = await this.#prisma.notification.findUnique({
         where: {
           id: id,
         },
@@ -277,7 +277,7 @@ export class PrismaNotificationRepository implements NotificationRepository {
         }
       }
 
-      const res = await this.prisma.notification.findMany({
+      const res = await this.#prisma.notification.findMany({
         where: {
           recipientID: recipientID,
         },
@@ -308,7 +308,7 @@ export class PrismaNotificationRepository implements NotificationRepository {
         return Result.err(new Error('ReadAt is not set'));
       }
 
-      await this.prisma.notification.update({
+      await this.#prisma.notification.update({
         where: {
           id: notification.getID(),
         },

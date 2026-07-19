@@ -11,10 +11,15 @@ import {
 } from '../model/repository.js';
 
 export class ListTimelineService {
+  readonly #timelineCacheRepository: TimelineNotesCacheRepository;
+  readonly #timelineRepository: TimelineRepository;
   constructor(
-    private readonly timelineCacheRepository: TimelineNotesCacheRepository,
-    private readonly timelineRepository: TimelineRepository,
-  ) {}
+    timelineCacheRepository: TimelineNotesCacheRepository,
+    timelineRepository: TimelineRepository,
+  ) {
+    this.#timelineCacheRepository = timelineCacheRepository;
+    this.#timelineRepository = timelineRepository;
+  }
 
   /**
    * @description Fetch list timeline notes
@@ -27,7 +32,7 @@ export class ListTimelineService {
     filter: FetchListTimelineFilter,
   ): Promise<Result.Result<Error, Note[]>> {
     const cachedNotesRes =
-      await this.timelineCacheRepository.getListTimeline(listID);
+      await this.#timelineCacheRepository.getListTimeline(listID);
     if (Result.isErr(cachedNotesRes)) {
       timelineModuleLogger.warn(
         'Failed to get list timeline cache',
@@ -37,7 +42,10 @@ export class ListTimelineService {
     }
     const cachedNotes = Result.unwrap(cachedNotesRes);
 
-    return await this.timelineRepository.fetchListTimeline(cachedNotes, filter);
+    return await this.#timelineRepository.fetchListTimeline(
+      cachedNotes,
+      filter,
+    );
   }
 }
 export const listTimelineSymbol = Ether.newEtherSymbol<ListTimelineService>();

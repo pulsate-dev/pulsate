@@ -4,7 +4,10 @@ import { createMiddleware } from 'hono/factory';
 import { type Captcha, captchaSymbol } from '../../model/captcha.js';
 
 export class CaptchaMiddleware {
-  constructor(private readonly captcha: Captcha) {}
+  readonly #captcha: Captcha;
+  constructor(captcha: Captcha) {
+    this.#captcha = captcha;
+  }
 
   handle() {
     return createMiddleware(async (c, next) => {
@@ -20,7 +23,7 @@ export class CaptchaMiddleware {
         return;
       }
       const isValidToken = Option.isNone(
-        await this.captcha.validate(req.captcha_token),
+        await this.#captcha.validate(req.captcha_token),
       );
       if (!isValidToken) {
         c.res = undefined;

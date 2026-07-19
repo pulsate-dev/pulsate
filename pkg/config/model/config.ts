@@ -12,36 +12,36 @@ export interface CreateConfigArgs {
 
 export class Config {
   private constructor(arg: CreateConfigArgs) {
-    this.instanceName = arg.instanceName;
-    this.instanceFqdn = arg.instanceFqdn;
-    this.openRegistration = arg.openRegistration;
-    this.maintainerAccount = arg.maintainerAccount;
-    this.maintainerEmail = arg.maintainerEmail;
+    this.#instanceName = arg.instanceName;
+    this.#instanceFqdn = arg.instanceFqdn;
+    this.#openRegistration = arg.openRegistration;
+    this.#maintainerAccount = arg.maintainerAccount;
+    this.#maintainerEmail = arg.maintainerEmail;
   }
 
-  private readonly instanceName: string;
+  readonly #instanceName: string;
   getInstanceName(): string {
-    return this.instanceName;
+    return this.#instanceName;
   }
 
-  private readonly instanceFqdn: string;
+  readonly #instanceFqdn: string;
   getInstanceFqdn(): string {
-    return this.instanceFqdn;
+    return this.#instanceFqdn;
   }
 
-  private readonly openRegistration: boolean;
+  readonly #openRegistration: boolean;
   isOpenRegistration(): boolean {
-    return this.openRegistration;
+    return this.#openRegistration;
   }
 
-  private readonly maintainerAccount: AccountName;
+  readonly #maintainerAccount: AccountName;
   getMaintainerAccount(): AccountName {
-    return this.maintainerAccount;
+    return this.#maintainerAccount;
   }
 
-  private readonly maintainerEmail: string;
+  readonly #maintainerEmail: string;
   getMaintainerEmail(): string {
-    return this.maintainerEmail;
+    return this.#maintainerEmail;
   }
 
   public static new(arg: CreateConfigArgs): Config {

@@ -17,11 +17,18 @@ import {
 } from '../model/repository.js';
 
 export class CreateReactionService {
+  readonly #idGenerator: SnowflakeIDGenerator;
+  readonly #reactionRepository: ReactionRepository;
+  readonly #noteRepository: NoteRepository;
   constructor(
-    private readonly idGenerator: SnowflakeIDGenerator,
-    private readonly reactionRepository: ReactionRepository,
-    private readonly noteRepository: NoteRepository,
-  ) {}
+    idGenerator: SnowflakeIDGenerator,
+    reactionRepository: ReactionRepository,
+    noteRepository: NoteRepository,
+  ) {
+    this.#idGenerator = idGenerator;
+    this.#reactionRepository = reactionRepository;
+    this.#noteRepository = noteRepository;
+  }
 
   async handle(
     noteID: NoteID,
@@ -34,23 +41,23 @@ export class CreateReactionService {
     return Cat.doT(resultPromiseMonad<Error>())
       .addM(
         'note',
-        this.noteRepository
+        this.#noteRepository
           .findByID(noteID)
           .then(Option.okOrElse(notFound('Note not found'))),
       )
-      .addM('id', Promise.resolve(this.idGenerator.generate<Reaction>()))
+      .addM('id', Promise.resolve(this.#idGenerator.generate<Reaction>()))
       .addMWith('reaction', ({ id, note }) =>
         Promise.resolve(Reaction.new({ id, note, accountID, body })),
       )
       .runWith(({ reaction }) =>
-        this.reactionRepository.create(reaction).then(Result.map(() => [])),
+        this.#reactionRepository.create(reaction).then(Result.map(() => [])),
       )
       .addMWith('result', async ({ note }) => {
         const redirectTo = getReactionRedirectTargetID(note);
         if (Option.isNone(redirectTo)) {
           return Result.ok(note);
         }
-        return this.noteRepository
+        return this.#noteRepository
           .findByID(Option.unwrap(redirectTo))
           .then(Option.okOrElse(notFound('Original note not found')));
       })

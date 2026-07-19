@@ -27,7 +27,10 @@ type DeserializeNoteArgs = Awaited<
 >;
 
 export class PrismaNoteRepository implements NoteRepository {
-  constructor(private readonly client: PrismaClient) {}
+  readonly #client: PrismaClient;
+  constructor(client: PrismaClient) {
+    this.#client = client;
+  }
 
   private serialize(note: Note): Prisma.NoteCreateInput {
     const visibility = () => {
@@ -108,7 +111,7 @@ export class PrismaNoteRepository implements NoteRepository {
   async create(note: Note): Promise<Result.Result<Error, void>> {
     const serialized = this.serialize(note);
     try {
-      await this.client.note.create({
+      await this.#client.note.create({
         data: serialized,
       });
     } catch (e) {
@@ -120,7 +123,7 @@ export class PrismaNoteRepository implements NoteRepository {
   async deleteByID(id: NoteID): Promise<Result.Result<Error, void>> {
     try {
       // NOTE: logical delete
-      await this.client.note.update({
+      await this.#client.note.update({
         where: {
           id,
         },
@@ -140,7 +143,7 @@ export class PrismaNoteRepository implements NoteRepository {
     limit: number,
   ): Promise<Option.Option<Note[]>> {
     try {
-      const res = await this.client.note.findMany({
+      const res = await this.#client.note.findMany({
         where: {
           authorId,
           // NOTE: Exclude from the search those whose deletedAt does not appear undefined.
@@ -160,7 +163,7 @@ export class PrismaNoteRepository implements NoteRepository {
 
   async findManyByIDs(ids: NoteID[]): Promise<Result.Result<Error, Note[]>> {
     try {
-      const res = await this.client.note.findMany({
+      const res = await this.#client.note.findMany({
         where: {
           id: {
             in: [...new Set(ids)],
@@ -179,7 +182,7 @@ export class PrismaNoteRepository implements NoteRepository {
 
   async findByID(id: NoteID): Promise<Option.Option<Note>> {
     try {
-      const res = await this.client.note.findUniqueOrThrow({
+      const res = await this.#client.note.findUniqueOrThrow({
         where: {
           id,
           // NOTE: Exclude from the search those whose deletedAt does not appear undefined.
@@ -204,7 +207,7 @@ export class PrismaNoteRepository implements NoteRepository {
     noteIDs: NoteID[],
   ): Promise<RenoteStatus[]> {
     try {
-      const renotes = await this.client.note.findMany({
+      const renotes = await this.#client.note.findMany({
         where: {
           authorId: accountId,
           renoteId: {
@@ -242,14 +245,17 @@ export const prismaNoteRepo = (client: PrismaClient) =>
   Ether.newEther(noteRepoSymbol, () => new PrismaNoteRepository(client));
 
 export class PrismaBookmarkRepository implements BookmarkRepository {
-  constructor(private readonly client: PrismaClient) {}
+  readonly #client: PrismaClient;
+  constructor(client: PrismaClient) {
+    this.#client = client;
+  }
 
   async create(id: {
     noteID: NoteID;
     accountID: AccountID;
   }): Promise<Result.Result<Error, void>> {
     try {
-      await this.client.bookmark.create({
+      await this.#client.bookmark.create({
         data: {
           noteId: id.noteID,
           accountId: id.accountID,
@@ -266,7 +272,7 @@ export class PrismaBookmarkRepository implements BookmarkRepository {
     accountID: AccountID;
   }): Promise<Result.Result<Error, void>> {
     try {
-      await this.client.bookmark.update({
+      await this.#client.bookmark.update({
         where: {
           noteId_accountId: {
             accountId: id.accountID,
@@ -285,7 +291,7 @@ export class PrismaBookmarkRepository implements BookmarkRepository {
 
   async findByAccountID(id: AccountID): Promise<Option.Option<Bookmark[]>> {
     try {
-      const res = await this.client.bookmark.findMany({
+      const res = await this.#client.bookmark.findMany({
         where: {
           accountId: id,
           deletedAt: undefined,
@@ -309,7 +315,7 @@ export class PrismaBookmarkRepository implements BookmarkRepository {
     accountID: AccountID;
   }): Promise<Option.Option<Bookmark>> {
     try {
-      const res = await this.client.bookmark.findUniqueOrThrow({
+      const res = await this.#client.bookmark.findUniqueOrThrow({
         where: {
           noteId_accountId: {
             accountId: id.accountID,
@@ -344,7 +350,10 @@ type DeserializeNoteAttachmentArgs = Awaited<
 export class PrismaNoteAttachmentRepository
   implements NoteAttachmentRepository
 {
-  constructor(private readonly client: PrismaClient) {}
+  readonly #client: PrismaClient;
+  constructor(client: PrismaClient) {
+    this.#client = client;
+  }
 
   private deserialize(data: DeserializeNoteAttachmentArgs): Medium[] {
     return data.map((v) => {
@@ -377,7 +386,7 @@ export class PrismaNoteAttachmentRepository
     });
 
     try {
-      await this.client.noteAttachment.createMany({
+      await this.#client.noteAttachment.createMany({
         data,
       });
       return Result.ok(undefined);
@@ -388,7 +397,7 @@ export class PrismaNoteAttachmentRepository
 
   async findByNoteID(noteID: NoteID): Promise<Result.Result<Error, Medium[]>> {
     try {
-      const res = await this.client.noteAttachment.findMany({
+      const res = await this.#client.noteAttachment.findMany({
         where: {
           noteId: noteID,
         },
@@ -412,7 +421,10 @@ type DeserializeReactionArgs = Awaited<
   ReturnType<typeof prismaClient.reaction.findUnique>
 >;
 export class PrismaReactionRepository implements ReactionRepository {
-  constructor(private readonly client: PrismaClient) {}
+  readonly #client: PrismaClient;
+  constructor(client: PrismaClient) {
+    this.#client = client;
+  }
 
   private deserialize(data: DeserializeReactionArgs): Reaction {
     if (!data) {
@@ -429,7 +441,7 @@ export class PrismaReactionRepository implements ReactionRepository {
 
   async create(reaction: Reaction): Promise<Result.Result<Error, void>> {
     try {
-      await this.client.reaction.create({
+      await this.#client.reaction.create({
         data: {
           reactionId: reaction.getID(),
           reactedToId: reaction.getNoteID(),
@@ -446,7 +458,7 @@ export class PrismaReactionRepository implements ReactionRepository {
 
   async findByID(id: ReactionID): Promise<Result.Result<Error, Reaction>> {
     try {
-      const res = await this.client.reaction.findUnique({
+      const res = await this.#client.reaction.findUnique({
         where: {
           reactionId: id,
         },
@@ -463,7 +475,7 @@ export class PrismaReactionRepository implements ReactionRepository {
     accountID: AccountID;
   }): Promise<Result.Result<Error, Reaction>> {
     try {
-      const res = await this.client.reaction.findUnique({
+      const res = await this.#client.reaction.findUnique({
         where: {
           reactedById_reactedToId: {
             reactedById: id.accountID,
@@ -483,7 +495,7 @@ export class PrismaReactionRepository implements ReactionRepository {
     id: AccountID,
   ): Promise<Result.Result<Error, Reaction[]>> {
     try {
-      const res = await this.client.reaction.findMany({
+      const res = await this.#client.reaction.findMany({
         where: {
           reactedById: id,
           deletedAt: undefined,
@@ -498,7 +510,7 @@ export class PrismaReactionRepository implements ReactionRepository {
 
   async findByNoteID(id: NoteID): Promise<Result.Result<Error, Reaction[]>> {
     try {
-      const res = await this.client.reaction.findMany({
+      const res = await this.#client.reaction.findMany({
         where: {
           reactedToId: id,
           deletedAt: null,
@@ -513,7 +525,7 @@ export class PrismaReactionRepository implements ReactionRepository {
 
   async deleteByID(id: ReactionID): Promise<Result.Result<Error, void>> {
     try {
-      await this.client.reaction.delete({
+      await this.#client.reaction.delete({
         where: {
           reactionId: id,
         },

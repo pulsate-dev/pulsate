@@ -14,7 +14,7 @@ import {
 export class InMemoryTimelineCacheRepository
   implements TimelineNotesCacheRepository
 {
-  private data: Map<CacheObjectKey, NoteID[]>;
+  #data: Map<CacheObjectKey, NoteID[]>;
   constructor(
     homeData: [AccountID, NoteID[]][] = [],
     listData: [ListID, NoteID[]][] = [],
@@ -28,7 +28,7 @@ export class InMemoryTimelineCacheRepository
       return [key, v[1]];
     });
 
-    this.data = new Map([...home, ...list]);
+    this.#data = new Map([...home, ...list]);
   }
 
   private generateObjectKey(
@@ -45,11 +45,11 @@ export class InMemoryTimelineCacheRepository
     const newNoteIDs = notes.map((note) => note.getID());
     const objectKey = this.generateObjectKey(accountID, 'home');
 
-    if (!this.data.has(objectKey)) {
-      this.data.set(objectKey, newNoteIDs);
+    if (!this.#data.has(objectKey)) {
+      this.#data.set(objectKey, newNoteIDs);
       return Result.ok(undefined);
     }
-    this.data.get(objectKey)?.push(...newNoteIDs);
+    this.#data.get(objectKey)?.push(...newNoteIDs);
 
     return Result.ok(undefined);
   }
@@ -61,11 +61,11 @@ export class InMemoryTimelineCacheRepository
     const newNoteIDs = notes.map((note) => note.getID());
     const objectKey = this.generateObjectKey(listID, 'list');
 
-    if (!this.data.has(objectKey)) {
-      this.data.set(objectKey, newNoteIDs);
+    if (!this.#data.has(objectKey)) {
+      this.#data.set(objectKey, newNoteIDs);
       return Result.ok(undefined);
     }
-    this.data.get(objectKey)?.push(...newNoteIDs);
+    this.#data.get(objectKey)?.push(...newNoteIDs);
 
     return Result.ok(undefined);
   }
@@ -73,7 +73,7 @@ export class InMemoryTimelineCacheRepository
   async getHomeTimeline(
     accountID: AccountID,
   ): Promise<Result.Result<Error, NoteID[]>> {
-    const fetched = this.data.get(this.generateObjectKey(accountID, 'home'));
+    const fetched = this.#data.get(this.generateObjectKey(accountID, 'home'));
     if (!fetched) {
       return Result.err(
         new TimelineCacheNotFoundError('timeline cache not found', {
@@ -87,7 +87,7 @@ export class InMemoryTimelineCacheRepository
   async getListTimeline(
     listID: ListID,
   ): Promise<Result.Result<Error, NoteID[]>> {
-    const fetched = this.data.get(this.generateObjectKey(listID, 'list'));
+    const fetched = this.#data.get(this.generateObjectKey(listID, 'list'));
     if (!fetched) {
       return Result.err(
         new TimelineCacheNotFoundError('timeline cache not found', {
@@ -111,7 +111,7 @@ export class InMemoryTimelineCacheRepository
       return [key, v[1]];
     });
 
-    this.data = new Map([...home, ...list]);
+    this.#data = new Map([...home, ...list]);
   }
 
   async deleteNotesFromHomeTimeline(
@@ -119,7 +119,7 @@ export class InMemoryTimelineCacheRepository
     noteIDs: NoteID[],
   ): Promise<Result.Result<Error, void>> {
     const objectKey = this.generateObjectKey(accountID, 'home');
-    const fetched = this.data.get(objectKey);
+    const fetched = this.#data.get(objectKey);
     if (!fetched) {
       return Result.err(
         new TimelineCacheNotFoundError('timeline cache not found', {
@@ -127,7 +127,7 @@ export class InMemoryTimelineCacheRepository
         }),
       );
     }
-    this.data.set(
+    this.#data.set(
       objectKey,
       fetched.filter((v) => !noteIDs.includes(v)),
     );
@@ -140,7 +140,7 @@ export class InMemoryTimelineCacheRepository
     noteIDs: NoteID[],
   ): Promise<Result.Result<Error, void>> {
     const objectKey = this.generateObjectKey(listID, 'list');
-    const fetched = this.data.get(objectKey);
+    const fetched = this.#data.get(objectKey);
     if (!fetched) {
       return Result.err(
         new TimelineCacheNotFoundError('timeline cache not found', {
@@ -148,7 +148,7 @@ export class InMemoryTimelineCacheRepository
         }),
       );
     }
-    this.data.set(
+    this.#data.set(
       objectKey,
       fetched.filter((v) => !noteIDs.includes(v)),
     );

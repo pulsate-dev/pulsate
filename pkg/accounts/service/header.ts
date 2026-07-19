@@ -13,10 +13,15 @@ import {
 } from '../model/repository.js';
 
 export class AccountHeaderService {
+  readonly #headerRepository: AccountHeaderRepository;
+  readonly #mediaModule: MediaModuleFacade;
   constructor(
-    private readonly headerRepository: AccountHeaderRepository,
-    private readonly mediaModule: MediaModuleFacade,
-  ) {}
+    headerRepository: AccountHeaderRepository,
+    mediaModule: MediaModuleFacade,
+  ) {
+    this.#headerRepository = headerRepository;
+    this.#mediaModule = mediaModule;
+  }
 
   /**
    * @description Set account header image.
@@ -39,7 +44,7 @@ export class AccountHeaderService {
 
     // ToDo: Check media type
     return Cat.doT(monad)
-      .addM('medium', this.mediaModule.fetchMedia(mediumID))
+      .addM('medium', this.#mediaModule.fetchMedia(mediumID))
       .when(
         ({ medium }) => medium.isNsfw(),
         () =>
@@ -63,7 +68,7 @@ export class AccountHeaderService {
         ),
       )
       .runWith(() =>
-        monad.map(() => [])(this.headerRepository.create(accountID, mediumID)),
+        monad.map(() => [])(this.#headerRepository.create(accountID, mediumID)),
       )
       .finish(() => undefined);
   }
@@ -88,7 +93,7 @@ export class AccountHeaderService {
         ),
       )
       .runWith(() =>
-        monad.map(() => [])(this.headerRepository.delete(accountID)),
+        monad.map(() => [])(this.#headerRepository.delete(accountID)),
       )
       .finish(() => undefined);
   }
@@ -100,13 +105,13 @@ export class AccountHeaderService {
   async fetchByAccountID(
     accountID: AccountID,
   ): Promise<Result.Result<Error, Medium>> {
-    return await this.headerRepository.findByID(accountID);
+    return await this.#headerRepository.findByID(accountID);
   }
 
   async fetchByAccountIDs(
     accountIDs: readonly AccountID[],
   ): Promise<Result.Result<Error, Medium[]>> {
-    return await this.headerRepository.findByIDs(accountIDs);
+    return await this.#headerRepository.findByIDs(accountIDs);
   }
 
   private isAllowed(

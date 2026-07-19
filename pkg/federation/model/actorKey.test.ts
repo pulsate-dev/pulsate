@@ -79,7 +79,13 @@ vfBYk096qOEdFfQma6qWoXYQa4orPLtI
       ),
     });
 
-    expect(res).toMatchSnapshot();
+    expect(res.getID()).toBe('1');
+    expect(res.getActorID()).toBe('10');
+    expect(res.getPublicKeyID()).toEqual(
+      new URL('https://social.example.com/actor/1#main-key'),
+    );
+    expect(res.getPublicKeyString()).toMatch(/^-----BEGIN PUBLIC KEY-----/);
+    expect(Option.isSome(res.getPrivateKeyString())).toBeTruthy();
   });
 
   it('should output CryptoKeyPair', async () => {

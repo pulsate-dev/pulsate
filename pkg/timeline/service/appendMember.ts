@@ -9,7 +9,10 @@ import type { List, ListID } from '../model/list.js';
 import { type ListRepository, listRepoSymbol } from '../model/repository.js';
 
 export class AppendListMemberService {
-  constructor(private readonly listRepository: ListRepository) {}
+  readonly #listRepository: ListRepository;
+  constructor(listRepository: ListRepository) {
+    this.#listRepository = listRepository;
+  }
 
   /**
    * @description Append member to list.
@@ -29,7 +32,7 @@ export class AppendListMemberService {
     return Cat.doT(monad)
       .addM(
         'list',
-        this.listRepository
+        this.#listRepository
           .fetchList(listID)
           .then(
             Result.mapErr(
@@ -53,7 +56,7 @@ export class AppendListMemberService {
         monad.map(() => [])(Promise.resolve(list.addMember(accountID))),
       )
       .runWith(({ list }) =>
-        monad.map(() => [])(this.listRepository.appendListMember(list)),
+        monad.map(() => [])(this.#listRepository.appendListMember(list)),
       )
       .finish(() => undefined);
   }
