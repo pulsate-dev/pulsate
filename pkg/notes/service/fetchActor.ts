@@ -1,8 +1,8 @@
 import { Result } from '@mikuroxina/mini-fn';
 
-import type { Account, AccountID } from '../../accounts/model/account.js';
-import { AccountNotFoundError } from '../../accounts/model/errors.js';
-import type { AccountModuleFacade } from '../../intermodule/account.js';
+import type { Account, AccountID } from '../../accounts/model/account.ts';
+import { AccountNotFoundError } from '../../accounts/model/errors.ts';
+import type { AccountModuleFacade } from '../../intermodule/account.ts';
 
 /**
  * Fetches the actor account, preserving the underlying fetch failure as

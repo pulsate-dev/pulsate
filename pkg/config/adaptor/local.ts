@@ -3,8 +3,8 @@ import { readFileSync } from 'node:fs';
 import { Ether } from '@mikuroxina/mini-fn';
 import { parse } from 'yaml';
 
-import { type ConfigStore, configStoreSymbol } from '../mod.js';
-import { type AccountName, Config } from '../model/config.js';
+import { type ConfigStore, configStoreSymbol } from '../mod.ts';
+import { type AccountName, Config } from '../model/config.ts';
 
 export class LocalConfigStore implements ConfigStore {
   readonly #config: Config;

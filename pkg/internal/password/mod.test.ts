@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 
-import { Argon2idPasswordEncoder, type PasswordEncoder } from './mod.js';
+import { Argon2idPasswordEncoder, type PasswordEncoder } from './mod.ts';
 
 const encoder: PasswordEncoder = new Argon2idPasswordEncoder();
 const raw = 'じゃすた・いぐざんぽぅ';

@@ -1,8 +1,8 @@
 import { describe, expect, it } from 'vitest';
 
-import type { AccountID } from '../../accounts/model/account.js';
-import { Bookmark, type CreateBookmarkArgs } from './bookmark.js';
-import type { NoteID } from './note.js';
+import type { AccountID } from '../../accounts/model/account.ts';
+import { Bookmark, type CreateBookmarkArgs } from './bookmark.ts';
+import type { NoteID } from './note.ts';
 
 const exampleInput: CreateBookmarkArgs = {
   noteID: '1' as NoteID,

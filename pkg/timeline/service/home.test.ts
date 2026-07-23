@@ -1,17 +1,17 @@
 import { Result } from '@mikuroxina/mini-fn';
 import { describe, expect, it } from 'vitest';
 
-import type { AccountID } from '../../accounts/model/account.js';
-import type { NoteID } from '../../notes/model/note.js';
-import { InMemoryTimelineRepository } from '../adaptor/repository/dummy.js';
-import { InMemoryTimelineCacheRepository } from '../adaptor/repository/dummyCache.js';
+import type { AccountID } from '../../accounts/model/account.ts';
+import type { NoteID } from '../../notes/model/note.ts';
+import { InMemoryTimelineRepository } from '../adaptor/repository/dummy.ts';
+import { InMemoryTimelineCacheRepository } from '../adaptor/repository/dummyCache.ts';
 import {
   dummyDirectNote,
   dummyFollowersNote,
   dummyHomeNote,
   dummyPublicNote,
-} from '../testData/testData.js';
-import { HomeTimelineService } from './home.js';
+} from '../testData/testData.ts';
+import { HomeTimelineService } from './home.ts';
 
 describe('HomeTimelineService', () => {
   const timelineCacheRepository = new InMemoryTimelineCacheRepository([

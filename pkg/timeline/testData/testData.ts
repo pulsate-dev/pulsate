@@ -3,8 +3,8 @@
  * */
 import { Option, Result } from '@mikuroxina/mini-fn';
 
-import type { AccountID } from '../../accounts/model/account.js';
-import { Note, type NoteID } from '../../notes/model/note.js';
+import type { AccountID } from '../../accounts/model/account.ts';
+import { Note, type NoteID } from '../../notes/model/note.ts';
 
 export const dummyPublicNote = Result.unwrap(
   Note.new({

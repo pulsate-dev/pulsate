@@ -2,8 +2,8 @@ import { Option, Result } from '@mikuroxina/mini-fn';
 import * as jose from 'jose';
 import { describe, expect, it } from 'vitest';
 
-import { MockClock } from '../../internal/id/mod.js';
-import { AuthenticationTokenService } from './authenticationTokenService.js';
+import { MockClock } from '../../internal/id/mod.ts';
+import { AuthenticationTokenService } from './authenticationTokenService.ts';
 
 describe('AuthenticationTokenService', () => {
   it('verify JWT Token', async () => {

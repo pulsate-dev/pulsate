@@ -1,19 +1,19 @@
 import { Option, Result } from '@mikuroxina/mini-fn';
 import { afterEach, describe, expect, it } from 'vitest';
 
-import type { AccountID } from '../../../accounts/model/account.js';
+import type { AccountID } from '../../../accounts/model/account.ts';
 import {
   DirectNote,
   type DirectNoteID,
-} from '../../../notes/model/directNote.js';
-import { Note, type NoteID } from '../../../notes/model/note.js';
-import { TimelineInvalidFilterRangeError } from '../../model/errors.js';
-import { List, type ListID } from '../../model/list.js';
+} from '../../../notes/model/directNote.ts';
+import { Note, type NoteID } from '../../../notes/model/note.ts';
+import { TimelineInvalidFilterRangeError } from '../../model/errors.ts';
+import { List, type ListID } from '../../model/list.ts';
 import {
   InMemoryConversationRepository,
   InMemoryListRepository,
   InMemoryTimelineRepository,
-} from './dummy.js';
+} from './dummy.ts';
 
 describe('InMemoryTimelineRepository', () => {
   const dummyPublicNote = Result.unwrap(

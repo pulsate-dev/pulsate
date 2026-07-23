@@ -1,28 +1,28 @@
 import type { z } from '@hono/zod-openapi';
 import { Cat, Option, Result } from '@mikuroxina/mini-fn';
 
-import type { Medium, MediumID } from '../../../drive/model/medium.js';
-import type { AccountID, AccountName } from '../../model/account.js';
-import type { AccountFollow } from '../../model/follow.js';
-import type { AccountFollowCount } from '../../model/repository.js';
-import type { AuthenticateService } from '../../service/authenticate.js';
+import type { Medium, MediumID } from '../../../drive/model/medium.ts';
+import type { AccountID, AccountName } from '../../model/account.ts';
+import type { AccountFollow } from '../../model/follow.ts';
+import type { AccountFollowCount } from '../../model/repository.ts';
+import type { AuthenticateService } from '../../service/authenticate.ts';
 import type {
   AuthenticationToken,
   AuthenticationTokenService,
-} from '../../service/authenticationTokenService.js';
-import type { AccountAvatarService } from '../../service/avatar.js';
-import type { EditService } from '../../service/edit.js';
-import type { FetchService } from '../../service/fetch.js';
-import type { FetchFollowService } from '../../service/fetchFollow.js';
-import type { FollowService } from '../../service/follow.js';
-import type { FreezeService } from '../../service/freeze.js';
-import type { AccountHeaderService } from '../../service/header.js';
-import type { RegisterService } from '../../service/register.js';
-import type { FetchRelationshipService } from '../../service/relationships.js';
-import type { ResendVerifyTokenService } from '../../service/resendToken.js';
-import type { SilenceService } from '../../service/silence.js';
-import type { UnfollowService } from '../../service/unfollow.js';
-import type { VerifyAccountTokenService } from '../../service/verifyToken.js';
+} from '../../service/authenticationTokenService.ts';
+import type { AccountAvatarService } from '../../service/avatar.ts';
+import type { EditService } from '../../service/edit.ts';
+import type { FetchService } from '../../service/fetch.ts';
+import type { FetchFollowService } from '../../service/fetchFollow.ts';
+import type { FollowService } from '../../service/follow.ts';
+import type { FreezeService } from '../../service/freeze.ts';
+import type { AccountHeaderService } from '../../service/header.ts';
+import type { RegisterService } from '../../service/register.ts';
+import type { FetchRelationshipService } from '../../service/relationships.ts';
+import type { ResendVerifyTokenService } from '../../service/resendToken.ts';
+import type { SilenceService } from '../../service/silence.ts';
+import type { UnfollowService } from '../../service/unfollow.ts';
+import type { VerifyAccountTokenService } from '../../service/verifyToken.ts';
 import type {
   CreateAccountResponseSchema,
   GetAccountFollowerSchema,
@@ -32,7 +32,7 @@ import type {
   LoginResponseSchema,
   RefreshResponseSchema,
   UpdateAccountResponseSchema,
-} from '../validator/schema.js';
+} from '../validator/schema.ts';
 
 export class AccountController {
   readonly #registerService: RegisterService;

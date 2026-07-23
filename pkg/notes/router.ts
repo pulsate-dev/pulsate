@@ -1,6 +1,6 @@
 import { createRoute, z } from '@hono/zod-openapi';
 
-import { AccountNotFound } from '../accounts/adaptor/presenter/errors.js';
+import { AccountNotFound } from '../accounts/adaptor/presenter/errors.ts';
 import {
   bearerAuth,
   errorResponse,
@@ -8,7 +8,7 @@ import {
   jsonBody,
   noContentResponse,
   okResponse,
-} from '../internal/router/helper.js';
+} from '../internal/router/helper.ts';
 import {
   AlreadyReacted,
   AttachmentNotFound,
@@ -21,7 +21,7 @@ import {
   TooManyAttachments,
   TooManyContent,
   YouAreSilenced,
-} from './adaptor/presenter/errors.js';
+} from './adaptor/presenter/errors.ts';
 import {
   CreateBookmarkResponseSchema,
   CreateNoteRequestSchema,
@@ -31,7 +31,7 @@ import {
   GetNoteResponseSchema,
   RenoteRequestSchema,
   RenoteResponseSchema,
-} from './adaptor/validator/schema.js';
+} from './adaptor/validator/schema.ts';
 
 const noteInternalErrorSchema = z
   .object({ error: NoteInternal })

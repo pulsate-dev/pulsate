@@ -1,7 +1,7 @@
-import type { AccountID } from '../../accounts/model/account.js';
-import type { ID } from '../../internal/id/type.js';
-import type { ActorKeyPair } from './actorKey.js';
-import type { InstanceID } from './instance.js';
+import type { AccountID } from '../../accounts/model/account.ts';
+import type { ID } from '../../internal/id/type.ts';
+import type { ActorKeyPair } from './actorKey.ts';
+import type { InstanceID } from './instance.ts';
 
 export type ActorID = ID<Actor>;
 

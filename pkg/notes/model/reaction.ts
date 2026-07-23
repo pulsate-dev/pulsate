@@ -1,10 +1,10 @@
 import { Result } from '@mikuroxina/mini-fn';
 import * as v from 'valibot';
 
-import type { AccountID } from '../../accounts/model/account.js';
-import type { ID } from '../../internal/id/type.js';
-import { NoteInvalidReactionError } from './errors.js';
-import type { Note, NoteID } from './note.js';
+import type { AccountID } from '../../accounts/model/account.ts';
+import type { ID } from '../../internal/id/type.ts';
+import { NoteInvalidReactionError } from './errors.ts';
+import type { Note, NoteID } from './note.ts';
 
 const unicodeEmojiSchema = v.pipe(
   v.string(),

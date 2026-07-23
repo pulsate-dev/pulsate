@@ -1,7 +1,7 @@
 import { Promise, type Result } from '@mikuroxina/mini-fn';
-import type { AccountID } from '../../accounts/model/account.js';
-import type { List, ListID } from '../model/list.js';
-import type { ListRepository } from '../model/repository.js';
+import type { AccountID } from '../../accounts/model/account.ts';
+import type { List, ListID } from '../model/list.ts';
+import type { ListRepository } from '../model/repository.ts';
 
 export class FetchSubscribedListService {
   readonly #listRepository: ListRepository;

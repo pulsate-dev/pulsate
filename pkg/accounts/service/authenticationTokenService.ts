@@ -1,11 +1,11 @@
 import { Ether, Option, type Promise, Result } from '@mikuroxina/mini-fn';
 import * as jose from 'jose';
 
-import { type Clock, clockSymbol } from '../../internal/id/mod.js';
+import { type Clock, clockSymbol } from '../../internal/id/mod.ts';
 import {
   AccountAuthenticationTokenExpiredError,
   AccountAuthenticationTokenInvalidError,
-} from '../model/errors.js';
+} from '../model/errors.ts';
 
 declare const authenticationTokenNominal: unique symbol;
 export type AuthenticationToken = string & {

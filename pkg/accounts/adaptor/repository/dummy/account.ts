@@ -1,9 +1,9 @@
 import { Ether, Option, Result } from '@mikuroxina/mini-fn';
-import type { Account, AccountID } from '../../../model/account.js';
+import type { Account, AccountID } from '../../../model/account.ts';
 import {
   type AccountRepository,
   accountRepoSymbol,
-} from '../../../model/repository.js';
+} from '../../../model/repository.ts';
 
 export class InMemoryAccountRepository implements AccountRepository {
   #data: Set<Account>;

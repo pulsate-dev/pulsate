@@ -1,10 +1,10 @@
 import { Ether, Option, Result } from '@mikuroxina/mini-fn';
-import type { AccountID } from '../../../model/account.js';
-import type { InactiveAccount } from '../../../model/inactiveAccount.js';
+import type { AccountID } from '../../../model/account.ts';
+import type { InactiveAccount } from '../../../model/inactiveAccount.ts';
 import {
   type InactiveAccountRepository,
   inactiveAccountRepoSymbol,
-} from '../../../model/repository.js';
+} from '../../../model/repository.ts';
 
 export class InMemoryInactiveAccountRepository
   implements InactiveAccountRepository

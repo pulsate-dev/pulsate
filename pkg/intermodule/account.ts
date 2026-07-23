@@ -1,40 +1,40 @@
 import { Cat, Ether, Option, Result } from '@mikuroxina/mini-fn';
-import { InMemoryAccountRepository } from '../accounts/adaptor/repository/dummy/account.js';
-import { inMemoryAccountAvatarRepo } from '../accounts/adaptor/repository/dummy/avatar.js';
-import { newFollowRepo } from '../accounts/adaptor/repository/dummy/follow.js';
-import { inMemoryAccountHeaderRepo } from '../accounts/adaptor/repository/dummy/header.js';
-import { prismaAccountAvatarRepo } from '../accounts/adaptor/repository/prisma/avatar.js';
-import { prismaAccountHeaderRepo } from '../accounts/adaptor/repository/prisma/header.js';
+import { InMemoryAccountRepository } from '../accounts/adaptor/repository/dummy/account.ts';
+import { inMemoryAccountAvatarRepo } from '../accounts/adaptor/repository/dummy/avatar.ts';
+import { newFollowRepo } from '../accounts/adaptor/repository/dummy/follow.ts';
+import { inMemoryAccountHeaderRepo } from '../accounts/adaptor/repository/dummy/header.ts';
+import { prismaAccountAvatarRepo } from '../accounts/adaptor/repository/prisma/avatar.ts';
+import { prismaAccountHeaderRepo } from '../accounts/adaptor/repository/prisma/header.ts';
 import {
   PrismaAccountRepository,
   prismaFollowRepo,
-} from '../accounts/adaptor/repository/prisma/prisma.js';
+} from '../accounts/adaptor/repository/prisma/prisma.ts';
 import type {
   Account,
   AccountID,
   AccountName,
-} from '../accounts/model/account.js';
-import type { AccountFollow } from '../accounts/model/follow.js';
-import { accountRepoSymbol } from '../accounts/model/repository.js';
+} from '../accounts/model/account.ts';
+import type { AccountFollow } from '../accounts/model/follow.ts';
+import { accountRepoSymbol } from '../accounts/model/repository.ts';
 import {
   type AccountAvatarService,
   accountAvatar,
-} from '../accounts/service/avatar.js';
-import type { FetchService } from '../accounts/service/fetch.js';
-import { fetch } from '../accounts/service/fetch.js';
-import type { FetchFollowService } from '../accounts/service/fetchFollow.js';
-import { fetchFollow } from '../accounts/service/fetchFollow.js';
+} from '../accounts/service/avatar.ts';
+import type { FetchService } from '../accounts/service/fetch.ts';
+import { fetch } from '../accounts/service/fetch.ts';
+import type { FetchFollowService } from '../accounts/service/fetchFollow.ts';
+import { fetchFollow } from '../accounts/service/fetchFollow.ts';
 import {
   type AccountHeaderService,
   accountHeader,
-} from '../accounts/service/header.js';
-import { dummyAccounts, dummyfollows } from '../accounts/testData/testData.js';
-import { isProduction } from '../adaptors/env.js';
-import { prismaClient } from '../adaptors/prisma.js';
-import type { Medium } from '../drive/model/medium.js';
-import { mediaModuleFacadeEther } from './media.js';
+} from '../accounts/service/header.ts';
+import { dummyAccounts, dummyfollows } from '../accounts/testData/testData.ts';
+import { isProduction } from '../adaptors/env.ts';
+import { prismaClient } from '../adaptors/prisma.ts';
+import type { Medium } from '../drive/model/medium.ts';
+import { mediaModuleFacadeEther } from './media.ts';
 
-export type { Account } from '../accounts/model/account.js';
+export type { Account } from '../accounts/model/account.ts';
 
 export interface PartialAccount {
   id: AccountID;

@@ -2,8 +2,8 @@ import { Ether, Option, Result } from '@mikuroxina/mini-fn';
 import {
   Prisma,
   type PrismaClient,
-} from '../../../../adaptors/prisma/client.js';
-import type { prismaClient } from '../../../../adaptors/prisma.js';
+} from '../../../../adaptors/prisma/client.ts';
+import type { prismaClient } from '../../../../adaptors/prisma.ts';
 import {
   Account,
   type AccountFrozen,
@@ -12,12 +12,12 @@ import {
   type AccountRole,
   type AccountSilenced,
   type AccountStatus,
-} from '../../../model/account.js';
+} from '../../../model/account.ts';
 import {
   AccountInternalError,
   AccountNotFoundError,
-} from '../../../model/errors.js';
-import { AccountFollow } from '../../../model/follow.js';
+} from '../../../model/errors.ts';
+import { AccountFollow } from '../../../model/follow.ts';
 import {
   type AccountFollowCount,
   type AccountFollowRepository,
@@ -26,8 +26,8 @@ import {
   accountRepoSymbol,
   followRepoSymbol,
   verifyTokenRepoSymbol,
-} from '../../../model/repository.js';
-import { VerifyToken } from '../../../model/verifyToken.js';
+} from '../../../model/repository.ts';
+import { VerifyToken } from '../../../model/verifyToken.ts';
 
 type AccountPrismaArgs = Awaited<
   ReturnType<typeof prismaClient.account.findUnique>

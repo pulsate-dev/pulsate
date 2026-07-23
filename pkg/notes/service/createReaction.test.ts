@@ -1,13 +1,13 @@
 import { Option, Result } from '@mikuroxina/mini-fn';
 import { afterEach, describe, expect, it } from 'vitest';
-import type { AccountID } from '../../accounts/model/account.js';
-import { MockClock, SnowflakeIDGenerator } from '../../internal/id/mod.js';
+import type { AccountID } from '../../accounts/model/account.ts';
+import { MockClock, SnowflakeIDGenerator } from '../../internal/id/mod.ts';
 import {
   InMemoryNoteRepository,
   InMemoryReactionRepository,
-} from '../adaptor/repository/dummy.js';
-import { Note, type NoteID } from '../model/note.js';
-import { CreateReactionService } from './createReaction.js';
+} from '../adaptor/repository/dummy.ts';
+import { Note, type NoteID } from '../model/note.ts';
+import { CreateReactionService } from './createReaction.ts';
 
 const idGenerator = new SnowflakeIDGenerator(1, new MockClock(new Date()));
 

@@ -1,8 +1,8 @@
 import { z } from '@hono/zod-openapi';
 import { Ether, Result } from '@mikuroxina/mini-fn';
 
-import { OFFSET_FROM_UNIX_EPOCH } from '../time/mod.js';
-import type { ID } from './type.js';
+import { OFFSET_FROM_UNIX_EPOCH } from '../time/mod.ts';
+import type { ID } from './type.ts';
 
 export interface Clock {
   /** @returns current time in milliseconds from Unix Epoch (1970 Jan 1st 00:00:00.000 UTC) */

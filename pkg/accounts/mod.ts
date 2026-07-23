@@ -3,34 +3,34 @@ import { Cat, Ether, Option, Promise, Result } from '@mikuroxina/mini-fn';
 import {
   AuthenticateMiddlewareService,
   type AuthMiddlewareVariable,
-} from '../adaptors/authenticateMiddleware.js';
-import { prismaClient } from '../adaptors/prisma.js';
-import { MediaNotFoundError } from '../drive/model/errors.js';
-import { mediaModuleFacadeEther } from '../intermodule/media.js';
+} from '../adaptors/authenticateMiddleware.ts';
+import { prismaClient } from '../adaptors/prisma.ts';
+import { MediaNotFoundError } from '../drive/model/errors.ts';
+import { mediaModuleFacadeEther } from '../intermodule/media.ts';
 import {
   notificationModule,
   notificationModuleFacadeSymbol,
-} from '../intermodule/notification.js';
-import { clockSymbol, snowflakeIDGenerator } from '../internal/id/mod.js';
-import { argon2idPasswordEncoder } from '../internal/password/mod.js';
-import { newTurnstileCaptchaValidator } from './adaptor/captcha/turnstile.js';
-import { AccountController } from './adaptor/controller/account.js';
-import { accountModuleLogger } from './adaptor/logger.js';
-import { captchaMiddleware } from './adaptor/middileware/captcha.js';
-import { InMemoryAccountRepository } from './adaptor/repository/dummy/account.js';
-import { inMemoryAccountAvatarRepo } from './adaptor/repository/dummy/avatar.js';
-import { newFollowRepo } from './adaptor/repository/dummy/follow.js';
-import { inMemoryAccountHeaderRepo } from './adaptor/repository/dummy/header.js';
-import { inactiveAccountRepo } from './adaptor/repository/dummy/inactiveAccount.js';
-import { verifyTokenRepo } from './adaptor/repository/dummy/verifyToken.js';
-import { prismaAccountAvatarRepo } from './adaptor/repository/prisma/avatar.js';
-import { prismaAccountHeaderRepo } from './adaptor/repository/prisma/header.js';
-import { prismaInactiveAccountRepo } from './adaptor/repository/prisma/inactiveAccount.js';
+} from '../intermodule/notification.ts';
+import { clockSymbol, snowflakeIDGenerator } from '../internal/id/mod.ts';
+import { argon2idPasswordEncoder } from '../internal/password/mod.ts';
+import { newTurnstileCaptchaValidator } from './adaptor/captcha/turnstile.ts';
+import { AccountController } from './adaptor/controller/account.ts';
+import { accountModuleLogger } from './adaptor/logger.ts';
+import { captchaMiddleware } from './adaptor/middileware/captcha.ts';
+import { InMemoryAccountRepository } from './adaptor/repository/dummy/account.ts';
+import { inMemoryAccountAvatarRepo } from './adaptor/repository/dummy/avatar.ts';
+import { newFollowRepo } from './adaptor/repository/dummy/follow.ts';
+import { inMemoryAccountHeaderRepo } from './adaptor/repository/dummy/header.ts';
+import { inactiveAccountRepo } from './adaptor/repository/dummy/inactiveAccount.ts';
+import { verifyTokenRepo } from './adaptor/repository/dummy/verifyToken.ts';
+import { prismaAccountAvatarRepo } from './adaptor/repository/prisma/avatar.ts';
+import { prismaAccountHeaderRepo } from './adaptor/repository/prisma/header.ts';
+import { prismaInactiveAccountRepo } from './adaptor/repository/prisma/inactiveAccount.ts';
 import {
   PrismaAccountRepository,
   prismaFollowRepo,
   prismaVerifyTokenRepo,
-} from './adaptor/repository/prisma/prisma.js';
+} from './adaptor/repository/prisma/prisma.ts';
 import {
   AccountAlreadyFollowingError,
   AccountAlreadyFrozenError,
@@ -53,8 +53,8 @@ import {
   AccountPassphraseRequirementsNotMetError,
   AccountRefreshTokenExpiredError,
   AccountRefreshTokenInvalidError,
-} from './model/errors.js';
-import { accountRepoSymbol } from './model/repository.js';
+} from './model/errors.ts';
+import { accountRepoSymbol } from './model/repository.ts';
 
 import {
   CreateAccountRoute,
@@ -77,26 +77,26 @@ import {
   UnsetAccountHeaderRoute,
   UpdateAccountRoute,
   VerifyEmailRoute,
-} from './router.js';
-import { authenticate } from './service/authenticate.js';
+} from './router.ts';
+import { authenticate } from './service/authenticate.ts';
 import {
   authenticateToken,
   authenticateTokenSymbol,
-} from './service/authenticationTokenService.js';
-import { accountAvatar } from './service/avatar.js';
-import { edit } from './service/edit.js';
-import { fetch } from './service/fetch.js';
-import { fetchFollow } from './service/fetchFollow.js';
-import { follow } from './service/follow.js';
-import { freeze } from './service/freeze.js';
-import { accountHeader } from './service/header.js';
-import { register } from './service/register.js';
-import { fetchRelationship } from './service/relationships.js';
-import { resendToken } from './service/resendToken.js';
-import { silence } from './service/silence.js';
-import { unfollow } from './service/unfollow.js';
-import { verifyAccountToken } from './service/verifyToken.js';
-import { dummyAccounts } from './testData/testData.js';
+} from './service/authenticationTokenService.ts';
+import { accountAvatar } from './service/avatar.ts';
+import { edit } from './service/edit.ts';
+import { fetch } from './service/fetch.ts';
+import { fetchFollow } from './service/fetchFollow.ts';
+import { follow } from './service/follow.ts';
+import { freeze } from './service/freeze.ts';
+import { accountHeader } from './service/header.ts';
+import { register } from './service/register.ts';
+import { fetchRelationship } from './service/relationships.ts';
+import { resendToken } from './service/resendToken.ts';
+import { silence } from './service/silence.ts';
+import { unfollow } from './service/unfollow.ts';
+import { verifyAccountToken } from './service/verifyToken.ts';
+import { dummyAccounts } from './testData/testData.ts';
 
 const isProduction = process.env.NODE_ENV === 'production';
 

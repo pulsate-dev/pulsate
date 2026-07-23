@@ -1,15 +1,15 @@
 import { Ether, Result } from '@mikuroxina/mini-fn';
 
-import type { AccountID } from '../../accounts/model/account.js';
-import type { Note } from '../../notes/model/note.js';
-import { timelineModuleLogger } from '../adaptor/logger.js';
+import type { AccountID } from '../../accounts/model/account.ts';
+import type { Note } from '../../notes/model/note.ts';
+import { timelineModuleLogger } from '../adaptor/logger.ts';
 import {
   type FetchHomeTimelineFilter,
   type TimelineNotesCacheRepository,
   type TimelineRepository,
   timelineNotesCacheRepoSymbol,
   timelineRepoSymbol,
-} from '../model/repository.js';
+} from '../model/repository.ts';
 
 export class HomeTimelineService {
   readonly #timelineCacheRepository: TimelineNotesCacheRepository;

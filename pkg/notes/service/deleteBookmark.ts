@@ -1,11 +1,11 @@
 import { Ether, type Result } from '@mikuroxina/mini-fn';
 
-import type { AccountID } from '../../accounts/model/account.js';
-import type { NoteID } from '../model/note.js';
+import type { AccountID } from '../../accounts/model/account.ts';
+import type { NoteID } from '../model/note.ts';
 import {
   type BookmarkRepository,
   bookmarkRepoSymbol,
-} from '../model/repository.js';
+} from '../model/repository.ts';
 
 export class DeleteBookmarkService {
   readonly #bookmarkRepository: BookmarkRepository;

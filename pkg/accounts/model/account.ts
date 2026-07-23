@@ -1,7 +1,7 @@
 import { Result } from '@mikuroxina/mini-fn';
 import * as v from 'valibot';
 
-import type { ID } from '../../internal/id/type.js';
+import type { ID } from '../../internal/id/type.ts';
 import {
   AccountAlreadyDeletedError,
   AccountAlreadyFrozenError,
@@ -10,7 +10,7 @@ import {
   AccountMailAddressLengthError,
   AccountNickNameLengthError,
   AccountPassphraseRequirementsNotMetError,
-} from './account.errors.js';
+} from './account.errors.ts';
 
 export type AccountID = ID<Account>;
 export type AccountName = `@${string}@${string}`;

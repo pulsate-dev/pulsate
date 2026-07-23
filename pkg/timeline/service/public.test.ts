@@ -1,16 +1,16 @@
 import { Option, Result } from '@mikuroxina/mini-fn';
 import { describe, expect, it } from 'vitest';
 
-import type { AccountID } from '../../accounts/model/account.js';
-import { Note, type NoteID } from '../../notes/model/note.js';
-import { InMemoryTimelineRepository } from '../adaptor/repository/dummy.js';
+import type { AccountID } from '../../accounts/model/account.ts';
+import { Note, type NoteID } from '../../notes/model/note.ts';
+import { InMemoryTimelineRepository } from '../adaptor/repository/dummy.ts';
 import {
   dummyDirectNote,
   dummyFollowersNote,
   dummyHomeNote,
   dummyPublicNote,
-} from '../testData/testData.js';
-import { PublicTimelineService } from './public.js';
+} from '../testData/testData.ts';
+import { PublicTimelineService } from './public.ts';
 
 const dummyPublicNote2 = Result.unwrap(
   Note.new({

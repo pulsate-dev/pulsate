@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 
-import { Config } from './config.js';
-import { ConfigInvalidError } from './errors.js';
+import { Config } from './config.ts';
+import { ConfigInvalidError } from './errors.ts';
 
 const validArgs = {
   instanceName: 'Pulsate Demo Server',

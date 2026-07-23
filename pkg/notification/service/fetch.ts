@@ -1,14 +1,14 @@
 import { Cat, Ether, Promise, Result } from '@mikuroxina/mini-fn';
-import type { AccountID } from '../../accounts/model/account.js';
+import type { AccountID } from '../../accounts/model/account.ts';
 import type {
   Notification,
   NotificationID,
-} from '../model/notificationBase.js';
+} from '../model/notificationBase.ts';
 import {
   type NotificationFilter,
   type NotificationRepository,
   notificationRepoSymbol,
-} from '../model/repository/notification.js';
+} from '../model/repository/notification.ts';
 
 export class FetchNotificationService {
   readonly #notificationRepository: NotificationRepository;

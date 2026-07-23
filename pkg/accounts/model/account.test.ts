@@ -7,7 +7,7 @@ import {
   type AccountID,
   accountNameSchema,
   type CreateAccountArgs,
-} from './account.js';
+} from './account.ts';
 
 const exampleInput: CreateAccountArgs = {
   id: '1' as AccountID,

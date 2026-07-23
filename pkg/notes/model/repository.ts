@@ -1,12 +1,12 @@
 import { Ether, type Option, type Result } from '@mikuroxina/mini-fn';
 
-import type { AccountID } from '../../accounts/model/account.js';
-import type { Medium, MediumID } from '../../drive/model/medium.js';
-import type { Bookmark } from './bookmark.js';
-import type { DirectNote, DirectNoteID } from './directNote.js';
-import type { Note, NoteID } from './note.js';
-import type { Reaction, ReactionID } from './reaction.js';
-import type { RenoteStatus } from './renoteStatus.js';
+import type { AccountID } from '../../accounts/model/account.ts';
+import type { Medium, MediumID } from '../../drive/model/medium.ts';
+import type { Bookmark } from './bookmark.ts';
+import type { DirectNote, DirectNoteID } from './directNote.ts';
+import type { Note, NoteID } from './note.ts';
+import type { Reaction, ReactionID } from './reaction.ts';
+import type { RenoteStatus } from './renoteStatus.ts';
 
 export interface NoteRepository {
   create(note: Note): Promise<Result.Result<Error, void>>;

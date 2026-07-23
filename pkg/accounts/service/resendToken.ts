@@ -2,17 +2,17 @@ import { Cat, Ether, Option, Promise, Result } from '@mikuroxina/mini-fn';
 import {
   type NotificationModuleFacade,
   notificationModuleFacadeSymbol,
-} from '../../intermodule/notification.js';
-import type { AccountName } from '../model/account.js';
-import { AccountNotFoundError } from '../model/errors.js';
+} from '../../intermodule/notification.ts';
+import type { AccountName } from '../model/account.ts';
+import { AccountNotFoundError } from '../model/errors.ts';
 import {
   type InactiveAccountRepository,
   inactiveAccountRepoSymbol,
-} from '../model/repository.js';
+} from '../model/repository.ts';
 import {
   type VerifyAccountTokenService,
   verifyAccountTokenSymbol,
-} from './verifyToken.js';
+} from './verifyToken.ts';
 
 export class ResendVerifyTokenService {
   readonly #inactiveAccountRepository: InactiveAccountRepository;

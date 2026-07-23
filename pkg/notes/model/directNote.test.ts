@@ -1,17 +1,17 @@
 import { Option, Result } from '@mikuroxina/mini-fn';
 import { describe, expect, it } from 'vitest';
 
-import type { AccountID } from '../../accounts/model/account.js';
-import type { MediumID } from '../../drive/model/medium.js';
+import type { AccountID } from '../../accounts/model/account.ts';
+import type { MediumID } from '../../drive/model/medium.ts';
 import {
   type CreateDirectNoteArgs,
   DirectNote,
   type DirectNoteID,
-} from './directNote.js';
+} from './directNote.ts';
 import {
   DirectNoteContentLengthError,
   DirectNoteTooManyAttachmentsError,
-} from './errors.js';
+} from './errors.ts';
 
 const exampleInput: Omit<CreateDirectNoteArgs, 'deletedAt'> = {
   id: '1' as DirectNoteID,

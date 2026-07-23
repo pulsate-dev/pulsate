@@ -1,11 +1,11 @@
 import type { z } from '@hono/zod-openapi';
 import { Option, Result } from '@mikuroxina/mini-fn';
-import type { AccountID } from '../../../accounts/model/account.js';
-import type { NoteID } from '../../model/note.js';
-import type { CreateReactionService } from '../../service/createReaction.js';
-import type { DeleteReactionService } from '../../service/deleteReaction.js';
-import type { FetchService } from '../../service/fetch.js';
-import type { CreateReactionResponseSchema } from '../validator/schema.js';
+import type { AccountID } from '../../../accounts/model/account.ts';
+import type { NoteID } from '../../model/note.ts';
+import type { CreateReactionService } from '../../service/createReaction.ts';
+import type { DeleteReactionService } from '../../service/deleteReaction.ts';
+import type { FetchService } from '../../service/fetch.ts';
+import type { CreateReactionResponseSchema } from '../validator/schema.ts';
 
 export class ReactionController {
   readonly #createReactionService: CreateReactionService;

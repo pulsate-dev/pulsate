@@ -1,7 +1,7 @@
 import { Ether, type Option, type Result } from '@mikuroxina/mini-fn';
 
-import type { AccountID } from '../../accounts/model/account.js';
-import type { Medium, MediumID } from './medium.js';
+import type { AccountID } from '../../accounts/model/account.ts';
+import type { Medium, MediumID } from './medium.ts';
 
 export interface MediaRepository {
   create(medium: Medium): Promise<Result.Result<Error, Medium>>;

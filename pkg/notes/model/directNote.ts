@@ -1,16 +1,16 @@
 import { Option, Result } from '@mikuroxina/mini-fn';
 import * as v from 'valibot';
 
-import type { AccountID } from '../../accounts/model/account.js';
-import type { MediumID } from '../../drive/model/medium.js';
-import type { ID } from '../../internal/id/type.js';
+import type { AccountID } from '../../accounts/model/account.ts';
+import type { MediumID } from '../../drive/model/medium.ts';
+import type { ID } from '../../internal/id/type.ts';
 import {
   DirectNoteContentLengthError,
   DirectNoteDateInvalidError,
   DirectNoteSelfSendError,
   DirectNoteTooManyAttachmentsError,
-} from './errors.js';
-import { cwCommentSchema, noteContentSchema } from './note.js';
+} from './errors.ts';
+import { cwCommentSchema, noteContentSchema } from './note.ts';
 
 export type DirectNoteID = ID<DirectNote>;
 

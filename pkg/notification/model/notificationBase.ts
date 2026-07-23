@@ -1,6 +1,6 @@
 import { Option, Result } from '@mikuroxina/mini-fn';
-import type { AccountID } from '../../accounts/model/account.js';
-import type { ID } from '../../internal/id/type.js';
+import type { AccountID } from '../../accounts/model/account.ts';
+import type { ID } from '../../internal/id/type.ts';
 
 export type NotificationID = ID<NotificationBase>;
 export type NotificationType =

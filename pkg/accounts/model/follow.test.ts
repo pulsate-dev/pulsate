@@ -1,8 +1,8 @@
 import { Option, Result } from '@mikuroxina/mini-fn';
 import { describe, expect, it } from 'vitest';
 
-import type { AccountID } from './account.js';
-import { AccountFollow } from './follow.js';
+import type { AccountID } from './account.ts';
+import { AccountFollow } from './follow.ts';
 
 describe('AccountFollow', () => {
   it('generate new instance', () => {

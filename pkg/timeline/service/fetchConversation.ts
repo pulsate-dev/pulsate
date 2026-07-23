@@ -1,14 +1,14 @@
 import { Ether, Option, Result } from '@mikuroxina/mini-fn';
 
-import type { AccountID } from '../../accounts/model/account.js';
-import type { DirectNote, DirectNoteID } from '../../notes/model/directNote.js';
-import { TimelineInvalidFilterRangeError } from '../model/errors.js';
+import type { AccountID } from '../../accounts/model/account.ts';
+import type { DirectNote, DirectNoteID } from '../../notes/model/directNote.ts';
+import { TimelineInvalidFilterRangeError } from '../model/errors.ts';
 import {
   type ConversationNotesFilter,
   type ConversationRecipient,
   type ConversationRepository,
   conversationRepoSymbol,
-} from '../model/repository.js';
+} from '../model/repository.ts';
 
 export interface FetchConversationNotesArgs {
   limit: Option.Option<number>;

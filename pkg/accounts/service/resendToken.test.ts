@@ -1,15 +1,15 @@
 import { Option } from '@mikuroxina/mini-fn';
 import { afterEach, describe, expect, it } from 'vitest';
-import { notificationModule } from '../../intermodule/notification.js';
-import { MockClock } from '../../internal/id/mod.js';
-import { InMemoryAccountRepository } from '../adaptor/repository/dummy/account.js';
-import { InMemoryInactiveAccountRepository } from '../adaptor/repository/dummy/inactiveAccount.js';
-import { InMemoryAccountVerifyTokenRepository } from '../adaptor/repository/dummy/verifyToken.js';
-import type { AccountID } from '../model/account.js';
-import { AccountNotFoundError } from '../model/errors.js';
-import { InactiveAccount } from '../model/inactiveAccount.js';
-import { ResendVerifyTokenService } from './resendToken.js';
-import { VerifyAccountTokenService } from './verifyToken.js';
+import { notificationModule } from '../../intermodule/notification.ts';
+import { MockClock } from '../../internal/id/mod.ts';
+import { InMemoryAccountRepository } from '../adaptor/repository/dummy/account.ts';
+import { InMemoryInactiveAccountRepository } from '../adaptor/repository/dummy/inactiveAccount.ts';
+import { InMemoryAccountVerifyTokenRepository } from '../adaptor/repository/dummy/verifyToken.ts';
+import type { AccountID } from '../model/account.ts';
+import { AccountNotFoundError } from '../model/errors.ts';
+import { InactiveAccount } from '../model/inactiveAccount.ts';
+import { ResendVerifyTokenService } from './resendToken.ts';
+import { VerifyAccountTokenService } from './verifyToken.ts';
 
 const inactiveAccountRepository = new InMemoryInactiveAccountRepository();
 await inactiveAccountRepository.create(

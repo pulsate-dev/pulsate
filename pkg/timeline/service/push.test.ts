@@ -1,22 +1,22 @@
 import { Option, Result } from '@mikuroxina/mini-fn';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
-import type { AccountID } from '../../accounts/model/account.js';
-import { partialAccount1 } from '../../accounts/testData/testData.js';
-import { dummyAccountModuleFacade } from '../../intermodule/account.js';
-import { addSecondsToDate } from '../../internal/time/mod.js';
-import { Note, type NoteID } from '../../notes/model/note.js';
-import { InMemoryListRepository } from '../adaptor/repository/dummy.js';
-import { InMemoryTimelineCacheRepository } from '../adaptor/repository/dummyCache.js';
-import { List, type ListID } from '../model/list.js';
+import type { AccountID } from '../../accounts/model/account.ts';
+import { partialAccount1 } from '../../accounts/testData/testData.ts';
+import { dummyAccountModuleFacade } from '../../intermodule/account.ts';
+import { addSecondsToDate } from '../../internal/time/mod.ts';
+import { Note, type NoteID } from '../../notes/model/note.ts';
+import { InMemoryListRepository } from '../adaptor/repository/dummy.ts';
+import { InMemoryTimelineCacheRepository } from '../adaptor/repository/dummyCache.ts';
+import { List, type ListID } from '../model/list.ts';
 import {
   dummyFollowersNote,
   dummyHomeNote,
   dummyPublicNote,
-} from '../testData/testData.js';
-import { FetchSubscribedListService } from './fetchSubscribed.js';
-import { NoteVisibilityService } from './noteVisibility.js';
-import { PushTimelineService } from './push.js';
+} from '../testData/testData.ts';
+import { FetchSubscribedListService } from './fetchSubscribed.ts';
+import { NoteVisibilityService } from './noteVisibility.ts';
+import { PushTimelineService } from './push.ts';
 
 describe('PushTimelineService', () => {
   const dummyList = List.reconstruct({

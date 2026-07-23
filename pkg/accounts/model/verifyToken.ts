@@ -1,4 +1,4 @@
-import type { AccountID } from './account.js';
+import type { AccountID } from './account.ts';
 
 export interface VerifyTokenArgs {
   accountID: AccountID;

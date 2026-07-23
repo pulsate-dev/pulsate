@@ -1,39 +1,39 @@
 import { OpenAPIHono } from '@hono/zod-openapi';
 import { Cat, Ether, Option, Result } from '@mikuroxina/mini-fn';
 
-import type { AccountID } from '../accounts/model/account.js';
-import { AccountNotFoundError } from '../accounts/model/errors.js';
+import type { AccountID } from '../accounts/model/account.ts';
+import { AccountNotFoundError } from '../accounts/model/errors.ts';
 import {
   AuthenticateMiddlewareService,
   type AuthMiddlewareVariable,
-} from '../adaptors/authenticateMiddleware.js';
-import { isProduction } from '../adaptors/env.js';
-import { prismaClient } from '../adaptors/prisma.js';
+} from '../adaptors/authenticateMiddleware.ts';
+import { isProduction } from '../adaptors/env.ts';
+import { prismaClient } from '../adaptors/prisma.ts';
 import {
   accountModule,
   accountModuleEther,
   accountModuleFacadeSymbol,
   dummyAccountModuleFacade,
-} from '../intermodule/account.js';
-import { timelineModuleFacadeEther } from '../intermodule/timeline.js';
-import { clockSymbol, snowflakeIDGenerator } from '../internal/id/mod.js';
-import { BookmarkController } from './adaptor/controller/bookmark.js';
-import { NoteController } from './adaptor/controller/note.js';
-import { ReactionController } from './adaptor/controller/reaction.js';
-import { noteModuleLogger } from './adaptor/logger.js';
+} from '../intermodule/account.ts';
+import { timelineModuleFacadeEther } from '../intermodule/timeline.ts';
+import { clockSymbol, snowflakeIDGenerator } from '../internal/id/mod.ts';
+import { BookmarkController } from './adaptor/controller/bookmark.ts';
+import { NoteController } from './adaptor/controller/note.ts';
+import { ReactionController } from './adaptor/controller/reaction.ts';
+import { noteModuleLogger } from './adaptor/logger.ts';
 import {
   inMemoryBookmarkRepo,
   inMemoryNoteAttachmentRepo,
   inMemoryNoteRepo,
   inMemoryReactionRepo,
-} from './adaptor/repository/dummy.js';
-import { prismaDirectNoteRepo } from './adaptor/repository/prisma/directNote.js';
+} from './adaptor/repository/dummy.ts';
+import { prismaDirectNoteRepo } from './adaptor/repository/prisma/directNote.ts';
 import {
   prismaBookmarkRepo,
   prismaNoteAttachmentRepo,
   prismaNoteRepo,
   prismaReactionRepo,
-} from './adaptor/repository/prisma/note.js';
+} from './adaptor/repository/prisma/note.ts';
 import {
   NoteAccountSilencedError,
   NoteAlreadyReactedError,
@@ -44,7 +44,7 @@ import {
   NoteNotReactedYetError,
   NoteTooManyAttachmentsError,
   NoteVisibilityInvalidError,
-} from './model/errors.js';
+} from './model/errors.ts';
 import {
   CreateBookmarkRoute,
   CreateNoteRoute,
@@ -53,14 +53,14 @@ import {
   DeleteReactionRoute,
   GetNoteRoute,
   RenoteRoute,
-} from './router.js';
-import { createService } from './service/create.js';
-import { createBookmark } from './service/createBookmark.js';
-import { createReactionService } from './service/createReaction.js';
-import { deleteBookmarkService } from './service/deleteBookmark.js';
-import { deleteReaction } from './service/deleteReaction.js';
-import { fetch } from './service/fetch.js';
-import { renote } from './service/renote.js';
+} from './router.ts';
+import { createService } from './service/create.ts';
+import { createBookmark } from './service/createBookmark.ts';
+import { createReactionService } from './service/createReaction.ts';
+import { deleteBookmarkService } from './service/deleteBookmark.ts';
+import { deleteReaction } from './service/deleteReaction.ts';
+import { fetch } from './service/fetch.ts';
+import { renote } from './service/renote.ts';
 
 // NOTE: These dependency Ethers are shared between intermodule and notes module to ensure the same instances are used
 // NOTE: No in-memory fallback — DirectNote repo is Prisma-only until a dev-mode stub is introduced
