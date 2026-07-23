@@ -1,6 +1,6 @@
 import { Ether, type Result } from '@mikuroxina/mini-fn';
-import type { AccountID } from '../accounts/model/account.js';
-import type { Medium } from '../drive/model/medium.js';
+import type { AccountID } from '../accounts/model/account.ts';
+import type { Medium } from '../drive/model/medium.ts';
 import {
   noteAttachmentRepoEther,
   noteClockEther,
@@ -9,10 +9,10 @@ import {
   noteIdGeneratorEther,
   noteReactionRepoEther,
   noteRepoEther,
-} from '../notes/mod.js';
-import type { Note, NoteID } from '../notes/model/note.js';
-import type { Reaction } from '../notes/model/reaction.js';
-import type { RenoteStatus } from '../notes/model/renoteStatus.js';
+} from '../notes/mod.ts';
+import type { Note, NoteID } from '../notes/model/note.ts';
+import type { Reaction } from '../notes/model/reaction.ts';
+import type { RenoteStatus } from '../notes/model/renoteStatus.ts';
 
 export class NoteModuleFacade {
   readonly #fetchService: typeof noteFetchServiceInstance;

@@ -1,14 +1,14 @@
 import { Option, Result } from '@mikuroxina/mini-fn';
 import { describe, expect, it } from 'vitest';
 
-import type { AccountID } from '../../accounts/model/account.js';
-import type { MediumID } from '../../drive/model/medium.js';
+import type { AccountID } from '../../accounts/model/account.ts';
+import type { MediumID } from '../../drive/model/medium.ts';
 import {
   NoteContentLengthError,
   NoteNoDestinationError,
   NoteTooManyAttachmentsError,
-} from './errors.js';
-import { type CreateNoteArgs, Note, type NoteID } from './note.js';
+} from './errors.ts';
+import { type CreateNoteArgs, Note, type NoteID } from './note.ts';
 
 const exampleInput: CreateNoteArgs = {
   id: '1' as NoteID,

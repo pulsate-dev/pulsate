@@ -1,9 +1,9 @@
 import { Option } from '@mikuroxina/mini-fn';
 import { beforeEach, describe, expect, it } from 'vitest';
 
-import { InMemoryAccountRepository } from '../adaptor/repository/dummy/account.js';
-import { Account, type AccountID } from '../model/account.js';
-import { SilenceService } from './silence.js';
+import { InMemoryAccountRepository } from '../adaptor/repository/dummy/account.ts';
+import { Account, type AccountID } from '../model/account.ts';
+import { SilenceService } from './silence.ts';
 
 const repository = new InMemoryAccountRepository();
 const silenceService = new SilenceService(repository);

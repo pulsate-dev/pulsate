@@ -1,9 +1,9 @@
 import { Result } from '@mikuroxina/mini-fn';
 import { describe, expect, it } from 'vitest';
-import type { AccountID } from '../../accounts/model/account.js';
-import { InMemoryListRepository } from '../adaptor/repository/dummy.js';
-import { List, type ListID } from '../model/list.js';
-import { FetchListService } from './fetchList.js';
+import type { AccountID } from '../../accounts/model/account.ts';
+import { InMemoryListRepository } from '../adaptor/repository/dummy.ts';
+import { List, type ListID } from '../model/list.ts';
+import { FetchListService } from './fetchList.ts';
 
 const repository = new InMemoryListRepository([
   List.reconstruct({

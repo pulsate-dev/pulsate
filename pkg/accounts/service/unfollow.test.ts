@@ -1,11 +1,11 @@
 import { Option, Result } from '@mikuroxina/mini-fn';
 import { describe, expect, it } from 'vitest';
 
-import { InMemoryAccountRepository } from '../adaptor/repository/dummy/account.js';
-import { InMemoryAccountFollowRepository } from '../adaptor/repository/dummy/follow.js';
-import { Account, type AccountID } from '../model/account.js';
-import { AccountFollow } from '../model/follow.js';
-import { UnfollowService } from './unfollow.js';
+import { InMemoryAccountRepository } from '../adaptor/repository/dummy/account.ts';
+import { InMemoryAccountFollowRepository } from '../adaptor/repository/dummy/follow.ts';
+import { Account, type AccountID } from '../model/account.ts';
+import { AccountFollow } from '../model/follow.ts';
+import { UnfollowService } from './unfollow.ts';
 
 const accountRepository = new InMemoryAccountRepository();
 await accountRepository.create(

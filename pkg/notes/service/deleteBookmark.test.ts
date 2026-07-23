@@ -1,11 +1,11 @@
 import { Result } from '@mikuroxina/mini-fn';
 import { describe, expect, it } from 'vitest';
 
-import type { AccountID } from '../../accounts/model/account.js';
-import { InMemoryBookmarkRepository } from '../adaptor/repository/dummy.js';
-import { Bookmark } from '../model/bookmark.js';
-import type { NoteID } from '../model/note.js';
-import { DeleteBookmarkService } from './deleteBookmark.js';
+import type { AccountID } from '../../accounts/model/account.ts';
+import { InMemoryBookmarkRepository } from '../adaptor/repository/dummy.ts';
+import { Bookmark } from '../model/bookmark.ts';
+import type { NoteID } from '../model/note.ts';
+import { DeleteBookmarkService } from './deleteBookmark.ts';
 
 const noteID = '1' as NoteID;
 const accountID = '1' as AccountID;

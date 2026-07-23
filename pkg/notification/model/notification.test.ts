@@ -1,8 +1,8 @@
 import { Option } from '@mikuroxina/mini-fn';
 import { describe, expect, it } from 'vitest';
-import type { AccountID } from '../../accounts/model/account.js';
-import type { NoteID } from '../../notes/model/note.js';
-import type { ReactionID } from '../../notes/model/reaction.js';
+import type { AccountID } from '../../accounts/model/account.ts';
+import type { NoteID } from '../../notes/model/note.ts';
+import type { ReactionID } from '../../notes/model/reaction.ts';
 import {
   FollowAcceptedNotification,
   FollowedNotification,
@@ -10,8 +10,8 @@ import {
   MentionedNotification,
   ReactedNotification,
   RenotedNotification,
-} from './notification.js';
-import type { NotificationID } from './notificationBase.js';
+} from './notification.ts';
+import type { NotificationID } from './notificationBase.ts';
 
 describe('Followed', () => {
   it('should create new instance', () => {

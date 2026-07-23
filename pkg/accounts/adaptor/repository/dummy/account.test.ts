@@ -1,8 +1,8 @@
 import { Result } from '@mikuroxina/mini-fn';
 import { describe, expect, it } from 'vitest';
-import { Account, type AccountID } from '../../../model/account.js';
+import { Account, type AccountID } from '../../../model/account.ts';
 
-import { InMemoryAccountRepository } from './account.js';
+import { InMemoryAccountRepository } from './account.ts';
 
 describe('InMemoryAccountRepository', () => {
   const dummyInput: Account[] = [

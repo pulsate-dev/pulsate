@@ -1,14 +1,14 @@
 import { Cat, Ether, Option, type Result } from '@mikuroxina/mini-fn';
-import type { AccountID } from '../../accounts/model/account.js';
-import { resultPromiseMonad } from '../../internal/monad/mod.js';
-import { NoteNotFoundError } from '../model/errors.js';
-import type { NoteID } from '../model/note.js';
+import type { AccountID } from '../../accounts/model/account.ts';
+import { resultPromiseMonad } from '../../internal/monad/mod.ts';
+import { NoteNotFoundError } from '../model/errors.ts';
+import type { NoteID } from '../model/note.ts';
 import {
   type NoteRepository,
   noteRepoSymbol,
   type ReactionRepository,
   reactionRepoSymbol,
-} from '../model/repository.js';
+} from '../model/repository.ts';
 
 export class DeleteReactionService {
   readonly #reactionRepository: ReactionRepository;

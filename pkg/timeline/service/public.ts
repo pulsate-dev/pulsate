@@ -1,11 +1,11 @@
 import { Ether, type Result } from '@mikuroxina/mini-fn';
 
-import type { Note } from '../../notes/model/note.js';
+import type { Note } from '../../notes/model/note.ts';
 import {
   type FetchHomeTimelineFilter,
   type TimelineRepository,
   timelineRepoSymbol,
-} from '../model/repository.js';
+} from '../model/repository.ts';
 
 export class PublicTimelineService {
   readonly #timelineRepository: TimelineRepository;

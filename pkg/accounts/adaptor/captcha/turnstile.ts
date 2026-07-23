@@ -1,7 +1,7 @@
 import { Ether, Option } from '@mikuroxina/mini-fn';
 
-import { type Captcha, captchaSymbol } from '../../model/captcha.js';
-import { AccountCaptchaTokenInvalidError } from '../../model/errors.js';
+import { type Captcha, captchaSymbol } from '../../model/captcha.ts';
+import { AccountCaptchaTokenInvalidError } from '../../model/errors.ts';
 
 export class TurnstileCaptchaValidator implements Captcha {
   readonly #secret: string;

@@ -1,15 +1,15 @@
 import { Cat, Ether, Promise, type Result } from '@mikuroxina/mini-fn';
 
-import type { AccountID } from '../../accounts/model/account.js';
+import type { AccountID } from '../../accounts/model/account.ts';
 import {
   type Clock,
   clockSymbol,
   type SnowflakeIDGenerator,
   snowflakeIDGeneratorSymbol,
-} from '../../internal/id/mod.js';
-import { resultPromiseMonad } from '../../internal/monad/mod.js';
-import { List } from '../model/list.js';
-import { type ListRepository, listRepoSymbol } from '../model/repository.js';
+} from '../../internal/id/mod.ts';
+import { resultPromiseMonad } from '../../internal/monad/mod.ts';
+import { List } from '../model/list.ts';
+import { type ListRepository, listRepoSymbol } from '../model/repository.ts';
 
 export class CreateListService {
   readonly #idGenerator: SnowflakeIDGenerator;

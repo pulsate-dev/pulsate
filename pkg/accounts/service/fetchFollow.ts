@@ -1,16 +1,16 @@
 import { Cat, Ether, Option, type Result } from '@mikuroxina/mini-fn';
 
-import { resultPromiseMonad } from '../../internal/monad/mod.js';
-import type { AccountID, AccountName } from '../model/account.js';
-import { AccountNotFoundError } from '../model/errors.js';
-import type { AccountFollow } from '../model/follow.js';
+import { resultPromiseMonad } from '../../internal/monad/mod.ts';
+import type { AccountID, AccountName } from '../model/account.ts';
+import { AccountNotFoundError } from '../model/errors.ts';
+import type { AccountFollow } from '../model/follow.ts';
 import {
   type AccountFollowCount,
   type AccountFollowRepository,
   type AccountRepository,
   accountRepoSymbol,
   followRepoSymbol,
-} from '../model/repository.js';
+} from '../model/repository.ts';
 
 export class FetchFollowService {
   readonly #accountFollowRepository: AccountFollowRepository;

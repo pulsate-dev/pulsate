@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { Instance, type InstanceID } from './instance.js';
+import { Instance, type InstanceID } from './instance.ts';
 
 describe('Instance', () => {
   it('should create new instance', () => {

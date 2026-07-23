@@ -1,7 +1,7 @@
 import { Option, Result } from '@mikuroxina/mini-fn';
 import { describe, expect, it } from 'vitest';
-import type { ActorID } from './actor.js';
-import { ActorKeyPair, type ActorKeyPairID, type PEMKey } from './actorKey.js';
+import type { ActorID } from './actor.ts';
+import { ActorKeyPair, type ActorKeyPairID, type PEMKey } from './actorKey.ts';
 
 describe('ActorKeyPair', () => {
   it('should create new instance', () => {

@@ -1,11 +1,11 @@
 import { Result } from '@mikuroxina/mini-fn';
 import { describe, expect, it } from 'vitest';
-import { MockClock } from '../../internal/id/mod.js';
-import { Argon2idPasswordEncoder } from '../../internal/password/mod.js';
-import { InMemoryAccountRepository } from '../adaptor/repository/dummy/account.js';
-import { Account, type AccountID } from '../model/account.js';
-import { AuthenticateService } from './authenticate.js';
-import { AuthenticationTokenService } from './authenticationTokenService.js';
+import { MockClock } from '../../internal/id/mod.ts';
+import { Argon2idPasswordEncoder } from '../../internal/password/mod.ts';
+import { InMemoryAccountRepository } from '../adaptor/repository/dummy/account.ts';
+import { Account, type AccountID } from '../model/account.ts';
+import { AuthenticateService } from './authenticate.ts';
+import { AuthenticationTokenService } from './authenticationTokenService.ts';
 
 describe('AuthenticateService', () => {
   it('Generate valid token', async () => {

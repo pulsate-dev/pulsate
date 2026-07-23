@@ -1,17 +1,17 @@
 import { Ether, Result } from '@mikuroxina/mini-fn';
 
-import type { AccountID } from '../../accounts/model/account.js';
-import type { AccountModuleFacade } from '../../intermodule/account.js';
-import { NoteVisibilityInvalidError } from '../../notes/model/errors.js';
-import type { Note } from '../../notes/model/note.js';
-import { TimelineInternalError } from '../model/errors.js';
-import type { ListID } from '../model/list.js';
+import type { AccountID } from '../../accounts/model/account.ts';
+import type { AccountModuleFacade } from '../../intermodule/account.ts';
+import { NoteVisibilityInvalidError } from '../../notes/model/errors.ts';
+import type { Note } from '../../notes/model/note.ts';
+import { TimelineInternalError } from '../model/errors.ts';
+import type { ListID } from '../model/list.ts';
 import {
   type TimelineNotesCacheRepository,
   timelineNotesCacheRepoSymbol,
-} from '../model/repository.js';
-import type { FetchSubscribedListService } from './fetchSubscribed.js';
-import type { NoteVisibilityService } from './noteVisibility.js';
+} from '../model/repository.ts';
+import type { FetchSubscribedListService } from './fetchSubscribed.ts';
+import type { NoteVisibilityService } from './noteVisibility.ts';
 
 export class PushTimelineService {
   readonly #accountModule: AccountModuleFacade;

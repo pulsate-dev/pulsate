@@ -1,17 +1,17 @@
 import { Option, Result } from '@mikuroxina/mini-fn';
 import { describe, expect, it } from 'vitest';
-import type { AccountID } from '../../../../accounts/model/account.js';
-import type { NoteID } from '../../../../notes/model/note.js';
-import type { ReactionID } from '../../../../notes/model/reaction.js';
+import type { AccountID } from '../../../../accounts/model/account.ts';
+import type { NoteID } from '../../../../notes/model/note.ts';
+import type { ReactionID } from '../../../../notes/model/reaction.ts';
 import {
   FollowedNotification,
   FollowRequestedNotification,
   MentionedNotification,
   ReactedNotification,
   RenotedNotification,
-} from '../../../model/notification.js';
-import type { NotificationID } from '../../../model/notificationBase.js';
-import { InMemoryNotificationRepository } from './notification.js';
+} from '../../../model/notification.ts';
+import type { NotificationID } from '../../../model/notificationBase.ts';
+import { InMemoryNotificationRepository } from './notification.ts';
 
 describe('InMemoryNotificationRepository', () => {
   const dummyNotification1 = FollowedNotification.new({

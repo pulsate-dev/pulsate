@@ -1,36 +1,36 @@
 import { Cat, Ether, Option, Promise, Result } from '@mikuroxina/mini-fn';
 
-import type { Account, AccountID } from '../../accounts/model/account.js';
-import type { MediumID } from '../../drive/model/medium.js';
+import type { Account, AccountID } from '../../accounts/model/account.ts';
+import type { MediumID } from '../../drive/model/medium.ts';
 import {
   type AccountModuleFacade,
   accountModuleFacadeSymbol,
-} from '../../intermodule/account.js';
+} from '../../intermodule/account.ts';
 import {
   type TimelineModuleFacade,
   timelineModuleFacadeSymbol,
-} from '../../intermodule/timeline.js';
+} from '../../intermodule/timeline.ts';
 import {
   type Clock,
   clockSymbol,
   type SnowflakeIDGenerator,
   snowflakeIDGeneratorSymbol,
-} from '../../internal/id/mod.js';
-import { resultPromiseMonad } from '../../internal/monad/mod.js';
-import { checkVisibilityForSilencedActor } from '../model/createDomainService.js';
+} from '../../internal/id/mod.ts';
+import { resultPromiseMonad } from '../../internal/monad/mod.ts';
+import { checkVisibilityForSilencedActor } from '../model/createDomainService.ts';
 import {
   NoteInsufficientPermissionError,
   NoteNotFoundError,
-} from '../model/errors.js';
-import { Note, type NoteID, type NoteVisibility } from '../model/note.js';
-import { getRenoteChainRootID } from '../model/renoteDomainService.js';
+} from '../model/errors.ts';
+import { Note, type NoteID, type NoteVisibility } from '../model/note.ts';
+import { getRenoteChainRootID } from '../model/renoteDomainService.ts';
 import {
   type NoteAttachmentRepository,
   type NoteRepository,
   noteAttachmentRepoSymbol,
   noteRepoSymbol,
-} from '../model/repository.js';
-import { fetchActor } from './fetchActor.js';
+} from '../model/repository.ts';
+import { fetchActor } from './fetchActor.ts';
 
 export class RenoteService {
   readonly #deps: {

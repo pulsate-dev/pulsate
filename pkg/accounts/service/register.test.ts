@@ -1,14 +1,14 @@
 import { Result } from '@mikuroxina/mini-fn';
 import { afterEach, describe, expect, it } from 'vitest';
-import { notificationModule } from '../../intermodule/notification.js';
-import { MockClock, SnowflakeIDGenerator } from '../../internal/id/mod.js';
-import { Argon2idPasswordEncoder } from '../../internal/password/mod.js';
-import { InMemoryAccountRepository } from '../adaptor/repository/dummy/account.js';
-import { InMemoryInactiveAccountRepository } from '../adaptor/repository/dummy/inactiveAccount.js';
-import { InMemoryAccountVerifyTokenRepository } from '../adaptor/repository/dummy/verifyToken.js';
-import type { AccountName, AccountRole } from '../model/account.js';
-import { RegisterService } from './register.js';
-import { VerifyAccountTokenService } from './verifyToken.js';
+import { notificationModule } from '../../intermodule/notification.ts';
+import { MockClock, SnowflakeIDGenerator } from '../../internal/id/mod.ts';
+import { Argon2idPasswordEncoder } from '../../internal/password/mod.ts';
+import { InMemoryAccountRepository } from '../adaptor/repository/dummy/account.ts';
+import { InMemoryInactiveAccountRepository } from '../adaptor/repository/dummy/inactiveAccount.ts';
+import { InMemoryAccountVerifyTokenRepository } from '../adaptor/repository/dummy/verifyToken.ts';
+import type { AccountName, AccountRole } from '../model/account.ts';
+import { RegisterService } from './register.ts';
+import { VerifyAccountTokenService } from './verifyToken.ts';
 
 const inactiveAccountRepository = new InMemoryInactiveAccountRepository();
 const accountRepository = new InMemoryAccountRepository();

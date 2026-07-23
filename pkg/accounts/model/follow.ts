@@ -1,6 +1,6 @@
 import { Option, Result } from '@mikuroxina/mini-fn';
 
-import type { AccountID } from './account.js';
+import type { AccountID } from './account.ts';
 
 export interface AccountFollowConstructorArgs {
   fromID: AccountID;

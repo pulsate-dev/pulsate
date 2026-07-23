@@ -1,4 +1,4 @@
-import { ConfigInvalidError } from './errors.js';
+import { ConfigInvalidError } from './errors.ts';
 
 export type AccountName = `@${string}@${string}`;
 

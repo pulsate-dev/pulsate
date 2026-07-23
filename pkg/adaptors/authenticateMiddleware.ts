@@ -2,7 +2,7 @@ import { z } from '@hono/zod-openapi';
 import { Ether, Option, Result } from '@mikuroxina/mini-fn';
 import type { MiddlewareHandler } from 'hono';
 import { createMiddleware } from 'hono/factory';
-import { controller } from '../accounts/mod.js';
+import { controller } from '../accounts/mod.ts';
 
 /* eslint-disable-next-line @typescript-eslint/consistent-type-definitions */
 export type AuthMiddlewareVariable = {

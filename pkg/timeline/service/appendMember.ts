@@ -1,12 +1,12 @@
 import { Cat, Ether, Promise, Result } from '@mikuroxina/mini-fn';
-import type { AccountID } from '../../accounts/model/account.js';
-import { resultPromiseMonad } from '../../internal/monad/mod.js';
+import type { AccountID } from '../../accounts/model/account.ts';
+import { resultPromiseMonad } from '../../internal/monad/mod.ts';
 import {
   ListNotFoundError,
   TimelineInsufficientPermissionError,
-} from '../model/errors.js';
-import type { List, ListID } from '../model/list.js';
-import { type ListRepository, listRepoSymbol } from '../model/repository.js';
+} from '../model/errors.ts';
+import type { List, ListID } from '../model/list.ts';
+import { type ListRepository, listRepoSymbol } from '../model/repository.ts';
 
 export class AppendListMemberService {
   readonly #listRepository: ListRepository;

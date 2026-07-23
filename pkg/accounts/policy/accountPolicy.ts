@@ -3,11 +3,11 @@ import type {
   Policy,
   PolicyArgs,
   PolicyAuthorizedActionFunc,
-} from '../../internal/policy/policy.js';
-import { accountModuleLogger } from '../adaptor/logger.js';
-import { AccountAlreadyFrozenError } from '../model/account.errors.js';
-import type { Account } from '../model/account.js';
-import { AccountInsufficientPermissionError } from '../model/errors.js';
+} from '../../internal/policy/policy.ts';
+import { accountModuleLogger } from '../adaptor/logger.ts';
+import { AccountAlreadyFrozenError } from '../model/account.errors.ts';
+import type { Account } from '../model/account.ts';
+import { AccountInsufficientPermissionError } from '../model/errors.ts';
 
 export type AccountPolicyActionModelName =
   | 'account'

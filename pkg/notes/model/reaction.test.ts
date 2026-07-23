@@ -1,14 +1,14 @@
 import { Option, Result } from '@mikuroxina/mini-fn';
 import { describe, expect, it } from 'vitest';
 
-import type { AccountID } from '../../accounts/model/account.js';
-import { NoteInvalidReactionError } from './errors.js';
-import { Note, type NoteID } from './note.js';
+import type { AccountID } from '../../accounts/model/account.ts';
+import { NoteInvalidReactionError } from './errors.ts';
+import { Note, type NoteID } from './note.ts';
 import {
   type CreateReactionArgs,
   Reaction,
   type ReactionID,
-} from './reaction.js';
+} from './reaction.ts';
 
 const noteFactory = (
   id: NoteID,

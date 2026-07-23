@@ -1,11 +1,11 @@
 import { Ether, Option, Result } from '@mikuroxina/mini-fn';
-import type { AccountID } from '../../../../accounts/model/account.js';
+import type { AccountID } from '../../../../accounts/model/account.ts';
 import type {
   Prisma,
   PrismaClient,
-} from '../../../../adaptors/prisma/client.js';
-import type { NoteID } from '../../../../notes/model/note.js';
-import type { ReactionID } from '../../../../notes/model/reaction.js';
+} from '../../../../adaptors/prisma/client.ts';
+import type { NoteID } from '../../../../notes/model/note.ts';
+import type { ReactionID } from '../../../../notes/model/reaction.ts';
 import {
   FollowAcceptedNotification,
   FollowedNotification,
@@ -13,21 +13,21 @@ import {
   MentionedNotification,
   ReactedNotification,
   RenotedNotification,
-} from '../../../model/notification.js';
+} from '../../../model/notification.ts';
 import type {
   Notification,
   NotificationActorType,
   NotificationBase,
   NotificationID,
   NotificationType,
-} from '../../../model/notificationBase.js';
+} from '../../../model/notificationBase.ts';
 import {
   NOTIFICATION_DEFAULT_LIMIT,
   NOTIFICATION_MAX_LIMIT,
   type NotificationFilter,
   type NotificationRepository,
   notificationRepoSymbol,
-} from '../../../model/repository/notification.js';
+} from '../../../model/repository/notification.ts';
 
 /**
  * NOTE:

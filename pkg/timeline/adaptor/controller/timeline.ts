@@ -1,30 +1,30 @@
 import type { z } from '@hono/zod-openapi';
 import { Option, Result } from '@mikuroxina/mini-fn';
 
-import type { Account, AccountID } from '../../../accounts/model/account.js';
-import type { Medium } from '../../../drive/model/medium.js';
-import type { AccountModuleFacade } from '../../../intermodule/account.js';
-import type { NoteModuleFacade } from '../../../intermodule/note.js';
-import type { Note, NoteID } from '../../../notes/model/note.js';
-import type { Reaction } from '../../../notes/model/reaction.js';
+import type { Account, AccountID } from '../../../accounts/model/account.ts';
+import type { Medium } from '../../../drive/model/medium.ts';
+import type { AccountModuleFacade } from '../../../intermodule/account.ts';
+import type { NoteModuleFacade } from '../../../intermodule/note.ts';
+import type { Note, NoteID } from '../../../notes/model/note.ts';
+import type { Reaction } from '../../../notes/model/reaction.ts';
 import {
   findRenoteStatusByNoteID,
   type RenoteStatus,
-} from '../../../notes/model/renoteStatus.js';
-import type { ListID } from '../../model/list.js';
-import type { AccountTimelineService } from '../../service/account.js';
-import type { AppendListMemberService } from '../../service/appendMember.js';
-import type { CreateListService } from '../../service/createList.js';
-import type { DeleteListService } from '../../service/deleteList.js';
-import type { EditListService } from '../../service/editList.js';
-import type { FetchBookmarkService } from '../../service/fetchBookmark.js';
-import type { FetchConversationService } from '../../service/fetchConversation.js';
-import type { FetchListService } from '../../service/fetchList.js';
-import type { FetchListMemberService } from '../../service/fetchMember.js';
-import type { HomeTimelineService } from '../../service/home.js';
-import type { ListTimelineService } from '../../service/list.js';
-import type { PublicTimelineService } from '../../service/public.js';
-import type { RemoveListMemberService } from '../../service/removeMember.js';
+} from '../../../notes/model/renoteStatus.ts';
+import type { ListID } from '../../model/list.ts';
+import type { AccountTimelineService } from '../../service/account.ts';
+import type { AppendListMemberService } from '../../service/appendMember.ts';
+import type { CreateListService } from '../../service/createList.ts';
+import type { DeleteListService } from '../../service/deleteList.ts';
+import type { EditListService } from '../../service/editList.ts';
+import type { FetchBookmarkService } from '../../service/fetchBookmark.ts';
+import type { FetchConversationService } from '../../service/fetchConversation.ts';
+import type { FetchListService } from '../../service/fetchList.ts';
+import type { FetchListMemberService } from '../../service/fetchMember.ts';
+import type { HomeTimelineService } from '../../service/home.ts';
+import type { ListTimelineService } from '../../service/list.ts';
+import type { PublicTimelineService } from '../../service/public.ts';
+import type { RemoveListMemberService } from '../../service/removeMember.ts';
 import type {
   CreateListResponseSchema,
   EditListRequestSchema,
@@ -36,7 +36,7 @@ import type {
   GetListMemberResponseSchema,
   GetListTimelineResponseSchema,
   GetPublicTimelineResponseSchema,
-} from '../validator/timeline.js';
+} from '../validator/timeline.ts';
 
 export class TimelineController {
   readonly #accountTimelineService: AccountTimelineService;

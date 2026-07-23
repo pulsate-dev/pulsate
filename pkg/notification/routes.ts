@@ -2,8 +2,8 @@ import { createRoute, z } from '@hono/zod-openapi';
 import {
   NothingLeft,
   TimelineInternalError,
-} from '../timeline/adaptor/presenter/errors.js';
-import { GetNotificationsResponseSchema } from './adaptor/validator/schemas.js';
+} from '../timeline/adaptor/presenter/errors.ts';
+import { GetNotificationsResponseSchema } from './adaptor/validator/schemas.ts';
 
 export const GetNotificationsRoute = createRoute({
   method: 'get',

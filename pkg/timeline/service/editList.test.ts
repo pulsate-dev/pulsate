@@ -1,10 +1,10 @@
 import { Result } from '@mikuroxina/mini-fn';
 import { beforeEach, describe, expect, it } from 'vitest';
-import type { AccountID } from '../../accounts/model/account.js';
-import { InMemoryListRepository } from '../adaptor/repository/dummy.js';
-import { ListTitleLengthInvalidError } from '../model/errors.js';
-import { type CreateListArgs, List, type ListID } from '../model/list.js';
-import { EditListService } from './editList.js';
+import type { AccountID } from '../../accounts/model/account.ts';
+import { InMemoryListRepository } from '../adaptor/repository/dummy.ts';
+import { ListTitleLengthInvalidError } from '../model/errors.ts';
+import { type CreateListArgs, List, type ListID } from '../model/list.ts';
+import { EditListService } from './editList.ts';
 
 const testListData: CreateListArgs = {
   id: '1' as ListID,

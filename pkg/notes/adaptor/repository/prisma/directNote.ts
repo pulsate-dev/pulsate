@@ -1,16 +1,16 @@
 import { Ether, Option, Result } from '@mikuroxina/mini-fn';
 
-import type { AccountID } from '../../../../accounts/model/account.js';
-import type { PrismaClient } from '../../../../adaptors/prisma/client.js';
-import type { prismaClient } from '../../../../adaptors/prisma.js';
-import { Medium, type MediumID } from '../../../../drive/model/medium.js';
-import { DirectNote, type DirectNoteID } from '../../../model/directNote.js';
+import type { AccountID } from '../../../../accounts/model/account.ts';
+import type { PrismaClient } from '../../../../adaptors/prisma/client.ts';
+import type { prismaClient } from '../../../../adaptors/prisma.ts';
+import { Medium, type MediumID } from '../../../../drive/model/medium.ts';
+import { DirectNote, type DirectNoteID } from '../../../model/directNote.ts';
 import {
   type DirectNoteAttachmentRepository,
   type DirectNoteRepository,
   directNoteAttachmentRepoSymbol,
   directNoteRepoSymbol,
-} from '../../../model/repository.js';
+} from '../../../model/repository.ts';
 
 type RawDirectNote = Awaited<
   ReturnType<typeof prismaClient.directNote.findUnique>

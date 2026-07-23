@@ -1,6 +1,6 @@
 import { createRoute, z } from '@hono/zod-openapi';
 
-import { AccountNotFound } from '../accounts/adaptor/presenter/errors.js';
+import { AccountNotFound } from '../accounts/adaptor/presenter/errors.ts';
 import {
   bearerAuth,
   errorResponse,
@@ -8,7 +8,7 @@ import {
   jsonBody,
   noContentResponse,
   okResponse,
-} from '../internal/router/helper.js';
+} from '../internal/router/helper.ts';
 import {
   ListNotFound,
   NoPermission,
@@ -17,7 +17,7 @@ import {
   TitleTooLong,
   TooManyMembers,
   YouAreBlocked,
-} from './adaptor/presenter/errors.js';
+} from './adaptor/presenter/errors.ts';
 import {
   CreateListRequestSchema,
   CreateListResponseSchema,
@@ -30,7 +30,7 @@ import {
   GetListMemberResponseSchema,
   GetListTimelineResponseSchema,
   GetPublicTimelineResponseSchema,
-} from './adaptor/validator/timeline.js';
+} from './adaptor/validator/timeline.ts';
 
 /* NOTE: query params must use z.string() \
  cf. https://zenn.dev/loglass/articles/c237d89e238d42 (Japanese)\

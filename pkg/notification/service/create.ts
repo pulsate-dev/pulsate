@@ -1,14 +1,14 @@
 import { Cat, Ether, Promise, Result } from '@mikuroxina/mini-fn';
-import type { AccountID } from '../../accounts/model/account.js';
+import type { AccountID } from '../../accounts/model/account.ts';
 import {
   type Clock,
   clockSymbol,
   type SnowflakeIDGenerator,
   snowflakeIDGeneratorSymbol,
-} from '../../internal/id/mod.js';
-import { resultPromiseMonad } from '../../internal/monad/mod.js';
-import type { NoteID } from '../../notes/model/note.js';
-import type { ReactionID } from '../../notes/model/reaction.js';
+} from '../../internal/id/mod.ts';
+import { resultPromiseMonad } from '../../internal/monad/mod.ts';
+import type { NoteID } from '../../notes/model/note.ts';
+import type { ReactionID } from '../../notes/model/reaction.ts';
 import {
   FollowAcceptedNotification,
   FollowedNotification,
@@ -16,12 +16,12 @@ import {
   MentionedNotification,
   ReactedNotification,
   RenotedNotification,
-} from '../model/notification.js';
-import type { NotificationBase } from '../model/notificationBase.js';
+} from '../model/notification.ts';
+import type { NotificationBase } from '../model/notificationBase.ts';
 import {
   type NotificationRepository,
   notificationRepoSymbol,
-} from '../model/repository/notification.js';
+} from '../model/repository/notification.ts';
 
 export class CreateNotificationService {
   readonly #idGenerator: SnowflakeIDGenerator;

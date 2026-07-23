@@ -1,12 +1,12 @@
 import { Ether, Result } from '@mikuroxina/mini-fn';
-import type { AccountID } from '../../../model/account.js';
-import { AccountNotFoundError } from '../../../model/errors.js';
-import type { AccountFollow } from '../../../model/follow.js';
+import type { AccountID } from '../../../model/account.ts';
+import { AccountNotFoundError } from '../../../model/errors.ts';
+import type { AccountFollow } from '../../../model/follow.ts';
 import {
   type AccountFollowCount,
   type AccountFollowRepository,
   followRepoSymbol,
-} from '../../../model/repository.js';
+} from '../../../model/repository.ts';
 
 export class InMemoryAccountFollowRepository
   implements AccountFollowRepository

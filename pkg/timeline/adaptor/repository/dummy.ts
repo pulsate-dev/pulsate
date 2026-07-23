@@ -1,17 +1,17 @@
 import { Ether, Result } from '@mikuroxina/mini-fn';
 
-import type { AccountID } from '../../../accounts/model/account.js';
-import { AccountNotFoundError } from '../../../accounts/model/errors.js';
-import type { NoteModuleFacade } from '../../../intermodule/note.js';
-import type { Bookmark } from '../../../notes/model/bookmark.js';
-import type { DirectNote } from '../../../notes/model/directNote.js';
-import type { Note, NoteID } from '../../../notes/model/note.js';
+import type { AccountID } from '../../../accounts/model/account.ts';
+import { AccountNotFoundError } from '../../../accounts/model/errors.ts';
+import type { NoteModuleFacade } from '../../../intermodule/note.ts';
+import type { Bookmark } from '../../../notes/model/bookmark.ts';
+import type { DirectNote } from '../../../notes/model/directNote.ts';
+import type { Note, NoteID } from '../../../notes/model/note.ts';
 import {
   ListInternalError,
   ListNotFoundError,
   TimelineInvalidFilterRangeError,
-} from '../../model/errors.js';
-import type { List, ListID } from '../../model/list.js';
+} from '../../model/errors.ts';
+import type { List, ListID } from '../../model/list.ts';
 import {
   type BookmarkTimelineFilter,
   type BookmarkTimelineRepository,
@@ -27,7 +27,7 @@ import {
   listRepoSymbol,
   type TimelineRepository,
   timelineRepoSymbol,
-} from '../../model/repository.js';
+} from '../../model/repository.ts';
 
 export class InMemoryTimelineRepository implements TimelineRepository {
   #data: Map<NoteID, Note>;

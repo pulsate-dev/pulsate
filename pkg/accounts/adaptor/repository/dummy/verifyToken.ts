@@ -1,10 +1,10 @@
 import { Ether, Option, Result } from '@mikuroxina/mini-fn';
-import type { AccountID } from '../../../model/account.js';
+import type { AccountID } from '../../../model/account.ts';
 import {
   type AccountVerifyTokenRepository,
   verifyTokenRepoSymbol,
-} from '../../../model/repository.js';
-import { VerifyToken } from '../../../model/verifyToken.js';
+} from '../../../model/repository.ts';
+import { VerifyToken } from '../../../model/verifyToken.ts';
 
 export class InMemoryAccountVerifyTokenRepository
   implements AccountVerifyTokenRepository

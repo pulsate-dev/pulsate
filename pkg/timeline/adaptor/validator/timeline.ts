@@ -2,7 +2,7 @@ import { z } from '@hono/zod-openapi';
 import {
   noteAttachmentSchema,
   reactionSchema,
-} from '../../../notes/adaptor/validator/schema.js';
+} from '../../../notes/adaptor/validator/schema.ts';
 
 const TimelineNoteBaseSchema = z.object({
   id: z.string().openapi({

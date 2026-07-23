@@ -1,14 +1,14 @@
 import { Option, Result } from '@mikuroxina/mini-fn';
 import { describe, expect, it } from 'vitest';
-import type { AccountID } from '../../accounts/model/account.js';
+import type { AccountID } from '../../accounts/model/account.ts';
 import {
   InMemoryNoteRepository,
   InMemoryReactionRepository,
-} from '../adaptor/repository/dummy.js';
-import { NoteNotFoundError, NoteNotReactedYetError } from '../model/errors.js';
-import { Note, type NoteID } from '../model/note.js';
-import { Reaction, type ReactionID } from '../model/reaction.js';
-import { DeleteReactionService } from './deleteReaction.js';
+} from '../adaptor/repository/dummy.ts';
+import { NoteNotFoundError, NoteNotReactedYetError } from '../model/errors.ts';
+import { Note, type NoteID } from '../model/note.ts';
+import { Reaction, type ReactionID } from '../model/reaction.ts';
+import { DeleteReactionService } from './deleteReaction.ts';
 
 const noteFactory = (
   id: NoteID,

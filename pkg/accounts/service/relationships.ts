@@ -1,15 +1,15 @@
 import { Cat, Ether, Option, type Result } from '@mikuroxina/mini-fn';
 
-import { resultPromiseMonad } from '../../internal/monad/mod.js';
-import type { AccountID } from '../model/account.js';
-import { AccountNotFoundError } from '../model/errors.js';
-import { isFollowedBy, isFollowing } from '../model/followDomainService.js';
+import { resultPromiseMonad } from '../../internal/monad/mod.ts';
+import type { AccountID } from '../model/account.ts';
+import { AccountNotFoundError } from '../model/errors.ts';
+import { isFollowedBy, isFollowing } from '../model/followDomainService.ts';
 import {
   type AccountFollowRepository,
   type AccountRepository,
   accountRepoSymbol,
   followRepoSymbol,
-} from '../model/repository.js';
+} from '../model/repository.ts';
 
 export interface AccountRelationships {
   id: AccountID;

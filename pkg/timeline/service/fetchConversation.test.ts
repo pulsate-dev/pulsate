@@ -1,10 +1,10 @@
 import { Option, Result } from '@mikuroxina/mini-fn';
 import { describe, expect, it } from 'vitest';
 
-import type { AccountID } from '../../accounts/model/account.js';
-import { DirectNote, type DirectNoteID } from '../../notes/model/directNote.js';
-import { InMemoryConversationRepository } from '../adaptor/repository/dummy.js';
-import { FetchConversationService } from './fetchConversation.js';
+import type { AccountID } from '../../accounts/model/account.ts';
+import { DirectNote, type DirectNoteID } from '../../notes/model/directNote.ts';
+import { InMemoryConversationRepository } from '../adaptor/repository/dummy.ts';
+import { FetchConversationService } from './fetchConversation.ts';
 
 const directNoteFactory = (
   id: DirectNoteID,
