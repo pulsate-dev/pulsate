@@ -1,7 +1,6 @@
-import { Cat, Ether, Option, Result } from '@mikuroxina/mini-fn';
+import { Cat, Ether, Option, Promise, Result } from '@mikuroxina/mini-fn';
 
 import { type Clock, clockSymbol } from '../../internal/id/mod.js';
-import { resultPromiseMonad } from '../../internal/monad/mod.js';
 import type { AccountName } from '../model/account.js';
 import { AccountNotFoundError } from '../model/errors.js';
 import { AccountFollow } from '../model/follow.js';
@@ -30,7 +29,7 @@ export class FollowService {
     from: AccountName,
     target: AccountName,
   ): Promise<Result.Result<Error, AccountFollow>> {
-    const monad = resultPromiseMonad<Error>();
+    const monad = Promise.resultMonad<Error>();
 
     return Cat.doT(monad)
       .addM(

@@ -13,7 +13,6 @@ import {
   type SnowflakeIDGenerator,
   snowflakeIDGeneratorSymbol,
 } from '../../internal/id/mod.js';
-import { resultPromiseMonad } from '../../internal/monad/mod.js';
 import { DirectNote, type DirectNoteID } from '../model/directNote.js';
 import {
   type DirectNoteAttachmentRepository,
@@ -49,7 +48,7 @@ export class CreateDirectNoteService {
   ): Promise<Result.Result<Error, DirectNote>> {
     const now = this.#deps.clock.now();
 
-    return Cat.doT(resultPromiseMonad<Error>())
+    return Cat.doT(Promise.resultMonad<Error>())
       .runWith(() =>
         this.#deps.accountModule
           .fetchAccount(authorID)

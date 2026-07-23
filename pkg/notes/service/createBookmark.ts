@@ -1,7 +1,6 @@
-import { Cat, Ether, Option, Result } from '@mikuroxina/mini-fn';
+import { Cat, Ether, Option, Promise, Result } from '@mikuroxina/mini-fn';
 
 import type { AccountID } from '../../accounts/model/account.js';
-import { resultPromiseMonad } from '../../internal/monad/mod.js';
 import {
   NoteBookmarkAlreadyCreatedError,
   NoteNotFoundError,
@@ -29,7 +28,7 @@ export class CreateBookmarkService {
     noteID: NoteID,
     accountID: AccountID,
   ): Promise<Result.Result<Error, Note>> {
-    return Cat.doT(resultPromiseMonad<Error>())
+    return Cat.doT(Promise.resultMonad<Error>())
       .addM(
         'result',
         this.#noteRepository

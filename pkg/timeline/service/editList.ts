@@ -1,6 +1,5 @@
 import { Cat, Ether, Promise, type Result } from '@mikuroxina/mini-fn';
 import type { ID } from '../../internal/id/type.js';
-import { resultPromiseMonad } from '../../internal/monad/mod.js';
 import type { List } from '../model/list.js';
 import { type ListRepository, listRepoSymbol } from '../model/repository.js';
 
@@ -14,7 +13,7 @@ export class EditListService {
     listId: ID<List>,
     title: string,
   ): Promise<Result.Result<Error, void>> {
-    const monad = resultPromiseMonad<Error>();
+    const monad = Promise.resultMonad<Error>();
 
     return Cat.doT(monad)
       .addM('list', this.#listRepository.fetchList(listId))
@@ -30,7 +29,7 @@ export class EditListService {
     listId: ID<List>,
     publicity: 'PUBLIC' | 'PRIVATE',
   ): Promise<Result.Result<Error, void>> {
-    const monad = resultPromiseMonad<Error>();
+    const monad = Promise.resultMonad<Error>();
 
     return Cat.doT(monad)
       .addM('list', this.#listRepository.fetchList(listId))

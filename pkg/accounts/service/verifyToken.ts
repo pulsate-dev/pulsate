@@ -1,7 +1,6 @@
 import { Cat, Ether, Option, Promise, Result } from '@mikuroxina/mini-fn';
 
 import { type Clock, clockSymbol } from '../../internal/id/mod.js';
-import { resultPromiseMonad } from '../../internal/monad/mod.js';
 import type { AccountName } from '../model/account.js';
 import {
   AccountMailAddressVerificationTokenInvalidError,
@@ -37,7 +36,7 @@ export class VerifyAccountTokenService {
   async generate(
     accountName: AccountName,
   ): Promise<Result.Result<Error, string>> {
-    const monad = resultPromiseMonad<Error>();
+    const monad = Promise.resultMonad<Error>();
     // expireDate: After 7 days
     const expireDate = new Date(
       Number(this.#clock.now()) + 7 * 24 * 60 * 60 * 1000,
@@ -73,7 +72,7 @@ export class VerifyAccountTokenService {
     accountName: AccountName,
     token: string,
   ): Promise<Result.Result<Error, void>> {
-    const monad = resultPromiseMonad<Error>();
+    const monad = Promise.resultMonad<Error>();
 
     return Cat.doT(monad)
       .addM(

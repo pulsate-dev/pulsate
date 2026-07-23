@@ -1,6 +1,5 @@
 import { Cat, Ether, Promise, Result } from '@mikuroxina/mini-fn';
 import type { AccountID } from '../../accounts/model/account.js';
-import { resultPromiseMonad } from '../../internal/monad/mod.js';
 import {
   ListNotFoundError,
   TimelineInsufficientPermissionError,
@@ -27,7 +26,7 @@ export class AppendListMemberService {
     accountID: AccountID,
     actorID: AccountID,
   ): Promise<Result.Result<Error, void>> {
-    const monad = resultPromiseMonad<Error>();
+    const monad = Promise.resultMonad<Error>();
 
     return Cat.doT(monad)
       .addM(

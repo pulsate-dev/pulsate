@@ -1,6 +1,5 @@
 import { Cat, Ether, Option, Promise, Result } from '@mikuroxina/mini-fn';
 
-import { resultPromiseMonad } from '../../internal/monad/mod.js';
 import {
   type PasswordEncoder,
   passwordEncoderSymbol,
@@ -28,7 +27,7 @@ export class EditService {
     nickname: string,
     actorName: AccountName,
   ): Promise<Result.Result<Error, boolean>> {
-    const monad = resultPromiseMonad<Error>();
+    const monad = Promise.resultMonad<Error>();
 
     return Cat.doT(monad)
       .addM('account', this.findAccount(target, 'account not found'))
@@ -51,7 +50,7 @@ export class EditService {
     newPassphrase: string,
     actorName: AccountName,
   ): Promise<Result.Result<Error, boolean>> {
-    const monad = resultPromiseMonad<Error>();
+    const monad = Promise.resultMonad<Error>();
 
     return Cat.doT(monad)
       .addM('account', this.findAccount(target, 'account not found'))
@@ -93,7 +92,7 @@ export class EditService {
     newEmail: string,
     actorName: AccountName,
   ): Promise<Result.Result<Error, boolean>> {
-    const monad = resultPromiseMonad<Error>();
+    const monad = Promise.resultMonad<Error>();
 
     // TODO: add a process to check the email is active
     return Cat.doT(monad)
@@ -117,7 +116,7 @@ export class EditService {
     bio: string,
     actorName: AccountName,
   ): Promise<Result.Result<Error, boolean>> {
-    const monad = resultPromiseMonad<Error>();
+    const monad = Promise.resultMonad<Error>();
 
     return Cat.doT(monad)
       .addM('account', this.findAccount(target, 'account not found'))

@@ -1,6 +1,5 @@
-import { Cat, Ether, Option, type Result } from '@mikuroxina/mini-fn';
+import { Cat, Ether, Option, Promise, type Result } from '@mikuroxina/mini-fn';
 import type { AccountID } from '../../accounts/model/account.js';
-import { resultPromiseMonad } from '../../internal/monad/mod.js';
 import { NoteNotFoundError } from '../model/errors.js';
 import type { NoteID } from '../model/note.js';
 import {
@@ -25,7 +24,7 @@ export class DeleteReactionService {
     noteID: NoteID,
     accountID: AccountID,
   ): Promise<Result.Result<Error, void>> {
-    return Cat.doT(resultPromiseMonad<Error>())
+    return Cat.doT(Promise.resultMonad<Error>())
       .addM(
         'note',
         this.#noteRepository

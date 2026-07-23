@@ -7,7 +7,6 @@ import {
   type SnowflakeIDGenerator,
   snowflakeIDGeneratorSymbol,
 } from '../../internal/id/mod.js';
-import { resultPromiseMonad } from '../../internal/monad/mod.js';
 import { List } from '../model/list.js';
 import { type ListRepository, listRepoSymbol } from '../model/repository.js';
 
@@ -30,7 +29,7 @@ export class CreateListService {
     isPublic: boolean,
     ownerId: AccountID,
   ): Promise<Result.Result<Error, List>> {
-    const monad = resultPromiseMonad<Error>();
+    const monad = Promise.resultMonad<Error>();
 
     return Cat.doT(monad)
       .addM('id', Promise.resolve(this.#idGenerator.generate<List>()))

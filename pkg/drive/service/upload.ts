@@ -5,7 +5,6 @@ import sharp from 'sharp';
 
 import type { AccountID } from '../../accounts/model/account.js';
 import type { SnowflakeIDGenerator } from '../../internal/id/mod.js';
-import { resultPromiseMonad } from '../../internal/monad/mod.js';
 import { DriveInternalError, MediaTypeInvalidError } from '../model/errors.js';
 import { Medium } from '../model/medium.js';
 import type { MediaRepository } from '../model/repository.js';
@@ -47,7 +46,7 @@ export class UploadMediaService {
     nsfw: boolean;
     file: Uint8Array;
   }): Promise<Result.Result<Error, Medium>> {
-    const monad = resultPromiseMonad<Error>();
+    const monad = Promise.resultMonad<Error>();
     const invalidType = () =>
       new MediaTypeInvalidError('Invalid file type', { cause: null });
 
