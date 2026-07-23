@@ -1,6 +1,6 @@
 import { Option } from '@mikuroxina/mini-fn';
 
-import type { Note, NoteID } from './note.js';
+import type { Note, NoteID } from './note.ts';
 
 /**
  * Decides which Note a renote/quote targeting {@link note} should ultimately

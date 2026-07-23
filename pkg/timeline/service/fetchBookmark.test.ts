@@ -1,14 +1,14 @@
 import { Result } from '@mikuroxina/mini-fn';
 import { describe, expect, it } from 'vitest';
 
-import type { AccountID } from '../../accounts/model/account.js';
-import { Bookmark } from '../../notes/model/bookmark.js';
-import type { NoteID } from '../../notes/model/note.js';
+import type { AccountID } from '../../accounts/model/account.ts';
+import { Bookmark } from '../../notes/model/bookmark.ts';
+import type { NoteID } from '../../notes/model/note.ts';
 import {
   InMemoryBookmarkTimelineRepository,
   InMemoryTimelineRepository,
-} from '../adaptor/repository/dummy.js';
-import { FetchBookmarkService } from './fetchBookmark.js';
+} from '../adaptor/repository/dummy.ts';
+import { FetchBookmarkService } from './fetchBookmark.ts';
 
 const bookmarks = [
   Bookmark.new({

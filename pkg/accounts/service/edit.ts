@@ -1,16 +1,16 @@
 import { Cat, Ether, Option, Promise, Result } from '@mikuroxina/mini-fn';
 
-import { resultPromiseMonad } from '../../internal/monad/mod.js';
+import { resultPromiseMonad } from '../../internal/monad/mod.ts';
 import {
   type PasswordEncoder,
   passwordEncoderSymbol,
-} from '../../internal/password/mod.js';
-import { Account, type AccountName } from '../model/account.js';
-import { AccountInternalError, AccountNotFoundError } from '../model/errors.js';
+} from '../../internal/password/mod.ts';
+import { Account, type AccountName } from '../model/account.ts';
+import { AccountInternalError, AccountNotFoundError } from '../model/errors.ts';
 import {
   type AccountRepository,
   accountRepoSymbol,
-} from '../model/repository.js';
+} from '../model/repository.ts';
 
 export class EditService {
   #accountRepository: AccountRepository;

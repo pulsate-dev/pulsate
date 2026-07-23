@@ -1,16 +1,16 @@
 import { Option, Result } from '@mikuroxina/mini-fn';
 import * as v from 'valibot';
 
-import type { AccountID } from '../../accounts/model/account.js';
-import type { MediumID } from '../../drive/model/medium.js';
-import type { ID } from '../../internal/id/type.js';
+import type { AccountID } from '../../accounts/model/account.ts';
+import type { MediumID } from '../../drive/model/medium.ts';
+import type { ID } from '../../internal/id/type.ts';
 import {
   NoteContentLengthError,
   NoteDateInvalidError,
   NoteNoDestinationError,
   NoteTooManyAttachmentsError,
   NoteVisibilityInvalidError,
-} from './errors.js';
+} from './errors.ts';
 
 export type NoteID = ID<Note>;
 export type NoteVisibility = 'PUBLIC' | 'HOME' | 'FOLLOWERS' | 'DIRECT';

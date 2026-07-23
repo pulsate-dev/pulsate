@@ -1,14 +1,14 @@
 import { Cat, Ether, Option, Promise, Result } from '@mikuroxina/mini-fn';
 
-import type { AccountID } from '../../accounts/model/account.js';
-import type { Medium } from '../../drive/model/medium.js';
+import type { AccountID } from '../../accounts/model/account.ts';
+import type { Medium } from '../../drive/model/medium.ts';
 import {
   type AccountModuleFacade,
   accountModuleFacadeSymbol,
-} from '../../intermodule/account.js';
-import type { Note, NoteID } from '../model/note.js';
-import type { Reaction } from '../model/reaction.js';
-import type { RenoteStatus } from '../model/renoteStatus.js';
+} from '../../intermodule/account.ts';
+import type { Note, NoteID } from '../model/note.ts';
+import type { Reaction } from '../model/reaction.ts';
+import type { RenoteStatus } from '../model/renoteStatus.ts';
 import {
   type NoteAttachmentRepository,
   type NoteRepository,
@@ -16,7 +16,7 @@ import {
   noteRepoSymbol,
   type ReactionRepository,
   reactionRepoSymbol,
-} from '../model/repository.js';
+} from '../model/repository.ts';
 
 export class FetchService {
   readonly #noteRepository: NoteRepository;

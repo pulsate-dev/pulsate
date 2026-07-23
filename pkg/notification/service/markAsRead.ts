@@ -1,15 +1,15 @@
 import { Cat, Ether, Promise, Result } from '@mikuroxina/mini-fn';
-import type { AccountID } from '../../accounts/model/account.js';
-import { type Clock, clockSymbol } from '../../internal/id/mod.js';
-import { resultPromiseMonad } from '../../internal/monad/mod.js';
+import type { AccountID } from '../../accounts/model/account.ts';
+import { type Clock, clockSymbol } from '../../internal/id/mod.ts';
+import { resultPromiseMonad } from '../../internal/monad/mod.ts';
 import type {
   Notification,
   NotificationID,
-} from '../model/notificationBase.js';
+} from '../model/notificationBase.ts';
 import {
   type NotificationRepository,
   notificationRepoSymbol,
-} from '../model/repository/notification.js';
+} from '../model/repository/notification.ts';
 
 export class MarkAsReadNotificationService {
   readonly #notificationRepository: NotificationRepository;

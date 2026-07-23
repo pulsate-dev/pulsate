@@ -3,10 +3,10 @@ import {
   type Account,
   type AccountModuleFacade,
   accountModuleFacadeSymbol,
-} from '../../intermodule/account.js';
-import { resultPromiseMonad } from '../../internal/monad/mod.js';
-import type { ListID } from '../model/list.js';
-import { type ListRepository, listRepoSymbol } from '../model/repository.js';
+} from '../../intermodule/account.ts';
+import { resultPromiseMonad } from '../../internal/monad/mod.ts';
+import type { ListID } from '../model/list.ts';
+import { type ListRepository, listRepoSymbol } from '../model/repository.ts';
 
 export class FetchListMemberService {
   readonly #listRepository: ListRepository;

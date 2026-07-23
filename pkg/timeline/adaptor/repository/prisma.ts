@@ -1,22 +1,22 @@
 import { Ether, Option, Result } from '@mikuroxina/mini-fn';
-import type { AccountID } from '../../../accounts/model/account.js';
-import { Prisma, type PrismaClient } from '../../../adaptors/prisma/client.js';
-import type { prismaClient } from '../../../adaptors/prisma.js';
+import type { AccountID } from '../../../accounts/model/account.ts';
+import { Prisma, type PrismaClient } from '../../../adaptors/prisma/client.ts';
+import type { prismaClient } from '../../../adaptors/prisma.ts';
 import {
   DirectNote,
   type DirectNoteID,
-} from '../../../notes/model/directNote.js';
+} from '../../../notes/model/directNote.ts';
 import {
   Note,
   type NoteID,
   type NoteVisibility,
-} from '../../../notes/model/note.js';
+} from '../../../notes/model/note.ts';
 import {
   ListNotFoundError,
   TimelineInternalError,
   TimelineInvalidFilterRangeError,
-} from '../../model/errors.js';
-import { List, type ListID } from '../../model/list.js';
+} from '../../model/errors.ts';
+import { List, type ListID } from '../../model/list.ts';
 import {
   type BookmarkTimelineFilter,
   type BookmarkTimelineRepository,
@@ -32,7 +32,7 @@ import {
   listRepoSymbol,
   type TimelineRepository,
   timelineRepoSymbol,
-} from '../../model/repository.js';
+} from '../../model/repository.ts';
 
 export class PrismaTimelineRepository implements TimelineRepository {
   readonly #TIMELINE_NOTE_LIMIT = 20;

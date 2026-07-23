@@ -1,7 +1,7 @@
 import { Result } from '@mikuroxina/mini-fn';
 import { describe, expect, it } from 'vitest';
-import { InMemoryAccountRepository } from '../adaptor/repository/dummy/account.js';
-import { InMemoryAccountFollowRepository } from '../adaptor/repository/dummy/follow.js';
+import { InMemoryAccountRepository } from '../adaptor/repository/dummy/account.ts';
+import { InMemoryAccountFollowRepository } from '../adaptor/repository/dummy/follow.ts';
 import {
   Account,
   type AccountFrozen,
@@ -9,10 +9,10 @@ import {
   type AccountRole,
   type AccountSilenced,
   type AccountStatus,
-} from '../model/account.js';
-import { AccountNotFoundError } from '../model/errors.js';
-import { AccountFollow } from '../model/follow.js';
-import { FetchRelationshipService } from './relationships.js';
+} from '../model/account.ts';
+import { AccountNotFoundError } from '../model/errors.ts';
+import { AccountFollow } from '../model/follow.ts';
+import { FetchRelationshipService } from './relationships.ts';
 
 // Test factories
 const createMockAccount = (id: string, name: string): Account => {

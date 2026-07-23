@@ -1,7 +1,7 @@
 import { Option, type Result } from '@mikuroxina/mini-fn';
-import type { AccountID } from '../../accounts/model/account.js';
-import type { NoteID } from '../../notes/model/note.js';
-import type { ReactionID } from '../../notes/model/reaction.js';
+import type { AccountID } from '../../accounts/model/account.ts';
+import type { NoteID } from '../../notes/model/note.ts';
+import type { ReactionID } from '../../notes/model/reaction.ts';
 import {
   type CreateNotificationBaseArgs,
   type Notification,
@@ -9,7 +9,7 @@ import {
   NotificationBase,
   type NotificationID,
   type NotificationType,
-} from './notificationBase.js';
+} from './notificationBase.ts';
 
 export interface CreateFollowedNotificationArgs
   extends CreateNotificationBaseArgs {

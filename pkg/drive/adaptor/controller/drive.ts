@@ -1,9 +1,9 @@
 import type { z } from '@hono/zod-openapi';
 import { Option, Result } from '@mikuroxina/mini-fn';
 
-import type { AccountID } from '../../../accounts/model/account.js';
-import type { FetchMediaService } from '../../service/fetch.js';
-import type { GetDriveMediaResponseSchema } from '../validator/schema.js';
+import type { AccountID } from '../../../accounts/model/account.ts';
+import type { FetchMediaService } from '../../service/fetch.ts';
+import type { GetDriveMediaResponseSchema } from '../validator/schema.ts';
 
 export class DriveController {
   readonly #fetchService: FetchMediaService;

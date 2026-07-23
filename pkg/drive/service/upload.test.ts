@@ -2,15 +2,15 @@ import { readFile } from 'node:fs/promises';
 import { Result } from '@mikuroxina/mini-fn';
 import { describe, expect, it } from 'vitest';
 
-import type { AccountID } from '../../accounts/model/account.js';
-import { MockClock, SnowflakeIDGenerator } from '../../internal/id/mod.js';
-import { InMemoryMediaRepository } from '../adaptor/repository/dummy.js';
-import { LocalStorage } from '../adaptor/storage/dummy.js';
+import type { AccountID } from '../../accounts/model/account.ts';
+import { MockClock, SnowflakeIDGenerator } from '../../internal/id/mod.ts';
+import { InMemoryMediaRepository } from '../adaptor/repository/dummy.ts';
+import { LocalStorage } from '../adaptor/storage/dummy.ts';
 import {
   MediaSizeTooLargeError,
   MediaTypeInvalidError,
-} from '../model/errors.js';
-import { UploadMediaService } from './upload.js';
+} from '../model/errors.ts';
+import { UploadMediaService } from './upload.ts';
 
 describe('upload', () => {
   const idGenerator = new SnowflakeIDGenerator(0, new MockClock(new Date()));

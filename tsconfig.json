@@ -24,10 +24,13 @@
     "forceConsistentCasingInFileNames": true,
     "allowUnreachableCode": false,
     "verbatimModuleSyntax": true,
+    "allowImportingTsExtensions": true,
+    "rewriteRelativeImportExtensions": true,
+    "erasableSyntaxOnly": true,
     "pretty": true,
     "esModuleInterop": true,
     "resolveJsonModule": true
   },
-  "include": ["**/*.ts", "scripts/build.js"],
+  "include": ["**/*.ts"],
   "exclude": ["node_modules", "build"]
 }

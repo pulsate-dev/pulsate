@@ -1,10 +1,10 @@
 import { Result } from '@mikuroxina/mini-fn';
 import { describe, expect, it } from 'vitest';
 
-import type { AccountID } from '../../accounts/model/account.js';
-import { AccountNotFoundError } from '../../accounts/model/errors.js';
-import { dummyAccountModuleFacade } from '../../intermodule/account.js';
-import { fetchActor } from './fetchActor.js';
+import type { AccountID } from '../../accounts/model/account.ts';
+import { AccountNotFoundError } from '../../accounts/model/errors.ts';
+import { dummyAccountModuleFacade } from '../../intermodule/account.ts';
+import { fetchActor } from './fetchActor.ts';
 
 describe('fetchActor', () => {
   it('returns the account when found', async () => {

@@ -2,30 +2,30 @@ import { Cat, Ether, Option, Promise, Result } from '@mikuroxina/mini-fn';
 import {
   type NotificationModuleFacade,
   notificationModuleFacadeSymbol,
-} from '../../intermodule/notification.js';
+} from '../../intermodule/notification.ts';
 import {
   type SnowflakeIDGenerator,
   snowflakeIDGeneratorSymbol,
-} from '../../internal/id/mod.js';
-import { resultPromiseMonad } from '../../internal/monad/mod.js';
+} from '../../internal/id/mod.ts';
+import { resultPromiseMonad } from '../../internal/monad/mod.ts';
 import {
   type PasswordEncoder,
   passwordEncoderSymbol,
-} from '../../internal/password/mod.js';
+} from '../../internal/password/mod.ts';
 import {
   Account,
   type AccountName,
   type AccountRole,
-} from '../model/account.js';
-import { InactiveAccount } from '../model/inactiveAccount.js';
+} from '../model/account.ts';
+import { InactiveAccount } from '../model/inactiveAccount.ts';
 import {
   type InactiveAccountRepository,
   inactiveAccountRepoSymbol,
-} from '../model/repository.js';
+} from '../model/repository.ts';
 import {
   type VerifyAccountTokenService,
   verifyAccountTokenSymbol,
-} from './verifyToken.js';
+} from './verifyToken.ts';
 
 export class AccountAlreadyExistsError extends Error {
   override readonly name = 'AccountAlreadyExistsError' as const;

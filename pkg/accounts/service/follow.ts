@@ -1,16 +1,16 @@
 import { Cat, Ether, Option, Result } from '@mikuroxina/mini-fn';
 
-import { type Clock, clockSymbol } from '../../internal/id/mod.js';
-import { resultPromiseMonad } from '../../internal/monad/mod.js';
-import type { AccountName } from '../model/account.js';
-import { AccountNotFoundError } from '../model/errors.js';
-import { AccountFollow } from '../model/follow.js';
+import { type Clock, clockSymbol } from '../../internal/id/mod.ts';
+import { resultPromiseMonad } from '../../internal/monad/mod.ts';
+import type { AccountName } from '../model/account.ts';
+import { AccountNotFoundError } from '../model/errors.ts';
+import { AccountFollow } from '../model/follow.ts';
 import {
   type AccountFollowRepository,
   type AccountRepository,
   accountRepoSymbol,
   followRepoSymbol,
-} from '../model/repository.js';
+} from '../model/repository.ts';
 
 export class FollowService {
   readonly #followRepository: AccountFollowRepository;

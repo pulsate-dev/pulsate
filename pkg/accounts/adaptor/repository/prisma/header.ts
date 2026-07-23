@@ -1,14 +1,14 @@
 import { Ether, Option, Result } from '@mikuroxina/mini-fn';
-import type { PrismaClient } from '../../../../adaptors/prisma/client.js';
-import type { prismaClient } from '../../../../adaptors/prisma.js';
-import { Medium, type MediumID } from '../../../../drive/model/medium.js';
-import type { AccountID } from '../../../model/account.js';
-import { AccountInternalError } from '../../../model/errors.js';
+import type { PrismaClient } from '../../../../adaptors/prisma/client.ts';
+import type { prismaClient } from '../../../../adaptors/prisma.ts';
+import { Medium, type MediumID } from '../../../../drive/model/medium.ts';
+import type { AccountID } from '../../../model/account.ts';
+import { AccountInternalError } from '../../../model/errors.ts';
 import {
   type AccountHeaderRepository,
   accountHeaderRepoSymbol,
-} from '../../../model/repository.js';
-import { parsePrismaError } from './prisma.js';
+} from '../../../model/repository.ts';
+import { parsePrismaError } from './prisma.ts';
 
 type AccountHeaderData = Awaited<
   ReturnType<

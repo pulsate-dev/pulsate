@@ -1,12 +1,12 @@
 import type { z } from '@hono/zod-openapi';
 import { Option, Result } from '@mikuroxina/mini-fn';
 
-import type { AccountID } from '../../../accounts/model/account.js';
-import type { NoteID } from '../../model/note.js';
-import type { CreateBookmarkService } from '../../service/createBookmark.js';
-import type { DeleteBookmarkService } from '../../service/deleteBookmark.js';
-import type { FetchService } from '../../service/fetch.js';
-import type { CreateBookmarkResponseSchema } from '../validator/schema.js';
+import type { AccountID } from '../../../accounts/model/account.ts';
+import type { NoteID } from '../../model/note.ts';
+import type { CreateBookmarkService } from '../../service/createBookmark.ts';
+import type { DeleteBookmarkService } from '../../service/deleteBookmark.ts';
+import type { FetchService } from '../../service/fetch.ts';
+import type { CreateBookmarkResponseSchema } from '../validator/schema.ts';
 
 export class BookmarkController {
   readonly #createBookmarkService: CreateBookmarkService;

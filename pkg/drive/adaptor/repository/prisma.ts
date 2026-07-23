@@ -1,13 +1,13 @@
 import { Ether, Option, Result } from '@mikuroxina/mini-fn';
-import type { AccountID } from '../../../accounts/model/account.js';
-import { Prisma, type PrismaClient } from '../../../adaptors/prisma/client.js';
-import type { prismaClient } from '../../../adaptors/prisma.js';
-import { DriveInternalError, MediaNotFoundError } from '../../model/errors.js';
-import { Medium, type MediumID } from '../../model/medium.js';
+import type { AccountID } from '../../../accounts/model/account.ts';
+import { Prisma, type PrismaClient } from '../../../adaptors/prisma/client.ts';
+import type { prismaClient } from '../../../adaptors/prisma.ts';
+import { DriveInternalError, MediaNotFoundError } from '../../model/errors.ts';
+import { Medium, type MediumID } from '../../model/medium.ts';
 import {
   type MediaRepository,
   mediaRepoSymbol,
-} from '../../model/repository.js';
+} from '../../model/repository.ts';
 
 type MediumPrismaArgs = Awaited<
   ReturnType<typeof prismaClient.medium.findUnique>

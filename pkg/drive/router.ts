@@ -1,13 +1,13 @@
 import { createRoute, z } from '@hono/zod-openapi';
-import { InternalError } from '../accounts/adaptor/presenter/errors.js';
+import { InternalError } from '../accounts/adaptor/presenter/errors.ts';
 import {
   bearerAuth,
   errorResponse,
   internalErrorResponse,
   okResponse,
-} from '../internal/router/helper.js';
-import { FileNotFound } from './adaptor/presenter/errors.js';
-import { GetDriveMediaResponseSchema } from './adaptor/validator/schema.js';
+} from '../internal/router/helper.ts';
+import { FileNotFound } from './adaptor/presenter/errors.ts';
+import { GetDriveMediaResponseSchema } from './adaptor/validator/schema.ts';
 
 const driveInternalErrorSchema = z.object({ error: InternalError });
 

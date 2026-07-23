@@ -1,26 +1,26 @@
 import { Cat, Ether, Promise, Result } from '@mikuroxina/mini-fn';
 
-import type { AccountID } from '../../accounts/model/account.js';
-import { AccountNotFoundError } from '../../accounts/model/errors.js';
-import type { MediumID } from '../../drive/model/medium.js';
+import type { AccountID } from '../../accounts/model/account.ts';
+import { AccountNotFoundError } from '../../accounts/model/errors.ts';
+import type { MediumID } from '../../drive/model/medium.ts';
 import {
   type AccountModuleFacade,
   accountModuleFacadeSymbol,
-} from '../../intermodule/account.js';
+} from '../../intermodule/account.ts';
 import {
   type Clock,
   clockSymbol,
   type SnowflakeIDGenerator,
   snowflakeIDGeneratorSymbol,
-} from '../../internal/id/mod.js';
-import { resultPromiseMonad } from '../../internal/monad/mod.js';
-import { DirectNote, type DirectNoteID } from '../model/directNote.js';
+} from '../../internal/id/mod.ts';
+import { resultPromiseMonad } from '../../internal/monad/mod.ts';
+import { DirectNote, type DirectNoteID } from '../model/directNote.ts';
 import {
   type DirectNoteAttachmentRepository,
   type DirectNoteRepository,
   directNoteAttachmentRepoSymbol,
   directNoteRepoSymbol,
-} from '../model/repository.js';
+} from '../model/repository.ts';
 
 export class CreateDirectNoteService {
   readonly #deps: {

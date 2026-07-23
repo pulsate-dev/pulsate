@@ -3,7 +3,7 @@
   "version": "0.0.1",
   "description": "Easy-to-change, faster, developer friendly next generation decentralized social media.",
   "type": "module",
-  "main": "./build/main.js",
+  "main": "main.ts",
   "license": "Apache-2.0",
   "keywords": [],
   "packageManager": "pnpm@11.11.0",
@@ -15,9 +15,8 @@
     "node": "26.5.0"
   },
   "scripts": {
-    "start": "node --env-file=.env --enable-source-maps ./build/main.js",
-    "build": "esbuild main.ts --outdir=build --bundle --format=esm --platform=node --packages=external",
-    "build:api": "mkdir -p build/scripts && cp scripts/apidoc.ts build/scripts/apidoc.ts && node build/scripts/apidoc.ts",
+    "start": "node --env-file=.env --enable-source-maps main.ts",
+    "build:api": "node scripts/apidoc.ts",
     "build:prisma": "prisma generate",
     "clean": "rm -r ./build",
     "format": "biome format --write .",
@@ -63,7 +62,6 @@
     "@types/pacote": "^11.1.8",
     "@types/pg": "^8.15.6",
     "@vitest/coverage-v8": "^4.0.0",
-    "esbuild": "^0.28.0",
     "lefthook": "^2.0.0",
     "pacote": "^22.0.0",
     "typescript": "^6.0.0",

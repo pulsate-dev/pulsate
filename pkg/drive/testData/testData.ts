@@ -1,7 +1,7 @@
 import { Option } from '@mikuroxina/mini-fn';
 
-import type { AccountID } from '../../accounts/model/account.js';
-import { Medium, type MediumID } from '../model/medium.js';
+import type { AccountID } from '../../accounts/model/account.ts';
+import { Medium, type MediumID } from '../model/medium.ts';
 
 export const testMedium = Medium.reconstruct({
   id: '300' as MediumID,

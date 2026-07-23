@@ -1,18 +1,18 @@
 import { Option, Result } from '@mikuroxina/mini-fn';
 import { describe, expect, it } from 'vitest';
 
-import type { AccountID } from '../../accounts/model/account.js';
-import { Medium, type MediumID } from '../../drive/model/medium.js';
-import { dummyAccountModuleFacade } from '../../intermodule/account.js';
-import { dummyTimelineModuleFacade } from '../../intermodule/timeline.js';
-import { MockClock, SnowflakeIDGenerator } from '../../internal/id/mod.js';
-import { InMemoryTimelineCacheRepository } from '../../timeline/adaptor/repository/dummyCache.js';
+import type { AccountID } from '../../accounts/model/account.ts';
+import { Medium, type MediumID } from '../../drive/model/medium.ts';
+import { dummyAccountModuleFacade } from '../../intermodule/account.ts';
+import { dummyTimelineModuleFacade } from '../../intermodule/timeline.ts';
+import { MockClock, SnowflakeIDGenerator } from '../../internal/id/mod.ts';
+import { InMemoryTimelineCacheRepository } from '../../timeline/adaptor/repository/dummyCache.ts';
 import {
   InMemoryNoteAttachmentRepository,
   InMemoryNoteRepository,
-} from '../adaptor/repository/dummy.js';
-import { NoteAccountSilencedError } from '../model/errors.js';
-import { CreateService } from './create.js';
+} from '../adaptor/repository/dummy.ts';
+import { NoteAccountSilencedError } from '../model/errors.ts';
+import { CreateService } from './create.ts';
 
 const noteRepository = new InMemoryNoteRepository();
 const attachmentRepository = new InMemoryNoteAttachmentRepository(

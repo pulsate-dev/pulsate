@@ -1,16 +1,16 @@
 import { Cat, Ether, Promise, Result } from '@mikuroxina/mini-fn';
-import type { Medium, MediumID } from '../../drive/model/medium.js';
+import type { Medium, MediumID } from '../../drive/model/medium.ts';
 import {
   type MediaModuleFacade,
   mediaModuleFacadeSymbol,
-} from '../../intermodule/media.js';
-import { resultPromiseMonad } from '../../internal/monad/mod.js';
-import type { AccountID } from '../model/account.js';
-import { AccountInsufficientPermissionError } from '../model/errors.js';
+} from '../../intermodule/media.ts';
+import { resultPromiseMonad } from '../../internal/monad/mod.ts';
+import type { AccountID } from '../model/account.ts';
+import { AccountInsufficientPermissionError } from '../model/errors.ts';
 import {
   type AccountAvatarRepository,
   accountAvatarRepoSymbol,
-} from '../model/repository.js';
+} from '../model/repository.ts';
 
 export class AccountAvatarService {
   readonly #avatarRepository: AccountAvatarRepository;

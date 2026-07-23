@@ -1,18 +1,18 @@
 import { Ether, Result } from '@mikuroxina/mini-fn';
 import type { Redis } from 'ioredis';
 
-import type { AccountID } from '../../../accounts/model/account.js';
-import type { Note, NoteID } from '../../../notes/model/note.js';
+import type { AccountID } from '../../../accounts/model/account.ts';
+import type { Note, NoteID } from '../../../notes/model/note.ts';
 import {
   TimelineCacheNotFoundError,
   TimelineInternalError,
-} from '../../model/errors.js';
-import type { ListID } from '../../model/list.js';
+} from '../../model/errors.ts';
+import type { ListID } from '../../model/list.ts';
 import {
   type CacheObjectKey,
   type TimelineNotesCacheRepository,
   timelineNotesCacheRepoSymbol,
-} from '../../model/repository.js';
+} from '../../model/repository.ts';
 
 export class ValkeyTimelineCacheRepository
   implements TimelineNotesCacheRepository

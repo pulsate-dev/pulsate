@@ -1,24 +1,24 @@
 import type { z } from '@hono/zod-openapi';
 import { Option, Result } from '@mikuroxina/mini-fn';
-import type { Account, AccountID } from '../../../accounts/model/account.js';
-import type { AccountModuleFacade } from '../../../intermodule/account.js';
+import type { Account, AccountID } from '../../../accounts/model/account.ts';
+import type { AccountModuleFacade } from '../../../intermodule/account.ts';
 import type {
   MentionedNotification,
   ReactedNotification,
   RenotedNotification,
-} from '../../model/notification.js';
+} from '../../model/notification.ts';
 import type {
   Notification,
   NotificationID,
-} from '../../model/notificationBase.js';
-import type { NotificationCursor } from '../../model/repository/notification.js';
-import type { FetchNotificationService } from '../../service/fetch.js';
-import type { MarkAsReadNotificationService } from '../../service/markAsRead.js';
+} from '../../model/notificationBase.ts';
+import type { NotificationCursor } from '../../model/repository/notification.ts';
+import type { FetchNotificationService } from '../../service/fetch.ts';
+import type { MarkAsReadNotificationService } from '../../service/markAsRead.ts';
 import type {
   GetNotificationsResponseSchema,
   notificationBaseSchema,
   notificationSchema,
-} from '../validator/schemas.js';
+} from '../validator/schemas.ts';
 
 export class NotificationController {
   readonly #markAsReadService: MarkAsReadNotificationService;

@@ -1,24 +1,24 @@
 import { Cat, Ether } from '@mikuroxina/mini-fn';
-import type { AccountID } from '../accounts/model/account.js';
-import { isProduction } from '../adaptors/env.js';
-import { prismaClient } from '../adaptors/prisma.js';
-import { clockSymbol, snowflakeIDGenerator } from '../internal/id/mod.js';
-import type { NoteID } from '../notes/model/note.js';
-import type { ReactionID } from '../notes/model/reaction.js';
-import { DummyEmailSender } from '../notification/adaptor/email/dummySender.js';
-import { SmtpEmailSender } from '../notification/adaptor/email/genericSender.js';
-import { InMemoryNotificationRepository } from '../notification/adaptor/repository/dummy/notification.js';
-import { PrismaNotificationRepository } from '../notification/adaptor/repository/prisma/notification.js';
-import { emailSenderSymbol } from '../notification/model/emailSender.js';
-import { notificationRepoSymbol } from '../notification/model/repository/notification.js';
+import type { AccountID } from '../accounts/model/account.ts';
+import { isProduction } from '../adaptors/env.ts';
+import { prismaClient } from '../adaptors/prisma.ts';
+import { clockSymbol, snowflakeIDGenerator } from '../internal/id/mod.ts';
+import type { NoteID } from '../notes/model/note.ts';
+import type { ReactionID } from '../notes/model/reaction.ts';
+import { DummyEmailSender } from '../notification/adaptor/email/dummySender.ts';
+import { SmtpEmailSender } from '../notification/adaptor/email/genericSender.ts';
+import { InMemoryNotificationRepository } from '../notification/adaptor/repository/dummy/notification.ts';
+import { PrismaNotificationRepository } from '../notification/adaptor/repository/prisma/notification.ts';
+import { emailSenderSymbol } from '../notification/model/emailSender.ts';
+import { notificationRepoSymbol } from '../notification/model/repository/notification.ts';
 import {
   type CreateNotificationService,
   createNotificationService,
-} from '../notification/service/create.js';
+} from '../notification/service/create.ts';
 import {
   type SendEmailNotificationService,
   sendEmailNotificationService,
-} from '../notification/service/sendEmailNotification.js';
+} from '../notification/service/sendEmailNotification.ts';
 
 export class NotificationModuleFacade {
   readonly #createService: CreateNotificationService;

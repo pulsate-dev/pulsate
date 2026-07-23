@@ -1,9 +1,9 @@
 import { Result } from '@mikuroxina/mini-fn';
 import { afterEach, describe, expect, it } from 'vitest';
 
-import { InMemoryAccountRepository } from '../adaptor/repository/dummy/account.js';
-import { Account, type AccountID } from '../model/account.js';
-import { FetchService } from './fetch.js';
+import { InMemoryAccountRepository } from '../adaptor/repository/dummy/account.ts';
+import { Account, type AccountID } from '../model/account.ts';
+import { FetchService } from './fetch.ts';
 
 const testAccounts = [
   Account.new({

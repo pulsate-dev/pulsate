@@ -1,7 +1,7 @@
 import { Ether, Option } from '@mikuroxina/mini-fn';
 import { createMiddleware } from 'hono/factory';
 
-import { type Captcha, captchaSymbol } from '../../model/captcha.js';
+import { type Captcha, captchaSymbol } from '../../model/captcha.ts';
 
 export class CaptchaMiddleware {
   readonly #captcha: Captcha;

@@ -1,13 +1,13 @@
 import { Option, Result } from '@mikuroxina/mini-fn';
 import { describe, expect, it, vi } from 'vitest';
 
-import { Account, type AccountID } from '../../accounts/model/account.js';
-import type { PartialAccount } from '../../intermodule/account.js';
-import { dummyAccountModuleFacade } from '../../intermodule/account.js';
-import { Note, type NoteID } from '../../notes/model/note.js';
-import { InMemoryTimelineRepository } from '../adaptor/repository/dummy.js';
-import { AccountTimelineService } from './account.js';
-import { NoteVisibilityService } from './noteVisibility.js';
+import { Account, type AccountID } from '../../accounts/model/account.ts';
+import type { PartialAccount } from '../../intermodule/account.ts';
+import { dummyAccountModuleFacade } from '../../intermodule/account.ts';
+import { Note, type NoteID } from '../../notes/model/note.ts';
+import { InMemoryTimelineRepository } from '../adaptor/repository/dummy.ts';
+import { AccountTimelineService } from './account.ts';
+import { NoteVisibilityService } from './noteVisibility.ts';
 
 describe('AccountTimelineService', () => {
   const noteVisibilityService = new NoteVisibilityService(

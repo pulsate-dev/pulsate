@@ -3,20 +3,20 @@ import { Cat, Ether, Option, Result } from '@mikuroxina/mini-fn';
 import {
   AuthenticateMiddlewareService,
   type AuthMiddlewareVariable,
-} from '../adaptors/authenticateMiddleware.js';
-import { isProduction } from '../adaptors/env.js';
-import { prismaClient } from '../adaptors/prisma.js';
-import { accountModuleEther } from '../intermodule/account.js';
-import { clockSymbol } from '../internal/id/mod.js';
-import { NotificationController } from './adaptor/controller/notification.js';
-import { inMemoryNotificationRepo } from './adaptor/repository/dummy/notification.js';
-import { prismaNotificationRepo } from './adaptor/repository/prisma/notification.js';
+} from '../adaptors/authenticateMiddleware.ts';
+import { isProduction } from '../adaptors/env.ts';
+import { prismaClient } from '../adaptors/prisma.ts';
+import { accountModuleEther } from '../intermodule/account.ts';
+import { clockSymbol } from '../internal/id/mod.ts';
+import { NotificationController } from './adaptor/controller/notification.ts';
+import { inMemoryNotificationRepo } from './adaptor/repository/dummy/notification.ts';
+import { prismaNotificationRepo } from './adaptor/repository/prisma/notification.ts';
 import {
   GetNotificationsRoute,
   PostMakeAsReadNotificationRoute,
-} from './routes.js';
-import { fetchNotification } from './service/fetch.js';
-import { markAsReadNotification } from './service/markAsRead.js';
+} from './routes.ts';
+import { fetchNotification } from './service/fetch.ts';
+import { markAsReadNotification } from './service/markAsRead.ts';
 
 class Clock {
   now() {

@@ -1,11 +1,11 @@
 import { Ether, Option, Result } from '@mikuroxina/mini-fn';
 
-import type { AccountID } from '../../../accounts/model/account.js';
-import type { Medium, MediumID } from '../../model/medium.js';
+import type { AccountID } from '../../../accounts/model/account.ts';
+import type { Medium, MediumID } from '../../model/medium.ts';
 import {
   type MediaRepository,
   mediaRepoSymbol,
-} from '../../model/repository.js';
+} from '../../model/repository.ts';
 
 export class InMemoryMediaRepository implements MediaRepository {
   readonly #data: Map<string, Medium> = new Map();

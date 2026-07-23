@@ -1,16 +1,16 @@
 import { Ether, Result } from '@mikuroxina/mini-fn';
 
-import type { AccountID } from '../../accounts/model/account.js';
-import type { Note } from '../../notes/model/note.js';
+import type { AccountID } from '../../accounts/model/account.ts';
+import type { Note } from '../../notes/model/note.ts';
 import {
   type FetchAccountTimelineFilter,
   type TimelineRepository,
   timelineRepoSymbol,
-} from '../model/repository.js';
+} from '../model/repository.ts';
 import {
   type NoteVisibilityService,
   noteVisibilitySymbol,
-} from './noteVisibility.js';
+} from './noteVisibility.ts';
 
 export class AccountTimelineService {
   readonly #noteVisibilityService: NoteVisibilityService;

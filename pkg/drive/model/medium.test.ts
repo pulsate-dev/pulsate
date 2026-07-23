@@ -1,9 +1,9 @@
 import { Option, Result } from '@mikuroxina/mini-fn';
 import { describe, expect, it } from 'vitest';
 
-import type { AccountID } from '../../accounts/model/account.js';
-import { MediaSizeTooLargeError, MediaTypeInvalidError } from './errors.js';
-import { Medium, type MediumID } from './medium.js';
+import type { AccountID } from '../../accounts/model/account.ts';
+import { MediaSizeTooLargeError, MediaTypeInvalidError } from './errors.ts';
+import { Medium, type MediumID } from './medium.ts';
 
 const baseArgs = {
   id: '1' as MediumID,

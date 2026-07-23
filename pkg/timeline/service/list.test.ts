@@ -1,15 +1,15 @@
 import { Result } from '@mikuroxina/mini-fn';
 import { describe, expect, it } from 'vitest';
-import { InMemoryTimelineRepository } from '../adaptor/repository/dummy.js';
-import { InMemoryTimelineCacheRepository } from '../adaptor/repository/dummyCache.js';
-import type { ListID } from '../model/list.js';
+import { InMemoryTimelineRepository } from '../adaptor/repository/dummy.ts';
+import { InMemoryTimelineCacheRepository } from '../adaptor/repository/dummyCache.ts';
+import type { ListID } from '../model/list.ts';
 import {
   dummyDirectNote,
   dummyFollowersNote,
   dummyHomeNote,
   dummyPublicNote,
-} from '../testData/testData.js';
-import { ListTimelineService } from './list.js';
+} from '../testData/testData.ts';
+import { ListTimelineService } from './list.ts';
 
 describe('ListTimelineService', () => {
   const cache = new InMemoryTimelineCacheRepository();

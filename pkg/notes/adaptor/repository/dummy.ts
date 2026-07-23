@@ -1,12 +1,12 @@
 import { Ether, Option, Result } from '@mikuroxina/mini-fn';
 
-import type { AccountID } from '../../../accounts/model/account.js';
-import type { Medium, MediumID } from '../../../drive/model/medium.js';
-import { Bookmark } from '../../model/bookmark.js';
-import { NoteNotReactedYetError } from '../../model/errors.js';
-import type { Note, NoteID } from '../../model/note.js';
-import type { Reaction, ReactionID } from '../../model/reaction.js';
-import { RenoteStatus } from '../../model/renoteStatus.js';
+import type { AccountID } from '../../../accounts/model/account.ts';
+import type { Medium, MediumID } from '../../../drive/model/medium.ts';
+import { Bookmark } from '../../model/bookmark.ts';
+import { NoteNotReactedYetError } from '../../model/errors.ts';
+import type { Note, NoteID } from '../../model/note.ts';
+import type { Reaction, ReactionID } from '../../model/reaction.ts';
+import { RenoteStatus } from '../../model/renoteStatus.ts';
 import {
   type BookmarkRepository,
   bookmarkRepoSymbol,
@@ -16,7 +16,7 @@ import {
   noteRepoSymbol,
   type ReactionRepository,
   reactionRepoSymbol,
-} from '../../model/repository.js';
+} from '../../model/repository.ts';
 
 export class InMemoryNoteRepository implements NoteRepository {
   readonly #notes: Map<NoteID, Note>;

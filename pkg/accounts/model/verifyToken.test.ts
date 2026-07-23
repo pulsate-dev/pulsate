@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
-import type { AccountID } from './account.js';
-import { VerifyToken } from './verifyToken.js';
+import type { AccountID } from './account.ts';
+import { VerifyToken } from './verifyToken.ts';
 
 const accountID = '1' as AccountID;
 const future = new Date('2099-01-01T00:00:00Z');

@@ -1,18 +1,18 @@
 import { Option, Result } from '@mikuroxina/mini-fn';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 
-import { InMemoryAccountRepository } from '../../accounts/adaptor/repository/dummy/account.js';
-import { Account, type AccountID } from '../../accounts/model/account.js';
-import type { MediumID } from '../../drive/model/medium.js';
-import { testMedium, testNSFWMedium } from '../../drive/testData/testData.js';
-import { dummyAccountModuleFacade } from '../../intermodule/account.js';
+import { InMemoryAccountRepository } from '../../accounts/adaptor/repository/dummy/account.ts';
+import { Account, type AccountID } from '../../accounts/model/account.ts';
+import type { MediumID } from '../../drive/model/medium.ts';
+import { testMedium, testNSFWMedium } from '../../drive/testData/testData.ts';
+import { dummyAccountModuleFacade } from '../../intermodule/account.ts';
 import {
   InMemoryNoteAttachmentRepository,
   InMemoryNoteRepository,
   InMemoryReactionRepository,
-} from '../adaptor/repository/dummy.js';
-import { Note, type NoteID } from '../model/note.js';
-import { FetchService } from './fetch.js';
+} from '../adaptor/repository/dummy.ts';
+import { Note, type NoteID } from '../model/note.ts';
+import { FetchService } from './fetch.ts';
 
 const testNote = Result.unwrap(
   Note.new({

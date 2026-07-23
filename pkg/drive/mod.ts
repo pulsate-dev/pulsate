@@ -1,21 +1,21 @@
 import { OpenAPIHono } from '@hono/zod-openapi';
 import { Cat, Ether, Option, Result } from '@mikuroxina/mini-fn';
 
-import type { AccountID } from '../accounts/model/account.js';
+import type { AccountID } from '../accounts/model/account.ts';
 
 import {
   AuthenticateMiddlewareService,
   type AuthMiddlewareVariable,
-} from '../adaptors/authenticateMiddleware.js';
-import { isProduction } from '../adaptors/env.js';
-import { prismaClient } from '../adaptors/prisma.js';
-import { DriveController } from './adaptor/controller/drive.js';
-import { driveModuleLogger } from './adaptor/logger.js';
-import { inMemoryMediaRepo } from './adaptor/repository/dummy.js';
-import { prismaMediaRepo } from './adaptor/repository/prisma.js';
-import { MediaNotFoundError } from './model/errors.js';
-import { GetMediaRoute } from './router.js';
-import { fetchMediaService } from './service/fetch.js';
+} from '../adaptors/authenticateMiddleware.ts';
+import { isProduction } from '../adaptors/env.ts';
+import { prismaClient } from '../adaptors/prisma.ts';
+import { DriveController } from './adaptor/controller/drive.ts';
+import { driveModuleLogger } from './adaptor/logger.ts';
+import { inMemoryMediaRepo } from './adaptor/repository/dummy.ts';
+import { prismaMediaRepo } from './adaptor/repository/prisma.ts';
+import { MediaNotFoundError } from './model/errors.ts';
+import { GetMediaRoute } from './router.ts';
+import { fetchMediaService } from './service/fetch.ts';
 
 const AuthMiddleware = new AuthenticateMiddlewareService();
 

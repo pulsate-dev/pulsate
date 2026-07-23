@@ -1,5 +1,5 @@
-import type { AccountID } from './account.js';
-import type { AccountFollow } from './follow.js';
+import type { AccountID } from './account.ts';
+import type { AccountFollow } from './follow.ts';
 
 /**
  * Returns true if `fromID` is in the followers list (i.e., fromID follows the account that owns `followers`).

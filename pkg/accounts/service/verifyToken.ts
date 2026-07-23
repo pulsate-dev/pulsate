@@ -1,12 +1,12 @@
 import { Cat, Ether, Option, Promise, Result } from '@mikuroxina/mini-fn';
 
-import { type Clock, clockSymbol } from '../../internal/id/mod.js';
-import { resultPromiseMonad } from '../../internal/monad/mod.js';
-import type { AccountName } from '../model/account.js';
+import { type Clock, clockSymbol } from '../../internal/id/mod.ts';
+import { resultPromiseMonad } from '../../internal/monad/mod.ts';
+import type { AccountName } from '../model/account.ts';
 import {
   AccountMailAddressVerificationTokenInvalidError,
   AccountNotFoundError,
-} from '../model/errors.js';
+} from '../model/errors.ts';
 import {
   type AccountRepository,
   type AccountVerifyTokenRepository,
@@ -14,8 +14,8 @@ import {
   type InactiveAccountRepository,
   inactiveAccountRepoSymbol,
   verifyTokenRepoSymbol,
-} from '../model/repository.js';
-import { VerifyToken } from '../model/verifyToken.js';
+} from '../model/repository.ts';
+import { VerifyToken } from '../model/verifyToken.ts';
 
 export class VerifyAccountTokenService {
   readonly #repository: AccountVerifyTokenRepository;

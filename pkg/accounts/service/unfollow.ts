@@ -1,14 +1,14 @@
 import { Cat, Ether, Option, Result } from '@mikuroxina/mini-fn';
 
-import { resultPromiseMonad } from '../../internal/monad/mod.js';
-import type { AccountName } from '../model/account.js';
-import { AccountNotFoundError } from '../model/errors.js';
+import { resultPromiseMonad } from '../../internal/monad/mod.ts';
+import type { AccountName } from '../model/account.ts';
+import { AccountNotFoundError } from '../model/errors.ts';
 import {
   type AccountFollowRepository,
   type AccountRepository,
   accountRepoSymbol,
   followRepoSymbol,
-} from '../model/repository.js';
+} from '../model/repository.ts';
 
 export class UnfollowService {
   readonly #followRepository: AccountFollowRepository;

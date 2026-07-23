@@ -1,18 +1,18 @@
 import { Cat, Ether, Option, Result } from '@mikuroxina/mini-fn';
 
-import type { AccountID } from '../../accounts/model/account.js';
-import { resultPromiseMonad } from '../../internal/monad/mod.js';
+import type { AccountID } from '../../accounts/model/account.ts';
+import { resultPromiseMonad } from '../../internal/monad/mod.ts';
 import {
   NoteBookmarkAlreadyCreatedError,
   NoteNotFoundError,
-} from '../model/errors.js';
-import type { Note, NoteID } from '../model/note.js';
+} from '../model/errors.ts';
+import type { Note, NoteID } from '../model/note.ts';
 import {
   type BookmarkRepository,
   bookmarkRepoSymbol,
   type NoteRepository,
   noteRepoSymbol,
-} from '../model/repository.js';
+} from '../model/repository.ts';
 
 export class CreateBookmarkService {
   readonly #bookmarkRepository: BookmarkRepository;

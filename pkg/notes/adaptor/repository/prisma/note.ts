@@ -1,15 +1,15 @@
 import { Ether, Option, Result } from '@mikuroxina/mini-fn';
-import type { AccountID } from '../../../../accounts/model/account.js';
+import type { AccountID } from '../../../../accounts/model/account.ts';
 import type {
   Prisma,
   PrismaClient,
-} from '../../../../adaptors/prisma/client.js';
-import type { prismaClient } from '../../../../adaptors/prisma.js';
-import { Medium, type MediumID } from '../../../../drive/model/medium.js';
-import { Bookmark } from '../../../model/bookmark.js';
-import { Note, type NoteID, type NoteVisibility } from '../../../model/note.js';
-import { Reaction, type ReactionID } from '../../../model/reaction.js';
-import { RenoteStatus } from '../../../model/renoteStatus.js';
+} from '../../../../adaptors/prisma/client.ts';
+import type { prismaClient } from '../../../../adaptors/prisma.ts';
+import { Medium, type MediumID } from '../../../../drive/model/medium.ts';
+import { Bookmark } from '../../../model/bookmark.ts';
+import { Note, type NoteID, type NoteVisibility } from '../../../model/note.ts';
+import { Reaction, type ReactionID } from '../../../model/reaction.ts';
+import { RenoteStatus } from '../../../model/renoteStatus.ts';
 import {
   type BookmarkRepository,
   bookmarkRepoSymbol,
@@ -19,8 +19,8 @@ import {
   noteRepoSymbol,
   type ReactionRepository,
   reactionRepoSymbol,
-} from '../../../model/repository.js';
-import { noteModuleLogger } from '../../logger.js';
+} from '../../../model/repository.ts';
+import { noteModuleLogger } from '../../logger.ts';
 
 type DeserializeNoteArgs = Awaited<
   ReturnType<typeof prismaClient.note.findUnique>

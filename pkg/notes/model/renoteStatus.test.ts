@@ -1,8 +1,8 @@
 import { describe, expect, it } from 'vitest';
 
-import type { AccountID } from '../../accounts/model/account.js';
-import type { NoteID } from './note.js';
-import { RenoteStatus } from './renoteStatus.js';
+import type { AccountID } from '../../accounts/model/account.ts';
+import type { NoteID } from './note.ts';
+import { RenoteStatus } from './renoteStatus.ts';
 
 describe('RenoteStatus', () => {
   it('create renote status with isRenoted true', () => {

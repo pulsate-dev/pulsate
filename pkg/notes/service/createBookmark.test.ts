@@ -1,13 +1,13 @@
 import { Option, Result } from '@mikuroxina/mini-fn';
 import { describe, expect, it } from 'vitest';
 
-import type { AccountID } from '../../accounts/model/account.js';
+import type { AccountID } from '../../accounts/model/account.ts';
 import {
   InMemoryBookmarkRepository,
   InMemoryNoteRepository,
-} from '../adaptor/repository/dummy.js';
-import { Note, type NoteID } from '../model/note.js';
-import { CreateBookmarkService } from './createBookmark.js';
+} from '../adaptor/repository/dummy.ts';
+import { Note, type NoteID } from '../model/note.ts';
+import { CreateBookmarkService } from './createBookmark.ts';
 
 const noteID = 'noteID_1' as NoteID;
 const anotherNoteID = 'noteID_2' as NoteID;

@@ -1,18 +1,18 @@
 import { Ether, Option, Result } from '@mikuroxina/mini-fn';
-import type { PrismaClient } from '../../../../adaptors/prisma/client.js';
-import type { prismaClient } from '../../../../adaptors/prisma.js';
+import type { PrismaClient } from '../../../../adaptors/prisma/client.ts';
+import type { prismaClient } from '../../../../adaptors/prisma.ts';
 import type {
   AccountID,
   AccountName,
   AccountRole,
-} from '../../../model/account.js';
-import { InactiveAccount } from '../../../model/inactiveAccount.js';
+} from '../../../model/account.ts';
+import { InactiveAccount } from '../../../model/inactiveAccount.ts';
 import {
   type InactiveAccountRepository,
   inactiveAccountRepoSymbol,
-} from '../../../model/repository.js';
-import { accountModuleLogger } from '../../logger.js';
-import { parsePrismaError } from './prisma.js';
+} from '../../../model/repository.ts';
+import { accountModuleLogger } from '../../logger.ts';
+import { parsePrismaError } from './prisma.ts';
 
 type InactiveAccountPrismaArgs = Awaited<
   ReturnType<typeof prismaClient.inactiveAccount.findUnique>
