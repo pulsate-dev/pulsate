@@ -1,6 +1,5 @@
-import { Cat, Ether, Option, type Result } from '@mikuroxina/mini-fn';
+import { Cat, Ether, Option, Promise, type Result } from '@mikuroxina/mini-fn';
 
-import { resultPromiseMonad } from '../../internal/monad/mod.js';
 import type { AccountID } from '../model/account.js';
 import { AccountNotFoundError } from '../model/errors.js';
 import { isFollowedBy, isFollowing } from '../model/followDomainService.js';
@@ -33,7 +32,7 @@ export class FetchRelationshipService {
     targetAccountID: AccountID,
     fromAccountID: AccountID,
   ): Promise<Result.Result<Error, AccountRelationships>> {
-    const monad = resultPromiseMonad<Error>();
+    const monad = Promise.resultMonad<Error>();
 
     return Cat.doT(monad)
       .addM(

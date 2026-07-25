@@ -4,7 +4,6 @@ import {
   type SnowflakeIDGenerator,
   snowflakeIDGeneratorSymbol,
 } from '../../internal/id/mod.js';
-import { resultPromiseMonad } from '../../internal/monad/mod.js';
 import { NoteNotFoundError } from '../model/errors.js';
 import type { Note, NoteID } from '../model/note.js';
 import { Reaction } from '../model/reaction.js';
@@ -38,7 +37,7 @@ export class CreateReactionService {
     const notFound = (message: string) => () =>
       new NoteNotFoundError(message, { cause: null });
 
-    return Cat.doT(resultPromiseMonad<Error>())
+    return Cat.doT(Promise.resultMonad<Error>())
       .addM(
         'note',
         this.#noteRepository

@@ -1,7 +1,6 @@
 import { Cat, Ether, Promise, Result } from '@mikuroxina/mini-fn';
 import type { AccountID } from '../../accounts/model/account.js';
 import { type Clock, clockSymbol } from '../../internal/id/mod.js';
-import { resultPromiseMonad } from '../../internal/monad/mod.js';
 import type {
   Notification,
   NotificationID,
@@ -23,7 +22,7 @@ export class MarkAsReadNotificationService {
     notificationID: NotificationID,
     actorID: AccountID,
   ): Promise<Result.Result<Error, Notification>> {
-    const monad = resultPromiseMonad<Error>();
+    const monad = Promise.resultMonad<Error>();
 
     return Cat.doT(monad)
       .addM(

@@ -6,7 +6,6 @@ import {
   type SnowflakeIDGenerator,
   snowflakeIDGeneratorSymbol,
 } from '../../internal/id/mod.js';
-import { resultPromiseMonad } from '../../internal/monad/mod.js';
 import type { NoteID } from '../../notes/model/note.js';
 import type { ReactionID } from '../../notes/model/reaction.js';
 import {
@@ -41,7 +40,7 @@ export class CreateNotificationService {
     recipientID: AccountID;
     actorID: AccountID;
   }): Promise<Result.Result<Error, void>> {
-    const monad = resultPromiseMonad<Error>();
+    const monad = Promise.resultMonad<Error>();
 
     return Cat.doT(monad)
       .addM(
@@ -70,7 +69,7 @@ export class CreateNotificationService {
     recipientID: AccountID;
     actorID: AccountID;
   }): Promise<Result.Result<Error, void>> {
-    const monad = resultPromiseMonad<Error>();
+    const monad = Promise.resultMonad<Error>();
 
     return Cat.doT(monad)
       .addM(
@@ -99,7 +98,7 @@ export class CreateNotificationService {
     recipientID: AccountID;
     actorID: AccountID;
   }): Promise<Result.Result<Error, void>> {
-    const monad = resultPromiseMonad<Error>();
+    const monad = Promise.resultMonad<Error>();
 
     return Cat.doT(monad)
       .addM(
@@ -129,7 +128,7 @@ export class CreateNotificationService {
     actorID: AccountID;
     activityID: NoteID;
   }): Promise<Result.Result<Error, void>> {
-    const monad = resultPromiseMonad<Error>();
+    const monad = Promise.resultMonad<Error>();
 
     return Cat.doT(monad)
       .addM(
@@ -161,7 +160,7 @@ export class CreateNotificationService {
     sourceID: NoteID;
     activityID: NoteID;
   }): Promise<Result.Result<Error, void>> {
-    const monad = resultPromiseMonad<Error>();
+    const monad = Promise.resultMonad<Error>();
 
     return Cat.doT(monad)
       .addM(
@@ -194,7 +193,7 @@ export class CreateNotificationService {
     sourceID: NoteID;
     activityID: ReactionID;
   }): Promise<Result.Result<Error, void>> {
-    const monad = resultPromiseMonad<Error>();
+    const monad = Promise.resultMonad<Error>();
 
     return Cat.doT(monad)
       .addM(

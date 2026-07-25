@@ -1,6 +1,5 @@
-import { Cat, Ether, Option, Result } from '@mikuroxina/mini-fn';
+import { Cat, Ether, Option, Promise, Result } from '@mikuroxina/mini-fn';
 
-import { resultPromiseMonad } from '../../internal/monad/mod.js';
 import type { AccountName } from '../model/account.js';
 import { AccountNotFoundError } from '../model/errors.js';
 import {
@@ -25,7 +24,7 @@ export class UnfollowService {
     from: AccountName,
     target: AccountName,
   ): Promise<Option.Option<Error>> {
-    const monad = resultPromiseMonad<Error>();
+    const monad = Promise.resultMonad<Error>();
 
     const res = await Cat.doT(monad)
       .addM(

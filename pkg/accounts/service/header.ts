@@ -4,7 +4,6 @@ import {
   type MediaModuleFacade,
   mediaModuleFacadeSymbol,
 } from '../../intermodule/media.js';
-import { resultPromiseMonad } from '../../internal/monad/mod.js';
 import type { AccountID } from '../model/account.js';
 import { AccountInsufficientPermissionError } from '../model/errors.js';
 import {
@@ -40,7 +39,7 @@ export class AccountHeaderService {
     mediumID: MediumID,
     actorID: AccountID,
   ): Promise<Result.Result<Error, void>> {
-    const monad = resultPromiseMonad<Error>();
+    const monad = Promise.resultMonad<Error>();
 
     // ToDo: Check media type
     return Cat.doT(monad)
@@ -82,7 +81,7 @@ export class AccountHeaderService {
     accountID: AccountID,
     actorID: AccountID,
   ): Promise<Result.Result<Error, void>> {
-    const monad = resultPromiseMonad<Error>();
+    const monad = Promise.resultMonad<Error>();
 
     return Cat.doT(monad)
       .runWith(() =>

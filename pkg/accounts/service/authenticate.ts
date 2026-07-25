@@ -1,6 +1,5 @@
 import { Cat, Ether, Option, Promise, Result } from '@mikuroxina/mini-fn';
 
-import { resultPromiseMonad } from '../../internal/monad/mod.js';
 import {
   type PasswordEncoder,
   passwordEncoderSymbol,
@@ -39,7 +38,7 @@ export class AuthenticateService {
     email: string,
     passphrase: string,
   ): Promise<Result.Result<Error, AuthenticationToken>> {
-    const monad = resultPromiseMonad<Error>();
+    const monad = Promise.resultMonad<Error>();
 
     return Cat.doT(monad)
       .addM(

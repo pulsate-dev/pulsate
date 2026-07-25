@@ -1,6 +1,5 @@
 import { Cat, Ether, Option, Promise, Result } from '@mikuroxina/mini-fn';
 
-import { resultPromiseMonad } from '../../internal/monad/mod.js';
 import type { Account, AccountName } from '../model/account.js';
 import { AccountNotFoundError } from '../model/errors.js';
 import {
@@ -19,7 +18,7 @@ export class SilenceService {
     targetName: AccountName,
     actorName: AccountName,
   ): Promise<Result.Result<Error, boolean>> {
-    const monad = resultPromiseMonad<Error>();
+    const monad = Promise.resultMonad<Error>();
 
     return Cat.doT(monad)
       .addM('account', this.findAccount(targetName, 'account not found'))
@@ -41,7 +40,7 @@ export class SilenceService {
     targetName: AccountName,
     actorName: AccountName,
   ): Promise<Result.Result<Error, boolean>> {
-    const monad = resultPromiseMonad<Error>();
+    const monad = Promise.resultMonad<Error>();
 
     return Cat.doT(monad)
       .addM('account', this.findAccount(targetName, 'account not found'))

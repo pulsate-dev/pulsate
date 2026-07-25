@@ -1,9 +1,8 @@
-import { Cat, Ether, Option, Result } from '@mikuroxina/mini-fn';
+import { Cat, Ether, Option, Promise, Result } from '@mikuroxina/mini-fn';
 import {
   type NotificationModuleFacade,
   notificationModuleFacadeSymbol,
 } from '../../intermodule/notification.js';
-import { resultPromiseMonad } from '../../internal/monad/mod.js';
 import type { AccountName } from '../model/account.js';
 import { AccountNotFoundError } from '../model/errors.js';
 import {
@@ -31,7 +30,7 @@ export class ResendVerifyTokenService {
   }
 
   async handle(name: AccountName): Promise<Option.Option<Error>> {
-    const monad = resultPromiseMonad<Error>();
+    const monad = Promise.resultMonad<Error>();
 
     const res = await Cat.doT(monad)
       .addM(

@@ -1,6 +1,5 @@
-import { Cat, Ether, Option, type Result } from '@mikuroxina/mini-fn';
+import { Cat, Ether, Option, Promise, type Result } from '@mikuroxina/mini-fn';
 
-import { resultPromiseMonad } from '../../internal/monad/mod.js';
 import type { AccountID, AccountName } from '../model/account.js';
 import { AccountNotFoundError } from '../model/errors.js';
 import type { AccountFollow } from '../model/follow.js';
@@ -32,7 +31,7 @@ export class FetchFollowService {
   async fetchFollowingsByName(
     name: AccountName,
   ): Promise<Result.Result<Error, AccountFollow[]>> {
-    const monad = resultPromiseMonad<Error>();
+    const monad = Promise.resultMonad<Error>();
 
     return Cat.doT(monad)
       .addM(
@@ -57,7 +56,7 @@ export class FetchFollowService {
   async fetchFollowersByName(
     name: AccountName,
   ): Promise<Result.Result<Error, AccountFollow[]>> {
-    const monad = resultPromiseMonad<Error>();
+    const monad = Promise.resultMonad<Error>();
 
     return Cat.doT(monad)
       .addM(

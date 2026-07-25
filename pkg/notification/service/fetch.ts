@@ -1,6 +1,5 @@
 import { Cat, Ether, Promise, Result } from '@mikuroxina/mini-fn';
 import type { AccountID } from '../../accounts/model/account.js';
-import { resultPromiseMonad } from '../../internal/monad/mod.js';
 import type {
   Notification,
   NotificationID,
@@ -21,7 +20,7 @@ export class FetchNotificationService {
     id: NotificationID,
     actorID: AccountID,
   ): Promise<Result.Result<Error, Notification>> {
-    const monad = resultPromiseMonad<Error>();
+    const monad = Promise.resultMonad<Error>();
     const notAllowed = () => new Error('not allowed');
 
     return Cat.doT(monad)
@@ -37,7 +36,7 @@ export class FetchNotificationService {
     recipientID: AccountID,
     filter: NotificationFilter,
   ): Promise<Result.Result<Error, Notification[]>> {
-    const monad = resultPromiseMonad<Error>();
+    const monad = Promise.resultMonad<Error>();
     const notAllowed = () => new Error('not allowed');
 
     return Cat.doT(monad)

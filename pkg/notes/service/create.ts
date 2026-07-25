@@ -16,7 +16,6 @@ import {
   type SnowflakeIDGenerator,
   snowflakeIDGeneratorSymbol,
 } from '../../internal/id/mod.js';
-import { resultPromiseMonad } from '../../internal/monad/mod.js';
 import { checkVisibilityForSilencedActor } from '../model/createDomainService.js';
 import { NoteVisibilityInvalidError } from '../model/errors.js';
 import { Note, type NoteID, type NoteVisibility } from '../model/note.js';
@@ -48,7 +47,7 @@ export class CreateService {
     const now = this.#deps.clock.now();
 
     return (
-      Cat.doT(resultPromiseMonad<Error>())
+      Cat.doT(Promise.resultMonad<Error>())
         .addM('actor', fetchActor(this.#deps.accountModule, authorID))
         .runWith(({ actor }) =>
           Promise.resolve(

@@ -7,7 +7,6 @@ import {
   type SnowflakeIDGenerator,
   snowflakeIDGeneratorSymbol,
 } from '../../internal/id/mod.js';
-import { resultPromiseMonad } from '../../internal/monad/mod.js';
 import {
   type PasswordEncoder,
   passwordEncoderSymbol,
@@ -62,7 +61,7 @@ export class RegisterService {
     passphrase: string,
     role: AccountRole,
   ): Promise<Result.Result<Error, InactiveAccount>> {
-    const monad = resultPromiseMonad<Error>();
+    const monad = Promise.resultMonad<Error>();
 
     // ToDo: Notification Body
     return Cat.doT(monad)

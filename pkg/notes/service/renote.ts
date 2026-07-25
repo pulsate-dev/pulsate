@@ -16,7 +16,6 @@ import {
   type SnowflakeIDGenerator,
   snowflakeIDGeneratorSymbol,
 } from '../../internal/id/mod.js';
-import { resultPromiseMonad } from '../../internal/monad/mod.js';
 import { checkVisibilityForSilencedActor } from '../model/createDomainService.js';
 import {
   NoteInsufficientPermissionError,
@@ -66,7 +65,7 @@ export class RenoteService {
   ): Promise<Result.Result<Error, Note>> {
     const now = this.#deps.clock.now();
 
-    const res = await Cat.doT(resultPromiseMonad<Error>())
+    const res = await Cat.doT(Promise.resultMonad<Error>())
       .addM('actor', fetchActor(this.#deps.accountModule, authorID))
       .runWith(({ actor }) =>
         Promise.resolve(
@@ -131,7 +130,7 @@ export class RenoteService {
     const notFound = () =>
       new NoteNotFoundError('Original note not found', { cause: null });
 
-    return Cat.doT(resultPromiseMonad<Error>())
+    return Cat.doT(Promise.resultMonad<Error>())
       .addM(
         'note',
         this.#deps.noteRepository
