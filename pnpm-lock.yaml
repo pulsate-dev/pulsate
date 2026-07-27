@@ -18,8 +18,8 @@ importers:
         specifier: 1.5.1
         version: 1.5.1(hono@4.12.31)(zod@4.4.3)
       '@mikuroxina/mini-fn':
-        specifier: 7.3.0
-        version: 7.3.0
+        specifier: 7.4.0
+        version: 7.4.0
       '@prisma/adapter-pg':
         specifier: 7.8.0
         version: 7.8.0
@@ -751,8 +751,8 @@ packages:
     os: [darwin, linux, win32]
     hasBin: true
 
-  '@mikuroxina/mini-fn@7.3.0':
-    resolution: {integrity: sha512-5SaweMK5EAq5av1Idf+qNGppIiC42Pf/C+6aglVuzxjKnB/3/gOUSlR8zfLKMGvrYy/Yko8eHwvE8d9M5d41Zg==}
+  '@mikuroxina/mini-fn@7.4.0':
+    resolution: {integrity: sha512-eLlhw7evaSoXZT5wi0nk8lSkezjvpyh9eniMTkuLMJBf7NGPT17Ec0sJPNyy2yy/cggxaWSaYCG3l29yEK7XgA==}
 
   '@npmcli/agent@5.0.2':
     resolution: {integrity: sha512-EkzGmEsgbQ1rqWkRJe2P0oQHx/ylZozDUNPMXCklLuSFL3GY+QyEfBUjhjCsgGXzh4OGpnHvkboSQgczjP/jJg==}
@@ -2664,7 +2664,7 @@ snapshots:
 
   '@ls-lint/ls-lint@2.3.1': {}
 
-  '@mikuroxina/mini-fn@7.3.0': {}
+  '@mikuroxina/mini-fn@7.4.0': {}
 
   '@npmcli/agent@5.0.2(supports-color@7.2.0)':
     dependencies:
