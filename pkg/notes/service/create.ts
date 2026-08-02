@@ -73,10 +73,12 @@ export class CreateService {
         .runWith(({ note }) =>
           this.#deps.noteRepository.create(note).then(Result.map(() => [])),
         )
-        .runWith(({ note }) =>
-          this.#deps.noteAttachmentRepository
-            .create(note.getID(), note.getAttachmentFileID())
-            .then(Result.map(() => [])),
+        .when(
+          () => attachmentFileID.length !== 0,
+          ({ note }) =>
+            this.#deps.noteAttachmentRepository
+              .create(note.getID(), note.getAttachmentFileID())
+              .then(Result.map(() => [])),
         )
         // ToDo: Even if the note cannot be pushed to the timeline, the note is created successfully, so there is no error here.
         // ToDo: use job queue to push note to timeline

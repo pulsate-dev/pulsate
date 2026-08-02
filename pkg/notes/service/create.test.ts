@@ -1,5 +1,5 @@
 import { Option, Result } from '@mikuroxina/mini-fn';
-import { describe, expect, it } from 'vitest';
+import { describe, expect, it, vi } from 'vitest';
 
 import type { AccountID } from '../../accounts/model/account.js';
 import { Medium, type MediumID } from '../../drive/model/medium.js';
@@ -58,6 +58,21 @@ describe('CreateService', () => {
     );
 
     expect(Result.isOk(res)).toBe(true);
+  });
+
+  it('does not create attachments when none are provided', async () => {
+    const attachmentCreateSpy = vi.spyOn(attachmentRepository, 'create');
+
+    const res = await createService.handle(
+      'Hello world',
+      '',
+      '102' as AccountID,
+      [],
+      'PUBLIC',
+    );
+
+    expect(Result.isOk(res)).toBe(true);
+    expect(attachmentCreateSpy).not.toHaveBeenCalled();
   });
 
   it('with attachments', async () => {
