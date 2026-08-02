@@ -12,7 +12,7 @@
     "email": "info@pulsate.dev"
   },
   "engines": {
-    "node": "26.5.0"
+    "node": "26.5.1"
   },
   "scripts": {
     "start": "node --env-file=.env --enable-source-maps ./build/main.js",
