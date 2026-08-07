@@ -89,7 +89,7 @@ importers:
         version: 11.1.8
       '@types/pg':
         specifier: ^8.15.6
-        version: 8.20.3
+        version: 8.20.4
       '@vitest/coverage-v8':
         specifier: ^4.0.0
         version: 4.1.10(vitest@4.1.10)
@@ -1195,8 +1195,8 @@ packages:
   '@types/pacote@11.1.8':
     resolution: {integrity: sha512-/XLR0VoTh2JEO0jJg1q/e6Rh9bxjBq9vorJuQmtT7rRrXSiWz7e7NsvXVYJQ0i8JxMlBMPPYDTnrRe7MZRFA8Q==}
 
-  '@types/pg@8.20.3':
-    resolution: {integrity: sha512-4Tvg+HO6+oQaAkpT8GTYoSExzpGGZz532GXgbbCElWJQeQdMozBWxEKNBhJJpHFjWXsMxqPbyypvj/89FWNoSQ==}
+  '@types/pg@8.20.4':
+    resolution: {integrity: sha512-Jz7UDOlIiFJuacC0TlBoLyNtmwlA/wpIyPDd3tvUqlRM+HzkWy2xUgpFpaXtbfTAFF6sIGq5lsCDBdJnhky1Xg==}
 
   '@types/react@19.2.7':
     resolution: {integrity: sha512-MWtvHrGZLFttgeEj28VXHxpmwYbor/ATPYbBfSFZEIRK0ecCFLl2Qo55z52Hss+UV9CRN7trSeq1zbgx7YDWWg==}
@@ -2854,7 +2854,7 @@ snapshots:
   '@prisma/adapter-pg@7.9.1':
     dependencies:
       '@prisma/driver-adapter-utils': 7.9.1
-      '@types/pg': 8.20.3
+      '@types/pg': 8.20.4
       pg: 8.22.0
       postgres-array: 3.0.4
     transitivePeerDependencies:
@@ -3237,7 +3237,7 @@ snapshots:
       '@types/npmlog': 7.0.0
       '@types/ssri': 7.1.5
 
-  '@types/pg@8.20.3':
+  '@types/pg@8.20.4':
     dependencies:
       '@types/node': 26.1.2
       pg-protocol: 1.15.0
