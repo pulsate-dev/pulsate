@@ -13,9 +13,9 @@ jobs:
       pull-requests: write
 
     steps:
-      - uses: "actions/checkout@v7"
+      - uses: "actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1" # v7
 
-      - uses: "hadolint/hadolint-action@v3.3.0"
+      - uses: "hadolint/hadolint-action@2332a7b74a6de0dda2e2221d575162eba76ba5e5" # v3.3.0
         id: run_hadolint
         with:
           dockerfile: ./Dockerfile
@@ -23,7 +23,7 @@ jobs:
           no-fail: false
 
       - name: Create pull request comment
-        uses: "actions/github-script@v9"
+        uses: "actions/github-script@3a2844b7e9c422d3c10d287c895573f7108da1b3" # v9
         if: github.event_name == 'pull_request'
         with:
           script: |
