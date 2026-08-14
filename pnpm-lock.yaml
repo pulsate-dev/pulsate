@@ -15,8 +15,8 @@ importers:
         specifier: 0.6.1
         version: 0.6.1(hono@4.12.34)
       '@hono/zod-openapi':
-        specifier: 1.5.1
-        version: 1.5.1(hono@4.12.34)(zod@4.4.3)
+        specifier: 1.5.2
+        version: 1.5.2(hono@4.12.34)(zod@4.4.3)
       '@mikuroxina/mini-fn':
         specifier: 7.4.0
         version: 7.4.0
@@ -544,8 +544,8 @@ packages:
     peerDependencies:
       hono: '>=4.0.0'
 
-  '@hono/zod-openapi@1.5.1':
-    resolution: {integrity: sha512-ZaDdEIkn6PEGjIYHXJeyByg6yhvLzI+UXn968pWtahpwcQ6HMjQYXI3zNffTl0Wl9QZ79nUnGqiN1erEIu23fA==}
+  '@hono/zod-openapi@1.5.2':
+    resolution: {integrity: sha512-FPlspM6+qObGoMfux+0SSE0of0tGO+BVo3havhKzZMxRyz/ql89kuCd/7POd70aW3T4kz/aVL6gNZ6sVd0ItUQ==}
     engines: {node: '>=16.0.0'}
     peerDependencies:
       hono: '>=4.10.0'
@@ -2654,7 +2654,7 @@ snapshots:
     dependencies:
       hono: 4.12.34
 
-  '@hono/zod-openapi@1.5.1(hono@4.12.34)(zod@4.4.3)':
+  '@hono/zod-openapi@1.5.2(hono@4.12.34)(zod@4.4.3)':
     dependencies:
       '@asteasolutions/zod-to-openapi': 8.5.0(zod@4.4.3)
       '@hono/zod-validator': 0.9.0(hono@4.12.34)(zod@4.4.3)
