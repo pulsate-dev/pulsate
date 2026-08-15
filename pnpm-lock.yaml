@@ -89,7 +89,7 @@ importers:
         version: 11.1.8
       '@types/pg':
         specifier: ^8.15.6
-        version: 8.20.4
+        version: 8.21.0
       '@vitest/coverage-v8':
         specifier: ^4.0.0
         version: 4.1.10(vitest@4.1.10)
@@ -1195,8 +1195,8 @@ packages:
   '@types/pacote@11.1.8':
     resolution: {integrity: sha512-/XLR0VoTh2JEO0jJg1q/e6Rh9bxjBq9vorJuQmtT7rRrXSiWz7e7NsvXVYJQ0i8JxMlBMPPYDTnrRe7MZRFA8Q==}
 
-  '@types/pg@8.20.4':
-    resolution: {integrity: sha512-Jz7UDOlIiFJuacC0TlBoLyNtmwlA/wpIyPDd3tvUqlRM+HzkWy2xUgpFpaXtbfTAFF6sIGq5lsCDBdJnhky1Xg==}
+  '@types/pg@8.21.0':
+    resolution: {integrity: sha512-AYdtudzabjLZgVgRZmAnU8bAnVUXzuJX2IYHeSIiIHm68olD+LgQYCGWdtcNYnP0uq9c4S4NibVG3Ni7VbKW7Q==}
 
   '@types/react@19.2.7':
     resolution: {integrity: sha512-MWtvHrGZLFttgeEj28VXHxpmwYbor/ATPYbBfSFZEIRK0ecCFLl2Qo55z52Hss+UV9CRN7trSeq1zbgx7YDWWg==}
@@ -1984,6 +1984,9 @@ packages:
 
   pg-protocol@1.15.0:
     resolution: {integrity: sha512-cq9sECI5s0+uPUXjbz8ioyPJni6RzsRib0US67i5IoTZKw8fNeYlVE7u8F4dG7vEJJtc5wdD1K189lCCUwqWTQ==}
+
+  pg-protocol@1.16.0:
+    resolution: {integrity: sha512-sILXutLVjCLjcDuOmvhX5e2Z4cS5qG/6Bu3VkpFwdf/633ElGLpEh9bgmuI5I4sqKqkifQiGyiCcx1HdtrK7tg==}
 
   pg-types@2.2.0:
     resolution: {integrity: sha512-qTAAlrEsl8s4OiEQY69wDvcMIdQN6wdz5ojQiOy6YRMuynxenON0O5oCpJI6lshc6scgAY8qvJ2On/p+CXY0GA==}
@@ -2854,7 +2857,7 @@ snapshots:
   '@prisma/adapter-pg@7.9.1':
     dependencies:
       '@prisma/driver-adapter-utils': 7.9.1
-      '@types/pg': 8.20.4
+      '@types/pg': 8.21.0
       pg: 8.22.0
       postgres-array: 3.0.4
     transitivePeerDependencies:
@@ -3237,10 +3240,10 @@ snapshots:
       '@types/npmlog': 7.0.0
       '@types/ssri': 7.1.5
 
-  '@types/pg@8.20.4':
+  '@types/pg@8.21.0':
     dependencies:
       '@types/node': 26.2.0
-      pg-protocol: 1.15.0
+      pg-protocol: 1.16.0
       pg-types: 2.2.0
 
   '@types/react@19.2.7':
@@ -4139,6 +4142,8 @@ snapshots:
       pg: 8.22.0
 
   pg-protocol@1.15.0: {}
+
+  pg-protocol@1.16.0: {}
 
   pg-types@2.2.0:
     dependencies:
