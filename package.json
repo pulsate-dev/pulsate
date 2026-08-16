@@ -32,7 +32,7 @@
   "dependencies": {
     "@hono/node-server": "2.0.12",
     "@hono/swagger-ui": "0.6.1",
-    "@hono/zod-openapi": "1.5.1",
+    "@hono/zod-openapi": "1.5.3",
     "@mikuroxina/mini-fn": "7.4.0",
     "@prisma/adapter-pg": "7.9.1",
     "@prisma/client": "7.9.1",
