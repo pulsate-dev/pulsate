@@ -1,13 +1,13 @@
 import { Option, Result } from '@mikuroxina/mini-fn';
 import { describe, expect, it } from 'vitest';
-import type { AccountID } from '../../accounts/model/account.js';
-import { InMemoryNotificationRepository } from '../adaptor/repository/dummy/notification.js';
+import type { AccountID } from '../../accounts/model/account.ts';
+import { InMemoryNotificationRepository } from '../adaptor/repository/dummy/notification.ts';
 import {
   FollowedNotification,
   FollowRequestedNotification,
-} from '../model/notification.js';
-import type { NotificationID } from '../model/notificationBase.js';
-import { FetchNotificationService } from './fetch.js';
+} from '../model/notification.ts';
+import type { NotificationID } from '../model/notificationBase.ts';
+import { FetchNotificationService } from './fetch.ts';
 
 describe('FetchNotificationService', () => {
   const notifications = [

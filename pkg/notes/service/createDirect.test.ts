@@ -1,16 +1,16 @@
 import { Result } from '@mikuroxina/mini-fn';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
-import type { Account, AccountID } from '../../accounts/model/account.js';
-import { generateDummyAccount } from '../../accounts/testData/testData.js';
-import type { MediumID } from '../../drive/model/medium.js';
-import type { AccountModuleFacade } from '../../intermodule/account.js';
-import { MockClock, SnowflakeIDGenerator } from '../../internal/id/mod.js';
+import type { Account, AccountID } from '../../accounts/model/account.ts';
+import { generateDummyAccount } from '../../accounts/testData/testData.ts';
+import type { MediumID } from '../../drive/model/medium.ts';
+import type { AccountModuleFacade } from '../../intermodule/account.ts';
+import { MockClock, SnowflakeIDGenerator } from '../../internal/id/mod.ts';
 import type {
   DirectNoteAttachmentRepository,
   DirectNoteRepository,
-} from '../model/repository.js';
-import { CreateDirectNoteService } from './createDirect.js';
+} from '../model/repository.ts';
+import { CreateDirectNoteService } from './createDirect.ts';
 
 const author: Account = generateDummyAccount({
   id: '1' as AccountID,

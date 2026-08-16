@@ -1,13 +1,13 @@
 import { Result } from '@mikuroxina/mini-fn';
 import * as v from 'valibot';
-import { AccountMailAddressLengthError } from './account.errors.js';
+import { AccountMailAddressLengthError } from './account.errors.ts';
 import {
   Account,
   type AccountID,
   type AccountName,
   type AccountRole,
   mailSchema,
-} from './account.js';
+} from './account.ts';
 
 export interface CreateInactiveAccountArgs {
   id: AccountID;

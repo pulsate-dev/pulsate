@@ -1,6 +1,6 @@
 import { createRoute, z } from '@hono/zod-openapi';
 
-import { FileNotFound } from '../drive/adaptor/presenter/errors.js';
+import { FileNotFound } from '../drive/adaptor/presenter/errors.ts';
 import {
   bearerAuth,
   errorResponse,
@@ -8,7 +8,7 @@ import {
   jsonBody,
   noContentResponse,
   okResponse,
-} from '../internal/router/helper.js';
+} from '../internal/router/helper.ts';
 import {
   AccountAlreadyVerified,
   AccountNameInUse,
@@ -30,7 +30,7 @@ import {
   YouAreBot,
   YouAreFrozen,
   YouAreNotFollowing,
-} from './adaptor/presenter/errors.js';
+} from './adaptor/presenter/errors.ts';
 import {
   CreateAccountRequestSchema,
   CreateAccountResponseSchema,
@@ -45,7 +45,7 @@ import {
   UpdateAccountRequestSchema,
   UpdateAccountResponseSchema,
   VerifyEmailRequestSchema,
-} from './adaptor/validator/schema.js';
+} from './adaptor/validator/schema.ts';
 
 const accountInternalErrorSchema = z
   .object({ error: InternalError })

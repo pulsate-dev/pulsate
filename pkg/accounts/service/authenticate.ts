@@ -3,21 +3,21 @@ import { Cat, Ether, Option, Promise, Result } from '@mikuroxina/mini-fn';
 import {
   type PasswordEncoder,
   passwordEncoderSymbol,
-} from '../../internal/password/mod.js';
+} from '../../internal/password/mod.ts';
 import {
   AccountAuthenticationFailedError,
   AccountInternalError,
   AccountNotFoundError,
-} from '../model/errors.js';
+} from '../model/errors.ts';
 import {
   type AccountRepository,
   accountRepoSymbol,
-} from '../model/repository.js';
+} from '../model/repository.ts';
 import {
   type AuthenticationToken,
   type AuthenticationTokenService,
   authenticateTokenSymbol,
-} from './authenticationTokenService.js';
+} from './authenticationTokenService.ts';
 
 export class AuthenticateService {
   readonly #accountRepository: AccountRepository;

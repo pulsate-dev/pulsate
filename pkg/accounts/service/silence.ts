@@ -1,11 +1,11 @@
 import { Cat, Ether, Option, Promise, Result } from '@mikuroxina/mini-fn';
 
-import type { Account, AccountName } from '../model/account.js';
-import { AccountNotFoundError } from '../model/errors.js';
+import type { Account, AccountName } from '../model/account.ts';
+import { AccountNotFoundError } from '../model/errors.ts';
 import {
   type AccountRepository,
   accountRepoSymbol,
-} from '../model/repository.js';
+} from '../model/repository.ts';
 
 export class SilenceService {
   readonly #accountRepository: AccountRepository;

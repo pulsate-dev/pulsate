@@ -1,17 +1,17 @@
 import { Result } from '@mikuroxina/mini-fn';
 import { beforeEach, describe, expect, it } from 'vitest';
-import { InMemoryMediaRepository } from '../../drive/adaptor/repository/dummy.js';
-import type { MediumID } from '../../drive/model/medium.js';
+import { InMemoryMediaRepository } from '../../drive/adaptor/repository/dummy.ts';
+import type { MediumID } from '../../drive/model/medium.ts';
 import {
   testMedium,
   testNSFWMedium,
   testOtherMedium,
-} from '../../drive/testData/testData.js';
-import { dummyMediaModuleFacade } from '../../intermodule/media.js';
-import { InMemoryAccountHeaderRepository } from '../adaptor/repository/dummy/header.js';
-import type { AccountID } from '../model/account.js';
-import { AccountInsufficientPermissionError } from '../model/errors.js';
-import { AccountHeaderService } from './header.js';
+} from '../../drive/testData/testData.ts';
+import { dummyMediaModuleFacade } from '../../intermodule/media.ts';
+import { InMemoryAccountHeaderRepository } from '../adaptor/repository/dummy/header.ts';
+import type { AccountID } from '../model/account.ts';
+import { AccountInsufficientPermissionError } from '../model/errors.ts';
+import { AccountHeaderService } from './header.ts';
 
 describe('AccountHeaderService', () => {
   const headerRepository = new InMemoryAccountHeaderRepository();

@@ -1,6 +1,6 @@
 import { Result } from '@mikuroxina/mini-fn';
 
-import type { PartialAccount } from '../../intermodule/account.js';
+import type { PartialAccount } from '../../intermodule/account.ts';
 import {
   Account,
   type AccountFrozen,
@@ -9,8 +9,8 @@ import {
   type AccountRole,
   type AccountSilenced,
   type AccountStatus,
-} from '../model/account.js';
-import { AccountFollow } from '../model/follow.js';
+} from '../model/account.ts';
+import { AccountFollow } from '../model/follow.ts';
 
 /**
  * @description generate dummy account (factory function)

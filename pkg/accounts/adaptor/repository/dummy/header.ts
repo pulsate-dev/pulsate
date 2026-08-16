@@ -1,12 +1,12 @@
 import { Ether, Result } from '@mikuroxina/mini-fn';
-import { MediaNotFoundError } from '../../../../drive/model/errors.js';
-import type { Medium, MediumID } from '../../../../drive/model/medium.js';
-import type { AccountID } from '../../../model/account.js';
-import { AccountNotFoundError } from '../../../model/errors.js';
+import { MediaNotFoundError } from '../../../../drive/model/errors.ts';
+import type { Medium, MediumID } from '../../../../drive/model/medium.ts';
+import type { AccountID } from '../../../model/account.ts';
+import { AccountNotFoundError } from '../../../model/errors.ts';
 import {
   type AccountHeaderRepository,
   accountHeaderRepoSymbol,
-} from '../../../model/repository.js';
+} from '../../../model/repository.ts';
 
 export class InMemoryAccountHeaderRepository
   implements AccountHeaderRepository

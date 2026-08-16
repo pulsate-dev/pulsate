@@ -1,11 +1,11 @@
 import { Result } from '@mikuroxina/mini-fn';
 import { describe, expect, it, vi } from 'vitest';
-import type { AccountID } from '../../accounts/model/account.js';
-import { dummyAccounts } from '../../accounts/testData/testData.js';
-import { dummyAccountModuleFacade } from '../../intermodule/account.js';
-import { InMemoryListRepository } from '../adaptor/repository/dummy.js';
-import { List, type ListID } from '../model/list.js';
-import { FetchListMemberService } from './fetchMember.js';
+import type { AccountID } from '../../accounts/model/account.ts';
+import { dummyAccounts } from '../../accounts/testData/testData.ts';
+import { dummyAccountModuleFacade } from '../../intermodule/account.ts';
+import { InMemoryListRepository } from '../adaptor/repository/dummy.ts';
+import { List, type ListID } from '../model/list.ts';
+import { FetchListMemberService } from './fetchMember.ts';
 
 describe('FetchListMemberService', () => {
   const dummyListData = List.reconstruct({

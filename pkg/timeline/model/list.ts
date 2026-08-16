@@ -1,13 +1,13 @@
 import { Result } from '@mikuroxina/mini-fn';
 import * as v from 'valibot';
 
-import type { AccountID } from '../../accounts/model/account.js';
-import type { ID } from '../../internal/id/type.js';
+import type { AccountID } from '../../accounts/model/account.ts';
+import type { ID } from '../../internal/id/type.ts';
 import {
   ListMemberAlreadyExistsError,
   ListTitleLengthInvalidError,
   ListTooManyMembersError,
-} from './errors.js';
+} from './errors.ts';
 
 export type ListID = ID<List>;
 export type CreateListArgs = Readonly<{

@@ -1,9 +1,9 @@
 import { Option, Result } from '@mikuroxina/mini-fn';
 import { beforeEach, describe, expect, it } from 'vitest';
 
-import { InMemoryAccountRepository } from '../adaptor/repository/dummy/account.js';
-import { Account, type AccountID } from '../model/account.js';
-import { FreezeService } from './freeze.js';
+import { InMemoryAccountRepository } from '../adaptor/repository/dummy/account.ts';
+import { Account, type AccountID } from '../model/account.ts';
+import { FreezeService } from './freeze.ts';
 
 const testAccounts = [
   // NOTE: target account

@@ -4,7 +4,7 @@ import { SmtpTransport } from '@upyo/smtp';
 import {
   type EmailSender,
   emailSenderSymbol,
-} from '../../model/emailSender.js';
+} from '../../model/emailSender.ts';
 
 export interface SmtpConfig {
   host: string;

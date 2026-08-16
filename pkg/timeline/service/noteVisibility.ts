@@ -1,11 +1,11 @@
 import { Ether, Result } from '@mikuroxina/mini-fn';
 
-import type { AccountID } from '../../accounts/model/account.js';
+import type { AccountID } from '../../accounts/model/account.ts';
 import {
   type AccountModuleFacade,
   accountModuleFacadeSymbol,
-} from '../../intermodule/account.js';
-import type { Note } from '../../notes/model/note.js';
+} from '../../intermodule/account.ts';
+import type { Note } from '../../notes/model/note.ts';
 
 export interface NoteVisibilityCheckArgs {
   // account id of the user who is trying to see the note

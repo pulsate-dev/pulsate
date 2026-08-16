@@ -1,13 +1,13 @@
 import { Cat, Ether, Option, Promise, Result } from '@mikuroxina/mini-fn';
 
-import type { AccountName } from '../model/account.js';
-import { AccountNotFoundError } from '../model/errors.js';
+import type { AccountName } from '../model/account.ts';
+import { AccountNotFoundError } from '../model/errors.ts';
 import {
   type AccountFollowRepository,
   type AccountRepository,
   accountRepoSymbol,
   followRepoSymbol,
-} from '../model/repository.js';
+} from '../model/repository.ts';
 
 export class UnfollowService {
   readonly #followRepository: AccountFollowRepository;

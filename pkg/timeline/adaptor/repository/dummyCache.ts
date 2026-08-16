@@ -1,15 +1,15 @@
 import { Ether, Result } from '@mikuroxina/mini-fn';
 
-import type { AccountID } from '../../../accounts/model/account.js';
-import { compareID } from '../../../internal/id/mod.js';
-import type { Note, NoteID } from '../../../notes/model/note.js';
-import { TimelineCacheNotFoundError } from '../../model/errors.js';
-import type { ListID } from '../../model/list.js';
+import type { AccountID } from '../../../accounts/model/account.ts';
+import { compareID } from '../../../internal/id/mod.ts';
+import type { Note, NoteID } from '../../../notes/model/note.ts';
+import { TimelineCacheNotFoundError } from '../../model/errors.ts';
+import type { ListID } from '../../model/list.ts';
 import {
   type CacheObjectKey,
   type TimelineNotesCacheRepository,
   timelineNotesCacheRepoSymbol,
-} from '../../model/repository.js';
+} from '../../model/repository.ts';
 
 export class InMemoryTimelineCacheRepository
   implements TimelineNotesCacheRepository

@@ -1,19 +1,19 @@
 import { Cat, Ether, Option, Promise, Result } from '@mikuroxina/mini-fn';
-import type { AccountID } from '../../accounts/model/account.js';
+import type { AccountID } from '../../accounts/model/account.ts';
 import {
   type SnowflakeIDGenerator,
   snowflakeIDGeneratorSymbol,
-} from '../../internal/id/mod.js';
-import { NoteNotFoundError } from '../model/errors.js';
-import type { Note, NoteID } from '../model/note.js';
-import { Reaction } from '../model/reaction.js';
-import { getReactionRedirectTargetID } from '../model/reactionDomainService.js';
+} from '../../internal/id/mod.ts';
+import { NoteNotFoundError } from '../model/errors.ts';
+import type { Note, NoteID } from '../model/note.ts';
+import { Reaction } from '../model/reaction.ts';
+import { getReactionRedirectTargetID } from '../model/reactionDomainService.ts';
 import {
   type NoteRepository,
   noteRepoSymbol,
   type ReactionRepository,
   reactionRepoSymbol,
-} from '../model/repository.js';
+} from '../model/repository.ts';
 
 export class CreateReactionService {
   readonly #idGenerator: SnowflakeIDGenerator;

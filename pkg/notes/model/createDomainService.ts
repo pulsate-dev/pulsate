@@ -1,7 +1,7 @@
 import { Result } from '@mikuroxina/mini-fn';
 
-import { NoteAccountSilencedError } from './errors.js';
-import type { NoteVisibility } from './note.js';
+import { NoteAccountSilencedError } from './errors.ts';
+import type { NoteVisibility } from './note.ts';
 
 /**
  * Silenced accounts may still post notes, but not with PUBLIC visibility.

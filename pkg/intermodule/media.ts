@@ -1,10 +1,10 @@
 import { Ether, type Result } from '@mikuroxina/mini-fn';
-import { isProduction } from '../adaptors/env.js';
-import { prismaClient } from '../adaptors/prisma.js';
-import { InMemoryMediaRepository } from '../drive/adaptor/repository/dummy.js';
-import { PrismaMediaRepository } from '../drive/adaptor/repository/prisma.js';
-import type { Medium, MediumID } from '../drive/model/medium.js';
-import { FetchMediaService } from '../drive/service/fetch.js';
+import { isProduction } from '../adaptors/env.ts';
+import { prismaClient } from '../adaptors/prisma.ts';
+import { InMemoryMediaRepository } from '../drive/adaptor/repository/dummy.ts';
+import { PrismaMediaRepository } from '../drive/adaptor/repository/prisma.ts';
+import type { Medium, MediumID } from '../drive/model/medium.ts';
+import { FetchMediaService } from '../drive/service/fetch.ts';
 
 /**
  * Media Module facade.

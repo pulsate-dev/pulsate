@@ -3,12 +3,12 @@ import { encode } from 'blurhash';
 import { fileTypeFromBuffer } from 'file-type';
 import sharp from 'sharp';
 
-import type { AccountID } from '../../accounts/model/account.js';
-import type { SnowflakeIDGenerator } from '../../internal/id/mod.js';
-import { DriveInternalError, MediaTypeInvalidError } from '../model/errors.js';
-import { Medium } from '../model/medium.js';
-import type { MediaRepository } from '../model/repository.js';
-import type { Storage } from '../model/storage.js';
+import type { AccountID } from '../../accounts/model/account.ts';
+import type { SnowflakeIDGenerator } from '../../internal/id/mod.ts';
+import { DriveInternalError, MediaTypeInvalidError } from '../model/errors.ts';
+import { Medium } from '../model/medium.ts';
+import type { MediaRepository } from '../model/repository.ts';
+import type { Storage } from '../model/storage.ts';
 
 type ProcessedImage = {
   resized: Uint8Array;

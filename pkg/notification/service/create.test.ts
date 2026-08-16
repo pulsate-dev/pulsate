@@ -1,11 +1,11 @@
 import { Result } from '@mikuroxina/mini-fn';
 import { describe, expect, it } from 'vitest';
-import type { AccountID } from '../../accounts/model/account.js';
-import { MockClock, SnowflakeIDGenerator } from '../../internal/id/mod.js';
-import type { NoteID } from '../../notes/model/note.js';
-import type { ReactionID } from '../../notes/model/reaction.js';
-import { InMemoryNotificationRepository } from '../adaptor/repository/dummy/notification.js';
-import { CreateNotificationService } from './create.js';
+import type { AccountID } from '../../accounts/model/account.ts';
+import { MockClock, SnowflakeIDGenerator } from '../../internal/id/mod.ts';
+import type { NoteID } from '../../notes/model/note.ts';
+import type { ReactionID } from '../../notes/model/reaction.ts';
+import { InMemoryNotificationRepository } from '../adaptor/repository/dummy/notification.ts';
+import { CreateNotificationService } from './create.ts';
 
 describe('CreateNotificationService', () => {
   const notificationRepository = new InMemoryNotificationRepository();

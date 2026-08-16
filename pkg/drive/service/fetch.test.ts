@@ -1,10 +1,10 @@
 import { Option, Result } from '@mikuroxina/mini-fn';
 import { describe, expect, it } from 'vitest';
 
-import type { AccountID } from '../../accounts/model/account.js';
-import { InMemoryMediaRepository } from '../adaptor/repository/dummy.js';
-import { Medium, type MediumID } from '../model/medium.js';
-import { FetchMediaService } from './fetch.js';
+import type { AccountID } from '../../accounts/model/account.ts';
+import { InMemoryMediaRepository } from '../adaptor/repository/dummy.ts';
+import { Medium, type MediumID } from '../model/medium.ts';
+import { FetchMediaService } from './fetch.ts';
 
 describe('FetchMediaService', () => {
   const dummyMedium = Medium.reconstruct({

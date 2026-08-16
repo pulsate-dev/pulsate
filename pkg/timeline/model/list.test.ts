@@ -1,13 +1,13 @@
 import { Result } from '@mikuroxina/mini-fn';
 import { describe, expect, it } from 'vitest';
 
-import type { AccountID } from '../../accounts/model/account.js';
+import type { AccountID } from '../../accounts/model/account.ts';
 import {
   ListMemberAlreadyExistsError,
   ListTitleLengthInvalidError,
   ListTooManyMembersError,
-} from './errors.js';
-import { type CreateListArgs, List, type ListID } from './list.js';
+} from './errors.ts';
+import { type CreateListArgs, List, type ListID } from './list.ts';
 
 describe('List', () => {
   const args: CreateListArgs = {

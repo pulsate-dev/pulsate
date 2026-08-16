@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 
-import { Config } from '../model/config.js';
-import { DummyConfigStore } from './dummy.js';
+import { Config } from '../model/config.ts';
+import { DummyConfigStore } from './dummy.ts';
 
 const testConfig = Config.new({
   instanceName: 'Pulsate Demo Server',

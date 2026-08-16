@@ -46,9 +46,6 @@ jobs:
       - name: Run install
         run: pnpm i --frozen-lockfile
 
-      - name: Run build
-        run: pnpm build
-
       - name: Generate API schema
         run: pnpm run build:api
 

@@ -1,15 +1,15 @@
 import { Result } from '@mikuroxina/mini-fn';
 import { describe, expect, it, vi } from 'vitest';
 
-import type { AccountID } from '../../accounts/model/account.js';
-import { partialAccount1 } from '../../accounts/testData/testData.js';
-import { dummyAccountModuleFacade } from '../../intermodule/account.js';
+import type { AccountID } from '../../accounts/model/account.ts';
+import { partialAccount1 } from '../../accounts/testData/testData.ts';
+import { dummyAccountModuleFacade } from '../../intermodule/account.ts';
 import {
   dummyFollowersNote,
   dummyHomeNote,
   dummyPublicNote,
-} from '../testData/testData.js';
-import { NoteVisibilityService } from './noteVisibility.js';
+} from '../testData/testData.ts';
+import { NoteVisibilityService } from './noteVisibility.ts';
 
 describe('NoteVisibilityService', () => {
   const visibilityService = new NoteVisibilityService(dummyAccountModuleFacade);

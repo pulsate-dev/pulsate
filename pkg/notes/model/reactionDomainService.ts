@@ -1,6 +1,6 @@
 import { Option } from '@mikuroxina/mini-fn';
 
-import type { Note, NoteID } from './note.js';
+import type { Note, NoteID } from './note.ts';
 
 /**
  * Reactions on a pure renote (not a quote) are attributed to the original

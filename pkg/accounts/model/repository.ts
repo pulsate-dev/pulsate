@@ -1,10 +1,10 @@
 import { Ether, type Option, type Result } from '@mikuroxina/mini-fn';
 
-import type { Medium, MediumID } from '../../drive/model/medium.js';
-import type { Account, AccountID } from './account.js';
-import type { AccountFollow } from './follow.js';
-import type { InactiveAccount } from './inactiveAccount.js';
-import type { VerifyToken } from './verifyToken.js';
+import type { Medium, MediumID } from '../../drive/model/medium.ts';
+import type { Account, AccountID } from './account.ts';
+import type { AccountFollow } from './follow.ts';
+import type { InactiveAccount } from './inactiveAccount.ts';
+import type { VerifyToken } from './verifyToken.ts';
 
 export interface AccountRepository {
   create(account: Account): Promise<Result.Result<Error, void>>;

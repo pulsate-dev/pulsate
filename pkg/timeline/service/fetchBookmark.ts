@@ -1,14 +1,14 @@
 import { Ether, type Result } from '@mikuroxina/mini-fn';
 
-import type { AccountID } from '../../accounts/model/account.js';
-import type { Note, NoteID } from '../../notes/model/note.js';
+import type { AccountID } from '../../accounts/model/account.ts';
+import type { Note, NoteID } from '../../notes/model/note.ts';
 import {
   type BookmarkTimelineFilter,
   type BookmarkTimelineRepository,
   bookmarkTimelineRepoSymbol,
   type TimelineRepository,
   timelineRepoSymbol,
-} from '../model/repository.js';
+} from '../model/repository.ts';
 
 export class FetchBookmarkService {
   readonly #bookmarkRepository: BookmarkTimelineRepository;

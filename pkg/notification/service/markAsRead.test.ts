@@ -1,14 +1,14 @@
 import { Option, Result } from '@mikuroxina/mini-fn';
 import { describe, expect, it } from 'vitest';
-import type { AccountID } from '../../accounts/model/account.js';
-import { MockClock } from '../../internal/id/mod.js';
-import { InMemoryNotificationRepository } from '../adaptor/repository/dummy/notification.js';
+import type { AccountID } from '../../accounts/model/account.ts';
+import { MockClock } from '../../internal/id/mod.ts';
+import { InMemoryNotificationRepository } from '../adaptor/repository/dummy/notification.ts';
 import {
   type CreateFollowedNotificationArgs,
   FollowedNotification,
-} from '../model/notification.js';
-import type { NotificationID } from '../model/notificationBase.js';
-import { MarkAsReadNotificationService } from './markAsRead.js';
+} from '../model/notification.ts';
+import type { NotificationID } from '../model/notificationBase.ts';
+import { MarkAsReadNotificationService } from './markAsRead.ts';
 
 describe('MarkAsReadNotificationService', () => {
   const testNotificationArgs = {

@@ -3,13 +3,13 @@ import { Scalar } from '@scalar/hono-api-reference';
 import { Hono } from 'hono';
 import { cors } from 'hono/cors';
 
-import { accounts } from './pkg/accounts/mod.js';
-import { drive } from './pkg/drive/mod.js';
-import { noteHandlers } from './pkg/notes/mod.js';
-import { timeline } from './pkg/timeline/mod.js';
+import { accounts } from './pkg/accounts/mod.ts';
+import { drive } from './pkg/drive/mod.ts';
+import { noteHandlers } from './pkg/notes/mod.ts';
+import { timeline } from './pkg/timeline/mod.ts';
 import { Logger } from 'tslog';
-import { isProduction } from './pkg/adaptors/env.js';
-import { notification } from './pkg/notification/mod.js';
+import { isProduction } from './pkg/adaptors/env.ts';
+import { notification } from './pkg/notification/mod.ts';
 
 const coreLogger = new Logger({
   name: "Pulsate",

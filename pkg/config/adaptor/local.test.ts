@@ -4,8 +4,8 @@ import { join } from 'node:path';
 
 import { describe, expect, it } from 'vitest';
 
-import { ConfigInvalidError } from '../model/errors.js';
-import { LocalConfigStore } from './local.js';
+import { ConfigInvalidError } from '../model/errors.ts';
+import { LocalConfigStore } from './local.ts';
 
 describe('LocalConfigStore', () => {
   const createTempConfig = (content: string): string => {

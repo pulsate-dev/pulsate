@@ -1,10 +1,10 @@
 import { Option } from '@mikuroxina/mini-fn';
 import { describe, expect, it } from 'vitest';
 
-import type { AccountID } from '../../accounts/model/account.js';
-import type { MediumID } from '../../drive/model/medium.js';
-import { Note, type NoteID } from './note.js';
-import { getRenoteChainRootID } from './renoteDomainService.js';
+import type { AccountID } from '../../accounts/model/account.ts';
+import type { MediumID } from '../../drive/model/medium.ts';
+import { Note, type NoteID } from './note.ts';
+import { getRenoteChainRootID } from './renoteDomainService.ts';
 
 const baseNoteArgs = {
   authorID: '101' as AccountID,

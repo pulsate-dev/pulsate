@@ -1,6 +1,6 @@
 import { Ether } from '@mikuroxina/mini-fn';
-import { type ConfigStore, configStoreSymbol } from '../mod.js';
-import type { Config } from '../model/config.js';
+import { type ConfigStore, configStoreSymbol } from '../mod.ts';
+import type { Config } from '../model/config.ts';
 
 export class DummyConfigStore implements ConfigStore {
   readonly #config: Config;

@@ -1,5 +1,5 @@
-import type { AccountID } from '../../accounts/model/account.js';
-import type { NoteID } from './note.js';
+import type { AccountID } from '../../accounts/model/account.ts';
+import type { NoteID } from './note.ts';
 
 export interface CreateBookmarkArgs {
   noteID: NoteID;

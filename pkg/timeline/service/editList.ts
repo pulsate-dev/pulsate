@@ -1,7 +1,7 @@
 import { Cat, Ether, Promise, type Result } from '@mikuroxina/mini-fn';
-import type { ID } from '../../internal/id/type.js';
-import type { List } from '../model/list.js';
-import { type ListRepository, listRepoSymbol } from '../model/repository.js';
+import type { ID } from '../../internal/id/type.ts';
+import type { List } from '../model/list.ts';
+import { type ListRepository, listRepoSymbol } from '../model/repository.ts';
 
 export class EditListService {
   readonly #listRepository: ListRepository;

@@ -1,12 +1,12 @@
 import { Result } from '@mikuroxina/mini-fn';
 import { describe, expect, it } from 'vitest';
 
-import type { AccountID } from './account.js';
+import type { AccountID } from './account.ts';
 import {
   type ActivateArgs,
   type CreateInactiveAccountArgs,
   InactiveAccount,
-} from './inactiveAccount.js';
+} from './inactiveAccount.ts';
 
 const exampleInput: CreateInactiveAccountArgs = {
   id: '1' as AccountID,

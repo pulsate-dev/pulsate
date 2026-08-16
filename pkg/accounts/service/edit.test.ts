@@ -1,10 +1,10 @@
 import { Option, Result } from '@mikuroxina/mini-fn';
 import { afterEach, beforeEach, describe, expect, it } from 'vitest';
 
-import { Argon2idPasswordEncoder } from '../../internal/password/mod.js';
-import { InMemoryAccountRepository } from '../adaptor/repository/dummy/account.js';
-import { Account, type AccountID } from '../model/account.js';
-import { EditService } from './edit.js';
+import { Argon2idPasswordEncoder } from '../../internal/password/mod.ts';
+import { InMemoryAccountRepository } from '../adaptor/repository/dummy/account.ts';
+import { Account, type AccountID } from '../model/account.ts';
+import { EditService } from './edit.ts';
 
 const passwordEncoder = new Argon2idPasswordEncoder();
 const repository = new InMemoryAccountRepository();

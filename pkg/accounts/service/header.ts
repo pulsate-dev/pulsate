@@ -1,15 +1,15 @@
 import { Cat, Ether, Promise, Result } from '@mikuroxina/mini-fn';
-import type { Medium, MediumID } from '../../drive/model/medium.js';
+import type { Medium, MediumID } from '../../drive/model/medium.ts';
 import {
   type MediaModuleFacade,
   mediaModuleFacadeSymbol,
-} from '../../intermodule/media.js';
-import type { AccountID } from '../model/account.js';
-import { AccountInsufficientPermissionError } from '../model/errors.js';
+} from '../../intermodule/media.ts';
+import type { AccountID } from '../model/account.ts';
+import { AccountInsufficientPermissionError } from '../model/errors.ts';
 import {
   type AccountHeaderRepository,
   accountHeaderRepoSymbol,
-} from '../model/repository.js';
+} from '../model/repository.ts';
 
 export class AccountHeaderService {
   readonly #headerRepository: AccountHeaderRepository;

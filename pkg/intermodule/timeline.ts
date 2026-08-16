@@ -1,16 +1,16 @@
 import { Ether, Result } from '@mikuroxina/mini-fn';
-import { isProduction } from '../adaptors/env.js';
-import { prismaClient } from '../adaptors/prisma.js';
-import { valkeyClient } from '../adaptors/valkey.js';
-import type { Note } from '../notes/model/note.js';
-import { InMemoryListRepository } from '../timeline/adaptor/repository/dummy.js';
-import { InMemoryTimelineCacheRepository } from '../timeline/adaptor/repository/dummyCache.js';
-import { PrismaListRepository } from '../timeline/adaptor/repository/prisma.js';
-import { ValkeyTimelineCacheRepository } from '../timeline/adaptor/repository/valkeyCache.js';
-import { FetchSubscribedListService } from '../timeline/service/fetchSubscribed.js';
-import { NoteVisibilityService } from '../timeline/service/noteVisibility.js';
-import { PushTimelineService } from '../timeline/service/push.js';
-import { accountModule, dummyAccountModuleFacade } from './account.js';
+import { isProduction } from '../adaptors/env.ts';
+import { prismaClient } from '../adaptors/prisma.ts';
+import { valkeyClient } from '../adaptors/valkey.ts';
+import type { Note } from '../notes/model/note.ts';
+import { InMemoryListRepository } from '../timeline/adaptor/repository/dummy.ts';
+import { InMemoryTimelineCacheRepository } from '../timeline/adaptor/repository/dummyCache.ts';
+import { PrismaListRepository } from '../timeline/adaptor/repository/prisma.ts';
+import { ValkeyTimelineCacheRepository } from '../timeline/adaptor/repository/valkeyCache.ts';
+import { FetchSubscribedListService } from '../timeline/service/fetchSubscribed.ts';
+import { NoteVisibilityService } from '../timeline/service/noteVisibility.ts';
+import { PushTimelineService } from '../timeline/service/push.ts';
+import { accountModule, dummyAccountModuleFacade } from './account.ts';
 
 export class TimelineModuleFacade {
   readonly #pushTimelineService: PushTimelineService;

@@ -1,18 +1,18 @@
 import type { z } from '@hono/zod-openapi';
 import { Option, Result } from '@mikuroxina/mini-fn';
 
-import type { AccountID } from '../../../accounts/model/account.js';
-import type { MediumID } from '../../../drive/model/medium.js';
-import type { AccountModuleFacade } from '../../../intermodule/account.js';
-import type { NoteID, NoteVisibility } from '../../model/note.js';
-import type { CreateService } from '../../service/create.js';
-import type { FetchService } from '../../service/fetch.js';
-import type { RenoteService } from '../../service/renote.js';
+import type { AccountID } from '../../../accounts/model/account.ts';
+import type { MediumID } from '../../../drive/model/medium.ts';
+import type { AccountModuleFacade } from '../../../intermodule/account.ts';
+import type { NoteID, NoteVisibility } from '../../model/note.ts';
+import type { CreateService } from '../../service/create.ts';
+import type { FetchService } from '../../service/fetch.ts';
+import type { RenoteService } from '../../service/renote.ts';
 import type {
   CreateNoteResponseSchema,
   GetNoteResponseSchema,
   RenoteResponseSchema,
-} from '../validator/schema.js';
+} from '../validator/schema.ts';
 
 export class NoteController {
   readonly #createService: CreateService;
