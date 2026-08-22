@@ -9,6 +9,8 @@ import { noteHandlers } from './pkg/notes/mod.ts';
 import { timeline } from './pkg/timeline/mod.ts';
 import { Logger } from 'tslog';
 import { isProduction } from './pkg/adaptors/env.ts';
+import { prismaClient } from './pkg/adaptors/prisma.ts';
+import { closeValkeyClients } from './pkg/adaptors/valkey.ts';
 import { notification } from './pkg/notification/mod.ts';
 
 const coreLogger = new Logger({
@@ -92,7 +94,7 @@ app.get(
   }),
 );
 
-serve({ fetch: app.fetch, port: 3000 }, (addr) => {
+const server = serve({ fetch: app.fetch, port: 3000 }, (addr) => {
   coreLogger.info("Pulsate v0.1");
   if (isProduction) {
     coreLogger.info("Production mode");
@@ -102,3 +104,14 @@ serve({ fetch: app.fetch, port: 3000 }, (addr) => {
 
   coreLogger.info(`Server started at ${addr.address}:${addr.port} ${addr.family}`);
 });
+
+const shutdown = () => {
+  coreLogger.info('Shutting down gracefully...');
+  server.close(async () => {
+    await Promise.all([prismaClient.$disconnect(), closeValkeyClients()]);
+    process.exit(0);
+  });
+};
+
+process.on('SIGTERM', shutdown);
+process.on('SIGINT', shutdown);
