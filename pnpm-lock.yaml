@@ -42,8 +42,8 @@ importers:
         specifier: 2.0.5
         version: 2.0.5
       file-type:
-        specifier: 22.0.1
-        version: 22.0.1(supports-color@7.2.0)
+        specifier: 22.0.2
+        version: 22.0.2(supports-color@7.2.0)
       hono:
         specifier: 4.12.34
         version: 4.12.34
@@ -1398,8 +1398,8 @@ packages:
       picomatch:
         optional: true
 
-  file-type@22.0.1:
-    resolution: {integrity: sha512-ww5Mhre0EE+jmBvOXTmXAbEMuZE7uX4a3+oRCQFNj8w++g3ev913N6tXQz0XTXbueQ5TWQfm6BdaViEHHn8bhA==}
+  file-type@22.0.2:
+    resolution: {integrity: sha512-0H8TsCUGBLx+V5adH3EY52hTAcyLKbV1D4gq5cIOJ6DnQAHeV9Z2Hhuc5CoBX4YmvB2oL+JIC84z0qO7JsCoNw==}
     engines: {node: '>=22'}
 
   find-my-way@9.7.0:
@@ -3421,7 +3421,7 @@ snapshots:
     optionalDependencies:
       picomatch: 4.0.5
 
-  file-type@22.0.1(supports-color@7.2.0):
+  file-type@22.0.2(supports-color@7.2.0):
     dependencies:
       '@tokenizer/inflate': 0.4.1(supports-color@7.2.0)
       strtok3: 10.3.5
