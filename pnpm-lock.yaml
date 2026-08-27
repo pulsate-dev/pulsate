@@ -51,8 +51,8 @@ importers:
         specifier: 5.11.1
         version: 5.11.1(supports-color@7.2.0)
       jose:
-        specifier: 6.2.8
-        version: 6.2.8
+        specifier: 6.2.10
+        version: 6.2.10
       pg:
         specifier: 8.22.0
         version: 8.22.0
@@ -1552,8 +1552,8 @@ packages:
     resolution: {integrity: sha512-ekilCSN1jwRvIbgeg/57YFh8qQDNbwDb9xT/qu2DAHbFFZUicIl4ygVaAvzveMhMVr3LnpSKTNnwt8PoOfmKhQ==}
     hasBin: true
 
-  jose@6.2.8:
-    resolution: {integrity: sha512-Bsdjwm3Qsd/P0jR+BHDe3LytDfY7WBq2HmCCLIwuVRHMuEC9ae7/R474GIUdF1NgCyZjzVo/A9DOiOBtXq8ZoQ==}
+  jose@6.2.10:
+    resolution: {integrity: sha512-iiW7J9qRFlGxvCOIBDBDxFePQSn7ZMAnrYGhrrOo6siO/MIqwfyilLR27pkfDgUk+raLuzADS8A3S/KLBisc0g==}
 
   js-tokens@10.0.0:
     resolution: {integrity: sha512-lM/UBzQmfJRo9ABXbPWemivdCW8V2G8FHaHdypQaIy523snUjog0W71ayWXTjiR+ixeMyVHN2XcpnTd/liPg/Q==}
@@ -3587,7 +3587,7 @@ snapshots:
 
   jiti@2.6.1: {}
 
-  jose@6.2.8: {}
+  jose@6.2.10: {}
 
   js-tokens@10.0.0: {}
 
