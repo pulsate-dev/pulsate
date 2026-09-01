@@ -1,4 +1,4 @@
-import { type Option, Result } from '@mikuroxina/mini-fn';
+import { Result } from '@mikuroxina/mini-fn';
 
 import type { AccountID } from '../../../accounts/model/account.ts';
 import type { DomainEvent, EventID } from '../../../internal/event/type.ts';
@@ -8,12 +8,14 @@ import type { NoteID } from '../note.ts';
 export type BookmarkCreatedEvent = DomainEvent<
   NoteID,
   'note.bookmark.created',
-  { accountID: AccountID }
+  { accountID: AccountID },
+  AccountID
 >;
 export type BookmarkDeletedEvent = DomainEvent<
   NoteID,
   'note.bookmark.deleted',
-  { accountID: AccountID }
+  { accountID: AccountID },
+  AccountID
 >;
 
 export type BookmarkEvent = BookmarkCreatedEvent | BookmarkDeletedEvent;
@@ -23,7 +25,7 @@ export const bookmarkEventFactory = {
     idGenerator: SnowflakeIDGenerator,
     args: {
       target: NoteID;
-      actor: Option.Option<AccountID>;
+      actor: AccountID;
       occurredAt: Date;
       accountID: AccountID;
     },
@@ -41,7 +43,7 @@ export const bookmarkEventFactory = {
     idGenerator: SnowflakeIDGenerator,
     args: {
       target: NoteID;
-      actor: Option.Option<AccountID>;
+      actor: AccountID;
       occurredAt: Date;
       accountID: AccountID;
     },

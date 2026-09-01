@@ -1,4 +1,4 @@
-import { type Option, Result } from '@mikuroxina/mini-fn';
+import { Result } from '@mikuroxina/mini-fn';
 
 import type { AccountID } from '../../../accounts/model/account.ts';
 import type { DomainEvent, EventID } from '../../../internal/event/type.ts';
@@ -8,12 +8,14 @@ import type { NoteID } from '../note.ts';
 export type ReactionCreatedEvent = DomainEvent<
   NoteID,
   'note.reaction.created',
-  { accountID: AccountID; emoji: string }
+  { accountID: AccountID; emoji: string },
+  AccountID
 >;
 export type ReactionDeletedEvent = DomainEvent<
   NoteID,
   'note.reaction.deleted',
-  { accountID: AccountID }
+  { accountID: AccountID },
+  AccountID
 >;
 
 export type ReactionEvent = ReactionCreatedEvent | ReactionDeletedEvent;
@@ -23,7 +25,7 @@ export const reactionEventFactory = {
     idGenerator: SnowflakeIDGenerator,
     args: {
       target: NoteID;
-      actor: Option.Option<AccountID>;
+      actor: AccountID;
       occurredAt: Date;
       accountID: AccountID;
       emoji: string;
@@ -42,7 +44,7 @@ export const reactionEventFactory = {
     idGenerator: SnowflakeIDGenerator,
     args: {
       target: NoteID;
-      actor: Option.Option<AccountID>;
+      actor: AccountID;
       occurredAt: Date;
       accountID: AccountID;
     },

@@ -1,4 +1,4 @@
-import { type Option, Result } from '@mikuroxina/mini-fn';
+import { Result } from '@mikuroxina/mini-fn';
 
 import type { AccountID } from '../../../accounts/model/account.ts';
 import type { DomainEvent, EventID } from '../../../internal/event/type.ts';
@@ -8,22 +8,26 @@ import type { NoteID, NoteVisibility } from '../note.ts';
 export type NoteCreatedEvent = DomainEvent<
   NoteID,
   'note.created',
-  { authorID: AccountID; visibility: NoteVisibility }
+  { authorID: AccountID; visibility: NoteVisibility },
+  AccountID
 >;
 export type NoteDeletedEvent = DomainEvent<
   NoteID,
   'note.deleted',
-  Record<string, never>
+  Record<string, never>,
+  AccountID
 >;
 export type NoteRenotedEvent = DomainEvent<
   NoteID,
   'note.renoted',
-  { originalNoteID: NoteID }
+  { originalNoteID: NoteID },
+  AccountID
 >;
 export type NoteUnrenotedEvent = DomainEvent<
   NoteID,
   'note.unrenoted',
-  Record<string, never>
+  Record<string, never>,
+  AccountID
 >;
 
 export type NoteEvent =
@@ -37,7 +41,7 @@ export const noteEventFactory = {
     idGenerator: SnowflakeIDGenerator,
     args: {
       target: NoteID;
-      actor: Option.Option<AccountID>;
+      actor: AccountID;
       occurredAt: Date;
       authorID: AccountID;
       visibility: NoteVisibility;
@@ -56,7 +60,7 @@ export const noteEventFactory = {
     idGenerator: SnowflakeIDGenerator,
     args: {
       target: NoteID;
-      actor: Option.Option<AccountID>;
+      actor: AccountID;
       occurredAt: Date;
     },
   ): Result.Result<Error, NoteDeletedEvent> {
@@ -73,7 +77,7 @@ export const noteEventFactory = {
     idGenerator: SnowflakeIDGenerator,
     args: {
       target: NoteID;
-      actor: Option.Option<AccountID>;
+      actor: AccountID;
       occurredAt: Date;
       originalNoteID: NoteID;
     },
@@ -91,7 +95,7 @@ export const noteEventFactory = {
     idGenerator: SnowflakeIDGenerator,
     args: {
       target: NoteID;
-      actor: Option.Option<AccountID>;
+      actor: AccountID;
       occurredAt: Date;
     },
   ): Result.Result<Error, NoteUnrenotedEvent> {
