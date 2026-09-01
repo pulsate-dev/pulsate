@@ -1,4 +1,4 @@
-import { type Option, Result } from '@mikuroxina/mini-fn';
+import { Result } from '@mikuroxina/mini-fn';
 
 import type { MediumID } from '../../../drive/model/medium.ts';
 import type { DomainEvent, EventID } from '../../../internal/event/type.ts';
@@ -8,12 +8,14 @@ import type { AccountID } from '../account.ts';
 export type AccountAvatarUpdatedEvent = DomainEvent<
   AccountID,
   'account.avatar.updated',
-  { mediumID: MediumID }
+  { mediumID: MediumID },
+  AccountID
 >;
 export type AccountHeaderUpdatedEvent = DomainEvent<
   AccountID,
   'account.header.updated',
-  { mediumID: MediumID }
+  { mediumID: MediumID },
+  AccountID
 >;
 
 export type AvatarEvent = AccountAvatarUpdatedEvent | AccountHeaderUpdatedEvent;
@@ -23,7 +25,7 @@ export const avatarEventFactory = {
     idGenerator: SnowflakeIDGenerator,
     args: {
       target: AccountID;
-      actor: Option.Option<AccountID>;
+      actor: AccountID;
       occurredAt: Date;
       mediumID: MediumID;
     },
@@ -42,7 +44,7 @@ export const avatarEventFactory = {
     idGenerator: SnowflakeIDGenerator,
     args: {
       target: AccountID;
-      actor: Option.Option<AccountID>;
+      actor: AccountID;
       occurredAt: Date;
       mediumID: MediumID;
     },

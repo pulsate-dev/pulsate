@@ -17,37 +17,44 @@ export type AccountActivatedEvent = DomainEvent<
 export type AccountBioUpdatedEvent = DomainEvent<
   AccountID,
   'account.bio.updated',
-  { bio: string }
+  { bio: string },
+  AccountID
 >;
 export type AccountNicknameUpdatedEvent = DomainEvent<
   AccountID,
   'account.nickname.updated',
-  { nickname: string }
+  { nickname: string },
+  AccountID
 >;
 export type AccountEmailUpdatedEvent = DomainEvent<
   AccountID,
   'account.email.updated',
-  { mail: string }
+  { mail: string },
+  AccountID
 >;
 export type AccountAdminFrozenEvent = DomainEvent<
   AccountID,
   'account.admin.frozen',
-  Record<string, never>
+  Record<string, never>,
+  AccountID
 >;
 export type AccountAdminUnfrozenEvent = DomainEvent<
   AccountID,
   'account.admin.unfrozen',
-  Record<string, never>
+  Record<string, never>,
+  AccountID
 >;
 export type AccountAdminSilencedEvent = DomainEvent<
   AccountID,
   'account.admin.silenced',
-  Record<string, never>
+  Record<string, never>,
+  AccountID
 >;
 export type AccountAdminUnsilencedEvent = DomainEvent<
   AccountID,
   'account.admin.unsilenced',
-  Record<string, never>
+  Record<string, never>,
+  AccountID
 >;
 
 export type AccountEvent =
@@ -103,7 +110,7 @@ export const accountEventFactory = {
     idGenerator: SnowflakeIDGenerator,
     args: {
       target: AccountID;
-      actor: Option.Option<AccountID>;
+      actor: AccountID;
       occurredAt: Date;
       bio: string;
     },
@@ -122,7 +129,7 @@ export const accountEventFactory = {
     idGenerator: SnowflakeIDGenerator,
     args: {
       target: AccountID;
-      actor: Option.Option<AccountID>;
+      actor: AccountID;
       occurredAt: Date;
       nickname: string;
     },
@@ -141,7 +148,7 @@ export const accountEventFactory = {
     idGenerator: SnowflakeIDGenerator,
     args: {
       target: AccountID;
-      actor: Option.Option<AccountID>;
+      actor: AccountID;
       occurredAt: Date;
       mail: string;
     },
@@ -160,7 +167,7 @@ export const accountEventFactory = {
     idGenerator: SnowflakeIDGenerator,
     args: {
       target: AccountID;
-      actor: Option.Option<AccountID>;
+      actor: AccountID;
       occurredAt: Date;
     },
   ): Result.Result<Error, AccountAdminFrozenEvent> {
@@ -178,7 +185,7 @@ export const accountEventFactory = {
     idGenerator: SnowflakeIDGenerator,
     args: {
       target: AccountID;
-      actor: Option.Option<AccountID>;
+      actor: AccountID;
       occurredAt: Date;
     },
   ): Result.Result<Error, AccountAdminUnfrozenEvent> {
@@ -196,7 +203,7 @@ export const accountEventFactory = {
     idGenerator: SnowflakeIDGenerator,
     args: {
       target: AccountID;
-      actor: Option.Option<AccountID>;
+      actor: AccountID;
       occurredAt: Date;
     },
   ): Result.Result<Error, AccountAdminSilencedEvent> {
@@ -214,7 +221,7 @@ export const accountEventFactory = {
     idGenerator: SnowflakeIDGenerator,
     args: {
       target: AccountID;
-      actor: Option.Option<AccountID>;
+      actor: AccountID;
       occurredAt: Date;
     },
   ): Result.Result<Error, AccountAdminUnsilencedEvent> {

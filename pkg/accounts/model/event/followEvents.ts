@@ -1,4 +1,4 @@
-import { type Option, Result } from '@mikuroxina/mini-fn';
+import { Result } from '@mikuroxina/mini-fn';
 
 import type { DomainEvent, EventID } from '../../../internal/event/type.ts';
 import type { SnowflakeIDGenerator } from '../../../internal/id/mod.ts';
@@ -7,32 +7,38 @@ import type { AccountID } from '../account.ts';
 export type AccountFollowRequestedEvent = DomainEvent<
   AccountID,
   'account.follow.requested',
-  { targetID: AccountID }
+  { targetID: AccountID },
+  AccountID
 >;
 export type AccountFollowAcceptedEvent = DomainEvent<
   AccountID,
   'account.follow.accepted',
-  { targetID: AccountID }
+  { targetID: AccountID },
+  AccountID
 >;
 export type AccountFollowRejectedEvent = DomainEvent<
   AccountID,
   'account.follow.rejected',
-  { targetID: AccountID }
+  { targetID: AccountID },
+  AccountID
 >;
 export type AccountFollowUnfollowedEvent = DomainEvent<
   AccountID,
   'account.follow.unfollowed',
-  { targetID: AccountID }
+  { targetID: AccountID },
+  AccountID
 >;
 export type AccountFollowBlockedEvent = DomainEvent<
   AccountID,
   'account.follow.blocked',
-  { targetID: AccountID }
+  { targetID: AccountID },
+  AccountID
 >;
 export type AccountFollowUnblockedEvent = DomainEvent<
   AccountID,
   'account.follow.unblocked',
-  { targetID: AccountID }
+  { targetID: AccountID },
+  AccountID
 >;
 
 export type FollowEvent =
@@ -48,7 +54,7 @@ export const followEventFactory = {
     idGenerator: SnowflakeIDGenerator,
     args: {
       target: AccountID;
-      actor: Option.Option<AccountID>;
+      actor: AccountID;
       occurredAt: Date;
       targetID: AccountID;
     },
@@ -67,7 +73,7 @@ export const followEventFactory = {
     idGenerator: SnowflakeIDGenerator,
     args: {
       target: AccountID;
-      actor: Option.Option<AccountID>;
+      actor: AccountID;
       occurredAt: Date;
       targetID: AccountID;
     },
@@ -86,7 +92,7 @@ export const followEventFactory = {
     idGenerator: SnowflakeIDGenerator,
     args: {
       target: AccountID;
-      actor: Option.Option<AccountID>;
+      actor: AccountID;
       occurredAt: Date;
       targetID: AccountID;
     },
@@ -105,7 +111,7 @@ export const followEventFactory = {
     idGenerator: SnowflakeIDGenerator,
     args: {
       target: AccountID;
-      actor: Option.Option<AccountID>;
+      actor: AccountID;
       occurredAt: Date;
       targetID: AccountID;
     },
@@ -124,7 +130,7 @@ export const followEventFactory = {
     idGenerator: SnowflakeIDGenerator,
     args: {
       target: AccountID;
-      actor: Option.Option<AccountID>;
+      actor: AccountID;
       occurredAt: Date;
       targetID: AccountID;
     },
@@ -143,7 +149,7 @@ export const followEventFactory = {
     idGenerator: SnowflakeIDGenerator,
     args: {
       target: AccountID;
-      actor: Option.Option<AccountID>;
+      actor: AccountID;
       occurredAt: Date;
       targetID: AccountID;
     },
