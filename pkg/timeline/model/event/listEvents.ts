@@ -1,4 +1,4 @@
-import { type Option, Result } from '@mikuroxina/mini-fn';
+import { Result } from '@mikuroxina/mini-fn';
 
 import type { AccountID } from '../../../accounts/model/account.ts';
 import type { DomainEvent, EventID } from '../../../internal/event/type.ts';
@@ -8,22 +8,26 @@ import type { ListID } from '../list.ts';
 export type ListCreatedEvent = DomainEvent<
   ListID,
   'list.created',
-  { ownerID: AccountID; title: string }
+  { ownerID: AccountID; title: string },
+  AccountID
 >;
 export type ListDeletedEvent = DomainEvent<
   ListID,
   'list.deleted',
-  Record<string, never>
+  Record<string, never>,
+  AccountID
 >;
 export type ListMemberAppendedEvent = DomainEvent<
   ListID,
   'list.member.appended',
-  { memberID: AccountID }
+  { memberID: AccountID },
+  AccountID
 >;
 export type ListMemberRemovedEvent = DomainEvent<
   ListID,
   'list.member.removed',
-  { memberID: AccountID }
+  { memberID: AccountID },
+  AccountID
 >;
 
 export type ListEvent =
@@ -37,7 +41,7 @@ export const listEventFactory = {
     idGenerator: SnowflakeIDGenerator,
     args: {
       target: ListID;
-      actor: Option.Option<AccountID>;
+      actor: AccountID;
       occurredAt: Date;
       ownerID: AccountID;
       title: string;
@@ -57,7 +61,7 @@ export const listEventFactory = {
     idGenerator: SnowflakeIDGenerator,
     args: {
       target: ListID;
-      actor: Option.Option<AccountID>;
+      actor: AccountID;
       occurredAt: Date;
     },
   ): Result.Result<Error, ListDeletedEvent> {
@@ -75,7 +79,7 @@ export const listEventFactory = {
     idGenerator: SnowflakeIDGenerator,
     args: {
       target: ListID;
-      actor: Option.Option<AccountID>;
+      actor: AccountID;
       occurredAt: Date;
       memberID: AccountID;
     },
@@ -94,7 +98,7 @@ export const listEventFactory = {
     idGenerator: SnowflakeIDGenerator,
     args: {
       target: ListID;
-      actor: Option.Option<AccountID>;
+      actor: AccountID;
       occurredAt: Date;
       memberID: AccountID;
     },
