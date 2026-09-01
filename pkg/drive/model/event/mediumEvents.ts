@@ -1,4 +1,4 @@
-import { type Option, Result } from '@mikuroxina/mini-fn';
+import { Result } from '@mikuroxina/mini-fn';
 
 import type { AccountID } from '../../../accounts/model/account.ts';
 import type { DomainEvent, EventID } from '../../../internal/event/type.ts';
@@ -8,22 +8,26 @@ import type { MediumID } from '../medium.ts';
 export type MediumCreatedEvent = DomainEvent<
   MediumID,
   'medium.created',
-  { authorID: AccountID }
+  { authorID: AccountID },
+  AccountID
 >;
 export type MediumDeletedEvent = DomainEvent<
   MediumID,
   'medium.deleted',
-  Record<string, never>
+  Record<string, never>,
+  AccountID
 >;
 export type MediumAdminFlaggedEvent = DomainEvent<
   MediumID,
   'medium.admin.flagged',
-  Record<string, never>
+  Record<string, never>,
+  AccountID
 >;
 export type MediumAdminUnflaggedEvent = DomainEvent<
   MediumID,
   'medium.admin.unflagged',
-  Record<string, never>
+  Record<string, never>,
+  AccountID
 >;
 
 export type MediumEvent =
@@ -37,7 +41,7 @@ export const mediumEventFactory = {
     idGenerator: SnowflakeIDGenerator,
     args: {
       target: MediumID;
-      actor: Option.Option<AccountID>;
+      actor: AccountID;
       occurredAt: Date;
       authorID: AccountID;
     },
@@ -56,7 +60,7 @@ export const mediumEventFactory = {
     idGenerator: SnowflakeIDGenerator,
     args: {
       target: MediumID;
-      actor: Option.Option<AccountID>;
+      actor: AccountID;
       occurredAt: Date;
     },
   ): Result.Result<Error, MediumDeletedEvent> {
@@ -74,7 +78,7 @@ export const mediumEventFactory = {
     idGenerator: SnowflakeIDGenerator,
     args: {
       target: MediumID;
-      actor: Option.Option<AccountID>;
+      actor: AccountID;
       occurredAt: Date;
     },
   ): Result.Result<Error, MediumAdminFlaggedEvent> {
@@ -92,7 +96,7 @@ export const mediumEventFactory = {
     idGenerator: SnowflakeIDGenerator,
     args: {
       target: MediumID;
-      actor: Option.Option<AccountID>;
+      actor: AccountID;
       occurredAt: Date;
     },
   ): Result.Result<Error, MediumAdminUnflaggedEvent> {
