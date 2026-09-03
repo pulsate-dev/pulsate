@@ -14,58 +14,58 @@ describe('AccountTimelineService', () => {
     dummyAccountModuleFacade,
   );
 
-  const dummyPublicNote = Result.unwrap(
-    Note.new({
-      id: '1' as NoteID,
-      authorID: '100' as AccountID,
-      content: 'Hello world',
-      contentsWarningComment: '',
-      createdAt: new Date('2023-09-10T00:00:00Z'),
-      originalNoteID: Option.none(),
-      attachmentFileID: [],
-      sendTo: Option.none(),
-      visibility: 'PUBLIC',
-    }),
-  );
-  const dummyHomeNote = Result.unwrap(
-    Note.new({
-      id: '2' as NoteID,
-      authorID: '100' as AccountID,
-      content: 'Hello world to Home',
-      contentsWarningComment: '',
-      createdAt: new Date('2023-09-11T00:00:00Z'),
-      originalNoteID: Option.none(),
-      attachmentFileID: [],
-      sendTo: Option.none(),
-      visibility: 'HOME',
-    }),
-  );
-  const dummyFollowersNote = Result.unwrap(
-    Note.new({
-      id: '3' as NoteID,
-      authorID: '100' as AccountID,
-      content: 'Hello world to followers',
-      contentsWarningComment: '',
-      createdAt: new Date('2023-09-12T00:00:00Z'),
-      originalNoteID: Option.none(),
-      attachmentFileID: [],
-      sendTo: Option.none(),
-      visibility: 'FOLLOWERS',
-    }),
-  );
-  const dummyDirectNote = Result.unwrap(
-    Note.new({
-      id: '4' as NoteID,
-      authorID: '100' as AccountID,
-      content: 'Hello world to direct',
-      contentsWarningComment: '',
-      createdAt: new Date('2023-09-13T00:00:00Z'),
-      originalNoteID: Option.none(),
-      attachmentFileID: [],
-      sendTo: Option.some('101' as AccountID),
-      visibility: 'DIRECT',
-    }),
-  );
+  const dummyPublicNote = Note.reconstruct({
+    id: '1' as NoteID,
+    authorID: '100' as AccountID,
+    content: 'Hello world',
+    contentsWarningComment: '',
+    createdAt: new Date('2023-09-10T00:00:00Z'),
+    originalNoteID: Option.none(),
+    attachmentFileID: [],
+    sendTo: Option.none(),
+    visibility: 'PUBLIC',
+    updatedAt: Option.none(),
+    deletedAt: Option.none(),
+  });
+  const dummyHomeNote = Note.reconstruct({
+    id: '2' as NoteID,
+    authorID: '100' as AccountID,
+    content: 'Hello world to Home',
+    contentsWarningComment: '',
+    createdAt: new Date('2023-09-11T00:00:00Z'),
+    originalNoteID: Option.none(),
+    attachmentFileID: [],
+    sendTo: Option.none(),
+    visibility: 'HOME',
+    updatedAt: Option.none(),
+    deletedAt: Option.none(),
+  });
+  const dummyFollowersNote = Note.reconstruct({
+    id: '3' as NoteID,
+    authorID: '100' as AccountID,
+    content: 'Hello world to followers',
+    contentsWarningComment: '',
+    createdAt: new Date('2023-09-12T00:00:00Z'),
+    originalNoteID: Option.none(),
+    attachmentFileID: [],
+    sendTo: Option.none(),
+    visibility: 'FOLLOWERS',
+    updatedAt: Option.none(),
+    deletedAt: Option.none(),
+  });
+  const dummyDirectNote = Note.reconstruct({
+    id: '4' as NoteID,
+    authorID: '100' as AccountID,
+    content: 'Hello world to direct',
+    contentsWarningComment: '',
+    createdAt: new Date('2023-09-13T00:00:00Z'),
+    originalNoteID: Option.none(),
+    attachmentFileID: [],
+    sendTo: Option.some('101' as AccountID),
+    visibility: 'DIRECT',
+    updatedAt: Option.none(),
+    deletedAt: Option.none(),
+  });
   const dummyAccount1 = Account.new({
     id: '101' as AccountID,
     bio: 'this is test user',

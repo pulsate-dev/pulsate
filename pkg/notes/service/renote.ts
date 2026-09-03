@@ -87,17 +87,24 @@ export class RenoteService {
       .addM('id', Promise.resolve(this.#deps.idGenerator.generate<Note>()))
       .addMWith('renote', ({ id, originalNote }) =>
         Promise.resolve(
-          Note.new({
-            id,
-            content: content,
-            contentsWarningComment: contentsWarningComment,
-            originalNoteID: Option.some(originalNote.getID()),
-            authorID: authorID,
-            attachmentFileID: attachmentFileID,
-            visibility: visibility,
-            sendTo: Option.none(),
-            createdAt: new Date(Number(now)),
-          }),
+          Note.new(
+            {
+              id,
+              content: content,
+              contentsWarningComment: contentsWarningComment,
+              originalNoteID: Option.some(originalNote.getID()),
+              authorID: authorID,
+              attachmentFileID: attachmentFileID,
+              visibility: visibility,
+              sendTo: Option.none(),
+              createdAt: new Date(Number(now)),
+            },
+            {
+              idGenerator: this.#deps.idGenerator,
+              actor: authorID,
+              occurredAt: new Date(Number(now)),
+            },
+          ),
         ),
       )
       .when(

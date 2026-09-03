@@ -10,6 +10,7 @@ import { Note, type NoteID } from '../model/note.ts';
 import { CreateReactionService } from './createReaction.ts';
 
 const idGenerator = new SnowflakeIDGenerator(1, new MockClock(new Date()));
+const clock = new MockClock(new Date());
 
 const noteFactory = (
   id: NoteID,
@@ -18,19 +19,19 @@ const noteFactory = (
   originalNoteID: Option.Option<NoteID>,
   createdAt: Date,
 ) =>
-  Result.unwrap(
-    Note.new({
-      id,
-      authorID,
-      content,
-      visibility: 'PUBLIC',
-      contentsWarningComment: '',
-      attachmentFileID: [],
-      createdAt,
-      originalNoteID,
-      sendTo: Option.none(),
-    }),
-  );
+  Note.reconstruct({
+    id,
+    authorID,
+    content,
+    visibility: 'PUBLIC',
+    contentsWarningComment: '',
+    attachmentFileID: [],
+    createdAt,
+    originalNoteID,
+    sendTo: Option.none(),
+    updatedAt: Option.none(),
+    deletedAt: Option.none(),
+  });
 
 const normalNote = noteFactory(
   '1' as NoteID,
@@ -53,6 +54,7 @@ let service = new CreateReactionService(
   idGenerator,
   reactionRepository,
   noteRepository,
+  clock,
 );
 
 describe('CreateReactionService', () => {
@@ -63,6 +65,7 @@ describe('CreateReactionService', () => {
       idGenerator,
       reactionRepository,
       noteRepository,
+      clock,
     );
   });
 

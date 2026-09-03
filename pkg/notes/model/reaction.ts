@@ -2,8 +2,13 @@ import { Result } from '@mikuroxina/mini-fn';
 import * as v from 'valibot';
 
 import type { AccountID } from '../../accounts/model/account.ts';
+import type { EventMeta } from '../../internal/event/type.ts';
 import type { ID } from '../../internal/id/type.ts';
 import { NoteInvalidReactionError } from './errors.ts';
+import {
+  type ReactionEvent,
+  reactionEventFactory,
+} from './event/reactionEvents.ts';
 import type { Note, NoteID } from './note.ts';
 
 const unicodeEmojiSchema = v.pipe(
@@ -33,6 +38,7 @@ export class Reaction {
   readonly #accountID: AccountID;
   readonly #noteID: NoteID;
   readonly #emoji: Emoji;
+  #events: ReactionEvent[] = [];
 
   private constructor(args: {
     id: ReactionID;
@@ -48,7 +54,8 @@ export class Reaction {
 
   static new(
     arg: CreateReactionArgs,
-  ): Result.Result<NoteInvalidReactionError, Reaction> {
+    meta: EventMeta<AccountID>,
+  ): Result.Result<NoteInvalidReactionError | Error, Reaction> {
     if (!v.safeParse(EmojiSchema, arg.body).success) {
       return Result.err(
         new NoteInvalidReactionError('Emoji type is invalid', { cause: null }),
@@ -57,14 +64,27 @@ export class Reaction {
 
     const noteID = arg.note.getReactionTargetNoteID();
 
-    return Result.ok(
-      new Reaction({
-        id: arg.id,
-        accountID: arg.accountID,
-        noteID,
-        emoji: arg.body as Emoji,
-      }),
-    );
+    const eventRes = reactionEventFactory.created(meta.idGenerator, {
+      target: noteID,
+      actor: meta.actor,
+      occurredAt: meta.occurredAt,
+      accountID: arg.accountID,
+      emoji: arg.body,
+    });
+    if (Result.isErr(eventRes)) return eventRes;
+
+    const reaction = new Reaction({
+      id: arg.id,
+      accountID: arg.accountID,
+      noteID,
+      emoji: arg.body as Emoji,
+    });
+    reaction.#events.push(Result.unwrap(eventRes));
+    return Result.ok(reaction);
+  }
+
+  pullEvents(): ReactionEvent[] {
+    return this.#events.splice(0);
   }
 
   static reconstruct(arg: {
