@@ -2,6 +2,7 @@ import { Option, Result } from '@mikuroxina/mini-fn';
 import { describe, expect, it } from 'vitest';
 
 import type { AccountID } from '../../accounts/model/account.ts';
+import { MockClock, SnowflakeIDGenerator } from '../../internal/id/mod.ts';
 import { MediaSizeTooLargeError, MediaTypeInvalidError } from './errors.ts';
 import { Medium, type MediumID } from './medium.ts';
 
@@ -18,16 +19,23 @@ const baseArgs = {
   maxSize: 1024 * 1024,
 } as const;
 
+const idGenerator = new SnowflakeIDGenerator(0, new MockClock(new Date()));
+const baseMeta = {
+  idGenerator,
+  actor: baseArgs.authorId,
+  occurredAt: new Date(),
+} as const;
+
 describe('Medium.new', () => {
   it('creates a medium when the source is valid', () => {
-    const res = Medium.new({ ...baseArgs, sourceMime: 'image/png' });
+    const res = Medium.new({ ...baseArgs, sourceMime: 'image/png' }, baseMeta);
 
     expect(Result.isOk(res)).toBe(true);
     expect(Result.unwrap(res).getMime()).toBe('image/webp');
   });
 
   it('rejects a disallowed source MIME type', () => {
-    const res = Medium.new({ ...baseArgs, sourceMime: 'image/heic' });
+    const res = Medium.new({ ...baseArgs, sourceMime: 'image/heic' }, baseMeta);
 
     expect(Result.isErr(res)).toBe(true);
     expect(res[1]).toStrictEqual(
@@ -36,11 +44,14 @@ describe('Medium.new', () => {
   });
 
   it('rejects a file larger than the limit', () => {
-    const res = Medium.new({
-      ...baseArgs,
-      sourceMime: 'image/png',
-      size: baseArgs.maxSize + 1,
-    });
+    const res = Medium.new(
+      {
+        ...baseArgs,
+        sourceMime: 'image/png',
+        size: baseArgs.maxSize + 1,
+      },
+      baseMeta,
+    );
 
     expect(Result.isErr(res)).toBe(true);
     expect(res[1]).toStrictEqual(
@@ -49,12 +60,49 @@ describe('Medium.new', () => {
   });
 
   it('accepts a file exactly at the size limit', () => {
-    const res = Medium.new({
-      ...baseArgs,
-      sourceMime: 'image/png',
-      size: baseArgs.maxSize,
-    });
+    const res = Medium.new(
+      {
+        ...baseArgs,
+        sourceMime: 'image/png',
+        size: baseArgs.maxSize,
+      },
+      baseMeta,
+    );
 
     expect(Result.isOk(res)).toBe(true);
+  });
+});
+
+describe('Medium.new events', () => {
+  it('emits a medium.created event on success', () => {
+    const res = Medium.new({ ...baseArgs, sourceMime: 'image/png' }, baseMeta);
+
+    const medium = Result.unwrap(res);
+    const events = medium.pullEvents();
+    expect(events).toHaveLength(1);
+    const [event] = events;
+    expect(event?.eventName).toBe('medium.created');
+    expect(event?.target).toBe(baseArgs.id);
+    expect(event?.actor).toBe(baseArgs.authorId);
+  });
+
+  it.each([
+    ['disallowed source MIME type', { sourceMime: 'image/heic' }],
+    [
+      'file larger than the limit',
+      { sourceMime: 'image/png', size: baseArgs.maxSize + 1 },
+    ],
+  ])('does not emit an event when validation fails: %s', (_, override) => {
+    const res = Medium.new({ ...baseArgs, ...override }, baseMeta);
+
+    expect(Result.isErr(res)).toBe(true);
+  });
+
+  it('pullEvents() removes events, returning nothing on the second call', () => {
+    const res = Medium.new({ ...baseArgs, sourceMime: 'image/png' }, baseMeta);
+    const medium = Result.unwrap(res);
+
+    expect(medium.pullEvents()).toHaveLength(1);
+    expect(medium.pullEvents()).toHaveLength(0);
   });
 });

@@ -18,3 +18,17 @@ export interface DomainEvent<
   readonly payload: Payload;
   readonly occurredAt: Date;
 }
+
+import type { SnowflakeIDGenerator } from '../id/mod.ts';
+
+/**
+ * A model's state-changing method takes this as its trailing argument to
+ * generate the corresponding domain event. `Actor` is `AccountID` for
+ * user-initiated operations, `Option.Option<AccountID>` when the operation
+ * may originate from the system/batch processing (see DomainEvent).
+ */
+export interface EventMeta<Actor> {
+  readonly idGenerator: SnowflakeIDGenerator;
+  readonly actor: Actor;
+  readonly occurredAt: Date;
+}

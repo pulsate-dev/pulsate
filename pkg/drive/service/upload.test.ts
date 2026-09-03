@@ -13,7 +13,8 @@ import {
 import { UploadMediaService } from './upload.ts';
 
 describe('upload', () => {
-  const idGenerator = new SnowflakeIDGenerator(0, new MockClock(new Date()));
+  const clock = new MockClock(new Date());
+  const idGenerator = new SnowflakeIDGenerator(0, clock);
   const repository = new InMemoryMediaRepository([]);
   const storageService = new LocalStorage();
   const service = new UploadMediaService(
@@ -21,6 +22,7 @@ describe('upload', () => {
     repository,
     storageService,
     1024 * 1024 * 10,
+    clock,
   );
 
   it('valid files', async () => {
@@ -46,6 +48,7 @@ describe('upload', () => {
       repository,
       storageService,
       10,
+      clock,
     );
     const a = await readFile('./pkg/drive/testData/flower.jpeg');
     const res = await s.handle({
