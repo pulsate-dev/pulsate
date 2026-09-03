@@ -2,12 +2,14 @@ import { Result } from '@mikuroxina/mini-fn';
 import * as v from 'valibot';
 
 import type { AccountID } from '../../accounts/model/account.ts';
+import type { EventMeta } from '../../internal/event/type.ts';
 import type { ID } from '../../internal/id/type.ts';
 import {
   ListMemberAlreadyExistsError,
   ListTitleLengthInvalidError,
   ListTooManyMembersError,
 } from './errors.ts';
+import { type ListEvent, listEventFactory } from './event/listEvents.ts';
 
 export type ListID = ID<List>;
 export type CreateListArgs = Readonly<{
@@ -35,6 +37,7 @@ export class List {
   readonly #ownerId: AccountID;
   readonly #memberIds: Set<AccountID>;
   readonly #createdAt: Date;
+  #events: ListEvent[] = [];
 
   private constructor(args: CreateListArgs) {
     this.#id = args.id;
@@ -47,9 +50,41 @@ export class List {
 
   static new(
     args: CreateListArgs,
+    meta: EventMeta<AccountID>,
+  ): Result.Result<
+    ListTitleLengthInvalidError | ListTooManyMembersError | Error,
+    List
+  > {
+    const validationErr = List.#checkArgs(args);
+    if (Result.isErr(validationErr)) return validationErr;
+
+    const eventRes = listEventFactory.created(meta.idGenerator, {
+      target: args.id,
+      actor: meta.actor,
+      occurredAt: meta.occurredAt,
+      ownerID: args.ownerId,
+      title: args.title,
+    });
+    if (Result.isErr(eventRes)) return eventRes;
+
+    const list = new List(args);
+    list.#events.push(Result.unwrap(eventRes));
+    return Result.ok(list);
+  }
+
+  static reconstruct(args: CreateListArgs): List {
+    const validationErr = List.#checkArgs(args);
+    if (Result.isErr(validationErr)) {
+      throw Result.unwrapErr(validationErr);
+    }
+    return new List(args);
+  }
+
+  static #checkArgs(
+    args: CreateListArgs,
   ): Result.Result<
     ListTitleLengthInvalidError | ListTooManyMembersError,
-    List
+    void
   > {
     const parsed = v.safeParse(listTitleSchema, args.title);
     if (!parsed.success) {
@@ -64,11 +99,11 @@ export class List {
         new ListTooManyMembersError('too many members', { cause: null }),
       );
     }
-    return Result.ok(new List(args));
+    return Result.ok(undefined);
   }
 
-  static reconstruct(args: CreateListArgs): List {
-    return Result.unwrap(List.new(args));
+  pullEvents(): ListEvent[] {
+    return this.#events.splice(0);
   }
 
   getId(): ListID {
@@ -120,8 +155,9 @@ export class List {
 
   addMember(
     memberId: AccountID,
+    meta: EventMeta<AccountID>,
   ): Result.Result<
-    ListTooManyMembersError | ListMemberAlreadyExistsError,
+    ListTooManyMembersError | ListMemberAlreadyExistsError | Error,
     void
   > {
     if (this.#memberIds.has(memberId)) {
@@ -136,11 +172,34 @@ export class List {
         new ListTooManyMembersError('too many members', { cause: null }),
       );
     }
+
+    const eventRes = listEventFactory.memberAppended(meta.idGenerator, {
+      target: this.#id,
+      actor: meta.actor,
+      occurredAt: meta.occurredAt,
+      memberID: memberId,
+    });
+    if (Result.isErr(eventRes)) return eventRes;
+
     this.#memberIds.add(memberId);
+    this.#events.push(Result.unwrap(eventRes));
     return Result.ok(undefined);
   }
 
-  removeMember(memberId: AccountID): void {
+  removeMember(
+    memberId: AccountID,
+    meta: EventMeta<AccountID>,
+  ): Result.Result<Error, void> {
+    const eventRes = listEventFactory.memberRemoved(meta.idGenerator, {
+      target: this.#id,
+      actor: meta.actor,
+      occurredAt: meta.occurredAt,
+      memberID: memberId,
+    });
+    if (Result.isErr(eventRes)) return eventRes;
+
     this.#memberIds.delete(memberId);
+    this.#events.push(Result.unwrap(eventRes));
+    return Result.ok(undefined);
   }
 }

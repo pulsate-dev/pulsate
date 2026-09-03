@@ -35,14 +35,21 @@ export class CreateListService {
       .addM('id', Promise.resolve(this.#idGenerator.generate<List>()))
       .addMWith('list', ({ id }) =>
         Promise.resolve(
-          List.new({
-            id,
-            title,
-            publicity: isPublic ? 'PUBLIC' : 'PRIVATE',
-            ownerId,
-            memberIds: [] as const,
-            createdAt: new Date(Number(this.#clock.now())),
-          }),
+          List.new(
+            {
+              id,
+              title,
+              publicity: isPublic ? 'PUBLIC' : 'PRIVATE',
+              ownerId,
+              memberIds: [] as const,
+              createdAt: new Date(Number(this.#clock.now())),
+            },
+            {
+              idGenerator: this.#idGenerator,
+              actor: ownerId,
+              occurredAt: new Date(Number(this.#clock.now())),
+            },
+          ),
         ),
       )
       .runWith(({ list }) =>

@@ -1,6 +1,12 @@
 import { Cat, Ether, Promise, Result } from '@mikuroxina/mini-fn';
 import type { AccountID } from '../../accounts/model/account.ts';
 import {
+  type Clock,
+  clockSymbol,
+  type SnowflakeIDGenerator,
+  snowflakeIDGeneratorSymbol,
+} from '../../internal/id/mod.ts';
+import {
   ListNotFoundError,
   TimelineInsufficientPermissionError,
 } from '../model/errors.ts';
@@ -9,8 +15,16 @@ import { type ListRepository, listRepoSymbol } from '../model/repository.ts';
 
 export class AppendListMemberService {
   readonly #listRepository: ListRepository;
-  constructor(listRepository: ListRepository) {
+  readonly #idGenerator: SnowflakeIDGenerator;
+  readonly #clock: Clock;
+  constructor(
+    listRepository: ListRepository,
+    idGenerator: SnowflakeIDGenerator,
+    clock: Clock,
+  ) {
     this.#listRepository = listRepository;
+    this.#idGenerator = idGenerator;
+    this.#clock = clock;
   }
 
   /**
@@ -52,7 +66,15 @@ export class AppendListMemberService {
           ),
       )
       .runWith(({ list }) =>
-        monad.map(() => [])(Promise.resolve(list.addMember(accountID))),
+        monad.map(() => [])(
+          Promise.resolve(
+            list.addMember(accountID, {
+              idGenerator: this.#idGenerator,
+              actor: actorID,
+              occurredAt: new Date(Number(this.#clock.now())),
+            }),
+          ),
+        ),
       )
       .runWith(({ list }) =>
         monad.map(() => [])(this.#listRepository.appendListMember(list)),
@@ -68,6 +90,11 @@ export const appendListMemberSymbol =
   Ether.newEtherSymbol<AppendListMemberService>();
 export const appendListMember = Ether.newEther(
   appendListMemberSymbol,
-  ({ listRepository }) => new AppendListMemberService(listRepository),
-  { listRepository: listRepoSymbol },
+  ({ listRepository, idGenerator, clock }) =>
+    new AppendListMemberService(listRepository, idGenerator, clock),
+  {
+    listRepository: listRepoSymbol,
+    idGenerator: snowflakeIDGeneratorSymbol,
+    clock: clockSymbol,
+  },
 );
