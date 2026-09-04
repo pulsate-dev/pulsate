@@ -1,7 +1,6 @@
 import { Result } from '@mikuroxina/mini-fn';
 
 import type { AccountID } from '../../accounts/model/account.ts';
-import type { EventMeta } from '../../internal/event/type.ts';
 import {
   type BookmarkEvent,
   bookmarkEventFactory,
@@ -25,18 +24,16 @@ export class Bookmark {
 
   static new(
     arg: CreateBookmarkArgs,
-    meta: EventMeta<AccountID>,
-  ): Result.Result<Error, Bookmark> {
-    const eventRes = bookmarkEventFactory.created(meta.idGenerator, {
-      target: arg.noteID,
-      actor: meta.actor,
-      occurredAt: meta.occurredAt,
-      accountID: arg.accountID,
-    });
-    if (Result.isErr(eventRes)) return eventRes;
-
+    actor: AccountID,
+  ): Result.Result<never, Bookmark> {
     const bookmark = new Bookmark(arg);
-    bookmark.#events.push(Result.unwrap(eventRes));
+    bookmark.#events.push(
+      bookmarkEventFactory.created({
+        target: arg.noteID,
+        actor,
+        accountID: arg.accountID,
+      }),
+    );
     return Result.ok(bookmark);
   }
 

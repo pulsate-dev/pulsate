@@ -10,7 +10,6 @@ import { Note, type NoteID } from '../model/note.ts';
 import { CreateReactionService } from './createReaction.ts';
 
 const idGenerator = new SnowflakeIDGenerator(1, new MockClock(new Date()));
-const clock = new MockClock(new Date());
 
 const noteFactory = (
   id: NoteID,
@@ -54,7 +53,6 @@ let service = new CreateReactionService(
   idGenerator,
   reactionRepository,
   noteRepository,
-  clock,
 );
 
 describe('CreateReactionService', () => {
@@ -65,7 +63,6 @@ describe('CreateReactionService', () => {
       idGenerator,
       reactionRepository,
       noteRepository,
-      clock,
     );
   });
 

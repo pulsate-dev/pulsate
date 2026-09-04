@@ -141,9 +141,7 @@ const controller = new NoteController(
 const createBookmarkServiceObj = Ether.runEther(
   Cat.cat(createBookmark)
     .feed(Ether.compose(noteRepoEther))
-    .feed(Ether.compose(bookmarkRepository))
-    .feed(Ether.compose(noteIdGeneratorEther))
-    .feed(Ether.compose(noteClockEther)).value,
+    .feed(Ether.compose(bookmarkRepository)).value,
 );
 const bookmarkController = new BookmarkController(
   createBookmarkServiceObj,
@@ -159,8 +157,7 @@ const createReactionServiceObj = Ether.runEther(
   Cat.cat(createReactionService)
     .feed(Ether.compose(noteIdGeneratorEther))
     .feed(Ether.compose(noteReactionRepoEther))
-    .feed(Ether.compose(noteRepoEther))
-    .feed(Ether.compose(noteClockEther)).value,
+    .feed(Ether.compose(noteRepoEther)).value,
 );
 const deleteReactionServiceObj = Ether.runEther(
   Cat.cat(deleteReaction)

@@ -1,8 +1,6 @@
 import { Cat, Ether, Option, Promise, Result } from '@mikuroxina/mini-fn';
 import type { AccountID } from '../../accounts/model/account.ts';
 import {
-  type Clock,
-  clockSymbol,
   type SnowflakeIDGenerator,
   snowflakeIDGeneratorSymbol,
 } from '../../internal/id/mod.ts';
@@ -21,17 +19,14 @@ export class CreateReactionService {
   readonly #idGenerator: SnowflakeIDGenerator;
   readonly #reactionRepository: ReactionRepository;
   readonly #noteRepository: NoteRepository;
-  readonly #clock: Clock;
   constructor(
     idGenerator: SnowflakeIDGenerator,
     reactionRepository: ReactionRepository,
     noteRepository: NoteRepository,
-    clock: Clock,
   ) {
     this.#idGenerator = idGenerator;
     this.#reactionRepository = reactionRepository;
     this.#noteRepository = noteRepository;
-    this.#clock = clock;
   }
 
   async handle(
@@ -41,7 +36,6 @@ export class CreateReactionService {
   ): Promise<Result.Result<Error, Note>> {
     const notFound = (message: string) => () =>
       new NoteNotFoundError(message, { cause: null });
-    const now = this.#clock.now();
 
     return Cat.doT(Promise.resultMonad<Error>())
       .addM(
@@ -52,16 +46,7 @@ export class CreateReactionService {
       )
       .addM('id', Promise.resolve(this.#idGenerator.generate<Reaction>()))
       .addMWith('reaction', ({ id, note }) =>
-        Promise.resolve(
-          Reaction.new(
-            { id, note, accountID, body },
-            {
-              idGenerator: this.#idGenerator,
-              actor: accountID,
-              occurredAt: new Date(Number(now)),
-            },
-          ),
-        ),
+        Promise.resolve(Reaction.new({ id, note, accountID, body }, accountID)),
       )
       .runWith(({ reaction }) =>
         this.#reactionRepository.create(reaction).then(Result.map(() => [])),
@@ -82,17 +67,11 @@ export const createReactionServiceSymbol =
   Ether.newEtherSymbol<CreateReactionService>();
 export const createReactionService = Ether.newEther(
   createReactionServiceSymbol,
-  ({ idGenerator, reactionRepository, noteRepository, clock }) =>
-    new CreateReactionService(
-      idGenerator,
-      reactionRepository,
-      noteRepository,
-      clock,
-    ),
+  ({ idGenerator, reactionRepository, noteRepository }) =>
+    new CreateReactionService(idGenerator, reactionRepository, noteRepository),
   {
     idGenerator: snowflakeIDGeneratorSymbol,
     reactionRepository: reactionRepoSymbol,
     noteRepository: noteRepoSymbol,
-    clock: clockSymbol,
   },
 );

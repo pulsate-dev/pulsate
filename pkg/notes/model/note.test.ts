@@ -3,8 +3,6 @@ import { describe, expect, it } from 'vitest';
 
 import type { AccountID } from '../../accounts/model/account.ts';
 import type { MediumID } from '../../drive/model/medium.ts';
-import type { EventMeta } from '../../internal/event/type.ts';
-import { MockClock, SnowflakeIDGenerator } from '../../internal/id/mod.ts';
 import {
   NoteContentLengthError,
   NoteNoDestinationError,
@@ -26,25 +24,11 @@ const exampleInput: CreateNoteArgs = {
   deletedAt: Option.none(),
 };
 
-const occurredAt = new Date('2023-09-10T00:00:00.000Z');
-const workingIDGenerator = new SnowflakeIDGenerator(
-  0,
-  new MockClock(occurredAt),
-);
-// NOTE: a clock stuck before OFFSET_FROM_UNIX_EPOCH makes generate() always fail.
-const failingIDGenerator = new SnowflakeIDGenerator(
-  0,
-  new MockClock(new Date(0)),
-);
-const meta: EventMeta<AccountID> = {
-  idGenerator: workingIDGenerator,
-  actor: exampleInput.authorID,
-  occurredAt,
-};
+const actor = exampleInput.authorID;
 
 describe('Note', () => {
   it('generate new instance', () => {
-    const note = Result.unwrap(Note.new(exampleInput, meta));
+    const note = Result.unwrap(Note.new(exampleInput, actor));
 
     expect(note.getID()).toBe(exampleInput.id);
     expect(note.getAuthorID()).toBe(exampleInput.authorID);
@@ -104,18 +88,10 @@ describe('Note', () => {
         expectedError: NoteContentLengthError,
       },
     ])('$name returns error', ({ args, expectedError }) => {
-      const result = Note.new(args, meta);
+      const result = Note.new(args, actor);
       expect(Result.isErr(result)).toBe(true);
       expect(Result.unwrapErr(result)).toBeInstanceOf(expectedError);
     });
-  });
-
-  it('should return Error when event ID generation fails', () => {
-    const result = Note.new(exampleInput, {
-      ...meta,
-      idGenerator: failingIDGenerator,
-    });
-    expect(Result.isErr(result)).toBe(true);
   });
 
   it('should allow empty content for renote (originalNoteID is Some)', () => {
@@ -128,7 +104,7 @@ describe('Note', () => {
           attachmentFileID: [],
           originalNoteID: Option.some('999' as NoteID),
         },
-        meta,
+        actor,
       ),
     );
 
@@ -150,7 +126,7 @@ describe('Note', () => {
           attachmentFileID: [],
           originalNoteID: Option.some('999' as NoteID),
         },
-        meta,
+        actor,
       ),
     );
 
@@ -171,7 +147,7 @@ describe('Note', () => {
           attachmentFileID: ['10' as MediumID, '11' as MediumID],
           originalNoteID: Option.some('999' as NoteID),
         },
-        meta,
+        actor,
       ),
     );
 
@@ -197,7 +173,7 @@ describe('Note', () => {
             attachmentFileID: [],
             createdAt: new Date('2023-09-11T00:00:00.000Z'),
           },
-          meta,
+          actor,
         ),
       );
 
@@ -223,7 +199,7 @@ describe('Note', () => {
             attachmentFileID: [],
             createdAt: new Date('2023-09-11T00:00:00.000Z'),
           },
-          meta,
+          actor,
         ),
       );
 
@@ -246,7 +222,7 @@ describe('Note', () => {
             attachmentFileID: ['10' as MediumID],
             createdAt: new Date('2023-09-11T00:00:00.000Z'),
           },
-          meta,
+          actor,
         ),
       );
 
@@ -275,7 +251,7 @@ describe('Note', () => {
             attachmentFileID: [],
             createdAt: new Date('2023-09-12T00:00:00.000Z'),
           },
-          meta,
+          actor,
         ),
       );
 
@@ -298,7 +274,7 @@ describe('Note', () => {
             attachmentFileID: [],
             createdAt: new Date('2023-09-12T00:00:00.000Z'),
           },
-          meta,
+          actor,
         ),
       );
 
@@ -321,7 +297,7 @@ describe('Note', () => {
                 : Option.none(),
             originalNoteID: Option.some('100' as NoteID),
           },
-          meta,
+          actor,
         );
 
         expect(Result.isErr(res)).toBe(true);
@@ -336,7 +312,7 @@ describe('Note', () => {
       '%s note can be renoted by anyone',
       (visibility) => {
         const note = Result.unwrap(
-          Note.new({ ...exampleInput, visibility }, meta),
+          Note.new({ ...exampleInput, visibility }, actor),
         );
         expect(Result.isOk(note.canBeRenotedBy('999' as AccountID))).toBe(true);
       },
@@ -350,7 +326,7 @@ describe('Note', () => {
             authorID: author,
             visibility: 'FOLLOWERS',
           },
-          meta,
+          actor,
         ),
       );
       expect(Result.isOk(note.canBeRenotedBy(author))).toBe(true);
@@ -364,7 +340,7 @@ describe('Note', () => {
             authorID: author,
             visibility: 'FOLLOWERS',
           },
-          meta,
+          actor,
         ),
       );
       expect(Result.isErr(note.canBeRenotedBy('999' as AccountID))).toBe(true);
@@ -379,7 +355,7 @@ describe('Note', () => {
             visibility: 'DIRECT',
             sendTo: Option.some('999' as AccountID),
           },
-          meta,
+          actor,
         ),
       );
       expect(Result.isErr(note.canBeRenotedBy(author))).toBe(true);
@@ -388,7 +364,7 @@ describe('Note', () => {
 
   describe('getReactionTargetNoteID', () => {
     it('returns its own ID for an ordinary note', () => {
-      const note = Result.unwrap(Note.new(exampleInput, meta));
+      const note = Result.unwrap(Note.new(exampleInput, actor));
       expect(note.getReactionTargetNoteID()).toBe(note.getID());
     });
 
@@ -402,7 +378,7 @@ describe('Note', () => {
             attachmentFileID: [],
             originalNoteID: Option.some('999' as NoteID),
           },
-          meta,
+          actor,
         ),
       );
       expect(note.getReactionTargetNoteID()).toBe('999' as NoteID);
@@ -416,7 +392,7 @@ describe('Note', () => {
             content: 'quoting!',
             originalNoteID: Option.some('999' as NoteID),
           },
-          meta,
+          actor,
         ),
       );
       expect(note.getReactionTargetNoteID()).toBe(note.getID());
@@ -435,21 +411,18 @@ describe('Note', () => {
     });
 
     it('should push exactly one note.created event on success', () => {
-      const note = Result.unwrap(Note.new(exampleInput, meta));
+      const note = Result.unwrap(Note.new(exampleInput, actor));
 
       const events = note.pullEvents();
 
       expect(events).toHaveLength(1);
-      expect(events[0]).toStrictEqual({
-        id: events[0]?.id,
-        eventName: 'note.created',
-        target: exampleInput.id,
-        actor: exampleInput.authorID,
-        occurredAt,
-        payload: {
-          authorID: exampleInput.authorID,
-          visibility: exampleInput.visibility,
-        },
+      const [event] = events;
+      expect(event?.eventName).toBe('note.created');
+      expect(event?.target).toBe(exampleInput.id);
+      expect(event?.actor).toBe(exampleInput.authorID);
+      expect(event?.payload).toStrictEqual({
+        authorID: exampleInput.authorID,
+        visibility: exampleInput.visibility,
       });
     });
 
@@ -463,20 +436,19 @@ describe('Note', () => {
             attachmentFileID: [],
             originalNoteID: Option.some('999' as NoteID),
           },
-          meta,
+          actor,
         ),
       );
 
       const events = note.pullEvents();
 
       expect(events).toHaveLength(1);
-      expect(events[0]).toStrictEqual({
-        id: events[0]?.id,
-        eventName: 'note.renoted',
-        target: exampleInput.id,
-        actor: exampleInput.authorID,
-        occurredAt,
-        payload: { originalNoteID: '999' as NoteID },
+      const [event] = events;
+      expect(event?.eventName).toBe('note.renoted');
+      expect(event?.target).toBe(exampleInput.id);
+      expect(event?.actor).toBe(exampleInput.authorID);
+      expect(event?.payload).toStrictEqual({
+        originalNoteID: '999' as NoteID,
       });
     });
 
@@ -488,7 +460,7 @@ describe('Note', () => {
             content: 'quoting!',
             originalNoteID: Option.some('999' as NoteID),
           },
-          meta,
+          actor,
         ),
       );
 
@@ -501,23 +473,14 @@ describe('Note', () => {
     it('should not push any event when validation fails', () => {
       const result = Note.new(
         { ...exampleInput, content: 'a'.repeat(3001) },
-        meta,
+        actor,
       );
 
       expect(Result.isErr(result)).toBe(true);
     });
 
-    it('should not push an event nor mutate state when event ID generation fails', () => {
-      const result = Note.new(exampleInput, {
-        ...meta,
-        idGenerator: failingIDGenerator,
-      });
-
-      expect(Result.isErr(result)).toBe(true);
-    });
-
     it('should be a destructive read: pullEvents returns empty on the second call', () => {
-      const note = Result.unwrap(Note.new(exampleInput, meta));
+      const note = Result.unwrap(Note.new(exampleInput, actor));
 
       note.pullEvents();
 
@@ -526,25 +489,22 @@ describe('Note', () => {
 
     describe('setDeletedAt', () => {
       it('should push exactly one note.deleted event for a normal note', () => {
-        const note = Result.unwrap(Note.new(exampleInput, meta));
+        const note = Result.unwrap(Note.new(exampleInput, actor));
         note.pullEvents();
 
         const res = note.setDeletedAt(
           new Date('2023-09-11T00:00:00.000Z'),
-          meta,
+          actor,
         );
         expect(Result.isOk(res)).toBe(true);
 
         const events = note.pullEvents();
         expect(events).toHaveLength(1);
-        expect(events[0]).toStrictEqual({
-          id: events[0]?.id,
-          eventName: 'note.deleted',
-          target: exampleInput.id,
-          actor: exampleInput.authorID,
-          occurredAt,
-          payload: {},
-        });
+        const [event] = events;
+        expect(event?.eventName).toBe('note.deleted');
+        expect(event?.target).toBe(exampleInput.id);
+        expect(event?.actor).toBe(exampleInput.authorID);
+        expect(event?.payload).toStrictEqual({});
       });
 
       it('should push exactly one note.unrenoted event for a renote', () => {
@@ -557,14 +517,14 @@ describe('Note', () => {
               attachmentFileID: [],
               originalNoteID: Option.some('999' as NoteID),
             },
-            meta,
+            actor,
           ),
         );
         note.pullEvents();
 
         const res = note.setDeletedAt(
           new Date('2023-09-11T00:00:00.000Z'),
-          meta,
+          actor,
         );
         expect(Result.isOk(res)).toBe(true);
 
@@ -574,12 +534,12 @@ describe('Note', () => {
       });
 
       it('should not push an event when deletedAt is before createdAt', () => {
-        const note = Result.unwrap(Note.new(exampleInput, meta));
+        const note = Result.unwrap(Note.new(exampleInput, actor));
         note.pullEvents();
 
         const res = note.setDeletedAt(
           new Date('2000-01-01T00:00:00.000Z'),
-          meta,
+          actor,
         );
         expect(Result.isErr(res)).toBe(true);
         expect(note.pullEvents()).toStrictEqual([]);

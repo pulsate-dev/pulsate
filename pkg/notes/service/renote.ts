@@ -99,11 +99,7 @@ export class RenoteService {
               sendTo: Option.none(),
               createdAt: new Date(Number(now)),
             },
-            {
-              idGenerator: this.#deps.idGenerator,
-              actor: authorID,
-              occurredAt: new Date(Number(now)),
-            },
+            authorID,
           ),
         ),
       )

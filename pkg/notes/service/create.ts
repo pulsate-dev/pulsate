@@ -69,11 +69,7 @@ export class CreateService {
                 visibility: visibility,
                 authorID: authorID,
               },
-              {
-                idGenerator: this.#deps.idGenerator,
-                actor: authorID,
-                occurredAt: new Date(Number(now)),
-              },
+              authorID,
             ),
           ),
         )

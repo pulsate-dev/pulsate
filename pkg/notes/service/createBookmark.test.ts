@@ -2,7 +2,6 @@ import { Option, Result } from '@mikuroxina/mini-fn';
 import { describe, expect, it } from 'vitest';
 
 import type { AccountID } from '../../accounts/model/account.ts';
-import { MockClock, SnowflakeIDGenerator } from '../../internal/id/mod.ts';
 import {
   InMemoryBookmarkRepository,
   InMemoryNoteRepository,
@@ -14,9 +13,6 @@ const noteID = 'noteID_1' as NoteID;
 const anotherNoteID = 'noteID_2' as NoteID;
 const accountID = 'accountID_1' as AccountID;
 const anotherAccountID = 'accountID_2' as AccountID;
-
-const idGenerator = new SnowflakeIDGenerator(1, new MockClock(new Date()));
-const clock = new MockClock(new Date());
 
 const bookmarkRepository = new InMemoryBookmarkRepository();
 const noteRepository = new InMemoryNoteRepository([
@@ -50,8 +46,6 @@ const noteRepository = new InMemoryNoteRepository([
 const createBookmarkService = new CreateBookmarkService(
   bookmarkRepository,
   noteRepository,
-  idGenerator,
-  clock,
 );
 
 describe('CreateBookmarkService', () => {

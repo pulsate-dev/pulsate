@@ -3,7 +3,6 @@ import * as v from 'valibot';
 
 import type { AccountID } from '../../accounts/model/account.ts';
 import type { MediumID } from '../../drive/model/medium.ts';
-import type { EventMeta } from '../../internal/event/type.ts';
 import type { ID } from '../../internal/id/type.ts';
 import {
   NoteContentLengthError,
@@ -85,32 +84,30 @@ export class Note {
 
   static new(
     args: NewNoteArgs,
-    meta: EventMeta<AccountID>,
-  ): Result.Result<NoteValidationError | Error, Note> {
+    actor: AccountID,
+  ): Result.Result<NoteValidationError, Note> {
     if (Option.isSome(args.originalNoteID)) {
       if (Note.#isThisArgsQuote(args)) {
-        return Note.#quote(args, meta);
+        return Note.#quote(args, actor);
       }
-      return Note.#renote(args, meta);
+      return Note.#renote(args, actor);
     }
     const err = Note.#checkArgs(args);
     if (Result.isErr(err)) return err;
-
-    const eventRes = noteEventFactory.created(meta.idGenerator, {
-      target: args.id,
-      actor: meta.actor,
-      occurredAt: meta.occurredAt,
-      authorID: args.authorID,
-      visibility: args.visibility,
-    });
-    if (Result.isErr(eventRes)) return eventRes;
 
     const note = new Note({
       ...args,
       updatedAt: Option.none(),
       deletedAt: Option.none(),
     });
-    note.#events.push(Result.unwrap(eventRes));
+    note.#events.push(
+      noteEventFactory.created({
+        target: args.id,
+        actor,
+        authorID: args.authorID,
+        visibility: args.visibility,
+      }),
+    );
     return Result.ok(note);
   }
 
@@ -194,8 +191,8 @@ export class Note {
       | 'attachmentFileID'
       | 'createdAt'
     >,
-    meta: EventMeta<AccountID>,
-  ): Result.Result<NoteValidationError | Error, Note> {
+    actor: AccountID,
+  ): Result.Result<NoteValidationError, Note> {
     const visibilityErr = Note.#checkRenoteVisibility(arg.visibility);
     if (Result.isErr(visibilityErr)) return visibilityErr;
 
@@ -209,20 +206,18 @@ export class Note {
     const err = Note.#checkArgs(normalizedArg);
     if (Result.isErr(err)) return err;
 
-    const eventRes = noteEventFactory.renoted(meta.idGenerator, {
-      target: arg.id,
-      actor: meta.actor,
-      occurredAt: meta.occurredAt,
-      originalNoteID: Option.unwrap(arg.originalNoteID),
-    });
-    if (Result.isErr(eventRes)) return eventRes;
-
     const note = new Note({
       ...normalizedArg,
       updatedAt: Option.none(),
       deletedAt: Option.none(),
     });
-    note.#events.push(Result.unwrap(eventRes));
+    note.#events.push(
+      noteEventFactory.renoted({
+        target: arg.id,
+        actor,
+        originalNoteID: Option.unwrap(arg.originalNoteID),
+      }),
+    );
     return Result.ok(note);
   }
 
@@ -239,8 +234,8 @@ export class Note {
       | 'attachmentFileID'
       | 'createdAt'
     >,
-    meta: EventMeta<AccountID>,
-  ): Result.Result<NoteValidationError | Error, Note> {
+    actor: AccountID,
+  ): Result.Result<NoteValidationError, Note> {
     const visibilityErr = Note.#checkRenoteVisibility(arg.visibility);
     if (Result.isErr(visibilityErr)) return visibilityErr;
 
@@ -260,20 +255,18 @@ export class Note {
     const err = Note.#checkArgs(normalizedArg);
     if (Result.isErr(err)) return err;
 
-    const eventRes = noteEventFactory.renoted(meta.idGenerator, {
-      target: arg.id,
-      actor: meta.actor,
-      occurredAt: meta.occurredAt,
-      originalNoteID: Option.unwrap(arg.originalNoteID),
-    });
-    if (Result.isErr(eventRes)) return eventRes;
-
     const note = new Note({
       ...normalizedArg,
       updatedAt: Option.none(),
       deletedAt: Option.none(),
     });
-    note.#events.push(Result.unwrap(eventRes));
+    note.#events.push(
+      noteEventFactory.renoted({
+        target: arg.id,
+        actor,
+        originalNoteID: Option.unwrap(arg.originalNoteID),
+      }),
+    );
     return Result.ok(note);
   }
 
@@ -405,8 +398,8 @@ export class Note {
 
   setDeletedAt(
     deletedAt: Date,
-    meta: EventMeta<AccountID>,
-  ): Result.Result<NoteDateInvalidError | Error, void> {
+    actor: AccountID,
+  ): Result.Result<NoteDateInvalidError, void> {
     if (this.#createdAt > deletedAt) {
       return Result.err(
         new NoteDateInvalidError('deletedAt must be after createdAt', {
@@ -415,21 +408,12 @@ export class Note {
       );
     }
 
-    const eventRes: Result.Result<Error, NoteEvent> = this.isRenote()
-      ? noteEventFactory.unrenoted(meta.idGenerator, {
-          target: this.#id,
-          actor: meta.actor,
-          occurredAt: meta.occurredAt,
-        })
-      : noteEventFactory.deleted(meta.idGenerator, {
-          target: this.#id,
-          actor: meta.actor,
-          occurredAt: meta.occurredAt,
-        });
-    if (Result.isErr(eventRes)) return eventRes;
+    const event: NoteEvent = this.isRenote()
+      ? noteEventFactory.unrenoted({ target: this.#id, actor })
+      : noteEventFactory.deleted({ target: this.#id, actor });
 
     this.#deletedAt = Option.some(deletedAt);
-    this.#events.push(Result.unwrap(eventRes));
+    this.#events.push(event);
     return Result.ok(undefined);
   }
 }

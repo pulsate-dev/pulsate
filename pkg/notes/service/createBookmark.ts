@@ -1,12 +1,6 @@
 import { Cat, Ether, Option, Promise, Result } from '@mikuroxina/mini-fn';
 
 import type { AccountID } from '../../accounts/model/account.ts';
-import {
-  type Clock,
-  clockSymbol,
-  type SnowflakeIDGenerator,
-  snowflakeIDGeneratorSymbol,
-} from '../../internal/id/mod.ts';
 import { Bookmark } from '../model/bookmark.ts';
 import {
   NoteBookmarkAlreadyCreatedError,
@@ -23,26 +17,18 @@ import {
 export class CreateBookmarkService {
   readonly #bookmarkRepository: BookmarkRepository;
   readonly #noteRepository: NoteRepository;
-  readonly #idGenerator: SnowflakeIDGenerator;
-  readonly #clock: Clock;
   constructor(
     bookmarkRepository: BookmarkRepository,
     noteRepository: NoteRepository,
-    idGenerator: SnowflakeIDGenerator,
-    clock: Clock,
   ) {
     this.#bookmarkRepository = bookmarkRepository;
     this.#noteRepository = noteRepository;
-    this.#idGenerator = idGenerator;
-    this.#clock = clock;
   }
 
   async handle(
     noteID: NoteID,
     accountID: AccountID,
   ): Promise<Result.Result<Error, Note>> {
-    const now = this.#clock.now();
-
     return Cat.doT(Promise.resultMonad<Error>())
       .addM(
         'result',
@@ -71,16 +57,7 @@ export class CreateBookmarkService {
           ),
       )
       .addMWith('bookmark', () =>
-        Promise.resolve(
-          Bookmark.new(
-            { noteID, accountID },
-            {
-              idGenerator: this.#idGenerator,
-              actor: accountID,
-              occurredAt: new Date(Number(now)),
-            },
-          ),
-        ),
+        Promise.resolve(Bookmark.new({ noteID, accountID }, accountID)),
       )
       .runWith(() =>
         this.#bookmarkRepository
@@ -95,17 +72,10 @@ export const createBookmarkSymbol =
   Ether.newEtherSymbol<CreateBookmarkService>();
 export const createBookmark = Ether.newEther(
   createBookmarkSymbol,
-  ({ bookmarkRepository, noteRepository, idGenerator, clock }) =>
-    new CreateBookmarkService(
-      bookmarkRepository,
-      noteRepository,
-      idGenerator,
-      clock,
-    ),
+  ({ bookmarkRepository, noteRepository }) =>
+    new CreateBookmarkService(bookmarkRepository, noteRepository),
   {
     bookmarkRepository: bookmarkRepoSymbol,
     noteRepository: noteRepoSymbol,
-    idGenerator: snowflakeIDGeneratorSymbol,
-    clock: clockSymbol,
   },
 );
