@@ -44,11 +44,7 @@ export class CreateListService {
               memberIds: [] as const,
               createdAt: new Date(Number(this.#clock.now())),
             },
-            {
-              idGenerator: this.#idGenerator,
-              actor: ownerId,
-              occurredAt: new Date(Number(this.#clock.now())),
-            },
+            ownerId,
           ),
         ),
       )

@@ -2,7 +2,6 @@ import { Result } from '@mikuroxina/mini-fn';
 import * as v from 'valibot';
 
 import type { AccountID } from '../../accounts/model/account.ts';
-import type { EventMeta } from '../../internal/event/type.ts';
 import type { ID } from '../../internal/id/type.ts';
 import {
   ListMemberAlreadyExistsError,
@@ -50,25 +49,23 @@ export class List {
 
   static new(
     args: CreateListArgs,
-    meta: EventMeta<AccountID>,
+    actor: AccountID,
   ): Result.Result<
-    ListTitleLengthInvalidError | ListTooManyMembersError | Error,
+    ListTitleLengthInvalidError | ListTooManyMembersError,
     List
   > {
     const validationErr = List.#checkArgs(args);
     if (Result.isErr(validationErr)) return validationErr;
 
-    const eventRes = listEventFactory.created(meta.idGenerator, {
-      target: args.id,
-      actor: meta.actor,
-      occurredAt: meta.occurredAt,
-      ownerID: args.ownerId,
-      title: args.title,
-    });
-    if (Result.isErr(eventRes)) return eventRes;
-
     const list = new List(args);
-    list.#events.push(Result.unwrap(eventRes));
+    list.#events.push(
+      listEventFactory.created({
+        target: args.id,
+        actor,
+        ownerID: args.ownerId,
+        title: args.title,
+      }),
+    );
     return Result.ok(list);
   }
 
@@ -155,9 +152,9 @@ export class List {
 
   addMember(
     memberId: AccountID,
-    meta: EventMeta<AccountID>,
+    actor: AccountID,
   ): Result.Result<
-    ListTooManyMembersError | ListMemberAlreadyExistsError | Error,
+    ListTooManyMembersError | ListMemberAlreadyExistsError,
     void
   > {
     if (this.#memberIds.has(memberId)) {
@@ -173,33 +170,29 @@ export class List {
       );
     }
 
-    const eventRes = listEventFactory.memberAppended(meta.idGenerator, {
-      target: this.#id,
-      actor: meta.actor,
-      occurredAt: meta.occurredAt,
-      memberID: memberId,
-    });
-    if (Result.isErr(eventRes)) return eventRes;
-
     this.#memberIds.add(memberId);
-    this.#events.push(Result.unwrap(eventRes));
+    this.#events.push(
+      listEventFactory.memberAppended({
+        target: this.#id,
+        actor,
+        memberID: memberId,
+      }),
+    );
     return Result.ok(undefined);
   }
 
   removeMember(
     memberId: AccountID,
-    meta: EventMeta<AccountID>,
-  ): Result.Result<Error, void> {
-    const eventRes = listEventFactory.memberRemoved(meta.idGenerator, {
-      target: this.#id,
-      actor: meta.actor,
-      occurredAt: meta.occurredAt,
-      memberID: memberId,
-    });
-    if (Result.isErr(eventRes)) return eventRes;
-
+    actor: AccountID,
+  ): Result.Result<never, void> {
     this.#memberIds.delete(memberId);
-    this.#events.push(Result.unwrap(eventRes));
+    this.#events.push(
+      listEventFactory.memberRemoved({
+        target: this.#id,
+        actor,
+        memberID: memberId,
+      }),
+    );
     return Result.ok(undefined);
   }
 }

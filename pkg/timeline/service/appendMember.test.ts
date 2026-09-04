@@ -1,7 +1,6 @@
 import { Result } from '@mikuroxina/mini-fn';
 import { beforeEach, describe, expect, it } from 'vitest';
 import type { AccountID } from '../../accounts/model/account.ts';
-import { MockClock, SnowflakeIDGenerator } from '../../internal/id/mod.ts';
 import { InMemoryListRepository } from '../adaptor/repository/dummy.ts';
 import {
   ListNotFoundError,
@@ -23,13 +22,7 @@ describe('AppendListMemberService', () => {
     }),
   ];
   const listRepository = new InMemoryListRepository(listData);
-  const service = new AppendListMemberService(
-    listRepository,
-    new SnowflakeIDGenerator(0, {
-      now: () => BigInt(Date.UTC(2023, 9, 10, 0, 0)),
-    }),
-    new MockClock(new Date('2023-09-10T00:00:00Z')),
-  );
+  const service = new AppendListMemberService(listRepository);
 
   beforeEach(() => {
     listRepository.reset(listData);

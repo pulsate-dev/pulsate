@@ -162,10 +162,7 @@ const controller = new TimelineController({
       .feed(Ether.compose(timelineRepository)).value,
   ),
   appendListMemberService: Ether.runEther(
-    Cat.cat(appendListMember)
-      .feed(Ether.compose(listRepository))
-      .feed(Ether.compose(idGenerator))
-      .feed(Ether.compose(clock)).value,
+    Cat.cat(appendListMember).feed(Ether.compose(listRepository)).value,
   ),
   removeListMemberService: Ether.runEther(
     Cat.cat(removeListMember).feed(Ether.compose(listRepository)).value,
