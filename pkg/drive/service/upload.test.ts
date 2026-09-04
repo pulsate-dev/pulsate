@@ -22,7 +22,6 @@ describe('upload', () => {
     repository,
     storageService,
     1024 * 1024 * 10,
-    clock,
   );
 
   it('valid files', async () => {
@@ -48,7 +47,6 @@ describe('upload', () => {
       repository,
       storageService,
       10,
-      clock,
     );
     const a = await readFile('./pkg/drive/testData/flower.jpeg');
     const res = await s.handle({

@@ -2,7 +2,6 @@ import { Option, Result } from '@mikuroxina/mini-fn';
 import { describe, expect, it } from 'vitest';
 
 import type { AccountID } from '../../accounts/model/account.ts';
-import { MockClock, SnowflakeIDGenerator } from '../../internal/id/mod.ts';
 import { MediaSizeTooLargeError, MediaTypeInvalidError } from './errors.ts';
 import { Medium, type MediumID } from './medium.ts';
 
@@ -19,23 +18,22 @@ const baseArgs = {
   maxSize: 1024 * 1024,
 } as const;
 
-const idGenerator = new SnowflakeIDGenerator(0, new MockClock(new Date()));
-const baseMeta = {
-  idGenerator,
-  actor: baseArgs.authorId,
-  occurredAt: new Date(),
-} as const;
-
 describe('Medium.new', () => {
   it('creates a medium when the source is valid', () => {
-    const res = Medium.new({ ...baseArgs, sourceMime: 'image/png' }, baseMeta);
+    const res = Medium.new(
+      { ...baseArgs, sourceMime: 'image/png' },
+      baseArgs.authorId,
+    );
 
     expect(Result.isOk(res)).toBe(true);
     expect(Result.unwrap(res).getMime()).toBe('image/webp');
   });
 
   it('rejects a disallowed source MIME type', () => {
-    const res = Medium.new({ ...baseArgs, sourceMime: 'image/heic' }, baseMeta);
+    const res = Medium.new(
+      { ...baseArgs, sourceMime: 'image/heic' },
+      baseArgs.authorId,
+    );
 
     expect(Result.isErr(res)).toBe(true);
     expect(res[1]).toStrictEqual(
@@ -50,7 +48,7 @@ describe('Medium.new', () => {
         sourceMime: 'image/png',
         size: baseArgs.maxSize + 1,
       },
-      baseMeta,
+      baseArgs.authorId,
     );
 
     expect(Result.isErr(res)).toBe(true);
@@ -66,7 +64,7 @@ describe('Medium.new', () => {
         sourceMime: 'image/png',
         size: baseArgs.maxSize,
       },
-      baseMeta,
+      baseArgs.authorId,
     );
 
     expect(Result.isOk(res)).toBe(true);
@@ -75,7 +73,10 @@ describe('Medium.new', () => {
 
 describe('Medium.new events', () => {
   it('emits a medium.created event on success', () => {
-    const res = Medium.new({ ...baseArgs, sourceMime: 'image/png' }, baseMeta);
+    const res = Medium.new(
+      { ...baseArgs, sourceMime: 'image/png' },
+      baseArgs.authorId,
+    );
 
     const medium = Result.unwrap(res);
     const events = medium.pullEvents();
@@ -93,13 +94,16 @@ describe('Medium.new events', () => {
       { sourceMime: 'image/png', size: baseArgs.maxSize + 1 },
     ],
   ])('does not emit an event when validation fails: %s', (_, override) => {
-    const res = Medium.new({ ...baseArgs, ...override }, baseMeta);
+    const res = Medium.new({ ...baseArgs, ...override }, baseArgs.authorId);
 
     expect(Result.isErr(res)).toBe(true);
   });
 
   it('pullEvents() removes events, returning nothing on the second call', () => {
-    const res = Medium.new({ ...baseArgs, sourceMime: 'image/png' }, baseMeta);
+    const res = Medium.new(
+      { ...baseArgs, sourceMime: 'image/png' },
+      baseArgs.authorId,
+    );
     const medium = Result.unwrap(res);
 
     expect(medium.pullEvents()).toHaveLength(1);

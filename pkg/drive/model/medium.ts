@@ -2,7 +2,6 @@ import { type Option, Result } from '@mikuroxina/mini-fn';
 import * as v from 'valibot';
 
 import type { AccountID } from '../../accounts/model/account.ts';
-import type { EventMeta } from '../../internal/event/type.ts';
 import type { ID } from '../../internal/id/type.ts';
 import { MediaSizeTooLargeError, MediaTypeInvalidError } from './errors.ts';
 import { type MediumEvent, mediumEventFactory } from './event/mediumEvents.ts';
@@ -56,11 +55,8 @@ export class Medium {
 
   public static new(
     arg: NewMediumArgs,
-    meta: EventMeta<AccountID>,
-  ): Result.Result<
-    MediaSizeTooLargeError | MediaTypeInvalidError | Error,
-    Medium
-  > {
+    actor: AccountID,
+  ): Result.Result<MediaSizeTooLargeError | MediaTypeInvalidError, Medium> {
     if (!v.safeParse(sourceMimeSchema, arg.sourceMime).success) {
       return Result.err(
         new MediaTypeInvalidError('Invalid file type', { cause: null }),
@@ -74,18 +70,14 @@ export class Medium {
       );
     }
 
-    const event = mediumEventFactory.created(meta.idGenerator, {
-      target: arg.id,
-      actor: arg.authorId,
-      occurredAt: meta.occurredAt,
-      authorID: arg.authorId,
-    });
-    if (Result.isErr(event)) {
-      return event;
-    }
-
     const medium = new Medium(arg);
-    medium.#events.push(Result.unwrap(event));
+    medium.#events.push(
+      mediumEventFactory.created({
+        target: arg.id,
+        actor,
+        authorID: arg.authorId,
+      }),
+    );
     return Result.ok(medium);
   }
 

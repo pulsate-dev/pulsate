@@ -4,7 +4,7 @@ import { fileTypeFromBuffer } from 'file-type';
 import sharp from 'sharp';
 
 import type { AccountID } from '../../accounts/model/account.ts';
-import type { Clock, SnowflakeIDGenerator } from '../../internal/id/mod.ts';
+import type { SnowflakeIDGenerator } from '../../internal/id/mod.ts';
 import { DriveInternalError, MediaTypeInvalidError } from '../model/errors.ts';
 import { Medium } from '../model/medium.ts';
 import type { MediaRepository } from '../model/repository.ts';
@@ -21,19 +21,16 @@ export class UploadMediaService {
   readonly #repository: MediaRepository;
   readonly #storage: Storage;
   readonly #MAX_MEDIA_SIZE: number;
-  readonly #clock: Clock;
   constructor(
     idGenerator: SnowflakeIDGenerator,
     repository: MediaRepository,
     storage: Storage,
     MAX_MEDIA_SIZE: number,
-    clock: Clock,
   ) {
     this.#idGenerator = idGenerator;
     this.#repository = repository;
     this.#storage = storage;
     this.#MAX_MEDIA_SIZE = MAX_MEDIA_SIZE;
-    this.#clock = clock;
   }
 
   /**
@@ -88,11 +85,7 @@ export class UploadMediaService {
                 size: args.file.length,
                 maxSize: this.#MAX_MEDIA_SIZE,
               },
-              {
-                idGenerator: this.#idGenerator,
-                actor: args.authorId,
-                occurredAt: new Date(Number(this.#clock.now())),
-              },
+              args.authorId,
             ),
           ),
         )
