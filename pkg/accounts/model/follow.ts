@@ -51,16 +51,20 @@ export class AccountFollow {
     // so a follow relationship is established immediately. Both the request
     // and its (automatic) acceptance are recorded as domain events.
     follow.#events.push(
-      followEventFactory.requested({
-        target: args.targetID,
-        actor: args.fromID,
-        targetID: args.targetID,
-      }),
-      followEventFactory.accepted({
-        target: args.targetID,
-        actor: args.targetID,
-        targetID: args.targetID,
-      }),
+      Result.unwrap(
+        followEventFactory.requested({
+          target: args.targetID,
+          actor: args.fromID,
+          targetID: args.targetID,
+        }),
+      ),
+      Result.unwrap(
+        followEventFactory.accepted({
+          target: args.targetID,
+          actor: args.targetID,
+          targetID: args.targetID,
+        }),
+      ),
     );
     return Result.ok(follow);
   }
@@ -98,11 +102,13 @@ export class AccountFollow {
 
     this.#deletedAt = Option.some(deletedAt);
     this.#events.push(
-      followEventFactory.unfollowed({
-        target: this.#targetID,
-        actor: this.#fromID,
-        targetID: this.#targetID,
-      }),
+      Result.unwrap(
+        followEventFactory.unfollowed({
+          target: this.#targetID,
+          actor: this.#fromID,
+          targetID: this.#targetID,
+        }),
+      ),
     );
     return Result.ok(undefined);
   }

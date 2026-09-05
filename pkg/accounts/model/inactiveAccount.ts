@@ -128,7 +128,13 @@ export class InactiveAccount {
 
     const account = new InactiveAccount(arg);
     account.#events.push(
-      accountEventFactory.registered({ target: arg.id, actor, mail: arg.mail }),
+      Result.unwrap(
+        accountEventFactory.registered({
+          target: arg.id,
+          actor,
+          mail: arg.mail,
+        }),
+      ),
     );
     return Result.ok(account);
   }

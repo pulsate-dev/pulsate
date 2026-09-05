@@ -224,7 +224,9 @@ export class Account {
 
     this.#mail = mail;
     this.#events.push(
-      accountEventFactory.emailUpdated({ target: this.#id, actor, mail }),
+      Result.unwrap(
+        accountEventFactory.emailUpdated({ target: this.#id, actor, mail }),
+      ),
     );
     return Result.ok(undefined);
   }
@@ -257,11 +259,13 @@ export class Account {
 
     this.#nickname = name;
     this.#events.push(
-      accountEventFactory.nicknameUpdated({
-        target: this.#id,
-        actor,
-        nickname: name,
-      }),
+      Result.unwrap(
+        accountEventFactory.nicknameUpdated({
+          target: this.#id,
+          actor,
+          nickname: name,
+        }),
+      ),
     );
     return Result.ok(undefined);
   }
@@ -313,7 +317,9 @@ export class Account {
 
     this.#bio = bio;
     this.#events.push(
-      accountEventFactory.bioUpdated({ target: this.#id, actor, bio }),
+      Result.unwrap(
+        accountEventFactory.bioUpdated({ target: this.#id, actor, bio }),
+      ),
     );
     return Result.ok(undefined);
   }
@@ -387,7 +393,9 @@ export class Account {
 
     this.#frozen = 'frozen';
     this.#events.push(
-      accountEventFactory.adminFrozen({ target: this.#id, actor }),
+      Result.unwrap(
+        accountEventFactory.adminFrozen({ target: this.#id, actor }),
+      ),
     );
     return Result.ok(undefined);
   }
@@ -406,7 +414,9 @@ export class Account {
 
     this.#frozen = 'normal';
     this.#events.push(
-      accountEventFactory.adminUnfrozen({ target: this.#id, actor }),
+      Result.unwrap(
+        accountEventFactory.adminUnfrozen({ target: this.#id, actor }),
+      ),
     );
     return Result.ok(undefined);
   }
@@ -430,7 +440,9 @@ export class Account {
 
     this.#silenced = 'silenced';
     this.#events.push(
-      accountEventFactory.adminSilenced({ target: this.#id, actor }),
+      Result.unwrap(
+        accountEventFactory.adminSilenced({ target: this.#id, actor }),
+      ),
     );
     return Result.ok(undefined);
   }
@@ -453,7 +465,9 @@ export class Account {
 
     this.#silenced = 'normal';
     this.#events.push(
-      accountEventFactory.adminUnsilenced({ target: this.#id, actor }),
+      Result.unwrap(
+        accountEventFactory.adminUnsilenced({ target: this.#id, actor }),
+      ),
     );
     return Result.ok(undefined);
   }
@@ -477,7 +491,7 @@ export class Account {
 
     this.#status = 'active';
     this.#events.push(
-      accountEventFactory.activated({ target: this.#id, actor }),
+      Result.unwrap(accountEventFactory.activated({ target: this.#id, actor })),
     );
     return Result.ok(undefined);
   }
@@ -546,7 +560,13 @@ export class Account {
       deletedAt: undefined,
     });
     account.#events.push(
-      accountEventFactory.registered({ target: arg.id, actor, mail: arg.mail }),
+      Result.unwrap(
+        accountEventFactory.registered({
+          target: arg.id,
+          actor,
+          mail: arg.mail,
+        }),
+      ),
     );
     return account;
   }

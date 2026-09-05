@@ -1,7 +1,7 @@
 import { type Option, Result } from '@mikuroxina/mini-fn';
 
 import { eventIDGenerator } from '../../../internal/event/idGenerator.ts';
-import type { DomainEvent } from '../../../internal/event/type.ts';
+import type { DomainEvent, EventID } from '../../../internal/event/type.ts';
 import type { AccountID } from '../account.ts';
 
 export type AccountRegisteredEvent = DomainEvent<
@@ -74,30 +74,34 @@ export const accountEventFactory = {
     actor: Option.Option<AccountID>;
     mail: string;
     occurredAt?: Date;
-  }): AccountRegisteredEvent {
-    return {
-      id: Result.unwrap(eventIDGenerator.generate<'Event'>()),
-      eventName: 'account.registered' as const,
-      target: args.target,
-      actor: args.actor,
-      occurredAt: args.occurredAt ?? new Date(),
-      payload: { mail: args.mail },
-    };
+  }): Result.Result<Error, AccountRegisteredEvent> {
+    return Result.map(
+      (id: EventID): AccountRegisteredEvent => ({
+        id,
+        eventName: 'account.registered' as const,
+        target: args.target,
+        actor: args.actor,
+        occurredAt: args.occurredAt ?? new Date(),
+        payload: { mail: args.mail },
+      }),
+    )(eventIDGenerator.generate<'Event'>());
   },
 
   activated(args: {
     target: AccountID;
     actor: Option.Option<AccountID>;
     occurredAt?: Date;
-  }): AccountActivatedEvent {
-    return {
-      id: Result.unwrap(eventIDGenerator.generate<'Event'>()),
-      eventName: 'account.activated' as const,
-      target: args.target,
-      actor: args.actor,
-      occurredAt: args.occurredAt ?? new Date(),
-      payload: {},
-    };
+  }): Result.Result<Error, AccountActivatedEvent> {
+    return Result.map(
+      (id: EventID): AccountActivatedEvent => ({
+        id,
+        eventName: 'account.activated' as const,
+        target: args.target,
+        actor: args.actor,
+        occurredAt: args.occurredAt ?? new Date(),
+        payload: {},
+      }),
+    )(eventIDGenerator.generate<'Event'>());
   },
 
   bioUpdated(args: {
@@ -105,15 +109,17 @@ export const accountEventFactory = {
     actor: AccountID;
     bio: string;
     occurredAt?: Date;
-  }): AccountBioUpdatedEvent {
-    return {
-      id: Result.unwrap(eventIDGenerator.generate<'Event'>()),
-      eventName: 'account.bio.updated' as const,
-      target: args.target,
-      actor: args.actor,
-      occurredAt: args.occurredAt ?? new Date(),
-      payload: { bio: args.bio },
-    };
+  }): Result.Result<Error, AccountBioUpdatedEvent> {
+    return Result.map(
+      (id: EventID): AccountBioUpdatedEvent => ({
+        id,
+        eventName: 'account.bio.updated' as const,
+        target: args.target,
+        actor: args.actor,
+        occurredAt: args.occurredAt ?? new Date(),
+        payload: { bio: args.bio },
+      }),
+    )(eventIDGenerator.generate<'Event'>());
   },
 
   nicknameUpdated(args: {
@@ -121,15 +127,17 @@ export const accountEventFactory = {
     actor: AccountID;
     nickname: string;
     occurredAt?: Date;
-  }): AccountNicknameUpdatedEvent {
-    return {
-      id: Result.unwrap(eventIDGenerator.generate<'Event'>()),
-      eventName: 'account.nickname.updated' as const,
-      target: args.target,
-      actor: args.actor,
-      occurredAt: args.occurredAt ?? new Date(),
-      payload: { nickname: args.nickname },
-    };
+  }): Result.Result<Error, AccountNicknameUpdatedEvent> {
+    return Result.map(
+      (id: EventID): AccountNicknameUpdatedEvent => ({
+        id,
+        eventName: 'account.nickname.updated' as const,
+        target: args.target,
+        actor: args.actor,
+        occurredAt: args.occurredAt ?? new Date(),
+        payload: { nickname: args.nickname },
+      }),
+    )(eventIDGenerator.generate<'Event'>());
   },
 
   emailUpdated(args: {
@@ -137,74 +145,84 @@ export const accountEventFactory = {
     actor: AccountID;
     mail: string;
     occurredAt?: Date;
-  }): AccountEmailUpdatedEvent {
-    return {
-      id: Result.unwrap(eventIDGenerator.generate<'Event'>()),
-      eventName: 'account.email.updated' as const,
-      target: args.target,
-      actor: args.actor,
-      occurredAt: args.occurredAt ?? new Date(),
-      payload: { mail: args.mail },
-    };
+  }): Result.Result<Error, AccountEmailUpdatedEvent> {
+    return Result.map(
+      (id: EventID): AccountEmailUpdatedEvent => ({
+        id,
+        eventName: 'account.email.updated' as const,
+        target: args.target,
+        actor: args.actor,
+        occurredAt: args.occurredAt ?? new Date(),
+        payload: { mail: args.mail },
+      }),
+    )(eventIDGenerator.generate<'Event'>());
   },
 
   adminFrozen(args: {
     target: AccountID;
     actor: AccountID;
     occurredAt?: Date;
-  }): AccountAdminFrozenEvent {
-    return {
-      id: Result.unwrap(eventIDGenerator.generate<'Event'>()),
-      eventName: 'account.admin.frozen' as const,
-      target: args.target,
-      actor: args.actor,
-      occurredAt: args.occurredAt ?? new Date(),
-      payload: {},
-    };
+  }): Result.Result<Error, AccountAdminFrozenEvent> {
+    return Result.map(
+      (id: EventID): AccountAdminFrozenEvent => ({
+        id,
+        eventName: 'account.admin.frozen' as const,
+        target: args.target,
+        actor: args.actor,
+        occurredAt: args.occurredAt ?? new Date(),
+        payload: {},
+      }),
+    )(eventIDGenerator.generate<'Event'>());
   },
 
   adminUnfrozen(args: {
     target: AccountID;
     actor: AccountID;
     occurredAt?: Date;
-  }): AccountAdminUnfrozenEvent {
-    return {
-      id: Result.unwrap(eventIDGenerator.generate<'Event'>()),
-      eventName: 'account.admin.unfrozen' as const,
-      target: args.target,
-      actor: args.actor,
-      occurredAt: args.occurredAt ?? new Date(),
-      payload: {},
-    };
+  }): Result.Result<Error, AccountAdminUnfrozenEvent> {
+    return Result.map(
+      (id: EventID): AccountAdminUnfrozenEvent => ({
+        id,
+        eventName: 'account.admin.unfrozen' as const,
+        target: args.target,
+        actor: args.actor,
+        occurredAt: args.occurredAt ?? new Date(),
+        payload: {},
+      }),
+    )(eventIDGenerator.generate<'Event'>());
   },
 
   adminSilenced(args: {
     target: AccountID;
     actor: AccountID;
     occurredAt?: Date;
-  }): AccountAdminSilencedEvent {
-    return {
-      id: Result.unwrap(eventIDGenerator.generate<'Event'>()),
-      eventName: 'account.admin.silenced' as const,
-      target: args.target,
-      actor: args.actor,
-      occurredAt: args.occurredAt ?? new Date(),
-      payload: {},
-    };
+  }): Result.Result<Error, AccountAdminSilencedEvent> {
+    return Result.map(
+      (id: EventID): AccountAdminSilencedEvent => ({
+        id,
+        eventName: 'account.admin.silenced' as const,
+        target: args.target,
+        actor: args.actor,
+        occurredAt: args.occurredAt ?? new Date(),
+        payload: {},
+      }),
+    )(eventIDGenerator.generate<'Event'>());
   },
 
   adminUnsilenced(args: {
     target: AccountID;
     actor: AccountID;
     occurredAt?: Date;
-  }): AccountAdminUnsilencedEvent {
-    return {
-      id: Result.unwrap(eventIDGenerator.generate<'Event'>()),
-      eventName: 'account.admin.unsilenced' as const,
-      target: args.target,
-      actor: args.actor,
-      occurredAt: args.occurredAt ?? new Date(),
-      payload: {},
-    };
+  }): Result.Result<Error, AccountAdminUnsilencedEvent> {
+    return Result.map(
+      (id: EventID): AccountAdminUnsilencedEvent => ({
+        id,
+        eventName: 'account.admin.unsilenced' as const,
+        target: args.target,
+        actor: args.actor,
+        occurredAt: args.occurredAt ?? new Date(),
+        payload: {},
+      }),
+    )(eventIDGenerator.generate<'Event'>());
   },
 };

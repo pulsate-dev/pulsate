@@ -2,7 +2,7 @@ import { Result } from '@mikuroxina/mini-fn';
 
 import type { MediumID } from '../../../drive/model/medium.ts';
 import { eventIDGenerator } from '../../../internal/event/idGenerator.ts';
-import type { DomainEvent } from '../../../internal/event/type.ts';
+import type { DomainEvent, EventID } from '../../../internal/event/type.ts';
 import type { AccountID } from '../account.ts';
 
 export type AccountAvatarUpdatedEvent = DomainEvent<
@@ -26,15 +26,17 @@ export const avatarEventFactory = {
     actor: AccountID;
     mediumID: MediumID;
     occurredAt?: Date;
-  }): AccountAvatarUpdatedEvent {
-    return {
-      id: Result.unwrap(eventIDGenerator.generate<'Event'>()),
-      eventName: 'account.avatar.updated' as const,
-      target: args.target,
-      actor: args.actor,
-      occurredAt: args.occurredAt ?? new Date(),
-      payload: { mediumID: args.mediumID },
-    };
+  }): Result.Result<Error, AccountAvatarUpdatedEvent> {
+    return Result.map(
+      (id: EventID): AccountAvatarUpdatedEvent => ({
+        id,
+        eventName: 'account.avatar.updated' as const,
+        target: args.target,
+        actor: args.actor,
+        occurredAt: args.occurredAt ?? new Date(),
+        payload: { mediumID: args.mediumID },
+      }),
+    )(eventIDGenerator.generate<'Event'>());
   },
 
   headerUpdated(args: {
@@ -42,14 +44,16 @@ export const avatarEventFactory = {
     actor: AccountID;
     mediumID: MediumID;
     occurredAt?: Date;
-  }): AccountHeaderUpdatedEvent {
-    return {
-      id: Result.unwrap(eventIDGenerator.generate<'Event'>()),
-      eventName: 'account.header.updated' as const,
-      target: args.target,
-      actor: args.actor,
-      occurredAt: args.occurredAt ?? new Date(),
-      payload: { mediumID: args.mediumID },
-    };
+  }): Result.Result<Error, AccountHeaderUpdatedEvent> {
+    return Result.map(
+      (id: EventID): AccountHeaderUpdatedEvent => ({
+        id,
+        eventName: 'account.header.updated' as const,
+        target: args.target,
+        actor: args.actor,
+        occurredAt: args.occurredAt ?? new Date(),
+        payload: { mediumID: args.mediumID },
+      }),
+    )(eventIDGenerator.generate<'Event'>());
   },
 };

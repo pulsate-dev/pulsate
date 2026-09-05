@@ -1,7 +1,7 @@
 import { Result } from '@mikuroxina/mini-fn';
 
 import { eventIDGenerator } from '../../../internal/event/idGenerator.ts';
-import type { DomainEvent } from '../../../internal/event/type.ts';
+import type { DomainEvent, EventID } from '../../../internal/event/type.ts';
 import type { AccountID } from '../account.ts';
 
 export type AccountFollowRequestedEvent = DomainEvent<
@@ -55,15 +55,17 @@ export const followEventFactory = {
     actor: AccountID;
     targetID: AccountID;
     occurredAt?: Date;
-  }): AccountFollowRequestedEvent {
-    return {
-      id: Result.unwrap(eventIDGenerator.generate<'Event'>()),
-      eventName: 'account.follow.requested' as const,
-      target: args.target,
-      actor: args.actor,
-      occurredAt: args.occurredAt ?? new Date(),
-      payload: { targetID: args.targetID },
-    };
+  }): Result.Result<Error, AccountFollowRequestedEvent> {
+    return Result.map(
+      (id: EventID): AccountFollowRequestedEvent => ({
+        id,
+        eventName: 'account.follow.requested' as const,
+        target: args.target,
+        actor: args.actor,
+        occurredAt: args.occurredAt ?? new Date(),
+        payload: { targetID: args.targetID },
+      }),
+    )(eventIDGenerator.generate<'Event'>());
   },
 
   accepted(args: {
@@ -71,15 +73,17 @@ export const followEventFactory = {
     actor: AccountID;
     targetID: AccountID;
     occurredAt?: Date;
-  }): AccountFollowAcceptedEvent {
-    return {
-      id: Result.unwrap(eventIDGenerator.generate<'Event'>()),
-      eventName: 'account.follow.accepted' as const,
-      target: args.target,
-      actor: args.actor,
-      occurredAt: args.occurredAt ?? new Date(),
-      payload: { targetID: args.targetID },
-    };
+  }): Result.Result<Error, AccountFollowAcceptedEvent> {
+    return Result.map(
+      (id: EventID): AccountFollowAcceptedEvent => ({
+        id,
+        eventName: 'account.follow.accepted' as const,
+        target: args.target,
+        actor: args.actor,
+        occurredAt: args.occurredAt ?? new Date(),
+        payload: { targetID: args.targetID },
+      }),
+    )(eventIDGenerator.generate<'Event'>());
   },
 
   rejected(args: {
@@ -87,15 +91,17 @@ export const followEventFactory = {
     actor: AccountID;
     targetID: AccountID;
     occurredAt?: Date;
-  }): AccountFollowRejectedEvent {
-    return {
-      id: Result.unwrap(eventIDGenerator.generate<'Event'>()),
-      eventName: 'account.follow.rejected' as const,
-      target: args.target,
-      actor: args.actor,
-      occurredAt: args.occurredAt ?? new Date(),
-      payload: { targetID: args.targetID },
-    };
+  }): Result.Result<Error, AccountFollowRejectedEvent> {
+    return Result.map(
+      (id: EventID): AccountFollowRejectedEvent => ({
+        id,
+        eventName: 'account.follow.rejected' as const,
+        target: args.target,
+        actor: args.actor,
+        occurredAt: args.occurredAt ?? new Date(),
+        payload: { targetID: args.targetID },
+      }),
+    )(eventIDGenerator.generate<'Event'>());
   },
 
   unfollowed(args: {
@@ -103,15 +109,17 @@ export const followEventFactory = {
     actor: AccountID;
     targetID: AccountID;
     occurredAt?: Date;
-  }): AccountFollowUnfollowedEvent {
-    return {
-      id: Result.unwrap(eventIDGenerator.generate<'Event'>()),
-      eventName: 'account.follow.unfollowed' as const,
-      target: args.target,
-      actor: args.actor,
-      occurredAt: args.occurredAt ?? new Date(),
-      payload: { targetID: args.targetID },
-    };
+  }): Result.Result<Error, AccountFollowUnfollowedEvent> {
+    return Result.map(
+      (id: EventID): AccountFollowUnfollowedEvent => ({
+        id,
+        eventName: 'account.follow.unfollowed' as const,
+        target: args.target,
+        actor: args.actor,
+        occurredAt: args.occurredAt ?? new Date(),
+        payload: { targetID: args.targetID },
+      }),
+    )(eventIDGenerator.generate<'Event'>());
   },
 
   blocked(args: {
@@ -119,15 +127,17 @@ export const followEventFactory = {
     actor: AccountID;
     targetID: AccountID;
     occurredAt?: Date;
-  }): AccountFollowBlockedEvent {
-    return {
-      id: Result.unwrap(eventIDGenerator.generate<'Event'>()),
-      eventName: 'account.follow.blocked' as const,
-      target: args.target,
-      actor: args.actor,
-      occurredAt: args.occurredAt ?? new Date(),
-      payload: { targetID: args.targetID },
-    };
+  }): Result.Result<Error, AccountFollowBlockedEvent> {
+    return Result.map(
+      (id: EventID): AccountFollowBlockedEvent => ({
+        id,
+        eventName: 'account.follow.blocked' as const,
+        target: args.target,
+        actor: args.actor,
+        occurredAt: args.occurredAt ?? new Date(),
+        payload: { targetID: args.targetID },
+      }),
+    )(eventIDGenerator.generate<'Event'>());
   },
 
   unblocked(args: {
@@ -135,14 +145,16 @@ export const followEventFactory = {
     actor: AccountID;
     targetID: AccountID;
     occurredAt?: Date;
-  }): AccountFollowUnblockedEvent {
-    return {
-      id: Result.unwrap(eventIDGenerator.generate<'Event'>()),
-      eventName: 'account.follow.unblocked' as const,
-      target: args.target,
-      actor: args.actor,
-      occurredAt: args.occurredAt ?? new Date(),
-      payload: { targetID: args.targetID },
-    };
+  }): Result.Result<Error, AccountFollowUnblockedEvent> {
+    return Result.map(
+      (id: EventID): AccountFollowUnblockedEvent => ({
+        id,
+        eventName: 'account.follow.unblocked' as const,
+        target: args.target,
+        actor: args.actor,
+        occurredAt: args.occurredAt ?? new Date(),
+        payload: { targetID: args.targetID },
+      }),
+    )(eventIDGenerator.generate<'Event'>());
   },
 };
