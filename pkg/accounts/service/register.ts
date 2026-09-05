@@ -87,13 +87,16 @@ export class RegisterService {
       )
       .addMWith('account', ({ generatedID, passphraseHash }) =>
         Promise.resolve(
-          InactiveAccount.new({
-            id: generatedID,
-            name,
-            mail,
-            passphraseHash,
-            role,
-          }),
+          InactiveAccount.new(
+            {
+              id: generatedID,
+              name,
+              mail,
+              passphraseHash,
+              role,
+            },
+            Option.none(),
+          ),
         ),
       )
       .runWith(({ account }) =>

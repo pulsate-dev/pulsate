@@ -26,8 +26,8 @@ export class FreezeService {
         ({ account, actor }) => !this.isAllowed('freeze', actor, account),
         () => Promise.resolve(Result.err(new Error('not allowed'))),
       )
-      .runWith(({ account }) =>
-        monad.map(() => [])(Promise.resolve(account.setFreeze())),
+      .runWith(({ account, actor }) =>
+        monad.map(() => [])(Promise.resolve(account.setFreeze(actor.getID()))),
       )
       .runWith(({ account }) =>
         monad.map(() => [])(this.#accountRepository.edit(account)),
@@ -48,8 +48,10 @@ export class FreezeService {
         ({ account, actor }) => !this.isAllowed('unFreeze', actor, account),
         () => Promise.resolve(Result.err(new Error('not allowed'))),
       )
-      .runWith(({ account }) =>
-        monad.map(() => [])(Promise.resolve(account.setUnfreeze())),
+      .runWith(({ account, actor }) =>
+        monad.map(() => [])(
+          Promise.resolve(account.setUnfreeze(actor.getID())),
+        ),
       )
       .runWith(({ account }) =>
         monad.map(() => [])(this.#accountRepository.edit(account)),
@@ -134,5 +136,7 @@ export const freezeSymbol = Ether.newEtherSymbol<FreezeService>();
 export const freeze = Ether.newEther(
   freezeSymbol,
   ({ accountRepository }) => new FreezeService(accountRepository),
-  { accountRepository: accountRepoSymbol },
+  {
+    accountRepository: accountRepoSymbol,
+  },
 );

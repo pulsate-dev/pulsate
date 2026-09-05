@@ -1,4 +1,4 @@
-import { Result } from '@mikuroxina/mini-fn';
+import { Option, Result } from '@mikuroxina/mini-fn';
 import * as v from 'valibot';
 import { describe, expect, it } from 'vitest';
 
@@ -25,8 +25,10 @@ const exampleInput: CreateAccountArgs = {
   deletedAt: new Date('2023-09-10T10:00:00.000Z'),
 };
 
+const newAccount = () => Account.new(exampleInput, Option.none());
+
 describe('Account', () => {
-  const account = Account.new(exampleInput);
+  const account = newAccount();
 
   it.each([
     ['id', account.getID(), exampleInput.id],
@@ -52,19 +54,19 @@ describe('Account', () => {
     string,
     (a: Account) => Result.Result<Error, void>,
   ][] = [
-    ['nickname too long', (a) => a.setNickName('a'.repeat(257))],
-    ['bio too long', (a) => a.setBio('a'.repeat(1025))],
-    ['mail too short', (a) => a.setMail('a'.repeat(6))],
-    ['mail too long', (a) => a.setMail('a'.repeat(320))],
+    ['nickname too long', (a) => a.setNickName('a'.repeat(257), a.getID())],
+    ['bio too long', (a) => a.setBio('a'.repeat(1025), a.getID())],
+    ['mail too short', (a) => a.setMail('a'.repeat(6), a.getID())],
+    ['mail too long', (a) => a.setMail('a'.repeat(320), a.getID())],
   ];
 
   it('allows empty string as nickname (no nickname set)', () => {
-    const account = Account.new(exampleInput);
-    expect(Result.isOk(account.setNickName(''))).toBe(true);
+    const account = newAccount();
+    expect(Result.isOk(account.setNickName('', account.getID()))).toBe(true);
   });
 
   it.each(validationCases)('returns error when %s', (_, call) => {
-    expect(Result.isErr(call(Account.new(exampleInput)))).toBe(true);
+    expect(Result.isErr(call(newAccount()))).toBe(true);
   });
 
   describe('validatePassphrase', () => {
@@ -85,31 +87,108 @@ describe('Account', () => {
 
   const mutationCalls: [string, (a: Account) => Result.Result<Error, void>][] =
     [
-      ['setBio', (a) => a.setBio('test')],
-      ['setNickName', (a) => a.setNickName('hello@example.com')],
+      ['setBio', (a) => a.setBio('test', a.getID())],
+      ['setNickName', (a) => a.setNickName('hello@example.com', a.getID())],
       ['setPassphraseHash', (a) => a.setPassphraseHash('123')],
-      ['setSilence', (a) => a.setSilence()],
-      ['setMail', (a) => a.setMail('pulsate@example.com')],
+      ['setSilence', (a) => a.setSilence(a.getID())],
+      ['setMail', (a) => a.setMail('pulsate@example.com', a.getID())],
     ];
 
   it.each(mutationCalls)('%s fails when account is frozen', (_, call) => {
-    const frozen = Account.new(exampleInput);
-    frozen.setFreeze();
+    const frozen = newAccount();
+    frozen.setFreeze(frozen.getID());
     expect(Result.isErr(call(frozen))).toBe(true);
   });
 
   it.each(mutationCalls)('%s fails when account is deleted', (_, call) => {
-    const deleted = Account.new(exampleInput);
+    const deleted = newAccount();
     deleted.setDeletedAt(new Date());
     expect(Result.isErr(call(deleted))).toBe(true);
   });
+});
+
+describe('Account domain events', () => {
+  it('new() generates an account.registered event', () => {
+    const account = newAccount();
+    const events = account.pullEvents();
+
+    expect(events).toHaveLength(1);
+    const [event] = events;
+    expect(event?.eventName).toBe('account.registered');
+    expect(event?.target).toBe(account.getID());
+    expect(event?.actor).toStrictEqual(Option.none());
+    expect(event?.payload).toStrictEqual({ mail: exampleInput.mail });
+  });
+
+  it('pullEvents() is destructive', () => {
+    const account = newAccount();
+    expect(account.pullEvents()).toHaveLength(1);
+    expect(account.pullEvents()).toStrictEqual([]);
+  });
+
+  const mutationEventCases: [
+    string,
+    (a: Account) => Result.Result<Error, void>,
+    string,
+  ][] = [
+    ['setBio', (a) => a.setBio('new bio', a.getID()), 'account.bio.updated'],
+    [
+      'setNickName',
+      (a) => a.setNickName('new nickname', a.getID()),
+      'account.nickname.updated',
+    ],
+    [
+      'setMail',
+      (a) => a.setMail('new@example.com', a.getID()),
+      'account.email.updated',
+    ],
+    ['setFreeze', (a) => a.setFreeze(a.getID()), 'account.admin.frozen'],
+    ['setUnfreeze', (a) => a.setUnfreeze(a.getID()), 'account.admin.unfrozen'],
+    ['setSilence', (a) => a.setSilence(a.getID()), 'account.admin.silenced'],
+    [
+      'undoSilence',
+      (a) => a.undoSilence(a.getID()),
+      'account.admin.unsilenced',
+    ],
+    ['activate', (a) => a.activate(Option.none()), 'account.activated'],
+  ];
+
+  it.each(mutationEventCases)(
+    '%s pushes a %s event on success',
+    (_, call, eventName) => {
+      const account = newAccount();
+      account.pullEvents();
+
+      const result = call(account);
+      expect(Result.isOk(result)).toBe(true);
+
+      const events = account.pullEvents();
+      expect(events).toHaveLength(1);
+      const [event] = events;
+      expect(event?.eventName).toBe(eventName);
+      expect(event?.target).toBe(account.getID());
+    },
+  );
+
+  it.each(mutationEventCases)(
+    '%s does not push an event when the account is already deleted',
+    (_, call) => {
+      const account = newAccount();
+      account.pullEvents();
+      account.setDeletedAt(new Date('2023-09-11T00:00:00.000Z'));
+
+      const result = call(account);
+      expect(Result.isErr(result)).toBe(true);
+      expect(account.pullEvents()).toStrictEqual([]);
+    },
+  );
 });
 
 describe('AccountNameSchema', () => {
   const check = (input: unknown) =>
     v.safeParse(accountNameSchema, input).success;
 
-  const account = Account.new(exampleInput);
+  const account = newAccount();
 
   it.each([
     account.getName(),

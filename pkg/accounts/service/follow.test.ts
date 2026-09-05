@@ -42,11 +42,8 @@ await accountRepository.create(
   }),
 );
 const repository = new InMemoryAccountFollowRepository();
-const service = new FollowService(
-  repository,
-  accountRepository,
-  new MockClock(new Date('2023-09-10T00:00:00Z')),
-);
+const mockClock = new MockClock(new Date('2023-09-10T00:00:00Z'));
+const service = new FollowService(repository, accountRepository, mockClock);
 
 describe('FollowService', () => {
   it('should follow', async () => {

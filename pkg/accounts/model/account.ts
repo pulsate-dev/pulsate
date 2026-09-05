@@ -1,4 +1,4 @@
-import { Result } from '@mikuroxina/mini-fn';
+import { type Option, Result } from '@mikuroxina/mini-fn';
 import * as v from 'valibot';
 
 import type { ID } from '../../internal/id/type.ts';
@@ -11,6 +11,10 @@ import {
   AccountNickNameLengthError,
   AccountPassphraseRequirementsNotMetError,
 } from './account.errors.ts';
+import {
+  type AccountEvent,
+  accountEventFactory,
+} from './event/accountEvents.ts';
 
 export type AccountID = ID<Account>;
 export type AccountName = `@${string}@${string}`;
@@ -130,6 +134,11 @@ export class Account {
   #status: AccountStatus;
   #updatedAt?: Date;
   #deletedAt?: Date;
+  #events: AccountEvent[] = [];
+
+  pullEvents(): AccountEvent[] {
+    return this.#events.splice(0);
+  }
 
   // get methods
   getID(): AccountID {
@@ -187,6 +196,7 @@ export class Account {
   // mutation methods
   setMail(
     mail: string,
+    actor: AccountID,
   ): Result.Result<
     | AccountAlreadyDeletedError
     | AccountAlreadyFrozenError
@@ -213,11 +223,17 @@ export class Account {
     }
 
     this.#mail = mail;
+    this.#events.push(
+      Result.unwrap(
+        accountEventFactory.emailUpdated({ target: this.#id, actor, mail }),
+      ),
+    );
     return Result.ok(undefined);
   }
 
   setNickName(
     name: string,
+    actor: AccountID,
   ): Result.Result<
     | AccountAlreadyDeletedError
     | AccountAlreadyFrozenError
@@ -242,6 +258,15 @@ export class Account {
     }
 
     this.#nickname = name;
+    this.#events.push(
+      Result.unwrap(
+        accountEventFactory.nicknameUpdated({
+          target: this.#id,
+          actor,
+          nickname: name,
+        }),
+      ),
+    );
     return Result.ok(undefined);
   }
 
@@ -268,6 +293,7 @@ export class Account {
 
   setBio(
     bio: string,
+    actor: AccountID,
   ): Result.Result<
     | AccountAlreadyDeletedError
     | AccountAlreadyFrozenError
@@ -288,7 +314,13 @@ export class Account {
     if (!v.safeParse(bioSchema, bio).success) {
       return Result.err(new AccountBioLengthError('bio is too long'));
     }
+
     this.#bio = bio;
+    this.#events.push(
+      Result.unwrap(
+        accountEventFactory.bioUpdated({ target: this.#id, actor, bio }),
+      ),
+    );
     return Result.ok(undefined);
   }
 
@@ -347,7 +379,9 @@ export class Account {
     return Result.ok(undefined);
   }
 
-  setFreeze(): Result.Result<
+  setFreeze(
+    actor: AccountID,
+  ): Result.Result<
     AccountAlreadyDeletedError | AccountAlreadyFrozenError,
     void
   > {
@@ -358,10 +392,17 @@ export class Account {
     }
 
     this.#frozen = 'frozen';
+    this.#events.push(
+      Result.unwrap(
+        accountEventFactory.adminFrozen({ target: this.#id, actor }),
+      ),
+    );
     return Result.ok(undefined);
   }
 
-  setUnfreeze(): Result.Result<
+  setUnfreeze(
+    actor: AccountID,
+  ): Result.Result<
     AccountAlreadyDeletedError | AccountAlreadyFrozenError,
     void
   > {
@@ -370,11 +411,19 @@ export class Account {
         new AccountAlreadyDeletedError('account already deleted'),
       );
     }
+
     this.#frozen = 'normal';
+    this.#events.push(
+      Result.unwrap(
+        accountEventFactory.adminUnfrozen({ target: this.#id, actor }),
+      ),
+    );
     return Result.ok(undefined);
   }
 
-  setSilence(): Result.Result<
+  setSilence(
+    actor: AccountID,
+  ): Result.Result<
     AccountAlreadyDeletedError | AccountAlreadyFrozenError,
     void
   > {
@@ -390,9 +439,16 @@ export class Account {
     }
 
     this.#silenced = 'silenced';
+    this.#events.push(
+      Result.unwrap(
+        accountEventFactory.adminSilenced({ target: this.#id, actor }),
+      ),
+    );
     return Result.ok(undefined);
   }
-  undoSilence(): Result.Result<
+  undoSilence(
+    actor: AccountID,
+  ): Result.Result<
     AccountAlreadyDeletedError | AccountAlreadyFrozenError,
     void
   > {
@@ -408,10 +464,17 @@ export class Account {
     }
 
     this.#silenced = 'normal';
+    this.#events.push(
+      Result.unwrap(
+        accountEventFactory.adminUnsilenced({ target: this.#id, actor }),
+      ),
+    );
     return Result.ok(undefined);
   }
 
-  activate(): Result.Result<
+  activate(
+    actor: Option.Option<AccountID>,
+  ): Result.Result<
     AccountAlreadyDeletedError | AccountAlreadyFrozenError,
     void
   > {
@@ -425,7 +488,11 @@ export class Account {
         new AccountAlreadyFrozenError('account already frozen'),
       );
     }
+
     this.#status = 'active';
+    this.#events.push(
+      Result.unwrap(accountEventFactory.activated({ target: this.#id, actor })),
+    );
     return Result.ok(undefined);
   }
 
@@ -475,8 +542,9 @@ export class Account {
       CreateAccountArgs,
       'deletedAt' | 'updatedAt' | 'frozen' | 'silenced' | 'status'
     >,
-  ) {
-    return new Account({
+    actor: Option.Option<AccountID>,
+  ): Account {
+    const account = new Account({
       id: arg.id,
       mail: arg.mail,
       name: arg.name,
@@ -491,6 +559,16 @@ export class Account {
       updatedAt: undefined,
       deletedAt: undefined,
     });
+    account.#events.push(
+      Result.unwrap(
+        accountEventFactory.registered({
+          target: arg.id,
+          actor,
+          mail: arg.mail,
+        }),
+      ),
+    );
+    return account;
   }
 
   static validatePassphrase(

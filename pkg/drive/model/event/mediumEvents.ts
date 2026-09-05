@@ -1,8 +1,8 @@
 import { Result } from '@mikuroxina/mini-fn';
 
 import type { AccountID } from '../../../accounts/model/account.ts';
-import type { DomainEvent, EventID } from '../../../internal/event/type.ts';
-import type { SnowflakeIDGenerator } from '../../../internal/id/mod.ts';
+import { eventIDGenerator } from '../../../internal/event/idGenerator.ts';
+import type { DomainEvent } from '../../../internal/event/type.ts';
 import type { MediumID } from '../medium.ts';
 
 export type MediumCreatedEvent = DomainEvent<
@@ -37,76 +37,64 @@ export type MediumEvent =
   | MediumAdminUnflaggedEvent;
 
 export const mediumEventFactory = {
-  created(
-    idGenerator: SnowflakeIDGenerator,
-    args: {
-      target: MediumID;
-      actor: AccountID;
-      occurredAt: Date;
-      authorID: AccountID;
-    },
-  ): Result.Result<Error, MediumCreatedEvent> {
-    return Result.map((id: EventID) => ({
-      id,
+  created(args: {
+    target: MediumID;
+    actor: AccountID;
+    authorID: AccountID;
+    occurredAt?: Date;
+  }): MediumCreatedEvent {
+    return {
+      id: Result.unwrap(eventIDGenerator.generate<'Event'>()),
       eventName: 'medium.created' as const,
       target: args.target,
       actor: args.actor,
-      occurredAt: args.occurredAt,
+      occurredAt: args.occurredAt ?? new Date(),
       payload: { authorID: args.authorID },
-    }))(idGenerator.generate<'Event'>());
+    };
   },
 
-  deleted(
-    idGenerator: SnowflakeIDGenerator,
-    args: {
-      target: MediumID;
-      actor: AccountID;
-      occurredAt: Date;
-    },
-  ): Result.Result<Error, MediumDeletedEvent> {
-    return Result.map((id: EventID) => ({
-      id,
+  deleted(args: {
+    target: MediumID;
+    actor: AccountID;
+    occurredAt?: Date;
+  }): MediumDeletedEvent {
+    return {
+      id: Result.unwrap(eventIDGenerator.generate<'Event'>()),
       eventName: 'medium.deleted' as const,
       target: args.target,
       actor: args.actor,
-      occurredAt: args.occurredAt,
+      occurredAt: args.occurredAt ?? new Date(),
       payload: {},
-    }))(idGenerator.generate<'Event'>());
+    };
   },
 
-  adminFlagged(
-    idGenerator: SnowflakeIDGenerator,
-    args: {
-      target: MediumID;
-      actor: AccountID;
-      occurredAt: Date;
-    },
-  ): Result.Result<Error, MediumAdminFlaggedEvent> {
-    return Result.map((id: EventID) => ({
-      id,
+  adminFlagged(args: {
+    target: MediumID;
+    actor: AccountID;
+    occurredAt?: Date;
+  }): MediumAdminFlaggedEvent {
+    return {
+      id: Result.unwrap(eventIDGenerator.generate<'Event'>()),
       eventName: 'medium.admin.flagged' as const,
       target: args.target,
       actor: args.actor,
-      occurredAt: args.occurredAt,
+      occurredAt: args.occurredAt ?? new Date(),
       payload: {},
-    }))(idGenerator.generate<'Event'>());
+    };
   },
 
-  adminUnflagged(
-    idGenerator: SnowflakeIDGenerator,
-    args: {
-      target: MediumID;
-      actor: AccountID;
-      occurredAt: Date;
-    },
-  ): Result.Result<Error, MediumAdminUnflaggedEvent> {
-    return Result.map((id: EventID) => ({
-      id,
+  adminUnflagged(args: {
+    target: MediumID;
+    actor: AccountID;
+    occurredAt?: Date;
+  }): MediumAdminUnflaggedEvent {
+    return {
+      id: Result.unwrap(eventIDGenerator.generate<'Event'>()),
       eventName: 'medium.admin.unflagged' as const,
       target: args.target,
       actor: args.actor,
-      occurredAt: args.occurredAt,
+      occurredAt: args.occurredAt ?? new Date(),
       payload: {},
-    }))(idGenerator.generate<'Event'>());
+    };
   },
 };
