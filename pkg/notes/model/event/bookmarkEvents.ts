@@ -1,8 +1,8 @@
 import { Result } from '@mikuroxina/mini-fn';
 
 import type { AccountID } from '../../../accounts/model/account.ts';
-import type { DomainEvent, EventID } from '../../../internal/event/type.ts';
-import type { SnowflakeIDGenerator } from '../../../internal/id/mod.ts';
+import { eventIDGenerator } from '../../../internal/event/idGenerator.ts';
+import type { DomainEvent } from '../../../internal/event/type.ts';
 import type { NoteID } from '../note.ts';
 
 export type BookmarkCreatedEvent = DomainEvent<
@@ -21,40 +21,35 @@ export type BookmarkDeletedEvent = DomainEvent<
 export type BookmarkEvent = BookmarkCreatedEvent | BookmarkDeletedEvent;
 
 export const bookmarkEventFactory = {
-  created(
-    idGenerator: SnowflakeIDGenerator,
-    args: {
-      target: NoteID;
-      actor: AccountID;
-      occurredAt: Date;
-      accountID: AccountID;
-    },
-  ): Result.Result<Error, BookmarkCreatedEvent> {
-    return Result.map((id: EventID) => ({
-      id,
+  created(args: {
+    target: NoteID;
+    actor: AccountID;
+    accountID: AccountID;
+    occurredAt?: Date;
+  }): BookmarkCreatedEvent {
+    return {
+      id: Result.unwrap(eventIDGenerator.generate<'Event'>()),
       eventName: 'note.bookmark.created' as const,
       target: args.target,
       actor: args.actor,
-      occurredAt: args.occurredAt,
+      occurredAt: args.occurredAt ?? new Date(),
       payload: { accountID: args.accountID },
-    }))(idGenerator.generate<'Event'>());
+    };
   },
-  deleted(
-    idGenerator: SnowflakeIDGenerator,
-    args: {
-      target: NoteID;
-      actor: AccountID;
-      occurredAt: Date;
-      accountID: AccountID;
-    },
-  ): Result.Result<Error, BookmarkDeletedEvent> {
-    return Result.map((id: EventID) => ({
-      id,
+
+  deleted(args: {
+    target: NoteID;
+    actor: AccountID;
+    accountID: AccountID;
+    occurredAt?: Date;
+  }): BookmarkDeletedEvent {
+    return {
+      id: Result.unwrap(eventIDGenerator.generate<'Event'>()),
       eventName: 'note.bookmark.deleted' as const,
       target: args.target,
       actor: args.actor,
-      occurredAt: args.occurredAt,
+      occurredAt: args.occurredAt ?? new Date(),
       payload: { accountID: args.accountID },
-    }))(idGenerator.generate<'Event'>());
+    };
   },
 };

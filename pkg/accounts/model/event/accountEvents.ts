@@ -73,13 +73,14 @@ export const accountEventFactory = {
     target: AccountID;
     actor: Option.Option<AccountID>;
     mail: string;
+    occurredAt?: Date;
   }): AccountRegisteredEvent {
     return {
       id: Result.unwrap(eventIDGenerator.generate<'Event'>()),
       eventName: 'account.registered' as const,
       target: args.target,
       actor: args.actor,
-      occurredAt: new Date(),
+      occurredAt: args.occurredAt ?? new Date(),
       payload: { mail: args.mail },
     };
   },
@@ -87,13 +88,14 @@ export const accountEventFactory = {
   activated(args: {
     target: AccountID;
     actor: Option.Option<AccountID>;
+    occurredAt?: Date;
   }): AccountActivatedEvent {
     return {
       id: Result.unwrap(eventIDGenerator.generate<'Event'>()),
       eventName: 'account.activated' as const,
       target: args.target,
       actor: args.actor,
-      occurredAt: new Date(),
+      occurredAt: args.occurredAt ?? new Date(),
       payload: {},
     };
   },
@@ -102,13 +104,14 @@ export const accountEventFactory = {
     target: AccountID;
     actor: AccountID;
     bio: string;
+    occurredAt?: Date;
   }): AccountBioUpdatedEvent {
     return {
       id: Result.unwrap(eventIDGenerator.generate<'Event'>()),
       eventName: 'account.bio.updated' as const,
       target: args.target,
       actor: args.actor,
-      occurredAt: new Date(),
+      occurredAt: args.occurredAt ?? new Date(),
       payload: { bio: args.bio },
     };
   },
@@ -117,13 +120,14 @@ export const accountEventFactory = {
     target: AccountID;
     actor: AccountID;
     nickname: string;
+    occurredAt?: Date;
   }): AccountNicknameUpdatedEvent {
     return {
       id: Result.unwrap(eventIDGenerator.generate<'Event'>()),
       eventName: 'account.nickname.updated' as const,
       target: args.target,
       actor: args.actor,
-      occurredAt: new Date(),
+      occurredAt: args.occurredAt ?? new Date(),
       payload: { nickname: args.nickname },
     };
   },
@@ -132,13 +136,14 @@ export const accountEventFactory = {
     target: AccountID;
     actor: AccountID;
     mail: string;
+    occurredAt?: Date;
   }): AccountEmailUpdatedEvent {
     return {
       id: Result.unwrap(eventIDGenerator.generate<'Event'>()),
       eventName: 'account.email.updated' as const,
       target: args.target,
       actor: args.actor,
-      occurredAt: new Date(),
+      occurredAt: args.occurredAt ?? new Date(),
       payload: { mail: args.mail },
     };
   },
@@ -146,13 +151,14 @@ export const accountEventFactory = {
   adminFrozen(args: {
     target: AccountID;
     actor: AccountID;
+    occurredAt?: Date;
   }): AccountAdminFrozenEvent {
     return {
       id: Result.unwrap(eventIDGenerator.generate<'Event'>()),
       eventName: 'account.admin.frozen' as const,
       target: args.target,
       actor: args.actor,
-      occurredAt: new Date(),
+      occurredAt: args.occurredAt ?? new Date(),
       payload: {},
     };
   },
@@ -160,13 +166,14 @@ export const accountEventFactory = {
   adminUnfrozen(args: {
     target: AccountID;
     actor: AccountID;
+    occurredAt?: Date;
   }): AccountAdminUnfrozenEvent {
     return {
       id: Result.unwrap(eventIDGenerator.generate<'Event'>()),
       eventName: 'account.admin.unfrozen' as const,
       target: args.target,
       actor: args.actor,
-      occurredAt: new Date(),
+      occurredAt: args.occurredAt ?? new Date(),
       payload: {},
     };
   },
@@ -174,13 +181,14 @@ export const accountEventFactory = {
   adminSilenced(args: {
     target: AccountID;
     actor: AccountID;
+    occurredAt?: Date;
   }): AccountAdminSilencedEvent {
     return {
       id: Result.unwrap(eventIDGenerator.generate<'Event'>()),
       eventName: 'account.admin.silenced' as const,
       target: args.target,
       actor: args.actor,
-      occurredAt: new Date(),
+      occurredAt: args.occurredAt ?? new Date(),
       payload: {},
     };
   },
@@ -188,13 +196,14 @@ export const accountEventFactory = {
   adminUnsilenced(args: {
     target: AccountID;
     actor: AccountID;
+    occurredAt?: Date;
   }): AccountAdminUnsilencedEvent {
     return {
       id: Result.unwrap(eventIDGenerator.generate<'Event'>()),
       eventName: 'account.admin.unsilenced' as const,
       target: args.target,
       actor: args.actor,
-      occurredAt: new Date(),
+      occurredAt: args.occurredAt ?? new Date(),
       payload: {},
     };
   },

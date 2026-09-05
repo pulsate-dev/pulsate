@@ -54,13 +54,14 @@ export const followEventFactory = {
     target: AccountID;
     actor: AccountID;
     targetID: AccountID;
+    occurredAt?: Date;
   }): AccountFollowRequestedEvent {
     return {
       id: Result.unwrap(eventIDGenerator.generate<'Event'>()),
       eventName: 'account.follow.requested' as const,
       target: args.target,
       actor: args.actor,
-      occurredAt: new Date(),
+      occurredAt: args.occurredAt ?? new Date(),
       payload: { targetID: args.targetID },
     };
   },
@@ -69,13 +70,14 @@ export const followEventFactory = {
     target: AccountID;
     actor: AccountID;
     targetID: AccountID;
+    occurredAt?: Date;
   }): AccountFollowAcceptedEvent {
     return {
       id: Result.unwrap(eventIDGenerator.generate<'Event'>()),
       eventName: 'account.follow.accepted' as const,
       target: args.target,
       actor: args.actor,
-      occurredAt: new Date(),
+      occurredAt: args.occurredAt ?? new Date(),
       payload: { targetID: args.targetID },
     };
   },
@@ -84,13 +86,14 @@ export const followEventFactory = {
     target: AccountID;
     actor: AccountID;
     targetID: AccountID;
+    occurredAt?: Date;
   }): AccountFollowRejectedEvent {
     return {
       id: Result.unwrap(eventIDGenerator.generate<'Event'>()),
       eventName: 'account.follow.rejected' as const,
       target: args.target,
       actor: args.actor,
-      occurredAt: new Date(),
+      occurredAt: args.occurredAt ?? new Date(),
       payload: { targetID: args.targetID },
     };
   },
@@ -99,13 +102,14 @@ export const followEventFactory = {
     target: AccountID;
     actor: AccountID;
     targetID: AccountID;
+    occurredAt?: Date;
   }): AccountFollowUnfollowedEvent {
     return {
       id: Result.unwrap(eventIDGenerator.generate<'Event'>()),
       eventName: 'account.follow.unfollowed' as const,
       target: args.target,
       actor: args.actor,
-      occurredAt: new Date(),
+      occurredAt: args.occurredAt ?? new Date(),
       payload: { targetID: args.targetID },
     };
   },
@@ -114,13 +118,14 @@ export const followEventFactory = {
     target: AccountID;
     actor: AccountID;
     targetID: AccountID;
+    occurredAt?: Date;
   }): AccountFollowBlockedEvent {
     return {
       id: Result.unwrap(eventIDGenerator.generate<'Event'>()),
       eventName: 'account.follow.blocked' as const,
       target: args.target,
       actor: args.actor,
-      occurredAt: new Date(),
+      occurredAt: args.occurredAt ?? new Date(),
       payload: { targetID: args.targetID },
     };
   },
@@ -129,13 +134,14 @@ export const followEventFactory = {
     target: AccountID;
     actor: AccountID;
     targetID: AccountID;
+    occurredAt?: Date;
   }): AccountFollowUnblockedEvent {
     return {
       id: Result.unwrap(eventIDGenerator.generate<'Event'>()),
       eventName: 'account.follow.unblocked' as const,
       target: args.target,
       actor: args.actor,
-      occurredAt: new Date(),
+      occurredAt: args.occurredAt ?? new Date(),
       payload: { targetID: args.targetID },
     };
   },

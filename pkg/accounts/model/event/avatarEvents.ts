@@ -25,13 +25,14 @@ export const avatarEventFactory = {
     target: AccountID;
     actor: AccountID;
     mediumID: MediumID;
+    occurredAt?: Date;
   }): AccountAvatarUpdatedEvent {
     return {
       id: Result.unwrap(eventIDGenerator.generate<'Event'>()),
       eventName: 'account.avatar.updated' as const,
       target: args.target,
       actor: args.actor,
-      occurredAt: new Date(),
+      occurredAt: args.occurredAt ?? new Date(),
       payload: { mediumID: args.mediumID },
     };
   },
@@ -40,13 +41,14 @@ export const avatarEventFactory = {
     target: AccountID;
     actor: AccountID;
     mediumID: MediumID;
+    occurredAt?: Date;
   }): AccountHeaderUpdatedEvent {
     return {
       id: Result.unwrap(eventIDGenerator.generate<'Event'>()),
       eventName: 'account.header.updated' as const,
       target: args.target,
       actor: args.actor,
-      occurredAt: new Date(),
+      occurredAt: args.occurredAt ?? new Date(),
       payload: { mediumID: args.mediumID },
     };
   },
