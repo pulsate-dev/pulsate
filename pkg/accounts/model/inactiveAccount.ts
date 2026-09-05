@@ -136,7 +136,7 @@ export class InactiveAccount {
     }
 
     const account = new InactiveAccount(arg);
-    account.#events.push(event[1]);
+    account.#events.push(Result.unwrap(event));
     return Result.ok(account);
   }
 

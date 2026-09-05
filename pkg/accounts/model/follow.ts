@@ -69,7 +69,7 @@ export class AccountFollow {
     }
 
     const follow = new AccountFollow({ ...args, deletedAt: Option.none() });
-    follow.#events.push(requested[1], accepted[1]);
+    follow.#events.push(Result.unwrap(requested), Result.unwrap(accepted));
     return Result.ok(follow);
   }
 
@@ -116,7 +116,7 @@ export class AccountFollow {
     }
 
     this.#deletedAt = Option.some(deletedAt);
-    this.#events.push(event[1]);
+    this.#events.push(Result.unwrap(event));
     return Result.ok(undefined);
   }
 }

@@ -235,7 +235,7 @@ export class Account {
     }
 
     this.#mail = mail;
-    this.#events.push(event[1]);
+    this.#events.push(Result.unwrap(event));
     return Result.ok(undefined);
   }
 
@@ -277,7 +277,7 @@ export class Account {
     }
 
     this.#nickname = name;
-    this.#events.push(event[1]);
+    this.#events.push(Result.unwrap(event));
     return Result.ok(undefined);
   }
 
@@ -338,7 +338,7 @@ export class Account {
     }
 
     this.#bio = bio;
-    this.#events.push(event[1]);
+    this.#events.push(Result.unwrap(event));
     return Result.ok(undefined);
   }
 
@@ -419,7 +419,7 @@ export class Account {
     }
 
     this.#frozen = 'frozen';
-    this.#events.push(event[1]);
+    this.#events.push(Result.unwrap(event));
     return Result.ok(undefined);
   }
 
@@ -445,7 +445,7 @@ export class Account {
     }
 
     this.#frozen = 'normal';
-    this.#events.push(event[1]);
+    this.#events.push(Result.unwrap(event));
     return Result.ok(undefined);
   }
 
@@ -476,7 +476,7 @@ export class Account {
     }
 
     this.#silenced = 'silenced';
-    this.#events.push(event[1]);
+    this.#events.push(Result.unwrap(event));
     return Result.ok(undefined);
   }
   undoSilence(
@@ -506,7 +506,7 @@ export class Account {
     }
 
     this.#silenced = 'normal';
-    this.#events.push(event[1]);
+    this.#events.push(Result.unwrap(event));
     return Result.ok(undefined);
   }
 
@@ -537,7 +537,7 @@ export class Account {
     }
 
     this.#status = 'active';
-    this.#events.push(event[1]);
+    this.#events.push(Result.unwrap(event));
     return Result.ok(undefined);
   }
 
@@ -614,7 +614,7 @@ export class Account {
       updatedAt: undefined,
       deletedAt: undefined,
     });
-    account.#events.push(event[1]);
+    account.#events.push(Result.unwrap(event));
     return Result.ok(account);
   }
 
