@@ -4,6 +4,7 @@ import * as v from 'valibot';
 import type { AccountID } from '../../accounts/model/account.ts';
 import type { ID } from '../../internal/id/type.ts';
 import { MediaSizeTooLargeError, MediaTypeInvalidError } from './errors.ts';
+import { type MediumEvent, mediumEventFactory } from './event/mediumEvents.ts';
 
 export type MediumID = ID<Medium>;
 
@@ -54,6 +55,7 @@ export class Medium {
 
   public static new(
     arg: NewMediumArgs,
+    actor: AccountID,
   ): Result.Result<MediaSizeTooLargeError | MediaTypeInvalidError, Medium> {
     if (!v.safeParse(sourceMimeSchema, arg.sourceMime).success) {
       return Result.err(
@@ -67,11 +69,25 @@ export class Medium {
         new MediaSizeTooLargeError('File size is too large', { cause: null }),
       );
     }
-    return Result.ok(new Medium(arg));
+
+    const medium = new Medium(arg);
+    medium.#events.push(
+      mediumEventFactory.created({
+        target: arg.id,
+        actor,
+        authorID: arg.authorId,
+      }),
+    );
+    return Result.ok(medium);
   }
 
   public static reconstruct(arg: CreateMediumArgs): Medium {
     return new Medium(arg);
+  }
+
+  #events: MediumEvent[] = [];
+  pullEvents(): MediumEvent[] {
+    return this.#events.splice(0);
   }
 
   readonly #id: MediumID;

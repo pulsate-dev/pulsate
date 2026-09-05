@@ -69,21 +69,24 @@ export class UploadMediaService {
         )
         .addMWith('medium', ({ id, mime, processed }) =>
           Promise.resolve(
-            Medium.new({
-              id,
-              name: args.name,
-              authorId: args.authorId,
-              nsfw: args.nsfw,
-              mime: 'image/webp',
-              hash: Option.unwrapOr('')(
-                Option.map((p: ProcessedImage) => p.hash)(processed),
-              ),
-              url: Option.none(),
-              thumbnailUrl: Option.none(),
-              sourceMime: mime,
-              size: args.file.length,
-              maxSize: this.#MAX_MEDIA_SIZE,
-            }),
+            Medium.new(
+              {
+                id,
+                name: args.name,
+                authorId: args.authorId,
+                nsfw: args.nsfw,
+                mime: 'image/webp',
+                hash: Option.unwrapOr('')(
+                  Option.map((p: ProcessedImage) => p.hash)(processed),
+                ),
+                url: Option.none(),
+                thumbnailUrl: Option.none(),
+                sourceMime: mime,
+                size: args.file.length,
+                maxSize: this.#MAX_MEDIA_SIZE,
+              },
+              args.authorId,
+            ),
           ),
         )
         // NOTE: The source is valid, so a failed processing is an internal error.
