@@ -21,7 +21,7 @@ describe('List', () => {
 
   describe('new', () => {
     it('should create a new list', () => {
-      const res = List.new(args);
+      const res = List.new(args, args.ownerId);
 
       expect(Result.isOk(res)).toBe(true);
       const list = Result.unwrap(res);
@@ -34,14 +34,14 @@ describe('List', () => {
     });
 
     it('should return ListTitleLengthInvalidError when title is empty', () => {
-      const res = List.new({ ...args, title: '' });
+      const res = List.new({ ...args, title: '' }, args.ownerId);
 
       expect(Result.isErr(res)).toBe(true);
       expect(Result.unwrapErr(res)).toBeInstanceOf(ListTitleLengthInvalidError);
     });
 
     it('should return ListTitleLengthInvalidError when title exceeds 100 chars', () => {
-      const res = List.new({ ...args, title: 'a'.repeat(101) });
+      const res = List.new({ ...args, title: 'a'.repeat(101) }, args.ownerId);
 
       expect(Result.isErr(res)).toBe(true);
       expect(Result.unwrapErr(res)).toBeInstanceOf(ListTitleLengthInvalidError);
@@ -52,7 +52,7 @@ describe('List', () => {
         { length: 251 },
         (_, i) => `${i + 1}` as AccountID,
       );
-      const res = List.new({ ...args, memberIds });
+      const res = List.new({ ...args, memberIds }, args.ownerId);
 
       expect(Result.isErr(res)).toBe(true);
       expect(Result.unwrapErr(res)).toBeInstanceOf(ListTooManyMembersError);
@@ -63,7 +63,7 @@ describe('List', () => {
     const list = List.reconstruct(args);
     const memberId = '4' as AccountID;
 
-    const res = list.addMember(memberId);
+    const res = list.addMember(memberId, args.ownerId);
 
     expect(Result.isOk(res)).toBe(true);
     expect(list.getMemberIds()).toStrictEqual([
@@ -79,7 +79,7 @@ describe('List', () => {
     });
     const memberId = '3' as AccountID;
 
-    const res = list.addMember(memberId);
+    const res = list.addMember(memberId, args.ownerId);
 
     expect(Result.isErr(res)).toBe(true);
     expect(Result.unwrapErr(res)).toBeInstanceOf(ListMemberAlreadyExistsError);
@@ -94,7 +94,7 @@ describe('List', () => {
     const list = List.reconstruct({ ...args, memberIds });
     const newMemberId = '251' as AccountID;
 
-    const res = list.addMember(newMemberId);
+    const res = list.addMember(newMemberId, args.ownerId);
 
     expect(Result.isErr(res)).toBe(true);
     expect(Result.unwrapErr(res)).toBeInstanceOf(ListTooManyMembersError);
@@ -108,8 +108,9 @@ describe('List', () => {
     });
     const memberId = '3' as AccountID;
 
-    list.removeMember(memberId);
+    const res = list.removeMember(memberId, args.ownerId);
 
+    expect(Result.isOk(res)).toBe(true);
     expect(list.getMemberIds()).toStrictEqual([]);
   });
 
@@ -170,6 +171,106 @@ describe('List', () => {
 
       expect(Result.isOk(res)).toBe(true);
       expect(list.isPublic()).toBe(true);
+    });
+  });
+
+  describe('domain events', () => {
+    it('should not push any event on reconstruct', () => {
+      const list = List.reconstruct(args);
+
+      expect(list.pullEvents()).toStrictEqual([]);
+    });
+
+    describe('list.created', () => {
+      it('should push exactly one list.created event on success', () => {
+        const res = List.new(args, args.ownerId);
+        const list = Result.unwrap(res);
+
+        const events = list.pullEvents();
+
+        expect(events).toHaveLength(1);
+        const [event] = events;
+        expect(event?.eventName).toBe('list.created');
+        expect(event?.target).toBe(args.id);
+        expect(event?.actor).toBe(args.ownerId);
+        expect(event?.payload).toStrictEqual({
+          ownerID: args.ownerId,
+          title: args.title,
+        });
+      });
+
+      it('should not push any event when validation fails', () => {
+        const res = List.new({ ...args, title: '' }, args.ownerId);
+
+        expect(Result.isErr(res)).toBe(true);
+      });
+    });
+
+    describe('list.member.appended', () => {
+      it('should push exactly one list.member.appended event on success', () => {
+        const list = List.reconstruct(args);
+        const memberId = '4' as AccountID;
+
+        const res = list.addMember(memberId, args.ownerId);
+        expect(Result.isOk(res)).toBe(true);
+
+        const events = list.pullEvents();
+
+        expect(events).toHaveLength(1);
+        const [event] = events;
+        expect(event?.eventName).toBe('list.member.appended');
+        expect(event?.target).toBe(args.id);
+        expect(event?.actor).toBe(args.ownerId);
+        expect(event?.payload).toStrictEqual({ memberID: memberId });
+      });
+
+      it('should not push any event when member already exists', () => {
+        const list = List.reconstruct(args);
+
+        const res = list.addMember('3' as AccountID, args.ownerId);
+
+        expect(Result.isErr(res)).toBe(true);
+        expect(list.pullEvents()).toStrictEqual([]);
+      });
+
+      it('should return an empty array on the second pullEvents call', () => {
+        const list = List.reconstruct(args);
+        const res = list.addMember('4' as AccountID, args.ownerId);
+        expect(Result.isOk(res)).toBe(true);
+
+        list.pullEvents();
+
+        expect(list.pullEvents()).toStrictEqual([]);
+      });
+    });
+
+    describe('list.member.removed', () => {
+      it('should push exactly one list.member.removed event on success', () => {
+        const list = List.reconstruct(args);
+        const memberId = '3' as AccountID;
+
+        const res = list.removeMember(memberId, args.ownerId);
+        expect(Result.isOk(res)).toBe(true);
+
+        const events = list.pullEvents();
+
+        expect(events).toHaveLength(1);
+        const [event] = events;
+        expect(event?.eventName).toBe('list.member.removed');
+        expect(event?.target).toBe(args.id);
+        expect(event?.actor).toBe(args.ownerId);
+        expect(event?.payload).toStrictEqual({ memberID: memberId });
+      });
+
+      it('should return an empty array on the second pullEvents call', () => {
+        const list = List.reconstruct(args);
+        const res = list.removeMember('3' as AccountID, args.ownerId);
+        expect(Result.isOk(res)).toBe(true);
+
+        list.pullEvents();
+
+        expect(list.pullEvents()).toStrictEqual([]);
+      });
     });
   });
 });

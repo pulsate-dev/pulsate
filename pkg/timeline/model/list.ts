@@ -8,6 +8,7 @@ import {
   ListTitleLengthInvalidError,
   ListTooManyMembersError,
 } from './errors.ts';
+import { type ListEvent, listEventFactory } from './event/listEvents.ts';
 
 export type ListID = ID<List>;
 export type CreateListArgs = Readonly<{
@@ -35,6 +36,7 @@ export class List {
   readonly #ownerId: AccountID;
   readonly #memberIds: Set<AccountID>;
   readonly #createdAt: Date;
+  #events: ListEvent[] = [];
 
   private constructor(args: CreateListArgs) {
     this.#id = args.id;
@@ -47,9 +49,39 @@ export class List {
 
   static new(
     args: CreateListArgs,
+    actor: AccountID,
   ): Result.Result<
     ListTitleLengthInvalidError | ListTooManyMembersError,
     List
+  > {
+    const validationErr = List.#checkArgs(args);
+    if (Result.isErr(validationErr)) return validationErr;
+
+    const list = new List(args);
+    list.#events.push(
+      listEventFactory.created({
+        target: args.id,
+        actor,
+        ownerID: args.ownerId,
+        title: args.title,
+      }),
+    );
+    return Result.ok(list);
+  }
+
+  static reconstruct(args: CreateListArgs): List {
+    const validationErr = List.#checkArgs(args);
+    if (Result.isErr(validationErr)) {
+      throw Result.unwrapErr(validationErr);
+    }
+    return new List(args);
+  }
+
+  static #checkArgs(
+    args: CreateListArgs,
+  ): Result.Result<
+    ListTitleLengthInvalidError | ListTooManyMembersError,
+    void
   > {
     const parsed = v.safeParse(listTitleSchema, args.title);
     if (!parsed.success) {
@@ -64,11 +96,11 @@ export class List {
         new ListTooManyMembersError('too many members', { cause: null }),
       );
     }
-    return Result.ok(new List(args));
+    return Result.ok(undefined);
   }
 
-  static reconstruct(args: CreateListArgs): List {
-    return Result.unwrap(List.new(args));
+  pullEvents(): ListEvent[] {
+    return this.#events.splice(0);
   }
 
   getId(): ListID {
@@ -120,6 +152,7 @@ export class List {
 
   addMember(
     memberId: AccountID,
+    actor: AccountID,
   ): Result.Result<
     ListTooManyMembersError | ListMemberAlreadyExistsError,
     void
@@ -136,11 +169,30 @@ export class List {
         new ListTooManyMembersError('too many members', { cause: null }),
       );
     }
+
     this.#memberIds.add(memberId);
+    this.#events.push(
+      listEventFactory.memberAppended({
+        target: this.#id,
+        actor,
+        memberID: memberId,
+      }),
+    );
     return Result.ok(undefined);
   }
 
-  removeMember(memberId: AccountID): void {
+  removeMember(
+    memberId: AccountID,
+    actor: AccountID,
+  ): Result.Result<never, void> {
     this.#memberIds.delete(memberId);
+    this.#events.push(
+      listEventFactory.memberRemoved({
+        target: this.#id,
+        actor,
+        memberID: memberId,
+      }),
+    );
+    return Result.ok(undefined);
   }
 }
