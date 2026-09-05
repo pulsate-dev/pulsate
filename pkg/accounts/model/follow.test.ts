@@ -33,9 +33,12 @@ describe('AccountFollow domain events', () => {
 
     for (const event of events) {
       expect(event.target).toBe(exampleInput.targetID);
-      expect(event.actor).toBe(exampleInput.fromID);
       expect(event.payload).toStrictEqual({ targetID: exampleInput.targetID });
     }
+    // requested: the follower requests the follow
+    expect(requested?.actor).toBe(exampleInput.fromID);
+    // accepted: the target account accepts the follow
+    expect(accepted?.actor).toBe(exampleInput.targetID);
     expect(requested?.id).not.toBe(accepted?.id);
   });
 

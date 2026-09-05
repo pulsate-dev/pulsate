@@ -58,7 +58,7 @@ export class AccountFollow {
       }),
       followEventFactory.accepted({
         target: args.targetID,
-        actor: args.fromID,
+        actor: args.targetID,
         targetID: args.targetID,
       }),
     );

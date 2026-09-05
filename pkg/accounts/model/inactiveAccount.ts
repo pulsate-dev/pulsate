@@ -1,10 +1,6 @@
 import { type Option, Result } from '@mikuroxina/mini-fn';
 import * as v from 'valibot';
-import {
-  type AccountAlreadyDeletedError,
-  type AccountAlreadyFrozenError,
-  AccountMailAddressLengthError,
-} from './account.errors.ts';
+import { AccountMailAddressLengthError } from './account.errors.ts';
 import {
   Account,
   type AccountID,
@@ -85,12 +81,7 @@ export class InactiveAccount {
   activate(
     args: ActivateArgs,
     actor: Option.Option<AccountID>,
-  ): Result.Result<
-    | AccountAlreadyActivatedError
-    | AccountAlreadyDeletedError
-    | AccountAlreadyFrozenError,
-    Account
-  > {
+  ): Result.Result<AccountAlreadyActivatedError, Account> {
     if (this.isActivated()) {
       return Result.err(
         new AccountAlreadyActivatedError('This account was already activated.'),
@@ -114,7 +105,9 @@ export class InactiveAccount {
     });
     const activated = account.activate(actor);
     if (Result.isErr(activated)) {
-      return activated;
+      throw new Error(
+        'unreachable: newly reconstructed account cannot be deleted or frozen',
+      );
     }
 
     this.#activated = true;
