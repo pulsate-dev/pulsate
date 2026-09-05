@@ -1,7 +1,6 @@
 import { Option, Result } from '@mikuroxina/mini-fn';
 import { describe, expect, it } from 'vitest';
 
-import { MockClock, SnowflakeIDGenerator } from '../../internal/id/mod.ts';
 import type { AccountID } from './account.ts';
 import {
   type ActivateArgs,
@@ -21,19 +20,8 @@ const exampleActivateArgs: ActivateArgs = {
   createdAt: new Date('2023-09-10T00:00:00.000Z'),
 };
 
-const idGenerator = new SnowflakeIDGenerator(
-  1,
-  new MockClock(new Date('2023-09-10T00:00:00.000Z')),
-);
-const occurredAt = new Date('2023-09-10T00:00:00.000Z');
-const systemMeta = () => ({
-  idGenerator,
-  actor: Option.none(),
-  occurredAt,
-});
-
 const newInactiveAccount = () =>
-  Result.unwrap(InactiveAccount.new(exampleInput, systemMeta()));
+  Result.unwrap(InactiveAccount.new(exampleInput, Option.none()));
 
 describe('InactiveAccount', () => {
   it('generate new instance', () => {
@@ -47,7 +35,7 @@ describe('InactiveAccount', () => {
         ...exampleInput,
         mail: 'a@b.c',
       },
-      systemMeta(),
+      Option.none(),
     );
     expect(Result.isErr(result)).toBe(true);
   });
@@ -58,7 +46,7 @@ describe('InactiveAccount', () => {
         ...exampleInput,
         mail: `${'a'.repeat(320)}@example.com`,
       },
-      systemMeta(),
+      Option.none(),
     );
     expect(Result.isErr(result)).toBe(true);
   });
@@ -66,7 +54,7 @@ describe('InactiveAccount', () => {
   it('activate account', () => {
     const inactiveAccount = newInactiveAccount();
     const account = Result.unwrap(
-      inactiveAccount.activate(exampleActivateArgs, systemMeta()),
+      inactiveAccount.activate(exampleActivateArgs, Option.none()),
     );
 
     expect(account.getID()).toBe(exampleInput.id);
@@ -86,9 +74,9 @@ describe('InactiveAccount', () => {
 
   it('already activated', () => {
     const inactiveAccount = newInactiveAccount();
-    inactiveAccount.activate(exampleActivateArgs, systemMeta());
+    inactiveAccount.activate(exampleActivateArgs, Option.none());
 
-    const result = inactiveAccount.activate(exampleActivateArgs, systemMeta());
+    const result = inactiveAccount.activate(exampleActivateArgs, Option.none());
     expect(Result.isErr(result)).toBe(true);
   });
 
@@ -116,21 +104,6 @@ describe('InactiveAccount domain events', () => {
     expect(event?.payload).toStrictEqual({ mail: exampleInput.mail });
   });
 
-  it('new() does not create an account when event generation fails', () => {
-    const brokenIDGenerator = new SnowflakeIDGenerator(
-      1,
-      new MockClock(new Date('2020-01-01T00:00:00.000Z')),
-    );
-
-    const result = InactiveAccount.new(exampleInput, {
-      idGenerator: brokenIDGenerator,
-      actor: Option.none(),
-      occurredAt,
-    });
-
-    expect(Result.isErr(result)).toBe(true);
-  });
-
   it('pullEvents() is destructive', () => {
     const account = newInactiveAccount();
     expect(account.pullEvents()).toHaveLength(1);
@@ -142,7 +115,7 @@ describe('InactiveAccount domain events', () => {
     inactiveAccount.pullEvents();
 
     const account = Result.unwrap(
-      inactiveAccount.activate(exampleActivateArgs, systemMeta()),
+      inactiveAccount.activate(exampleActivateArgs, Option.none()),
     );
 
     expect(inactiveAccount.pullEvents()).toStrictEqual([]);
@@ -157,9 +130,9 @@ describe('InactiveAccount domain events', () => {
   it('activate() does not push an event when already activated', () => {
     const inactiveAccount = newInactiveAccount();
     inactiveAccount.pullEvents();
-    inactiveAccount.activate(exampleActivateArgs, systemMeta());
+    inactiveAccount.activate(exampleActivateArgs, Option.none());
 
-    const result = inactiveAccount.activate(exampleActivateArgs, systemMeta());
+    const result = inactiveAccount.activate(exampleActivateArgs, Option.none());
     expect(Result.isErr(result)).toBe(true);
   });
 });

@@ -1,7 +1,10 @@
 import { type Option, Result } from '@mikuroxina/mini-fn';
 import * as v from 'valibot';
-import type { EventMeta } from '../../internal/event/type.ts';
-import { AccountMailAddressLengthError } from './account.errors.ts';
+import {
+  type AccountAlreadyDeletedError,
+  type AccountAlreadyFrozenError,
+  AccountMailAddressLengthError,
+} from './account.errors.ts';
 import {
   Account,
   type AccountID,
@@ -81,8 +84,13 @@ export class InactiveAccount {
 
   activate(
     args: ActivateArgs,
-    meta: EventMeta<Option.Option<AccountID>>,
-  ): Result.Result<AccountAlreadyActivatedError | Error, Account> {
+    actor: Option.Option<AccountID>,
+  ): Result.Result<
+    | AccountAlreadyActivatedError
+    | AccountAlreadyDeletedError
+    | AccountAlreadyFrozenError,
+    Account
+  > {
     if (this.isActivated()) {
       return Result.err(
         new AccountAlreadyActivatedError('This account was already activated.'),
@@ -104,7 +112,7 @@ export class InactiveAccount {
       updatedAt: undefined,
       deletedAt: undefined,
     });
-    const activated = account.activate(meta);
+    const activated = account.activate(actor);
     if (Result.isErr(activated)) {
       return activated;
     }
@@ -115,8 +123,8 @@ export class InactiveAccount {
 
   static new(
     arg: CreateInactiveAccountArgs,
-    meta: EventMeta<Option.Option<AccountID>>,
-  ): Result.Result<AccountMailAddressLengthError | Error, InactiveAccount> {
+    actor: Option.Option<AccountID>,
+  ): Result.Result<AccountMailAddressLengthError, InactiveAccount> {
     if (!v.safeParse(mailSchema, arg.mail).success) {
       return Result.err(
         new AccountMailAddressLengthError(
@@ -125,18 +133,10 @@ export class InactiveAccount {
       );
     }
 
-    const event = accountEventFactory.registered(meta.idGenerator, {
-      target: arg.id,
-      actor: meta.actor,
-      occurredAt: meta.occurredAt,
-      mail: arg.mail,
-    });
-    if (Result.isErr(event)) {
-      return event;
-    }
-
     const account = new InactiveAccount(arg);
-    account.#events.push(Result.unwrap(event));
+    account.#events.push(
+      accountEventFactory.registered({ target: arg.id, actor, mail: arg.mail }),
+    );
     return Result.ok(account);
   }
 

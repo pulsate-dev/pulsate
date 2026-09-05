@@ -1,12 +1,6 @@
 import { Cat, Ether, Option, Promise, Result } from '@mikuroxina/mini-fn';
 
 import {
-  type Clock,
-  clockSymbol,
-  type SnowflakeIDGenerator,
-  snowflakeIDGeneratorSymbol,
-} from '../../internal/id/mod.ts';
-import {
   type PasswordEncoder,
   passwordEncoderSymbol,
 } from '../../internal/password/mod.ts';
@@ -20,18 +14,12 @@ import {
 export class EditService {
   #accountRepository: AccountRepository;
   #passwordEncoder: PasswordEncoder;
-  #idGenerator: SnowflakeIDGenerator;
-  #clock: Clock;
   constructor(
     accountRepository: AccountRepository,
     passwordEncoder: PasswordEncoder,
-    idGenerator: SnowflakeIDGenerator,
-    clock: Clock,
   ) {
     this.#accountRepository = accountRepository;
     this.#passwordEncoder = passwordEncoder;
-    this.#idGenerator = idGenerator;
-    this.#clock = clock;
   }
 
   async editNickname(
@@ -50,13 +38,7 @@ export class EditService {
       )
       .runWith(({ account, actor }) =>
         monad.map(() => [])(
-          Promise.resolve(
-            account.setNickName(nickname, {
-              idGenerator: this.#idGenerator,
-              actor: actor.getID(),
-              occurredAt: new Date(Number(this.#clock.now())),
-            }),
-          ),
+          Promise.resolve(account.setNickName(nickname, actor.getID())),
         ),
       )
       .runWith(({ account }) =>
@@ -124,13 +106,7 @@ export class EditService {
       )
       .runWith(({ account, actor }) =>
         monad.map(() => [])(
-          Promise.resolve(
-            account.setMail(newEmail, {
-              idGenerator: this.#idGenerator,
-              actor: actor.getID(),
-              occurredAt: new Date(Number(this.#clock.now())),
-            }),
-          ),
+          Promise.resolve(account.setMail(newEmail, actor.getID())),
         ),
       )
       .runWith(({ account }) =>
@@ -155,13 +131,7 @@ export class EditService {
       )
       .runWith(({ account, actor }) =>
         monad.map(() => [])(
-          Promise.resolve(
-            account.setBio(bio, {
-              idGenerator: this.#idGenerator,
-              actor: actor.getID(),
-              occurredAt: new Date(Number(this.#clock.now())),
-            }),
-          ),
+          Promise.resolve(account.setBio(bio, actor.getID())),
         ),
       )
       .runWith(({ account }) =>
@@ -204,12 +174,10 @@ export class EditService {
 export const editSymbol = Ether.newEtherSymbol<EditService>();
 export const edit = Ether.newEther(
   editSymbol,
-  ({ accountRepository, passwordEncoder, idGenerator, clock }) =>
-    new EditService(accountRepository, passwordEncoder, idGenerator, clock),
+  ({ accountRepository, passwordEncoder }) =>
+    new EditService(accountRepository, passwordEncoder),
   {
     accountRepository: accountRepoSymbol,
     passwordEncoder: passwordEncoderSymbol,
-    idGenerator: snowflakeIDGeneratorSymbol,
-    clock: clockSymbol,
   },
 );

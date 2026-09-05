@@ -95,11 +95,7 @@ export class RegisterService {
               passphraseHash,
               role,
             },
-            {
-              idGenerator: this.#snowflakeIDGenerator,
-              actor: Option.none(),
-              occurredAt: new Date(),
-            },
+            Option.none(),
           ),
         ),
       )

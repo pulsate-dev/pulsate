@@ -1,6 +1,5 @@
 import { Option, Result } from '@mikuroxina/mini-fn';
 
-import type { EventMeta } from '../../internal/event/type.ts';
 import type { AccountID } from './account.ts';
 import { type FollowEvent, followEventFactory } from './event/followEvents.ts';
 
@@ -46,30 +45,23 @@ export class AccountFollow {
 
   public static new(
     args: AccountFollowArgs,
-    meta: EventMeta<AccountID>,
-  ): Result.Result<Error, AccountFollow> {
-    const requested = followEventFactory.requested(meta.idGenerator, {
-      target: args.targetID,
-      actor: meta.actor,
-      occurredAt: meta.occurredAt,
-      targetID: args.targetID,
-    });
-    if (Result.isErr(requested)) {
-      return requested;
-    }
-
-    const accepted = followEventFactory.accepted(meta.idGenerator, {
-      target: args.targetID,
-      actor: meta.actor,
-      occurredAt: meta.occurredAt,
-      targetID: args.targetID,
-    });
-    if (Result.isErr(accepted)) {
-      return accepted;
-    }
-
+  ): Result.Result<never, AccountFollow> {
     const follow = new AccountFollow({ ...args, deletedAt: Option.none() });
-    follow.#events.push(Result.unwrap(requested), Result.unwrap(accepted));
+    // NOTE: Pulsate does not yet have a locked-account/approval-request flow,
+    // so a follow relationship is established immediately. Both the request
+    // and its (automatic) acceptance are recorded as domain events.
+    follow.#events.push(
+      followEventFactory.requested({
+        target: args.targetID,
+        actor: args.fromID,
+        targetID: args.targetID,
+      }),
+      followEventFactory.accepted({
+        target: args.targetID,
+        actor: args.fromID,
+        targetID: args.targetID,
+      }),
+    );
     return Result.ok(follow);
   }
 
@@ -95,8 +87,7 @@ export class AccountFollow {
 
   setDeletedAt(
     deletedAt: Date,
-    meta: EventMeta<AccountID>,
-  ): Result.Result<AccountFollowDateInvalidError | Error, void> {
+  ): Result.Result<AccountFollowDateInvalidError, void> {
     if (this.#createdAt > deletedAt) {
       return Result.err(
         new AccountFollowDateInvalidError(
@@ -105,18 +96,14 @@ export class AccountFollow {
       );
     }
 
-    const event = followEventFactory.unfollowed(meta.idGenerator, {
-      target: this.#targetID,
-      actor: meta.actor,
-      occurredAt: meta.occurredAt,
-      targetID: this.#targetID,
-    });
-    if (Result.isErr(event)) {
-      return event;
-    }
-
     this.#deletedAt = Option.some(deletedAt);
-    this.#events.push(Result.unwrap(event));
+    this.#events.push(
+      followEventFactory.unfollowed({
+        target: this.#targetID,
+        actor: this.#fromID,
+        targetID: this.#targetID,
+      }),
+    );
     return Result.ok(undefined);
   }
 }

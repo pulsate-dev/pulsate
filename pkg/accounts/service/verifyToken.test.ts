@@ -1,6 +1,6 @@
 import { Option, Result } from '@mikuroxina/mini-fn';
 import { describe, expect, it } from 'vitest';
-import { MockClock, SnowflakeIDGenerator } from '../../internal/id/mod.ts';
+import { MockClock } from '../../internal/id/mod.ts';
 import { InMemoryAccountRepository } from '../adaptor/repository/dummy/account.ts';
 import { InMemoryInactiveAccountRepository } from '../adaptor/repository/dummy/inactiveAccount.ts';
 import { InMemoryAccountVerifyTokenRepository } from '../adaptor/repository/dummy/verifyToken.ts';
@@ -23,14 +23,12 @@ await inactiveAccountRepository.create(
 );
 
 const mockClock = new MockClock(new Date('2023-09-10T00:00:00Z'));
-const idGenerator = new SnowflakeIDGenerator(1, mockClock);
 
 const service = new VerifyAccountTokenService(
   repository,
   inactiveAccountRepository,
   accountRepository,
   mockClock,
-  idGenerator,
 );
 
 describe('VerifyAccountTokenService', () => {
@@ -60,7 +58,6 @@ describe('VerifyAccountTokenService', () => {
       inactiveAccountRepository,
       accountRepository,
       mockClock,
-      idGenerator,
     );
     const token = await dummyService.generate('@johndoe@example.com');
     if (Result.isErr(token)) {

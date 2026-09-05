@@ -1,6 +1,5 @@
 import { Result } from '@mikuroxina/mini-fn';
 import type { PartialAccount } from '../../intermodule/account.ts';
-import { MockClock, SnowflakeIDGenerator } from '../../internal/id/mod.ts';
 import {
   Account,
   type AccountFrozen,
@@ -11,11 +10,6 @@ import {
   type AccountStatus,
 } from '../model/account.ts';
 import { AccountFollow } from '../model/follow.ts';
-
-const idGenerator = new SnowflakeIDGenerator(
-  1,
-  new MockClock(new Date('2023-09-10T00:00:00.000Z')),
-);
 
 /**
  * @description generate dummy account (factory function)
@@ -118,45 +112,24 @@ export const partialAccounts = [partialAccount1, partialAccount2];
 
 export const dummyfollows: AccountFollow[] = [
   Result.unwrap(
-    AccountFollow.new(
-      {
-        fromID: '101' as AccountID,
-        targetID: '102' as AccountID,
-        createdAt: new Date('2023-09-12T00:00:00Z'),
-      },
-      {
-        idGenerator,
-        actor: '101' as AccountID,
-        occurredAt: new Date('2023-09-12T00:00:00Z'),
-      },
-    ),
+    AccountFollow.new({
+      fromID: '101' as AccountID,
+      targetID: '102' as AccountID,
+      createdAt: new Date('2023-09-12T00:00:00Z'),
+    }),
   ),
   Result.unwrap(
-    AccountFollow.new(
-      {
-        fromID: '102' as AccountID,
-        targetID: '101' as AccountID,
-        createdAt: new Date('2023-09-13T00:00:00Z'),
-      },
-      {
-        idGenerator,
-        actor: '102' as AccountID,
-        occurredAt: new Date('2023-09-13T00:00:00Z'),
-      },
-    ),
+    AccountFollow.new({
+      fromID: '102' as AccountID,
+      targetID: '101' as AccountID,
+      createdAt: new Date('2023-09-13T00:00:00Z'),
+    }),
   ),
   Result.unwrap(
-    AccountFollow.new(
-      {
-        fromID: '103' as AccountID,
-        targetID: '101' as AccountID,
-        createdAt: new Date('2023-09-14T00:00:00Z'),
-      },
-      {
-        idGenerator,
-        actor: '103' as AccountID,
-        occurredAt: new Date('2023-09-14T00:00:00Z'),
-      },
-    ),
+    AccountFollow.new({
+      fromID: '103' as AccountID,
+      targetID: '101' as AccountID,
+      createdAt: new Date('2023-09-14T00:00:00Z'),
+    }),
   ),
 ];

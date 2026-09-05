@@ -1,28 +1,14 @@
 import { Result } from '@mikuroxina/mini-fn';
 import { describe, expect, it } from 'vitest';
 
-import { MockClock, SnowflakeIDGenerator } from '../../internal/id/mod.ts';
 import { InMemoryAccountRepository } from '../adaptor/repository/dummy/account.ts';
 import { InMemoryAccountFollowRepository } from '../adaptor/repository/dummy/follow.ts';
 import { Account, type AccountID } from '../model/account.ts';
 import { AccountFollow } from '../model/follow.ts';
 import { FetchFollowService } from './fetchFollow.ts';
 
-const idGenerator = new SnowflakeIDGenerator(
-  1,
-  new MockClock(new Date('2023-09-10T00:00:00.000Z')),
-);
 const newFollow = (fromID: AccountID, targetID: AccountID, createdAt: Date) =>
-  Result.unwrap(
-    AccountFollow.new(
-      { fromID, targetID, createdAt },
-      {
-        idGenerator,
-        actor: fromID,
-        occurredAt: createdAt,
-      },
-    ),
-  );
+  Result.unwrap(AccountFollow.new({ fromID, targetID, createdAt }));
 
 const accountRepository = new InMemoryAccountRepository();
 

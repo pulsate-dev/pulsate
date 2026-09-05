@@ -1,7 +1,6 @@
 import { Option, Result } from '@mikuroxina/mini-fn';
 import { afterEach, beforeEach, describe, expect, it } from 'vitest';
 
-import { MockClock, SnowflakeIDGenerator } from '../../internal/id/mod.ts';
 import { Argon2idPasswordEncoder } from '../../internal/password/mod.ts';
 import { InMemoryAccountRepository } from '../adaptor/repository/dummy/account.ts';
 import { Account, type AccountID } from '../model/account.ts';
@@ -9,17 +8,7 @@ import { EditService } from './edit.ts';
 
 const passwordEncoder = new Argon2idPasswordEncoder();
 const repository = new InMemoryAccountRepository();
-const idGenerator = new SnowflakeIDGenerator(
-  1,
-  new MockClock(new Date('2023-09-10T00:00:00.000Z')),
-);
-const clock = new MockClock(new Date('2023-09-10T00:00:00.000Z'));
-const editService = new EditService(
-  repository,
-  passwordEncoder,
-  idGenerator,
-  clock,
-);
+const editService = new EditService(repository, passwordEncoder);
 
 describe('EditService', () => {
   let account: Account;

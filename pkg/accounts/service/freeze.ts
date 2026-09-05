@@ -1,11 +1,5 @@
 import { Cat, Ether, Option, Promise, Result } from '@mikuroxina/mini-fn';
 
-import {
-  type Clock,
-  clockSymbol,
-  type SnowflakeIDGenerator,
-  snowflakeIDGeneratorSymbol,
-} from '../../internal/id/mod.ts';
 import type { Account, AccountName } from '../model/account.ts';
 import { AccountNotFoundError } from '../model/errors.ts';
 import {
@@ -15,16 +9,8 @@ import {
 
 export class FreezeService {
   readonly #accountRepository: AccountRepository;
-  readonly #idGenerator: SnowflakeIDGenerator;
-  readonly #clock: Clock;
-  constructor(
-    accountRepository: AccountRepository,
-    idGenerator: SnowflakeIDGenerator,
-    clock: Clock,
-  ) {
+  constructor(accountRepository: AccountRepository) {
     this.#accountRepository = accountRepository;
-    this.#idGenerator = idGenerator;
-    this.#clock = clock;
   }
 
   async setFreeze(
@@ -41,15 +27,7 @@ export class FreezeService {
         () => Promise.resolve(Result.err(new Error('not allowed'))),
       )
       .runWith(({ account, actor }) =>
-        monad.map(() => [])(
-          Promise.resolve(
-            account.setFreeze({
-              idGenerator: this.#idGenerator,
-              actor: actor.getID(),
-              occurredAt: new Date(Number(this.#clock.now())),
-            }),
-          ),
-        ),
+        monad.map(() => [])(Promise.resolve(account.setFreeze(actor.getID()))),
       )
       .runWith(({ account }) =>
         monad.map(() => [])(this.#accountRepository.edit(account)),
@@ -72,13 +50,7 @@ export class FreezeService {
       )
       .runWith(({ account, actor }) =>
         monad.map(() => [])(
-          Promise.resolve(
-            account.setUnfreeze({
-              idGenerator: this.#idGenerator,
-              actor: actor.getID(),
-              occurredAt: new Date(Number(this.#clock.now())),
-            }),
-          ),
+          Promise.resolve(account.setUnfreeze(actor.getID())),
         ),
       )
       .runWith(({ account }) =>
@@ -163,11 +135,8 @@ export class FreezeService {
 export const freezeSymbol = Ether.newEtherSymbol<FreezeService>();
 export const freeze = Ether.newEther(
   freezeSymbol,
-  ({ accountRepository, idGenerator, clock }) =>
-    new FreezeService(accountRepository, idGenerator, clock),
+  ({ accountRepository }) => new FreezeService(accountRepository),
   {
     accountRepository: accountRepoSymbol,
-    idGenerator: snowflakeIDGeneratorSymbol,
-    clock: clockSymbol,
   },
 );

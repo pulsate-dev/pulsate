@@ -1,11 +1,6 @@
 import { Cat, Ether, Option, Promise, type Result } from '@mikuroxina/mini-fn';
 
-import {
-  type Clock,
-  clockSymbol,
-  type SnowflakeIDGenerator,
-  snowflakeIDGeneratorSymbol,
-} from '../../internal/id/mod.ts';
+import { type Clock, clockSymbol } from '../../internal/id/mod.ts';
 import type { AccountName } from '../model/account.ts';
 import { AccountNotFoundError } from '../model/errors.ts';
 import { AccountFollow } from '../model/follow.ts';
@@ -20,17 +15,14 @@ export class FollowService {
   readonly #followRepository: AccountFollowRepository;
   readonly #accountRepository: AccountRepository;
   readonly #clock: Clock;
-  readonly #idGenerator: SnowflakeIDGenerator;
   constructor(
     followRepository: AccountFollowRepository,
     accountRepository: AccountRepository,
     clock: Clock,
-    idGenerator: SnowflakeIDGenerator,
   ) {
     this.#followRepository = followRepository;
     this.#accountRepository = accountRepository;
     this.#clock = clock;
-    this.#idGenerator = idGenerator;
   }
 
   async handle(
@@ -62,18 +54,11 @@ export class FollowService {
       )
       .addMWith('follow', ({ fromAccount, targetAccount }) =>
         Promise.resolve(
-          AccountFollow.new(
-            {
-              fromID: fromAccount.getID(),
-              targetID: targetAccount.getID(),
-              createdAt: new Date(Number(this.#clock.now())),
-            },
-            {
-              idGenerator: this.#idGenerator,
-              actor: fromAccount.getID(),
-              occurredAt: new Date(Number(this.#clock.now())),
-            },
-          ),
+          AccountFollow.new({
+            fromID: fromAccount.getID(),
+            targetID: targetAccount.getID(),
+            createdAt: new Date(Number(this.#clock.now())),
+          }),
         ),
       )
       .runWith(({ follow }) =>
@@ -86,12 +71,11 @@ export class FollowService {
 export const followSymbol = Ether.newEtherSymbol<FollowService>();
 export const follow = Ether.newEther(
   followSymbol,
-  ({ followRepository, accountRepository, clock, idGenerator }) =>
-    new FollowService(followRepository, accountRepository, clock, idGenerator),
+  ({ followRepository, accountRepository, clock }) =>
+    new FollowService(followRepository, accountRepository, clock),
   {
     followRepository: followRepoSymbol,
     accountRepository: accountRepoSymbol,
     clock: clockSymbol,
-    idGenerator: snowflakeIDGeneratorSymbol,
   },
 );

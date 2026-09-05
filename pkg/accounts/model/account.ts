@@ -1,7 +1,6 @@
 import { type Option, Result } from '@mikuroxina/mini-fn';
 import * as v from 'valibot';
 
-import type { EventMeta } from '../../internal/event/type.ts';
 import type { ID } from '../../internal/id/type.ts';
 import {
   AccountAlreadyDeletedError,
@@ -197,12 +196,11 @@ export class Account {
   // mutation methods
   setMail(
     mail: string,
-    meta: EventMeta<AccountID>,
+    actor: AccountID,
   ): Result.Result<
     | AccountAlreadyDeletedError
     | AccountAlreadyFrozenError
-    | AccountMailAddressLengthError
-    | Error,
+    | AccountMailAddressLengthError,
     void
   > {
     if (this.#isDeleted()) {
@@ -224,29 +222,20 @@ export class Account {
       );
     }
 
-    const event = accountEventFactory.emailUpdated(meta.idGenerator, {
-      target: this.#id,
-      actor: meta.actor,
-      occurredAt: meta.occurredAt,
-      mail,
-    });
-    if (Result.isErr(event)) {
-      return event;
-    }
-
     this.#mail = mail;
-    this.#events.push(Result.unwrap(event));
+    this.#events.push(
+      accountEventFactory.emailUpdated({ target: this.#id, actor, mail }),
+    );
     return Result.ok(undefined);
   }
 
   setNickName(
     name: string,
-    meta: EventMeta<AccountID>,
+    actor: AccountID,
   ): Result.Result<
     | AccountAlreadyDeletedError
     | AccountAlreadyFrozenError
-    | AccountNickNameLengthError
-    | Error,
+    | AccountNickNameLengthError,
     void
   > {
     if (this.#isDeleted()) {
@@ -266,18 +255,14 @@ export class Account {
       );
     }
 
-    const event = accountEventFactory.nicknameUpdated(meta.idGenerator, {
-      target: this.#id,
-      actor: meta.actor,
-      occurredAt: meta.occurredAt,
-      nickname: name,
-    });
-    if (Result.isErr(event)) {
-      return event;
-    }
-
     this.#nickname = name;
-    this.#events.push(Result.unwrap(event));
+    this.#events.push(
+      accountEventFactory.nicknameUpdated({
+        target: this.#id,
+        actor,
+        nickname: name,
+      }),
+    );
     return Result.ok(undefined);
   }
 
@@ -304,12 +289,11 @@ export class Account {
 
   setBio(
     bio: string,
-    meta: EventMeta<AccountID>,
+    actor: AccountID,
   ): Result.Result<
     | AccountAlreadyDeletedError
     | AccountAlreadyFrozenError
-    | AccountBioLengthError
-    | Error,
+    | AccountBioLengthError,
     void
   > {
     if (this.#isDeleted()) {
@@ -327,18 +311,10 @@ export class Account {
       return Result.err(new AccountBioLengthError('bio is too long'));
     }
 
-    const event = accountEventFactory.bioUpdated(meta.idGenerator, {
-      target: this.#id,
-      actor: meta.actor,
-      occurredAt: meta.occurredAt,
-      bio,
-    });
-    if (Result.isErr(event)) {
-      return event;
-    }
-
     this.#bio = bio;
-    this.#events.push(Result.unwrap(event));
+    this.#events.push(
+      accountEventFactory.bioUpdated({ target: this.#id, actor, bio }),
+    );
     return Result.ok(undefined);
   }
 
@@ -398,9 +374,9 @@ export class Account {
   }
 
   setFreeze(
-    meta: EventMeta<AccountID>,
+    actor: AccountID,
   ): Result.Result<
-    AccountAlreadyDeletedError | AccountAlreadyFrozenError | Error,
+    AccountAlreadyDeletedError | AccountAlreadyFrozenError,
     void
   > {
     if (this.#isDeleted()) {
@@ -409,24 +385,17 @@ export class Account {
       );
     }
 
-    const event = accountEventFactory.adminFrozen(meta.idGenerator, {
-      target: this.#id,
-      actor: meta.actor,
-      occurredAt: meta.occurredAt,
-    });
-    if (Result.isErr(event)) {
-      return event;
-    }
-
     this.#frozen = 'frozen';
-    this.#events.push(Result.unwrap(event));
+    this.#events.push(
+      accountEventFactory.adminFrozen({ target: this.#id, actor }),
+    );
     return Result.ok(undefined);
   }
 
   setUnfreeze(
-    meta: EventMeta<AccountID>,
+    actor: AccountID,
   ): Result.Result<
-    AccountAlreadyDeletedError | AccountAlreadyFrozenError | Error,
+    AccountAlreadyDeletedError | AccountAlreadyFrozenError,
     void
   > {
     if (this.#isDeleted()) {
@@ -435,24 +404,17 @@ export class Account {
       );
     }
 
-    const event = accountEventFactory.adminUnfrozen(meta.idGenerator, {
-      target: this.#id,
-      actor: meta.actor,
-      occurredAt: meta.occurredAt,
-    });
-    if (Result.isErr(event)) {
-      return event;
-    }
-
     this.#frozen = 'normal';
-    this.#events.push(Result.unwrap(event));
+    this.#events.push(
+      accountEventFactory.adminUnfrozen({ target: this.#id, actor }),
+    );
     return Result.ok(undefined);
   }
 
   setSilence(
-    meta: EventMeta<AccountID>,
+    actor: AccountID,
   ): Result.Result<
-    AccountAlreadyDeletedError | AccountAlreadyFrozenError | Error,
+    AccountAlreadyDeletedError | AccountAlreadyFrozenError,
     void
   > {
     if (this.#isDeleted()) {
@@ -464,25 +426,18 @@ export class Account {
       return Result.err(
         new AccountAlreadyFrozenError('account already frozen'),
       );
-    }
-
-    const event = accountEventFactory.adminSilenced(meta.idGenerator, {
-      target: this.#id,
-      actor: meta.actor,
-      occurredAt: meta.occurredAt,
-    });
-    if (Result.isErr(event)) {
-      return event;
     }
 
     this.#silenced = 'silenced';
-    this.#events.push(Result.unwrap(event));
+    this.#events.push(
+      accountEventFactory.adminSilenced({ target: this.#id, actor }),
+    );
     return Result.ok(undefined);
   }
   undoSilence(
-    meta: EventMeta<AccountID>,
+    actor: AccountID,
   ): Result.Result<
-    AccountAlreadyDeletedError | AccountAlreadyFrozenError | Error,
+    AccountAlreadyDeletedError | AccountAlreadyFrozenError,
     void
   > {
     if (this.#isDeleted()) {
@@ -496,24 +451,17 @@ export class Account {
       );
     }
 
-    const event = accountEventFactory.adminUnsilenced(meta.idGenerator, {
-      target: this.#id,
-      actor: meta.actor,
-      occurredAt: meta.occurredAt,
-    });
-    if (Result.isErr(event)) {
-      return event;
-    }
-
     this.#silenced = 'normal';
-    this.#events.push(Result.unwrap(event));
+    this.#events.push(
+      accountEventFactory.adminUnsilenced({ target: this.#id, actor }),
+    );
     return Result.ok(undefined);
   }
 
   activate(
-    meta: EventMeta<Option.Option<AccountID>>,
+    actor: Option.Option<AccountID>,
   ): Result.Result<
-    AccountAlreadyDeletedError | AccountAlreadyFrozenError | Error,
+    AccountAlreadyDeletedError | AccountAlreadyFrozenError,
     void
   > {
     if (this.#isDeleted()) {
@@ -527,17 +475,10 @@ export class Account {
       );
     }
 
-    const event = accountEventFactory.activated(meta.idGenerator, {
-      target: this.#id,
-      actor: meta.actor,
-      occurredAt: meta.occurredAt,
-    });
-    if (Result.isErr(event)) {
-      return event;
-    }
-
     this.#status = 'active';
-    this.#events.push(Result.unwrap(event));
+    this.#events.push(
+      accountEventFactory.activated({ target: this.#id, actor }),
+    );
     return Result.ok(undefined);
   }
 
@@ -587,18 +528,8 @@ export class Account {
       CreateAccountArgs,
       'deletedAt' | 'updatedAt' | 'frozen' | 'silenced' | 'status'
     >,
-    meta: EventMeta<Option.Option<AccountID>>,
-  ): Result.Result<Error, Account> {
-    const event = accountEventFactory.registered(meta.idGenerator, {
-      target: arg.id,
-      actor: meta.actor,
-      occurredAt: meta.occurredAt,
-      mail: arg.mail,
-    });
-    if (Result.isErr(event)) {
-      return event;
-    }
-
+    actor: Option.Option<AccountID>,
+  ): Account {
     const account = new Account({
       id: arg.id,
       mail: arg.mail,
@@ -614,8 +545,10 @@ export class Account {
       updatedAt: undefined,
       deletedAt: undefined,
     });
-    account.#events.push(Result.unwrap(event));
-    return Result.ok(account);
+    account.#events.push(
+      accountEventFactory.registered({ target: arg.id, actor, mail: arg.mail }),
+    );
+    return account;
   }
 
   static validatePassphrase(

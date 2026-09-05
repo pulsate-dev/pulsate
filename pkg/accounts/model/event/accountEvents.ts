@@ -1,7 +1,7 @@
 import { type Option, Result } from '@mikuroxina/mini-fn';
 
-import type { DomainEvent, EventID } from '../../../internal/event/type.ts';
-import type { SnowflakeIDGenerator } from '../../../internal/id/mod.ts';
+import { eventIDGenerator } from '../../../internal/event/idGenerator.ts';
+import type { DomainEvent } from '../../../internal/event/type.ts';
 import type { AccountID } from '../account.ts';
 
 export type AccountRegisteredEvent = DomainEvent<
@@ -69,169 +69,133 @@ export type AccountEvent =
   | AccountAdminUnsilencedEvent;
 
 export const accountEventFactory = {
-  registered(
-    idGenerator: SnowflakeIDGenerator,
-    args: {
-      target: AccountID;
-      actor: Option.Option<AccountID>;
-      occurredAt: Date;
-      mail: string;
-    },
-  ): Result.Result<Error, AccountRegisteredEvent> {
-    return Result.map((id: EventID) => ({
-      id,
+  registered(args: {
+    target: AccountID;
+    actor: Option.Option<AccountID>;
+    mail: string;
+  }): AccountRegisteredEvent {
+    return {
+      id: Result.unwrap(eventIDGenerator.generate<'Event'>()),
       eventName: 'account.registered' as const,
       target: args.target,
       actor: args.actor,
-      occurredAt: args.occurredAt,
+      occurredAt: new Date(),
       payload: { mail: args.mail },
-    }))(idGenerator.generate<'Event'>());
+    };
   },
 
-  activated(
-    idGenerator: SnowflakeIDGenerator,
-    args: {
-      target: AccountID;
-      actor: Option.Option<AccountID>;
-      occurredAt: Date;
-    },
-  ): Result.Result<Error, AccountActivatedEvent> {
-    return Result.map((id: EventID) => ({
-      id,
+  activated(args: {
+    target: AccountID;
+    actor: Option.Option<AccountID>;
+  }): AccountActivatedEvent {
+    return {
+      id: Result.unwrap(eventIDGenerator.generate<'Event'>()),
       eventName: 'account.activated' as const,
       target: args.target,
       actor: args.actor,
-      occurredAt: args.occurredAt,
+      occurredAt: new Date(),
       payload: {},
-    }))(idGenerator.generate<'Event'>());
+    };
   },
 
-  bioUpdated(
-    idGenerator: SnowflakeIDGenerator,
-    args: {
-      target: AccountID;
-      actor: AccountID;
-      occurredAt: Date;
-      bio: string;
-    },
-  ): Result.Result<Error, AccountBioUpdatedEvent> {
-    return Result.map((id: EventID) => ({
-      id,
+  bioUpdated(args: {
+    target: AccountID;
+    actor: AccountID;
+    bio: string;
+  }): AccountBioUpdatedEvent {
+    return {
+      id: Result.unwrap(eventIDGenerator.generate<'Event'>()),
       eventName: 'account.bio.updated' as const,
       target: args.target,
       actor: args.actor,
-      occurredAt: args.occurredAt,
+      occurredAt: new Date(),
       payload: { bio: args.bio },
-    }))(idGenerator.generate<'Event'>());
+    };
   },
 
-  nicknameUpdated(
-    idGenerator: SnowflakeIDGenerator,
-    args: {
-      target: AccountID;
-      actor: AccountID;
-      occurredAt: Date;
-      nickname: string;
-    },
-  ): Result.Result<Error, AccountNicknameUpdatedEvent> {
-    return Result.map((id: EventID) => ({
-      id,
+  nicknameUpdated(args: {
+    target: AccountID;
+    actor: AccountID;
+    nickname: string;
+  }): AccountNicknameUpdatedEvent {
+    return {
+      id: Result.unwrap(eventIDGenerator.generate<'Event'>()),
       eventName: 'account.nickname.updated' as const,
       target: args.target,
       actor: args.actor,
-      occurredAt: args.occurredAt,
+      occurredAt: new Date(),
       payload: { nickname: args.nickname },
-    }))(idGenerator.generate<'Event'>());
+    };
   },
 
-  emailUpdated(
-    idGenerator: SnowflakeIDGenerator,
-    args: {
-      target: AccountID;
-      actor: AccountID;
-      occurredAt: Date;
-      mail: string;
-    },
-  ): Result.Result<Error, AccountEmailUpdatedEvent> {
-    return Result.map((id: EventID) => ({
-      id,
+  emailUpdated(args: {
+    target: AccountID;
+    actor: AccountID;
+    mail: string;
+  }): AccountEmailUpdatedEvent {
+    return {
+      id: Result.unwrap(eventIDGenerator.generate<'Event'>()),
       eventName: 'account.email.updated' as const,
       target: args.target,
       actor: args.actor,
-      occurredAt: args.occurredAt,
+      occurredAt: new Date(),
       payload: { mail: args.mail },
-    }))(idGenerator.generate<'Event'>());
+    };
   },
 
-  adminFrozen(
-    idGenerator: SnowflakeIDGenerator,
-    args: {
-      target: AccountID;
-      actor: AccountID;
-      occurredAt: Date;
-    },
-  ): Result.Result<Error, AccountAdminFrozenEvent> {
-    return Result.map((id: EventID) => ({
-      id,
+  adminFrozen(args: {
+    target: AccountID;
+    actor: AccountID;
+  }): AccountAdminFrozenEvent {
+    return {
+      id: Result.unwrap(eventIDGenerator.generate<'Event'>()),
       eventName: 'account.admin.frozen' as const,
       target: args.target,
       actor: args.actor,
-      occurredAt: args.occurredAt,
+      occurredAt: new Date(),
       payload: {},
-    }))(idGenerator.generate<'Event'>());
+    };
   },
 
-  adminUnfrozen(
-    idGenerator: SnowflakeIDGenerator,
-    args: {
-      target: AccountID;
-      actor: AccountID;
-      occurredAt: Date;
-    },
-  ): Result.Result<Error, AccountAdminUnfrozenEvent> {
-    return Result.map((id: EventID) => ({
-      id,
+  adminUnfrozen(args: {
+    target: AccountID;
+    actor: AccountID;
+  }): AccountAdminUnfrozenEvent {
+    return {
+      id: Result.unwrap(eventIDGenerator.generate<'Event'>()),
       eventName: 'account.admin.unfrozen' as const,
       target: args.target,
       actor: args.actor,
-      occurredAt: args.occurredAt,
+      occurredAt: new Date(),
       payload: {},
-    }))(idGenerator.generate<'Event'>());
+    };
   },
 
-  adminSilenced(
-    idGenerator: SnowflakeIDGenerator,
-    args: {
-      target: AccountID;
-      actor: AccountID;
-      occurredAt: Date;
-    },
-  ): Result.Result<Error, AccountAdminSilencedEvent> {
-    return Result.map((id: EventID) => ({
-      id,
+  adminSilenced(args: {
+    target: AccountID;
+    actor: AccountID;
+  }): AccountAdminSilencedEvent {
+    return {
+      id: Result.unwrap(eventIDGenerator.generate<'Event'>()),
       eventName: 'account.admin.silenced' as const,
       target: args.target,
       actor: args.actor,
-      occurredAt: args.occurredAt,
+      occurredAt: new Date(),
       payload: {},
-    }))(idGenerator.generate<'Event'>());
+    };
   },
 
-  adminUnsilenced(
-    idGenerator: SnowflakeIDGenerator,
-    args: {
-      target: AccountID;
-      actor: AccountID;
-      occurredAt: Date;
-    },
-  ): Result.Result<Error, AccountAdminUnsilencedEvent> {
-    return Result.map((id: EventID) => ({
-      id,
+  adminUnsilenced(args: {
+    target: AccountID;
+    actor: AccountID;
+  }): AccountAdminUnsilencedEvent {
+    return {
+      id: Result.unwrap(eventIDGenerator.generate<'Event'>()),
       eventName: 'account.admin.unsilenced' as const,
       target: args.target,
       actor: args.actor,
-      occurredAt: args.occurredAt,
+      occurredAt: new Date(),
       payload: {},
-    }))(idGenerator.generate<'Event'>());
+    };
   },
 };

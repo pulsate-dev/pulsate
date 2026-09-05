@@ -1,7 +1,6 @@
 import { Option, Result } from '@mikuroxina/mini-fn';
 import { beforeEach, describe, expect, it } from 'vitest';
 
-import { MockClock, SnowflakeIDGenerator } from '../../internal/id/mod.ts';
 import { InMemoryAccountRepository } from '../adaptor/repository/dummy/account.ts';
 import { Account, type AccountID } from '../model/account.ts';
 import { FreezeService } from './freeze.ts';
@@ -79,12 +78,7 @@ const testAccounts = [
   }),
 ];
 const repository = new InMemoryAccountRepository();
-const idGenerator = new SnowflakeIDGenerator(
-  1,
-  new MockClock(new Date('2023-09-10T00:00:00.000Z')),
-);
-const clock = new MockClock(new Date('2023-09-10T00:00:00.000Z'));
-const freezeService = new FreezeService(repository, idGenerator, clock);
+const freezeService = new FreezeService(repository);
 
 describe('FreezeService', () => {
   beforeEach(() => repository.reset(testAccounts));

@@ -2,7 +2,6 @@ import { Option, Result } from '@mikuroxina/mini-fn';
 import * as v from 'valibot';
 import { describe, expect, it } from 'vitest';
 
-import { MockClock, SnowflakeIDGenerator } from '../../internal/id/mod.ts';
 import {
   Account,
   type AccountID,
@@ -26,23 +25,7 @@ const exampleInput: CreateAccountArgs = {
   deletedAt: new Date('2023-09-10T10:00:00.000Z'),
 };
 
-const idGenerator = new SnowflakeIDGenerator(
-  1,
-  new MockClock(new Date('2023-09-10T00:00:00.000Z')),
-);
-const occurredAt = new Date('2023-09-10T00:00:00.000Z');
-const systemMeta = () => ({
-  idGenerator,
-  actor: Option.none(),
-  occurredAt,
-});
-const actorMeta = (actor: AccountID) => ({
-  idGenerator,
-  actor,
-  occurredAt,
-});
-
-const newAccount = () => Result.unwrap(Account.new(exampleInput, systemMeta()));
+const newAccount = () => Account.new(exampleInput, Option.none());
 
 describe('Account', () => {
   const account = newAccount();
@@ -71,20 +54,15 @@ describe('Account', () => {
     string,
     (a: Account) => Result.Result<Error, void>,
   ][] = [
-    [
-      'nickname too long',
-      (a) => a.setNickName('a'.repeat(257), actorMeta(a.getID())),
-    ],
-    ['bio too long', (a) => a.setBio('a'.repeat(1025), actorMeta(a.getID()))],
-    ['mail too short', (a) => a.setMail('a'.repeat(6), actorMeta(a.getID()))],
-    ['mail too long', (a) => a.setMail('a'.repeat(320), actorMeta(a.getID()))],
+    ['nickname too long', (a) => a.setNickName('a'.repeat(257), a.getID())],
+    ['bio too long', (a) => a.setBio('a'.repeat(1025), a.getID())],
+    ['mail too short', (a) => a.setMail('a'.repeat(6), a.getID())],
+    ['mail too long', (a) => a.setMail('a'.repeat(320), a.getID())],
   ];
 
   it('allows empty string as nickname (no nickname set)', () => {
     const account = newAccount();
-    expect(
-      Result.isOk(account.setNickName('', actorMeta(account.getID()))),
-    ).toBe(true);
+    expect(Result.isOk(account.setNickName('', account.getID()))).toBe(true);
   });
 
   it.each(validationCases)('returns error when %s', (_, call) => {
@@ -109,22 +87,16 @@ describe('Account', () => {
 
   const mutationCalls: [string, (a: Account) => Result.Result<Error, void>][] =
     [
-      ['setBio', (a) => a.setBio('test', actorMeta(a.getID()))],
-      [
-        'setNickName',
-        (a) => a.setNickName('hello@example.com', actorMeta(a.getID())),
-      ],
+      ['setBio', (a) => a.setBio('test', a.getID())],
+      ['setNickName', (a) => a.setNickName('hello@example.com', a.getID())],
       ['setPassphraseHash', (a) => a.setPassphraseHash('123')],
-      ['setSilence', (a) => a.setSilence(actorMeta(a.getID()))],
-      [
-        'setMail',
-        (a) => a.setMail('pulsate@example.com', actorMeta(a.getID())),
-      ],
+      ['setSilence', (a) => a.setSilence(a.getID())],
+      ['setMail', (a) => a.setMail('pulsate@example.com', a.getID())],
     ];
 
   it.each(mutationCalls)('%s fails when account is frozen', (_, call) => {
     const frozen = newAccount();
-    frozen.setFreeze(actorMeta(frozen.getID()));
+    frozen.setFreeze(frozen.getID());
     expect(Result.isErr(call(frozen))).toBe(true);
   });
 
@@ -148,21 +120,6 @@ describe('Account domain events', () => {
     expect(event?.payload).toStrictEqual({ mail: exampleInput.mail });
   });
 
-  it('new() does not create an account when event generation fails', () => {
-    const brokenIDGenerator = new SnowflakeIDGenerator(
-      1,
-      new MockClock(new Date('2020-01-01T00:00:00.000Z')),
-    );
-
-    const result = Account.new(exampleInput, {
-      idGenerator: brokenIDGenerator,
-      actor: Option.none(),
-      occurredAt,
-    });
-
-    expect(Result.isErr(result)).toBe(true);
-  });
-
   it('pullEvents() is destructive', () => {
     const account = newAccount();
     expect(account.pullEvents()).toHaveLength(1);
@@ -174,42 +131,26 @@ describe('Account domain events', () => {
     (a: Account) => Result.Result<Error, void>,
     string,
   ][] = [
-    [
-      'setBio',
-      (a) => a.setBio('new bio', actorMeta(a.getID())),
-      'account.bio.updated',
-    ],
+    ['setBio', (a) => a.setBio('new bio', a.getID()), 'account.bio.updated'],
     [
       'setNickName',
-      (a) => a.setNickName('new nickname', actorMeta(a.getID())),
+      (a) => a.setNickName('new nickname', a.getID()),
       'account.nickname.updated',
     ],
     [
       'setMail',
-      (a) => a.setMail('new@example.com', actorMeta(a.getID())),
+      (a) => a.setMail('new@example.com', a.getID()),
       'account.email.updated',
     ],
-    [
-      'setFreeze',
-      (a) => a.setFreeze(actorMeta(a.getID())),
-      'account.admin.frozen',
-    ],
-    [
-      'setUnfreeze',
-      (a) => a.setUnfreeze(actorMeta(a.getID())),
-      'account.admin.unfrozen',
-    ],
-    [
-      'setSilence',
-      (a) => a.setSilence(actorMeta(a.getID())),
-      'account.admin.silenced',
-    ],
+    ['setFreeze', (a) => a.setFreeze(a.getID()), 'account.admin.frozen'],
+    ['setUnfreeze', (a) => a.setUnfreeze(a.getID()), 'account.admin.unfrozen'],
+    ['setSilence', (a) => a.setSilence(a.getID()), 'account.admin.silenced'],
     [
       'undoSilence',
-      (a) => a.undoSilence(actorMeta(a.getID())),
+      (a) => a.undoSilence(a.getID()),
       'account.admin.unsilenced',
     ],
-    ['activate', (a) => a.activate(systemMeta()), 'account.activated'],
+    ['activate', (a) => a.activate(Option.none()), 'account.activated'],
   ];
 
   it.each(mutationEventCases)(

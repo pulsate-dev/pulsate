@@ -1,7 +1,6 @@
 import { Option, Result } from '@mikuroxina/mini-fn';
 import { describe, expect, it } from 'vitest';
 
-import { MockClock, SnowflakeIDGenerator } from '../../internal/id/mod.ts';
 import { InMemoryAccountRepository } from '../adaptor/repository/dummy/account.ts';
 import { InMemoryAccountFollowRepository } from '../adaptor/repository/dummy/follow.ts';
 import { Account, type AccountID } from '../model/account.ts';
@@ -43,24 +42,13 @@ await accountRepository.create(
     deletedAt: undefined,
   }),
 );
-const idGenerator = new SnowflakeIDGenerator(
-  1,
-  new MockClock(new Date('2023-09-10T00:00:00.000Z')),
-);
 const repository = new InMemoryAccountFollowRepository([
   Result.unwrap(
-    AccountFollow.new(
-      {
-        fromID: '1' as AccountID,
-        targetID: '2' as AccountID,
-        createdAt: new Date(),
-      },
-      {
-        idGenerator,
-        actor: '1' as AccountID,
-        occurredAt: new Date(),
-      },
-    ),
+    AccountFollow.new({
+      fromID: '1' as AccountID,
+      targetID: '2' as AccountID,
+      createdAt: new Date(),
+    }),
   ),
 ]);
 const service = new UnfollowService(repository, accountRepository);

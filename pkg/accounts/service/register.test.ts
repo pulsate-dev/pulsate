@@ -25,7 +25,6 @@ const registerService: RegisterService = new RegisterService({
     inactiveAccountRepository,
     accountRepository,
     mockClock,
-    new SnowflakeIDGenerator(1, mockClock),
   ),
 });
 
