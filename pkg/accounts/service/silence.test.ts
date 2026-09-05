@@ -1,12 +1,18 @@
 import { Option } from '@mikuroxina/mini-fn';
 import { beforeEach, describe, expect, it } from 'vitest';
 
+import { MockClock, SnowflakeIDGenerator } from '../../internal/id/mod.ts';
 import { InMemoryAccountRepository } from '../adaptor/repository/dummy/account.ts';
 import { Account, type AccountID } from '../model/account.ts';
 import { SilenceService } from './silence.ts';
 
 const repository = new InMemoryAccountRepository();
-const silenceService = new SilenceService(repository);
+const idGenerator = new SnowflakeIDGenerator(
+  1,
+  new MockClock(new Date('2023-09-10T00:00:00.000Z')),
+);
+const clock = new MockClock(new Date('2023-09-10T00:00:00.000Z'));
+const silenceService = new SilenceService(repository, idGenerator, clock);
 
 const resetRepository = () => {
   repository.reset([

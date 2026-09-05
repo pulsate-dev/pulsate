@@ -1,38 +1,67 @@
-import { Result } from '@mikuroxina/mini-fn';
+import { Option, Result } from '@mikuroxina/mini-fn';
 import { describe, expect, it } from 'vitest';
+import {
+  MockClock,
+  SnowflakeIDGenerator,
+} from '../../../../internal/id/mod.ts';
 import { Account, type AccountID } from '../../../model/account.ts';
 
 import { InMemoryAccountRepository } from './account.ts';
 
+const idGenerator = new SnowflakeIDGenerator(
+  1,
+  new MockClock(new Date('2023-09-10T00:00:00.000Z')),
+);
+const meta = () => ({
+  idGenerator,
+  actor: Option.none(),
+  occurredAt: new Date('2023-09-10T00:00:00.000Z'),
+});
+
 describe('InMemoryAccountRepository', () => {
   const dummyInput: Account[] = [
-    Account.new({
-      id: '1' as AccountID,
-      name: '@john@example.com',
-      mail: 'johndoe@example.com',
-      nickname: 'John Doe',
-      bio: 'Hello, World!',
-      role: 'normal',
-      createdAt: new Date('2023-09-10T12:00:00Z'),
-    }),
-    Account.new({
-      id: '2' as AccountID,
-      name: '@alice@example.com',
-      mail: 'alice@example.com',
-      nickname: 'Alice',
-      bio: 'Hello, World!',
-      role: 'normal',
-      createdAt: new Date('2023-09-11T12:00:00Z'),
-    }),
-    Account.new({
-      id: '3' as AccountID,
-      name: '@bob@example.com',
-      mail: 'bob@example.com',
-      nickname: 'bob',
-      bio: 'Hello, World!',
-      role: 'normal',
-      createdAt: new Date('2023-09-12T12:00:00Z'),
-    }),
+    Result.unwrap(
+      Account.new(
+        {
+          id: '1' as AccountID,
+          name: '@john@example.com',
+          mail: 'johndoe@example.com',
+          nickname: 'John Doe',
+          bio: 'Hello, World!',
+          role: 'normal',
+          createdAt: new Date('2023-09-10T12:00:00Z'),
+        },
+        meta(),
+      ),
+    ),
+    Result.unwrap(
+      Account.new(
+        {
+          id: '2' as AccountID,
+          name: '@alice@example.com',
+          mail: 'alice@example.com',
+          nickname: 'Alice',
+          bio: 'Hello, World!',
+          role: 'normal',
+          createdAt: new Date('2023-09-11T12:00:00Z'),
+        },
+        meta(),
+      ),
+    ),
+    Result.unwrap(
+      Account.new(
+        {
+          id: '3' as AccountID,
+          name: '@bob@example.com',
+          mail: 'bob@example.com',
+          nickname: 'bob',
+          bio: 'Hello, World!',
+          role: 'normal',
+          createdAt: new Date('2023-09-12T12:00:00Z'),
+        },
+        meta(),
+      ),
+    ),
   ];
   const repository = new InMemoryAccountRepository(dummyInput);
 

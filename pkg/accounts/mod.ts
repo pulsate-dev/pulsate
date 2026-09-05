@@ -142,7 +142,8 @@ const verifyAccountTokenService = Cat.cat(verifyAccountToken)
     ),
   )
   .feed(Ether.compose(inactiveAccountRepository))
-  .feed(Ether.compose(accountRepository)).value;
+  .feed(Ether.compose(accountRepository))
+  .feed(Ether.compose(idGenerator)).value;
 
 const composer = Ether.composeT(Promise.monad);
 const liftOverPromise = Ether.liftEther(Promise.monad);
@@ -165,7 +166,9 @@ export const controller = new AccountController({
   editService: Ether.runEther(
     Cat.cat(edit)
       .feed(Ether.compose(accountRepository))
-      .feed(Ether.compose(argon2idPasswordEncoder)).value,
+      .feed(Ether.compose(argon2idPasswordEncoder))
+      .feed(Ether.compose(idGenerator))
+      .feed(Ether.compose(clock)).value,
   ),
   fetchService: Ether.runEther(
     Cat.cat(fetch).feed(Ether.compose(accountRepository)).value,
@@ -174,10 +177,14 @@ export const controller = new AccountController({
     Cat.cat(follow)
       .feed(Ether.compose(clock))
       .feed(Ether.compose(accountRepository))
-      .feed(Ether.compose(accountFollowRepository)).value,
+      .feed(Ether.compose(accountFollowRepository))
+      .feed(Ether.compose(idGenerator)).value,
   ),
   freezeService: Ether.runEther(
-    Cat.cat(freeze).feed(Ether.compose(accountRepository)).value,
+    Cat.cat(freeze)
+      .feed(Ether.compose(accountRepository))
+      .feed(Ether.compose(idGenerator))
+      .feed(Ether.compose(clock)).value,
   ),
   registerService: Ether.runEther(
     Cat.cat(register)
@@ -195,7 +202,10 @@ export const controller = new AccountController({
       .feed(Ether.compose(verifyAccountTokenService)).value,
   ),
   silenceService: Ether.runEther(
-    Cat.cat(silence).feed(Ether.compose(accountRepository)).value,
+    Cat.cat(silence)
+      .feed(Ether.compose(accountRepository))
+      .feed(Ether.compose(idGenerator))
+      .feed(Ether.compose(clock)).value,
   ),
   verifyAccountTokenService: Ether.runEther(verifyAccountTokenService),
   unFollowService: Ether.runEther(

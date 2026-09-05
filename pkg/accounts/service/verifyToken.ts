@@ -1,6 +1,11 @@
 import { Cat, Ether, Option, Promise, Result } from '@mikuroxina/mini-fn';
 
-import { type Clock, clockSymbol } from '../../internal/id/mod.ts';
+import {
+  type Clock,
+  clockSymbol,
+  type SnowflakeIDGenerator,
+  snowflakeIDGeneratorSymbol,
+} from '../../internal/id/mod.ts';
 import type { AccountName } from '../model/account.ts';
 import {
   AccountMailAddressVerificationTokenInvalidError,
@@ -21,16 +26,19 @@ export class VerifyAccountTokenService {
   readonly #inactiveAccountRepository: InactiveAccountRepository;
   readonly #accountRepository: AccountRepository;
   readonly #clock: Clock;
+  readonly #idGenerator: SnowflakeIDGenerator;
   constructor(
     repository: AccountVerifyTokenRepository,
     inactiveAccountRepository: InactiveAccountRepository,
     accountRepository: AccountRepository,
     clock: Clock,
+    idGenerator: SnowflakeIDGenerator,
   ) {
     this.#repository = repository;
     this.#inactiveAccountRepository = inactiveAccountRepository;
     this.#accountRepository = accountRepository;
     this.#clock = clock;
+    this.#idGenerator = idGenerator;
   }
 
   async generate(
@@ -123,9 +131,16 @@ export class VerifyAccountTokenService {
       )
       .addMWith('account', ({ inactiveAccount }) =>
         Promise.resolve(
-          inactiveAccount.activate({
-            createdAt: new Date(Number(this.#clock.now())),
-          }),
+          inactiveAccount.activate(
+            {
+              createdAt: new Date(Number(this.#clock.now())),
+            },
+            {
+              idGenerator: this.#idGenerator,
+              actor: Option.none(),
+              occurredAt: new Date(Number(this.#clock.now())),
+            },
+          ),
         ),
       )
       .runWith(({ account }) =>
@@ -149,17 +164,20 @@ export const verifyAccountToken = Ether.newEther(
     inactiveAccountRepository,
     accountRepository,
     clock,
+    idGenerator,
   }) =>
     new VerifyAccountTokenService(
       verifyTokenRepository,
       inactiveAccountRepository,
       accountRepository,
       clock,
+      idGenerator,
     ),
   {
     verifyTokenRepository: verifyTokenRepoSymbol,
     inactiveAccountRepository: inactiveAccountRepoSymbol,
     accountRepository: accountRepoSymbol,
     clock: clockSymbol,
+    idGenerator: snowflakeIDGeneratorSymbol,
   },
 );

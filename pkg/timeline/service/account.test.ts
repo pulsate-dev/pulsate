@@ -4,6 +4,7 @@ import { describe, expect, it, vi } from 'vitest';
 import { Account, type AccountID } from '../../accounts/model/account.ts';
 import type { PartialAccount } from '../../intermodule/account.ts';
 import { dummyAccountModuleFacade } from '../../intermodule/account.ts';
+import { MockClock, SnowflakeIDGenerator } from '../../internal/id/mod.ts';
 import { Note, type NoteID } from '../../notes/model/note.ts';
 import { InMemoryTimelineRepository } from '../adaptor/repository/dummy.ts';
 import { AccountTimelineService } from './account.ts';
@@ -66,16 +67,28 @@ describe('AccountTimelineService', () => {
       visibility: 'DIRECT',
     }),
   );
-  const dummyAccount1 = Account.new({
-    id: '101' as AccountID,
-    bio: 'this is test user',
-    mail: 'john@example.com',
-    name: '@john@example.com',
-    nickname: 'John Doe',
-    passphraseHash: '',
-    role: 'normal',
-    createdAt: new Date(),
-  });
+  const dummyAccount1 = Result.unwrap(
+    Account.new(
+      {
+        id: '101' as AccountID,
+        bio: 'this is test user',
+        mail: 'john@example.com',
+        name: '@john@example.com',
+        nickname: 'John Doe',
+        passphraseHash: '',
+        role: 'normal',
+        createdAt: new Date(),
+      },
+      {
+        idGenerator: new SnowflakeIDGenerator(
+          1,
+          new MockClock(new Date('2023-09-10T00:00:00.000Z')),
+        ),
+        actor: Option.none(),
+        occurredAt: new Date('2023-09-10T00:00:00.000Z'),
+      },
+    ),
+  );
   const partialAccount1: PartialAccount = {
     id: dummyAccount1.getID(),
     name: dummyAccount1.getName(),

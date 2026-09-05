@@ -1,5 +1,6 @@
 import { Result } from '@mikuroxina/mini-fn';
 import { describe, expect, it } from 'vitest';
+import { MockClock, SnowflakeIDGenerator } from '../../internal/id/mod.ts';
 import { InMemoryAccountRepository } from '../adaptor/repository/dummy/account.ts';
 import { InMemoryAccountFollowRepository } from '../adaptor/repository/dummy/follow.ts';
 import {
@@ -31,17 +32,30 @@ const createMockAccount = (id: string, name: string): Account => {
   });
 };
 
+const idGenerator = new SnowflakeIDGenerator(
+  1,
+  new MockClock(new Date('2023-09-10T00:00:00.000Z')),
+);
+
 const createMockFollow = (
   fromId: string,
   targetId: string,
   dayOffset = 0,
 ): AccountFollow => {
+  const createdAt = new Date(`2024-01-${10 + dayOffset}T12:00:00Z`);
   return Result.unwrap(
-    AccountFollow.new({
-      fromID: fromId as AccountID,
-      targetID: targetId as AccountID,
-      createdAt: new Date(`2024-01-${10 + dayOffset}T12:00:00Z`),
-    }),
+    AccountFollow.new(
+      {
+        fromID: fromId as AccountID,
+        targetID: targetId as AccountID,
+        createdAt,
+      },
+      {
+        idGenerator,
+        actor: fromId as AccountID,
+        occurredAt: createdAt,
+      },
+    ),
   );
 };
 

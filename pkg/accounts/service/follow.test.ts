@@ -1,6 +1,6 @@
 import { Option, Result } from '@mikuroxina/mini-fn';
 import { describe, expect, it } from 'vitest';
-import { MockClock } from '../../internal/id/mod.ts';
+import { MockClock, SnowflakeIDGenerator } from '../../internal/id/mod.ts';
 import { InMemoryAccountRepository } from '../adaptor/repository/dummy/account.ts';
 import { InMemoryAccountFollowRepository } from '../adaptor/repository/dummy/follow.ts';
 import { Account, type AccountID } from '../model/account.ts';
@@ -42,10 +42,12 @@ await accountRepository.create(
   }),
 );
 const repository = new InMemoryAccountFollowRepository();
+const mockClock = new MockClock(new Date('2023-09-10T00:00:00Z'));
 const service = new FollowService(
   repository,
   accountRepository,
-  new MockClock(new Date('2023-09-10T00:00:00Z')),
+  mockClock,
+  new SnowflakeIDGenerator(1, mockClock),
 );
 
 describe('FollowService', () => {

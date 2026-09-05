@@ -1,7 +1,7 @@
 import { Option } from '@mikuroxina/mini-fn';
 import { afterEach, describe, expect, it } from 'vitest';
 import { notificationModule } from '../../intermodule/notification.ts';
-import { MockClock } from '../../internal/id/mod.ts';
+import { MockClock, SnowflakeIDGenerator } from '../../internal/id/mod.ts';
 import { InMemoryAccountRepository } from '../adaptor/repository/dummy/account.ts';
 import { InMemoryInactiveAccountRepository } from '../adaptor/repository/dummy/inactiveAccount.ts';
 import { InMemoryAccountVerifyTokenRepository } from '../adaptor/repository/dummy/verifyToken.ts';
@@ -31,6 +31,7 @@ const verifyAccountTokenService = new VerifyAccountTokenService(
   inactiveAccountRepository,
   accountRepository,
   mockClock,
+  new SnowflakeIDGenerator(1, mockClock),
 );
 
 describe('ResendVerifyTokenService', () => {

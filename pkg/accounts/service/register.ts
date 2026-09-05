@@ -87,13 +87,20 @@ export class RegisterService {
       )
       .addMWith('account', ({ generatedID, passphraseHash }) =>
         Promise.resolve(
-          InactiveAccount.new({
-            id: generatedID,
-            name,
-            mail,
-            passphraseHash,
-            role,
-          }),
+          InactiveAccount.new(
+            {
+              id: generatedID,
+              name,
+              mail,
+              passphraseHash,
+              role,
+            },
+            {
+              idGenerator: this.#snowflakeIDGenerator,
+              actor: Option.none(),
+              occurredAt: new Date(),
+            },
+          ),
         ),
       )
       .runWith(({ account }) =>

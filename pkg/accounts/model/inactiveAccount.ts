@@ -1,5 +1,6 @@
-import { Result } from '@mikuroxina/mini-fn';
+import { type Option, Result } from '@mikuroxina/mini-fn';
 import * as v from 'valibot';
+import type { EventMeta } from '../../internal/event/type.ts';
 import { AccountMailAddressLengthError } from './account.errors.ts';
 import {
   Account,
@@ -8,6 +9,10 @@ import {
   type AccountRole,
   mailSchema,
 } from './account.ts';
+import {
+  type AccountRegisteredEvent,
+  accountEventFactory,
+} from './event/accountEvents.ts';
 
 export interface CreateInactiveAccountArgs {
   id: AccountID;
@@ -44,6 +49,11 @@ export class InactiveAccount {
     return this.#activated;
   }
 
+  #events: AccountRegisteredEvent[] = [];
+  pullEvents(): AccountRegisteredEvent[] {
+    return this.#events.splice(0);
+  }
+
   readonly #id: AccountID;
   getID(): AccountID {
     return this.#id;
@@ -71,36 +81,42 @@ export class InactiveAccount {
 
   activate(
     args: ActivateArgs,
-  ): Result.Result<AccountAlreadyActivatedError, Account> {
+    meta: EventMeta<Option.Option<AccountID>>,
+  ): Result.Result<AccountAlreadyActivatedError | Error, Account> {
     if (this.isActivated()) {
       return Result.err(
         new AccountAlreadyActivatedError('This account was already activated.'),
       );
     }
 
+    const account = Account.reconstruct({
+      id: this.#id,
+      name: this.#name,
+      mail: this.#mail,
+      passphraseHash: this.#passphraseHash,
+      role: this.#role,
+      nickname: '',
+      bio: '',
+      createdAt: args.createdAt,
+      status: 'notActivated',
+      frozen: 'normal',
+      silenced: 'normal',
+      updatedAt: undefined,
+      deletedAt: undefined,
+    });
+    const activated = account.activate(meta);
+    if (Result.isErr(activated)) {
+      return activated;
+    }
+
     this.#activated = true;
-    return Result.ok(
-      Account.reconstruct({
-        id: this.#id,
-        name: this.#name,
-        mail: this.#mail,
-        passphraseHash: this.#passphraseHash,
-        role: this.#role,
-        nickname: '',
-        bio: '',
-        createdAt: args.createdAt,
-        status: 'active',
-        frozen: 'normal',
-        silenced: 'normal',
-        updatedAt: undefined,
-        deletedAt: undefined,
-      }),
-    );
+    return Result.ok(account);
   }
 
   static new(
     arg: CreateInactiveAccountArgs,
-  ): Result.Result<AccountMailAddressLengthError, InactiveAccount> {
+    meta: EventMeta<Option.Option<AccountID>>,
+  ): Result.Result<AccountMailAddressLengthError | Error, InactiveAccount> {
     if (!v.safeParse(mailSchema, arg.mail).success) {
       return Result.err(
         new AccountMailAddressLengthError(
@@ -108,7 +124,20 @@ export class InactiveAccount {
         ),
       );
     }
-    return Result.ok(new InactiveAccount(arg));
+
+    const event = accountEventFactory.registered(meta.idGenerator, {
+      target: arg.id,
+      actor: meta.actor,
+      occurredAt: meta.occurredAt,
+      mail: arg.mail,
+    });
+    if (Result.isErr(event)) {
+      return event;
+    }
+
+    const account = new InactiveAccount(arg);
+    account.#events.push(event[1]);
+    return Result.ok(account);
   }
 
   static reconstruct(arg: CreateInactiveAccountArgs): InactiveAccount {

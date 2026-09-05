@@ -1,5 +1,11 @@
 import { Cat, Ether, Option, Promise, Result } from '@mikuroxina/mini-fn';
 
+import {
+  type Clock,
+  clockSymbol,
+  type SnowflakeIDGenerator,
+  snowflakeIDGeneratorSymbol,
+} from '../../internal/id/mod.ts';
 import type { Account, AccountName } from '../model/account.ts';
 import { AccountNotFoundError } from '../model/errors.ts';
 import {
@@ -9,9 +15,17 @@ import {
 
 export class SilenceService {
   readonly #accountRepository: AccountRepository;
+  readonly #idGenerator: SnowflakeIDGenerator;
+  readonly #clock: Clock;
 
-  constructor(accountRepository: AccountRepository) {
+  constructor(
+    accountRepository: AccountRepository,
+    idGenerator: SnowflakeIDGenerator,
+    clock: Clock,
+  ) {
     this.#accountRepository = accountRepository;
+    this.#idGenerator = idGenerator;
+    this.#clock = clock;
   }
 
   async setSilence(
@@ -27,8 +41,16 @@ export class SilenceService {
         ({ account, actor }) => !this.isAllowed('silence', actor, account),
         () => Promise.resolve(Result.err(new Error('not allowed'))),
       )
-      .runWith(({ account }) =>
-        monad.map(() => [])(Promise.resolve(account.setSilence())),
+      .runWith(({ account, actor }) =>
+        monad.map(() => [])(
+          Promise.resolve(
+            account.setSilence({
+              idGenerator: this.#idGenerator,
+              actor: actor.getID(),
+              occurredAt: new Date(Number(this.#clock.now())),
+            }),
+          ),
+        ),
       )
       .runWith(({ account }) =>
         monad.map(() => [])(this.#accountRepository.edit(account)),
@@ -49,8 +71,16 @@ export class SilenceService {
         ({ account, actor }) => !this.isAllowed('undoSilence', actor, account),
         () => Promise.resolve(Result.err(new Error('not allowed'))),
       )
-      .runWith(({ account }) =>
-        monad.map(() => [])(Promise.resolve(account.undoSilence())),
+      .runWith(({ account, actor }) =>
+        monad.map(() => [])(
+          Promise.resolve(
+            account.undoSilence({
+              idGenerator: this.#idGenerator,
+              actor: actor.getID(),
+              occurredAt: new Date(Number(this.#clock.now())),
+            }),
+          ),
+        ),
       )
       .runWith(({ account }) =>
         monad.map(() => [])(this.#accountRepository.edit(account)),
@@ -134,6 +164,11 @@ export class SilenceService {
 export const silenceSymbol = Ether.newEtherSymbol<SilenceService>();
 export const silence = Ether.newEther(
   silenceSymbol,
-  ({ accountRepository }) => new SilenceService(accountRepository),
-  { accountRepository: accountRepoSymbol },
+  ({ accountRepository, idGenerator, clock }) =>
+    new SilenceService(accountRepository, idGenerator, clock),
+  {
+    accountRepository: accountRepoSymbol,
+    idGenerator: snowflakeIDGeneratorSymbol,
+    clock: clockSymbol,
+  },
 );

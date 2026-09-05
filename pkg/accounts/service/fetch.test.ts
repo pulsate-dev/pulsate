@@ -1,39 +1,65 @@
-import { Result } from '@mikuroxina/mini-fn';
+import { Option, Result } from '@mikuroxina/mini-fn';
 import { afterEach, describe, expect, it } from 'vitest';
 
+import { MockClock, SnowflakeIDGenerator } from '../../internal/id/mod.ts';
 import { InMemoryAccountRepository } from '../adaptor/repository/dummy/account.ts';
 import { Account, type AccountID } from '../model/account.ts';
 import { FetchService } from './fetch.ts';
 
+const idGenerator = new SnowflakeIDGenerator(
+  1,
+  new MockClock(new Date('2023-09-10T00:00:00.000Z')),
+);
+const meta = () => ({
+  idGenerator,
+  actor: Option.none(),
+  occurredAt: new Date('2023-09-10T00:00:00.000Z'),
+});
+
 const testAccounts = [
-  Account.new({
-    id: '1' as AccountID,
-    name: '@john@example.com',
-    mail: 'johndoe@example.com',
-    nickname: 'John Doe',
-    passphraseHash: 'hash',
-    bio: '',
-    role: 'normal',
-    createdAt: new Date('2023-09-10T12:00:00Z'),
-  }),
-  Account.new({
-    id: '2' as AccountID,
-    name: '@alice@example.com',
-    mail: 'alice@example.com',
-    nickname: 'Alice',
-    bio: 'Hello, World!',
-    role: 'normal',
-    createdAt: new Date('2023-09-11T12:00:00Z'),
-  }),
-  Account.new({
-    id: '3' as AccountID,
-    name: '@bob@example.com',
-    mail: 'bob@example.com',
-    nickname: 'bob',
-    bio: 'Hello, World!',
-    role: 'normal',
-    createdAt: new Date('2023-09-12T12:00:00Z'),
-  }),
+  Result.unwrap(
+    Account.new(
+      {
+        id: '1' as AccountID,
+        name: '@john@example.com',
+        mail: 'johndoe@example.com',
+        nickname: 'John Doe',
+        passphraseHash: 'hash',
+        bio: '',
+        role: 'normal',
+        createdAt: new Date('2023-09-10T12:00:00Z'),
+      },
+      meta(),
+    ),
+  ),
+  Result.unwrap(
+    Account.new(
+      {
+        id: '2' as AccountID,
+        name: '@alice@example.com',
+        mail: 'alice@example.com',
+        nickname: 'Alice',
+        bio: 'Hello, World!',
+        role: 'normal',
+        createdAt: new Date('2023-09-11T12:00:00Z'),
+      },
+      meta(),
+    ),
+  ),
+  Result.unwrap(
+    Account.new(
+      {
+        id: '3' as AccountID,
+        name: '@bob@example.com',
+        mail: 'bob@example.com',
+        nickname: 'bob',
+        bio: 'Hello, World!',
+        role: 'normal',
+        createdAt: new Date('2023-09-12T12:00:00Z'),
+      },
+      meta(),
+    ),
+  ),
 ];
 const repository = new InMemoryAccountRepository(testAccounts);
 const fetchService = new FetchService(repository);
@@ -72,16 +98,21 @@ describe('FetchService', () => {
     }
 
     expect(account[1]).toStrictEqual(
-      Account.new({
-        id: '1' as AccountID,
-        name: '@john@example.com',
-        mail: 'johndoe@example.com',
-        nickname: 'John Doe',
-        passphraseHash: 'hash',
-        bio: '',
-        role: 'normal',
-        createdAt: new Date('2023-09-10T12:00:00.000Z'),
-      }),
+      Result.unwrap(
+        Account.new(
+          {
+            id: '1' as AccountID,
+            name: '@john@example.com',
+            mail: 'johndoe@example.com',
+            nickname: 'John Doe',
+            passphraseHash: 'hash',
+            bio: '',
+            role: 'normal',
+            createdAt: new Date('2023-09-10T12:00:00.000Z'),
+          },
+          meta(),
+        ),
+      ),
     );
   });
 
