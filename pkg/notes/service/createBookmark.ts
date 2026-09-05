@@ -1,6 +1,7 @@
 import { Cat, Ether, Option, Promise, Result } from '@mikuroxina/mini-fn';
 
 import type { AccountID } from '../../accounts/model/account.ts';
+import { Bookmark } from '../model/bookmark.ts';
 import {
   NoteBookmarkAlreadyCreatedError,
   NoteNotFoundError,
@@ -54,6 +55,9 @@ export class CreateBookmarkService {
               ),
             ),
           ),
+      )
+      .addMWith('bookmark', () =>
+        Promise.resolve(Bookmark.new({ noteID, accountID }, accountID)),
       )
       .runWith(() =>
         this.#bookmarkRepository

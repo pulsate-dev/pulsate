@@ -16,32 +16,32 @@ const anotherAccountID = 'accountID_2' as AccountID;
 
 const bookmarkRepository = new InMemoryBookmarkRepository();
 const noteRepository = new InMemoryNoteRepository([
-  Result.unwrap(
-    Note.new({
-      id: 'noteID_1' as NoteID,
-      authorID: '3' as AccountID,
-      content: 'Hello world',
-      contentsWarningComment: '',
-      createdAt: new Date('2023-09-10T00:00:00Z'),
-      sendTo: Option.none(),
-      originalNoteID: Option.none(),
-      attachmentFileID: [],
-      visibility: 'PUBLIC',
-    }),
-  ),
-  Result.unwrap(
-    Note.new({
-      id: 'noteID_2' as NoteID,
-      authorID: '3' as AccountID,
-      content: 'Another note',
-      contentsWarningComment: '',
-      createdAt: new Date('2023-09-10T00:00:00Z'),
-      sendTo: Option.none(),
-      originalNoteID: Option.none(),
-      attachmentFileID: [],
-      visibility: 'PUBLIC',
-    }),
-  ),
+  Note.reconstruct({
+    id: 'noteID_1' as NoteID,
+    authorID: '3' as AccountID,
+    content: 'Hello world',
+    contentsWarningComment: '',
+    createdAt: new Date('2023-09-10T00:00:00Z'),
+    sendTo: Option.none(),
+    originalNoteID: Option.none(),
+    attachmentFileID: [],
+    visibility: 'PUBLIC',
+    updatedAt: Option.none(),
+    deletedAt: Option.none(),
+  }),
+  Note.reconstruct({
+    id: 'noteID_2' as NoteID,
+    authorID: '3' as AccountID,
+    content: 'Another note',
+    contentsWarningComment: '',
+    createdAt: new Date('2023-09-10T00:00:00Z'),
+    sendTo: Option.none(),
+    originalNoteID: Option.none(),
+    attachmentFileID: [],
+    visibility: 'PUBLIC',
+    updatedAt: Option.none(),
+    deletedAt: Option.none(),
+  }),
 ]);
 const createBookmarkService = new CreateBookmarkService(
   bookmarkRepository,

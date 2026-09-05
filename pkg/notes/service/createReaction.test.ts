@@ -18,19 +18,19 @@ const noteFactory = (
   originalNoteID: Option.Option<NoteID>,
   createdAt: Date,
 ) =>
-  Result.unwrap(
-    Note.new({
-      id,
-      authorID,
-      content,
-      visibility: 'PUBLIC',
-      contentsWarningComment: '',
-      attachmentFileID: [],
-      createdAt,
-      originalNoteID,
-      sendTo: Option.none(),
-    }),
-  );
+  Note.reconstruct({
+    id,
+    authorID,
+    content,
+    visibility: 'PUBLIC',
+    contentsWarningComment: '',
+    attachmentFileID: [],
+    createdAt,
+    originalNoteID,
+    sendTo: Option.none(),
+    updatedAt: Option.none(),
+    deletedAt: Option.none(),
+  });
 
 const normalNote = noteFactory(
   '1' as NoteID,

@@ -46,7 +46,7 @@ export class CreateReactionService {
       )
       .addM('id', Promise.resolve(this.#idGenerator.generate<Reaction>()))
       .addMWith('reaction', ({ id, note }) =>
-        Promise.resolve(Reaction.new({ id, note, accountID, body })),
+        Promise.resolve(Reaction.new({ id, note, accountID, body }, accountID)),
       )
       .runWith(({ reaction }) =>
         this.#reactionRepository.create(reaction).then(Result.map(() => [])),

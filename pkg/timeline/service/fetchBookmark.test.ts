@@ -11,23 +11,23 @@ import {
 import { FetchBookmarkService } from './fetchBookmark.ts';
 
 const bookmarks = [
-  Bookmark.new({
+  Bookmark.reconstruct({
     accountID: '10' as AccountID,
     noteID: '1' as NoteID,
   }),
-  Bookmark.new({
+  Bookmark.reconstruct({
     accountID: '10' as AccountID,
     noteID: '2' as NoteID,
   }),
-  Bookmark.new({
+  Bookmark.reconstruct({
     accountID: '20' as AccountID,
     noteID: '3' as NoteID,
   }),
-  Bookmark.new({
+  Bookmark.reconstruct({
     accountID: '20' as AccountID,
     noteID: '4' as NoteID,
   }),
-  Bookmark.new({
+  Bookmark.reconstruct({
     accountID: '20' as AccountID,
     noteID: '5' as NoteID,
   }),

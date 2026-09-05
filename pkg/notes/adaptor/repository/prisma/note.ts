@@ -299,7 +299,7 @@ export class PrismaBookmarkRepository implements BookmarkRepository {
       });
       return Option.some(
         res.map((v) =>
-          Bookmark.new({
+          Bookmark.reconstruct({
             noteID: v.noteId as NoteID,
             accountID: v.accountId as AccountID,
           }),
@@ -325,7 +325,7 @@ export class PrismaBookmarkRepository implements BookmarkRepository {
         },
       });
       return Option.some(
-        Bookmark.new({
+        Bookmark.reconstruct({
           noteID: res.noteId as NoteID,
           accountID: res.accountId as AccountID,
         }),

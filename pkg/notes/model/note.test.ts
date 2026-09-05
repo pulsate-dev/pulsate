@@ -24,9 +24,11 @@ const exampleInput: CreateNoteArgs = {
   deletedAt: Option.none(),
 };
 
+const actor = exampleInput.authorID;
+
 describe('Note', () => {
   it('generate new instance', () => {
-    const note = Result.unwrap(Note.new(exampleInput));
+    const note = Result.unwrap(Note.new(exampleInput, actor));
 
     expect(note.getID()).toBe(exampleInput.id);
     expect(note.getAuthorID()).toBe(exampleInput.authorID);
@@ -86,7 +88,7 @@ describe('Note', () => {
         expectedError: NoteContentLengthError,
       },
     ])('$name returns error', ({ args, expectedError }) => {
-      const result = Note.new(args);
+      const result = Note.new(args, actor);
       expect(Result.isErr(result)).toBe(true);
       expect(Result.unwrapErr(result)).toBeInstanceOf(expectedError);
     });
@@ -94,13 +96,16 @@ describe('Note', () => {
 
   it('should allow empty content for renote (originalNoteID is Some)', () => {
     const renote = Result.unwrap(
-      Note.new({
-        ...exampleInput,
-        content: '',
-        contentsWarningComment: '',
-        attachmentFileID: [],
-        originalNoteID: Option.some('999' as NoteID),
-      }),
+      Note.new(
+        {
+          ...exampleInput,
+          content: '',
+          contentsWarningComment: '',
+          attachmentFileID: [],
+          originalNoteID: Option.some('999' as NoteID),
+        },
+        actor,
+      ),
     );
 
     expect(renote.getContent()).toBe('');
@@ -113,13 +118,16 @@ describe('Note', () => {
 
   it('should allow empty content in renote with CW comment', () => {
     const renote = Result.unwrap(
-      Note.new({
-        ...exampleInput,
-        content: '',
-        contentsWarningComment: 'CW text',
-        attachmentFileID: [],
-        originalNoteID: Option.some('999' as NoteID),
-      }),
+      Note.new(
+        {
+          ...exampleInput,
+          content: '',
+          contentsWarningComment: 'CW text',
+          attachmentFileID: [],
+          originalNoteID: Option.some('999' as NoteID),
+        },
+        actor,
+      ),
     );
 
     expect(renote.getContent()).toBe('');
@@ -131,13 +139,16 @@ describe('Note', () => {
 
   it('should allow empty content in renote with attachments', () => {
     const renote = Result.unwrap(
-      Note.new({
-        ...exampleInput,
-        content: '',
-        contentsWarningComment: '',
-        attachmentFileID: ['10' as MediumID, '11' as MediumID],
-        originalNoteID: Option.some('999' as NoteID),
-      }),
+      Note.new(
+        {
+          ...exampleInput,
+          content: '',
+          contentsWarningComment: '',
+          attachmentFileID: ['10' as MediumID, '11' as MediumID],
+          originalNoteID: Option.some('999' as NoteID),
+        },
+        actor,
+      ),
     );
 
     expect(renote.getContent()).toBe('');
@@ -150,17 +161,20 @@ describe('Note', () => {
   describe('quote', () => {
     it('should create a quote with content', () => {
       const quote = Result.unwrap(
-        Note.new({
-          id: '200' as NoteID,
-          authorID: '3' as AccountID,
-          content: 'quoting this!',
-          visibility: 'PUBLIC',
-          contentsWarningComment: '',
-          sendTo: Option.none(),
-          originalNoteID: Option.some('100' as NoteID),
-          attachmentFileID: [],
-          createdAt: new Date('2023-09-11T00:00:00.000Z'),
-        }),
+        Note.new(
+          {
+            id: '200' as NoteID,
+            authorID: '3' as AccountID,
+            content: 'quoting this!',
+            visibility: 'PUBLIC',
+            contentsWarningComment: '',
+            sendTo: Option.none(),
+            originalNoteID: Option.some('100' as NoteID),
+            attachmentFileID: [],
+            createdAt: new Date('2023-09-11T00:00:00.000Z'),
+          },
+          actor,
+        ),
       );
 
       expect(quote.getContent()).toBe('quoting this!');
@@ -173,17 +187,20 @@ describe('Note', () => {
 
     it('should create a quote with CW comment only', () => {
       const quote = Result.unwrap(
-        Note.new({
-          id: '201' as NoteID,
-          authorID: '3' as AccountID,
-          content: '',
-          visibility: 'PUBLIC',
-          contentsWarningComment: 'CW text',
-          sendTo: Option.none(),
-          originalNoteID: Option.some('100' as NoteID),
-          attachmentFileID: [],
-          createdAt: new Date('2023-09-11T00:00:00.000Z'),
-        }),
+        Note.new(
+          {
+            id: '201' as NoteID,
+            authorID: '3' as AccountID,
+            content: '',
+            visibility: 'PUBLIC',
+            contentsWarningComment: 'CW text',
+            sendTo: Option.none(),
+            originalNoteID: Option.some('100' as NoteID),
+            attachmentFileID: [],
+            createdAt: new Date('2023-09-11T00:00:00.000Z'),
+          },
+          actor,
+        ),
       );
 
       expect(quote.getContent()).toBe('');
@@ -193,17 +210,20 @@ describe('Note', () => {
 
     it('should create a quote with attachments only', () => {
       const quote = Result.unwrap(
-        Note.new({
-          id: '202' as NoteID,
-          authorID: '3' as AccountID,
-          content: '',
-          visibility: 'PUBLIC',
-          contentsWarningComment: '',
-          sendTo: Option.none(),
-          originalNoteID: Option.some('100' as NoteID),
-          attachmentFileID: ['10' as MediumID],
-          createdAt: new Date('2023-09-11T00:00:00.000Z'),
-        }),
+        Note.new(
+          {
+            id: '202' as NoteID,
+            authorID: '3' as AccountID,
+            content: '',
+            visibility: 'PUBLIC',
+            contentsWarningComment: '',
+            sendTo: Option.none(),
+            originalNoteID: Option.some('100' as NoteID),
+            attachmentFileID: ['10' as MediumID],
+            createdAt: new Date('2023-09-11T00:00:00.000Z'),
+          },
+          actor,
+        ),
       );
 
       expect(quote.getContent()).toBe('');
@@ -219,17 +239,20 @@ describe('Note', () => {
        * Note.new() simply stores the originalNoteID as given.
        */
       const quote = Result.unwrap(
-        Note.new({
-          id: '301' as NoteID,
-          authorID: '4' as AccountID,
-          content: 'quoting a renote',
-          visibility: 'PUBLIC',
-          contentsWarningComment: '',
-          sendTo: Option.none(),
-          originalNoteID: Option.some('100' as NoteID),
-          attachmentFileID: [],
-          createdAt: new Date('2023-09-12T00:00:00.000Z'),
-        }),
+        Note.new(
+          {
+            id: '301' as NoteID,
+            authorID: '4' as AccountID,
+            content: 'quoting a renote',
+            visibility: 'PUBLIC',
+            contentsWarningComment: '',
+            sendTo: Option.none(),
+            originalNoteID: Option.some('100' as NoteID),
+            attachmentFileID: [],
+            createdAt: new Date('2023-09-12T00:00:00.000Z'),
+          },
+          actor,
+        ),
       );
 
       expect(quote.getOriginalNoteID()).toStrictEqual(
@@ -239,17 +262,20 @@ describe('Note', () => {
 
     it('should refer to the quote itself when quoting a quote', () => {
       const quote301 = Result.unwrap(
-        Note.new({
-          id: '301' as NoteID,
-          authorID: '4' as AccountID,
-          content: 'quoting a quote',
-          visibility: 'PUBLIC',
-          contentsWarningComment: '',
-          sendTo: Option.none(),
-          originalNoteID: Option.some('300' as NoteID),
-          attachmentFileID: [],
-          createdAt: new Date('2023-09-12T00:00:00.000Z'),
-        }),
+        Note.new(
+          {
+            id: '301' as NoteID,
+            authorID: '4' as AccountID,
+            content: 'quoting a quote',
+            visibility: 'PUBLIC',
+            contentsWarningComment: '',
+            sendTo: Option.none(),
+            originalNoteID: Option.some('300' as NoteID),
+            attachmentFileID: [],
+            createdAt: new Date('2023-09-12T00:00:00.000Z'),
+          },
+          actor,
+        ),
       );
 
       // NOTE: 100 <-Quotes- 300 <-Quotes- 301 => 301's original is 300 (not 100)
@@ -261,15 +287,18 @@ describe('Note', () => {
     it.each(['FOLLOWERS', 'DIRECT'] as const)(
       'renote/quote visibility must be PUBLIC or HOME (rejects %s)',
       (visibility) => {
-        const res = Note.new({
-          ...exampleInput,
-          visibility,
-          sendTo:
-            visibility === 'DIRECT'
-              ? Option.some('999' as AccountID)
-              : Option.none(),
-          originalNoteID: Option.some('100' as NoteID),
-        });
+        const res = Note.new(
+          {
+            ...exampleInput,
+            visibility,
+            sendTo:
+              visibility === 'DIRECT'
+                ? Option.some('999' as AccountID)
+                : Option.none(),
+            originalNoteID: Option.some('100' as NoteID),
+          },
+          actor,
+        );
 
         expect(Result.isErr(res)).toBe(true);
       },
@@ -282,41 +311,52 @@ describe('Note', () => {
     it.each(['PUBLIC', 'HOME'] as const)(
       '%s note can be renoted by anyone',
       (visibility) => {
-        const note = Result.unwrap(Note.new({ ...exampleInput, visibility }));
+        const note = Result.unwrap(
+          Note.new({ ...exampleInput, visibility }, actor),
+        );
         expect(Result.isOk(note.canBeRenotedBy('999' as AccountID))).toBe(true);
       },
     );
 
     it('FOLLOWERS note can be renoted by its author', () => {
       const note = Result.unwrap(
-        Note.new({
-          ...exampleInput,
-          authorID: author,
-          visibility: 'FOLLOWERS',
-        }),
+        Note.new(
+          {
+            ...exampleInput,
+            authorID: author,
+            visibility: 'FOLLOWERS',
+          },
+          actor,
+        ),
       );
       expect(Result.isOk(note.canBeRenotedBy(author))).toBe(true);
     });
 
     it('FOLLOWERS note cannot be renoted by others', () => {
       const note = Result.unwrap(
-        Note.new({
-          ...exampleInput,
-          authorID: author,
-          visibility: 'FOLLOWERS',
-        }),
+        Note.new(
+          {
+            ...exampleInput,
+            authorID: author,
+            visibility: 'FOLLOWERS',
+          },
+          actor,
+        ),
       );
       expect(Result.isErr(note.canBeRenotedBy('999' as AccountID))).toBe(true);
     });
 
     it('DIRECT note cannot be renoted', () => {
       const note = Result.unwrap(
-        Note.new({
-          ...exampleInput,
-          authorID: author,
-          visibility: 'DIRECT',
-          sendTo: Option.some('999' as AccountID),
-        }),
+        Note.new(
+          {
+            ...exampleInput,
+            authorID: author,
+            visibility: 'DIRECT',
+            sendTo: Option.some('999' as AccountID),
+          },
+          actor,
+        ),
       );
       expect(Result.isErr(note.canBeRenotedBy(author))).toBe(true);
     });
@@ -324,32 +364,186 @@ describe('Note', () => {
 
   describe('getReactionTargetNoteID', () => {
     it('returns its own ID for an ordinary note', () => {
-      const note = Result.unwrap(Note.new(exampleInput));
+      const note = Result.unwrap(Note.new(exampleInput, actor));
       expect(note.getReactionTargetNoteID()).toBe(note.getID());
     });
 
     it('returns the original note ID for a pure renote', () => {
       const note = Result.unwrap(
-        Note.new({
-          ...exampleInput,
-          content: '',
-          contentsWarningComment: '',
-          attachmentFileID: [],
-          originalNoteID: Option.some('999' as NoteID),
-        }),
+        Note.new(
+          {
+            ...exampleInput,
+            content: '',
+            contentsWarningComment: '',
+            attachmentFileID: [],
+            originalNoteID: Option.some('999' as NoteID),
+          },
+          actor,
+        ),
       );
       expect(note.getReactionTargetNoteID()).toBe('999' as NoteID);
     });
 
     it('returns its own ID for a quote', () => {
       const note = Result.unwrap(
-        Note.new({
-          ...exampleInput,
-          content: 'quoting!',
-          originalNoteID: Option.some('999' as NoteID),
-        }),
+        Note.new(
+          {
+            ...exampleInput,
+            content: 'quoting!',
+            originalNoteID: Option.some('999' as NoteID),
+          },
+          actor,
+        ),
       );
       expect(note.getReactionTargetNoteID()).toBe(note.getID());
+    });
+  });
+
+  describe('domain events', () => {
+    it('should not push any event on reconstruct', () => {
+      const note = Note.reconstruct({
+        ...exampleInput,
+        updatedAt: Option.none(),
+        deletedAt: Option.none(),
+      });
+
+      expect(note.pullEvents()).toStrictEqual([]);
+    });
+
+    it('should push exactly one note.created event on success', () => {
+      const note = Result.unwrap(Note.new(exampleInput, actor));
+
+      const events = note.pullEvents();
+
+      expect(events).toHaveLength(1);
+      const [event] = events;
+      expect(event?.eventName).toBe('note.created');
+      expect(event?.target).toBe(exampleInput.id);
+      expect(event?.actor).toBe(exampleInput.authorID);
+      expect(event?.payload).toStrictEqual({
+        authorID: exampleInput.authorID,
+        visibility: exampleInput.visibility,
+      });
+    });
+
+    it('should push exactly one note.renoted event when creating a renote', () => {
+      const note = Result.unwrap(
+        Note.new(
+          {
+            ...exampleInput,
+            content: '',
+            contentsWarningComment: '',
+            attachmentFileID: [],
+            originalNoteID: Option.some('999' as NoteID),
+          },
+          actor,
+        ),
+      );
+
+      const events = note.pullEvents();
+
+      expect(events).toHaveLength(1);
+      const [event] = events;
+      expect(event?.eventName).toBe('note.renoted');
+      expect(event?.target).toBe(exampleInput.id);
+      expect(event?.actor).toBe(exampleInput.authorID);
+      expect(event?.payload).toStrictEqual({
+        originalNoteID: '999' as NoteID,
+      });
+    });
+
+    it('should push exactly one note.renoted event when creating a quote', () => {
+      const note = Result.unwrap(
+        Note.new(
+          {
+            ...exampleInput,
+            content: 'quoting!',
+            originalNoteID: Option.some('999' as NoteID),
+          },
+          actor,
+        ),
+      );
+
+      const events = note.pullEvents();
+
+      expect(events).toHaveLength(1);
+      expect(events[0]?.eventName).toBe('note.renoted');
+    });
+
+    it('should not push any event when validation fails', () => {
+      const result = Note.new(
+        { ...exampleInput, content: 'a'.repeat(3001) },
+        actor,
+      );
+
+      expect(Result.isErr(result)).toBe(true);
+    });
+
+    it('should be a destructive read: pullEvents returns empty on the second call', () => {
+      const note = Result.unwrap(Note.new(exampleInput, actor));
+
+      note.pullEvents();
+
+      expect(note.pullEvents()).toStrictEqual([]);
+    });
+
+    describe('setDeletedAt', () => {
+      it('should push exactly one note.deleted event for a normal note', () => {
+        const note = Result.unwrap(Note.new(exampleInput, actor));
+        note.pullEvents();
+
+        const res = note.setDeletedAt(
+          new Date('2023-09-11T00:00:00.000Z'),
+          actor,
+        );
+        expect(Result.isOk(res)).toBe(true);
+
+        const events = note.pullEvents();
+        expect(events).toHaveLength(1);
+        const [event] = events;
+        expect(event?.eventName).toBe('note.deleted');
+        expect(event?.target).toBe(exampleInput.id);
+        expect(event?.actor).toBe(exampleInput.authorID);
+        expect(event?.payload).toStrictEqual({});
+      });
+
+      it('should push exactly one note.unrenoted event for a renote', () => {
+        const note = Result.unwrap(
+          Note.new(
+            {
+              ...exampleInput,
+              content: '',
+              contentsWarningComment: '',
+              attachmentFileID: [],
+              originalNoteID: Option.some('999' as NoteID),
+            },
+            actor,
+          ),
+        );
+        note.pullEvents();
+
+        const res = note.setDeletedAt(
+          new Date('2023-09-11T00:00:00.000Z'),
+          actor,
+        );
+        expect(Result.isOk(res)).toBe(true);
+
+        const events = note.pullEvents();
+        expect(events).toHaveLength(1);
+        expect(events[0]?.eventName).toBe('note.unrenoted');
+      });
+
+      it('should not push an event when deletedAt is before createdAt', () => {
+        const note = Result.unwrap(Note.new(exampleInput, actor));
+        note.pullEvents();
+
+        const res = note.setDeletedAt(
+          new Date('2000-01-01T00:00:00.000Z'),
+          actor,
+        );
+        expect(Result.isErr(res)).toBe(true);
+        expect(note.pullEvents()).toStrictEqual([]);
+      });
     });
   });
 });

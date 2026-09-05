@@ -1,3 +1,4 @@
+import { Result } from '@mikuroxina/mini-fn';
 import { describe, expect, it } from 'vitest';
 
 import type { AccountID } from '../../accounts/model/account.ts';
@@ -11,9 +12,46 @@ const exampleInput: CreateBookmarkArgs = {
 
 describe('Bookmark', () => {
   it('add note to bookmark', () => {
-    const bookmark = Bookmark.new(exampleInput);
+    const res = Bookmark.new(exampleInput, exampleInput.accountID);
+    expect(Result.isOk(res)).toBe(true);
 
+    const bookmark = Result.unwrap(res);
     expect(bookmark.getNoteID()).toBe(exampleInput.noteID);
     expect(bookmark.getAccountID()).toBe(exampleInput.accountID);
+  });
+
+  describe('domain events', () => {
+    it('should not push any event on reconstruct', () => {
+      const bookmark = Bookmark.reconstruct(exampleInput);
+
+      expect(bookmark.pullEvents()).toStrictEqual([]);
+    });
+
+    it('should push exactly one note.bookmark.created event on success', () => {
+      const bookmark = Result.unwrap(
+        Bookmark.new(exampleInput, exampleInput.accountID),
+      );
+
+      const events = bookmark.pullEvents();
+
+      expect(events).toHaveLength(1);
+      const [event] = events;
+      expect(event?.eventName).toBe('note.bookmark.created');
+      expect(event?.target).toBe(exampleInput.noteID);
+      expect(event?.actor).toBe(exampleInput.accountID);
+      expect(event?.payload).toStrictEqual({
+        accountID: exampleInput.accountID,
+      });
+    });
+
+    it('should be a destructive read: pullEvents returns empty on the second call', () => {
+      const bookmark = Result.unwrap(
+        Bookmark.new(exampleInput, exampleInput.accountID),
+      );
+
+      bookmark.pullEvents();
+
+      expect(bookmark.pullEvents()).toStrictEqual([]);
+    });
   });
 });
