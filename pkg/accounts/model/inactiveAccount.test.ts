@@ -1,4 +1,4 @@
-import { Result } from '@mikuroxina/mini-fn';
+import { Option, Result } from '@mikuroxina/mini-fn';
 import { describe, expect, it } from 'vitest';
 
 import type { AccountID } from './account.ts';
@@ -20,32 +20,41 @@ const exampleActivateArgs: ActivateArgs = {
   createdAt: new Date('2023-09-10T00:00:00.000Z'),
 };
 
+const newInactiveAccount = () =>
+  Result.unwrap(InactiveAccount.new(exampleInput, Option.none()));
+
 describe('InactiveAccount', () => {
   it('generate new instance', () => {
-    const account = Result.unwrap(InactiveAccount.new(exampleInput));
+    const account = newInactiveAccount();
     expect(account.isActivated()).toBe(false);
   });
 
   it('fail to create with too short mail', () => {
-    const result = InactiveAccount.new({
-      ...exampleInput,
-      mail: 'a@b.c',
-    });
+    const result = InactiveAccount.new(
+      {
+        ...exampleInput,
+        mail: 'a@b.c',
+      },
+      Option.none(),
+    );
     expect(Result.isErr(result)).toBe(true);
   });
 
   it('fail to create with too long mail', () => {
-    const result = InactiveAccount.new({
-      ...exampleInput,
-      mail: `${'a'.repeat(320)}@example.com`,
-    });
+    const result = InactiveAccount.new(
+      {
+        ...exampleInput,
+        mail: `${'a'.repeat(320)}@example.com`,
+      },
+      Option.none(),
+    );
     expect(Result.isErr(result)).toBe(true);
   });
 
   it('activate account', () => {
-    const inactiveAccount = Result.unwrap(InactiveAccount.new(exampleInput));
+    const inactiveAccount = newInactiveAccount();
     const account = Result.unwrap(
-      inactiveAccount.activate(exampleActivateArgs),
+      inactiveAccount.activate(exampleActivateArgs, Option.none()),
     );
 
     expect(account.getID()).toBe(exampleInput.id);
@@ -64,20 +73,66 @@ describe('InactiveAccount', () => {
   });
 
   it('already activated', () => {
-    const inactiveAccount = Result.unwrap(InactiveAccount.new(exampleInput));
-    inactiveAccount.activate(exampleActivateArgs);
+    const inactiveAccount = newInactiveAccount();
+    inactiveAccount.activate(exampleActivateArgs, Option.none());
 
-    const result = inactiveAccount.activate(exampleActivateArgs);
+    const result = inactiveAccount.activate(exampleActivateArgs, Option.none());
     expect(Result.isErr(result)).toBe(true);
   });
 
   it('get account property', () => {
-    const account = Result.unwrap(InactiveAccount.new(exampleInput));
+    const account = newInactiveAccount();
 
     expect(account.getID()).toBe(exampleInput.id);
     expect(account.getName()).toBe(exampleInput.name);
     expect(account.getMail()).toBe(exampleInput.mail);
     expect(account.getPassphraseHash()).toBe(exampleInput.passphraseHash);
     expect(account.getRole()).toBe(exampleInput.role);
+  });
+});
+
+describe('InactiveAccount domain events', () => {
+  it('new() generates an account.registered event', () => {
+    const account = newInactiveAccount();
+    const events = account.pullEvents();
+
+    expect(events).toHaveLength(1);
+    const [event] = events;
+    expect(event?.eventName).toBe('account.registered');
+    expect(event?.target).toBe(account.getID());
+    expect(event?.actor).toStrictEqual(Option.none());
+    expect(event?.payload).toStrictEqual({ mail: exampleInput.mail });
+  });
+
+  it('pullEvents() is destructive', () => {
+    const account = newInactiveAccount();
+    expect(account.pullEvents()).toHaveLength(1);
+    expect(account.pullEvents()).toStrictEqual([]);
+  });
+
+  it('activate() delegates the account.activated event to the Account it returns', () => {
+    const inactiveAccount = newInactiveAccount();
+    inactiveAccount.pullEvents();
+
+    const account = Result.unwrap(
+      inactiveAccount.activate(exampleActivateArgs, Option.none()),
+    );
+
+    expect(inactiveAccount.pullEvents()).toStrictEqual([]);
+
+    const events = account.pullEvents();
+    expect(events).toHaveLength(1);
+    const [event] = events;
+    expect(event?.eventName).toBe('account.activated');
+    expect(event?.target).toBe(account.getID());
+  });
+
+  it('activate() does not push an event when already activated', () => {
+    const inactiveAccount = newInactiveAccount();
+    inactiveAccount.pullEvents();
+    inactiveAccount.activate(exampleActivateArgs, Option.none());
+
+    const result = inactiveAccount.activate(exampleActivateArgs, Option.none());
+    expect(Result.isErr(result)).toBe(true);
   });
 });

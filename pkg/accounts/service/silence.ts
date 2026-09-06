@@ -27,8 +27,8 @@ export class SilenceService {
         ({ account, actor }) => !this.isAllowed('silence', actor, account),
         () => Promise.resolve(Result.err(new Error('not allowed'))),
       )
-      .runWith(({ account }) =>
-        monad.map(() => [])(Promise.resolve(account.setSilence())),
+      .runWith(({ account, actor }) =>
+        monad.map(() => [])(Promise.resolve(account.setSilence(actor.getID()))),
       )
       .runWith(({ account }) =>
         monad.map(() => [])(this.#accountRepository.edit(account)),
@@ -49,8 +49,10 @@ export class SilenceService {
         ({ account, actor }) => !this.isAllowed('undoSilence', actor, account),
         () => Promise.resolve(Result.err(new Error('not allowed'))),
       )
-      .runWith(({ account }) =>
-        monad.map(() => [])(Promise.resolve(account.undoSilence())),
+      .runWith(({ account, actor }) =>
+        monad.map(() => [])(
+          Promise.resolve(account.undoSilence(actor.getID())),
+        ),
       )
       .runWith(({ account }) =>
         monad.map(() => [])(this.#accountRepository.edit(account)),
@@ -135,5 +137,7 @@ export const silenceSymbol = Ether.newEtherSymbol<SilenceService>();
 export const silence = Ether.newEther(
   silenceSymbol,
   ({ accountRepository }) => new SilenceService(accountRepository),
-  { accountRepository: accountRepoSymbol },
+  {
+    accountRepository: accountRepoSymbol,
+  },
 );
