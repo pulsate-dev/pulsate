@@ -123,9 +123,10 @@ export class VerifyAccountTokenService {
       )
       .addMWith('account', ({ inactiveAccount }) =>
         Promise.resolve(
-          inactiveAccount.activate({
-            createdAt: new Date(Number(this.#clock.now())),
-          }),
+          inactiveAccount.activate(
+            { createdAt: new Date(Number(this.#clock.now())) },
+            Option.none(),
+          ),
         ),
       )
       .runWith(({ account }) =>

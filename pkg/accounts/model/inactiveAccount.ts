@@ -1,4 +1,4 @@
-import { Result } from '@mikuroxina/mini-fn';
+import { type Option, Result } from '@mikuroxina/mini-fn';
 import * as v from 'valibot';
 import { AccountMailAddressLengthError } from './account.errors.ts';
 import {
@@ -8,6 +8,10 @@ import {
   type AccountRole,
   mailSchema,
 } from './account.ts';
+import {
+  type AccountRegisteredEvent,
+  accountEventFactory,
+} from './event/accountEvents.ts';
 
 export interface CreateInactiveAccountArgs {
   id: AccountID;
@@ -44,6 +48,11 @@ export class InactiveAccount {
     return this.#activated;
   }
 
+  #events: AccountRegisteredEvent[] = [];
+  pullEvents(): AccountRegisteredEvent[] {
+    return this.#events.splice(0);
+  }
+
   readonly #id: AccountID;
   getID(): AccountID {
     return this.#id;
@@ -71,6 +80,7 @@ export class InactiveAccount {
 
   activate(
     args: ActivateArgs,
+    actor: Option.Option<AccountID>,
   ): Result.Result<AccountAlreadyActivatedError, Account> {
     if (this.isActivated()) {
       return Result.err(
@@ -78,28 +88,35 @@ export class InactiveAccount {
       );
     }
 
+    const account = Account.reconstruct({
+      id: this.#id,
+      name: this.#name,
+      mail: this.#mail,
+      passphraseHash: this.#passphraseHash,
+      role: this.#role,
+      nickname: '',
+      bio: '',
+      createdAt: args.createdAt,
+      status: 'notActivated',
+      frozen: 'normal',
+      silenced: 'normal',
+      updatedAt: undefined,
+      deletedAt: undefined,
+    });
+    const activated = account.activate(actor);
+    if (Result.isErr(activated)) {
+      throw new Error(
+        'unreachable: newly reconstructed account cannot be deleted or frozen',
+      );
+    }
+
     this.#activated = true;
-    return Result.ok(
-      Account.reconstruct({
-        id: this.#id,
-        name: this.#name,
-        mail: this.#mail,
-        passphraseHash: this.#passphraseHash,
-        role: this.#role,
-        nickname: '',
-        bio: '',
-        createdAt: args.createdAt,
-        status: 'active',
-        frozen: 'normal',
-        silenced: 'normal',
-        updatedAt: undefined,
-        deletedAt: undefined,
-      }),
-    );
+    return Result.ok(account);
   }
 
   static new(
     arg: CreateInactiveAccountArgs,
+    actor: Option.Option<AccountID>,
   ): Result.Result<AccountMailAddressLengthError, InactiveAccount> {
     if (!v.safeParse(mailSchema, arg.mail).success) {
       return Result.err(
@@ -108,7 +125,18 @@ export class InactiveAccount {
         ),
       );
     }
-    return Result.ok(new InactiveAccount(arg));
+
+    const account = new InactiveAccount(arg);
+    account.#events.push(
+      Result.unwrap(
+        accountEventFactory.registered({
+          target: arg.id,
+          actor,
+          mail: arg.mail,
+        }),
+      ),
+    );
+    return Result.ok(account);
   }
 
   static reconstruct(arg: CreateInactiveAccountArgs): InactiveAccount {

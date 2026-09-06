@@ -1,5 +1,7 @@
+import { Result } from '@mikuroxina/mini-fn';
+
 import type { AccountID } from '../../../accounts/model/account.ts';
-import { generateEventID } from '../../../internal/event/idGenerator.ts';
+import { eventIDGenerator } from '../../../internal/event/idGenerator.ts';
 import type { DomainEvent } from '../../../internal/event/type.ts';
 import type { NoteID } from '../note.ts';
 
@@ -23,27 +25,30 @@ export const bookmarkEventFactory = {
     target: NoteID;
     actor: AccountID;
     accountID: AccountID;
+    occurredAt?: Date;
   }): BookmarkCreatedEvent {
     return {
-      id: generateEventID(),
+      id: Result.unwrap(eventIDGenerator.generate<'Event'>()),
       eventName: 'note.bookmark.created' as const,
       target: args.target,
       actor: args.actor,
-      occurredAt: new Date(),
+      occurredAt: args.occurredAt ?? new Date(),
       payload: { accountID: args.accountID },
     };
   },
+
   deleted(args: {
     target: NoteID;
     actor: AccountID;
     accountID: AccountID;
+    occurredAt?: Date;
   }): BookmarkDeletedEvent {
     return {
-      id: generateEventID(),
+      id: Result.unwrap(eventIDGenerator.generate<'Event'>()),
       eventName: 'note.bookmark.deleted' as const,
       target: args.target,
       actor: args.actor,
-      occurredAt: new Date(),
+      occurredAt: args.occurredAt ?? new Date(),
       payload: { accountID: args.accountID },
     };
   },

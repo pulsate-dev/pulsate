@@ -1,4 +1,4 @@
-import { Cat, Ether, Option, Promise, Result } from '@mikuroxina/mini-fn';
+import { Cat, Ether, Option, Promise, type Result } from '@mikuroxina/mini-fn';
 
 import { type Clock, clockSymbol } from '../../internal/id/mod.ts';
 import type { AccountName } from '../model/account.ts';
@@ -52,8 +52,8 @@ export class FollowService {
             ),
           ),
       )
-      .addWith('follow', ({ fromAccount, targetAccount }) =>
-        Result.unwrap(
+      .addMWith('follow', ({ fromAccount, targetAccount }) =>
+        Promise.resolve(
           AccountFollow.new({
             fromID: fromAccount.getID(),
             targetID: targetAccount.getID(),

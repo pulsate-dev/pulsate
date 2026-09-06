@@ -1,5 +1,7 @@
+import { Result } from '@mikuroxina/mini-fn';
+
 import type { AccountID } from '../../../accounts/model/account.ts';
-import { generateEventID } from '../../../internal/event/idGenerator.ts';
+import { eventIDGenerator } from '../../../internal/event/idGenerator.ts';
 import type { DomainEvent } from '../../../internal/event/type.ts';
 import type { NoteID, NoteVisibility } from '../note.ts';
 
@@ -40,47 +42,60 @@ export const noteEventFactory = {
     actor: AccountID;
     authorID: AccountID;
     visibility: NoteVisibility;
+    occurredAt?: Date;
   }): NoteCreatedEvent {
     return {
-      id: generateEventID(),
+      id: Result.unwrap(eventIDGenerator.generate<'Event'>()),
       eventName: 'note.created' as const,
       target: args.target,
       actor: args.actor,
-      occurredAt: new Date(),
+      occurredAt: args.occurredAt ?? new Date(),
       payload: { authorID: args.authorID, visibility: args.visibility },
     };
   },
-  deleted(args: { target: NoteID; actor: AccountID }): NoteDeletedEvent {
+
+  deleted(args: {
+    target: NoteID;
+    actor: AccountID;
+    occurredAt?: Date;
+  }): NoteDeletedEvent {
     return {
-      id: generateEventID(),
+      id: Result.unwrap(eventIDGenerator.generate<'Event'>()),
       eventName: 'note.deleted' as const,
       target: args.target,
       actor: args.actor,
-      occurredAt: new Date(),
+      occurredAt: args.occurredAt ?? new Date(),
       payload: {},
     };
   },
+
   renoted(args: {
     target: NoteID;
     actor: AccountID;
     originalNoteID: NoteID;
+    occurredAt?: Date;
   }): NoteRenotedEvent {
     return {
-      id: generateEventID(),
+      id: Result.unwrap(eventIDGenerator.generate<'Event'>()),
       eventName: 'note.renoted' as const,
       target: args.target,
       actor: args.actor,
-      occurredAt: new Date(),
+      occurredAt: args.occurredAt ?? new Date(),
       payload: { originalNoteID: args.originalNoteID },
     };
   },
-  unrenoted(args: { target: NoteID; actor: AccountID }): NoteUnrenotedEvent {
+
+  unrenoted(args: {
+    target: NoteID;
+    actor: AccountID;
+    occurredAt?: Date;
+  }): NoteUnrenotedEvent {
     return {
-      id: generateEventID(),
+      id: Result.unwrap(eventIDGenerator.generate<'Event'>()),
       eventName: 'note.unrenoted' as const,
       target: args.target,
       actor: args.actor,
-      occurredAt: new Date(),
+      occurredAt: args.occurredAt ?? new Date(),
       payload: {},
     };
   },
