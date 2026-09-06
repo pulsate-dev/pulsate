@@ -1,5 +1,4 @@
 import { Result } from '@mikuroxina/mini-fn';
-
 import type { PartialAccount } from '../../intermodule/account.ts';
 import {
   Account,

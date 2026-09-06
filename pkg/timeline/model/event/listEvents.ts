@@ -1,5 +1,7 @@
+import { Result } from '@mikuroxina/mini-fn';
+
 import type { AccountID } from '../../../accounts/model/account.ts';
-import { generateEventID } from '../../../internal/event/idGenerator.ts';
+import { eventIDGenerator } from '../../../internal/event/idGenerator.ts';
 import type { DomainEvent } from '../../../internal/event/type.ts';
 import type { ListID } from '../list.ts';
 
@@ -40,24 +42,29 @@ export const listEventFactory = {
     actor: AccountID;
     ownerID: AccountID;
     title: string;
+    occurredAt?: Date;
   }): ListCreatedEvent {
     return {
-      id: generateEventID(),
+      id: Result.unwrap(eventIDGenerator.generate<'Event'>()),
       eventName: 'list.created' as const,
       target: args.target,
       actor: args.actor,
-      occurredAt: new Date(),
+      occurredAt: args.occurredAt ?? new Date(),
       payload: { ownerID: args.ownerID, title: args.title },
     };
   },
 
-  deleted(args: { target: ListID; actor: AccountID }): ListDeletedEvent {
+  deleted(args: {
+    target: ListID;
+    actor: AccountID;
+    occurredAt?: Date;
+  }): ListDeletedEvent {
     return {
-      id: generateEventID(),
+      id: Result.unwrap(eventIDGenerator.generate<'Event'>()),
       eventName: 'list.deleted' as const,
       target: args.target,
       actor: args.actor,
-      occurredAt: new Date(),
+      occurredAt: args.occurredAt ?? new Date(),
       payload: {},
     };
   },
@@ -66,13 +73,14 @@ export const listEventFactory = {
     target: ListID;
     actor: AccountID;
     memberID: AccountID;
+    occurredAt?: Date;
   }): ListMemberAppendedEvent {
     return {
-      id: generateEventID(),
+      id: Result.unwrap(eventIDGenerator.generate<'Event'>()),
       eventName: 'list.member.appended' as const,
       target: args.target,
       actor: args.actor,
-      occurredAt: new Date(),
+      occurredAt: args.occurredAt ?? new Date(),
       payload: { memberID: args.memberID },
     };
   },
@@ -81,13 +89,14 @@ export const listEventFactory = {
     target: ListID;
     actor: AccountID;
     memberID: AccountID;
+    occurredAt?: Date;
   }): ListMemberRemovedEvent {
     return {
-      id: generateEventID(),
+      id: Result.unwrap(eventIDGenerator.generate<'Event'>()),
       eventName: 'list.member.removed' as const,
       target: args.target,
       actor: args.actor,
-      occurredAt: new Date(),
+      occurredAt: args.occurredAt ?? new Date(),
       payload: { memberID: args.memberID },
     };
   },

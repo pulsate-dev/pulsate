@@ -36,8 +36,10 @@ export class EditService {
         ({ account, actor }) => !this.isAllowed('edit', actor, account),
         () => Promise.resolve(Result.err(new Error('not allowed'))),
       )
-      .runWith(({ account }) =>
-        monad.map(() => [])(Promise.resolve(account.setNickName(nickname))),
+      .runWith(({ account, actor }) =>
+        monad.map(() => [])(
+          Promise.resolve(account.setNickName(nickname, actor.getID())),
+        ),
       )
       .runWith(({ account }) =>
         monad.map(() => [])(this.#accountRepository.edit(account)),
@@ -102,8 +104,10 @@ export class EditService {
         ({ account, actor }) => !this.isAllowed('edit', actor, account),
         () => Promise.resolve(Result.err(new Error('not allowed'))),
       )
-      .runWith(({ account }) =>
-        monad.map(() => [])(Promise.resolve(account.setMail(newEmail))),
+      .runWith(({ account, actor }) =>
+        monad.map(() => [])(
+          Promise.resolve(account.setMail(newEmail, actor.getID())),
+        ),
       )
       .runWith(({ account }) =>
         monad.map(() => [])(this.#accountRepository.edit(account)),
@@ -125,8 +129,10 @@ export class EditService {
         ({ account, actor }) => !this.isAllowed('edit', actor, account),
         () => Promise.resolve(Result.err(new Error('not allowed'))),
       )
-      .runWith(({ account }) =>
-        monad.map(() => [])(Promise.resolve(account.setBio(bio))),
+      .runWith(({ account, actor }) =>
+        monad.map(() => [])(
+          Promise.resolve(account.setBio(bio, actor.getID())),
+        ),
       )
       .runWith(({ account }) =>
         monad.map(() => [])(this.#accountRepository.edit(account)),
