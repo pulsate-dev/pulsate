@@ -72,11 +72,13 @@ export class Medium {
 
     const medium = new Medium(arg);
     medium.#events.push(
-      mediumEventFactory.created({
-        target: arg.id,
-        actor,
-        authorID: arg.authorId,
-      }),
+      Result.unwrap(
+        mediumEventFactory.created({
+          target: arg.id,
+          actor,
+          authorID: arg.authorId,
+        }),
+      ),
     );
     return Result.ok(medium);
   }
