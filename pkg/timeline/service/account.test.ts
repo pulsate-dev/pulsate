@@ -66,16 +66,19 @@ describe('AccountTimelineService', () => {
       visibility: 'DIRECT',
     }),
   );
-  const dummyAccount1 = Account.new({
-    id: '101' as AccountID,
-    bio: 'this is test user',
-    mail: 'john@example.com',
-    name: '@john@example.com',
-    nickname: 'John Doe',
-    passphraseHash: '',
-    role: 'normal',
-    createdAt: new Date(),
-  });
+  const dummyAccount1 = Account.new(
+    {
+      id: '101' as AccountID,
+      bio: 'this is test user',
+      mail: 'john@example.com',
+      name: '@john@example.com',
+      nickname: 'John Doe',
+      passphraseHash: '',
+      role: 'normal',
+      createdAt: new Date(),
+    },
+    Option.none(),
+  );
   const partialAccount1: PartialAccount = {
     id: dummyAccount1.getID(),
     name: dummyAccount1.getName(),

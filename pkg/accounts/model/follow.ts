@@ -1,6 +1,7 @@
 import { Option, Result } from '@mikuroxina/mini-fn';
 
 import type { AccountID } from './account.ts';
+import { type FollowEvent, followEventFactory } from './event/followEvents.ts';
 
 export interface AccountFollowConstructorArgs {
   fromID: AccountID;
@@ -29,6 +30,7 @@ export class AccountFollow {
   readonly #targetID: AccountID;
   readonly #createdAt: Date;
   #deletedAt: Option.Option<Date>;
+  #events: FollowEvent[] = [];
 
   private constructor(args: AccountFollowConstructorArgs) {
     this.#fromID = args.fromID;
@@ -37,10 +39,34 @@ export class AccountFollow {
     this.#deletedAt = args.deletedAt;
   }
 
+  pullEvents(): FollowEvent[] {
+    return this.#events.splice(0);
+  }
+
   public static new(
     args: AccountFollowArgs,
   ): Result.Result<never, AccountFollow> {
-    return Result.ok(new AccountFollow({ ...args, deletedAt: Option.none() }));
+    const follow = new AccountFollow({ ...args, deletedAt: Option.none() });
+    // NOTE: Pulsate does not yet have a locked-account/approval-request flow,
+    // so a follow relationship is established immediately. Both the request
+    // and its (automatic) acceptance are recorded as domain events.
+    follow.#events.push(
+      Result.unwrap(
+        followEventFactory.requested({
+          target: args.targetID,
+          actor: args.fromID,
+          targetID: args.targetID,
+        }),
+      ),
+      Result.unwrap(
+        followEventFactory.accepted({
+          target: args.targetID,
+          actor: args.targetID,
+          targetID: args.targetID,
+        }),
+      ),
+    );
+    return Result.ok(follow);
   }
 
   public static reconstruct(args: AccountFollowConstructorArgs): AccountFollow {
@@ -73,7 +99,17 @@ export class AccountFollow {
         ),
       );
     }
+
     this.#deletedAt = Option.some(deletedAt);
+    this.#events.push(
+      Result.unwrap(
+        followEventFactory.unfollowed({
+          target: this.#targetID,
+          actor: this.#fromID,
+          targetID: this.#targetID,
+        }),
+      ),
+    );
     return Result.ok(undefined);
   }
 }
