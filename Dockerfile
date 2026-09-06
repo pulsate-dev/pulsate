@@ -16,7 +16,7 @@ RUN --mount=type=cache,id=pnpm,target=/pnpm/store pnpm install --frozen-lockfile
 FROM base AS build
 COPY . .
 COPY --from=prod-deps /app/node_modules ./node_modules
-RUN pnpm run prepare
+RUN pnpm --config.verify-deps-before-run=false run prepare
 
 # Stage 4: Final slim image
 FROM node:26-slim
