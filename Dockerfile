@@ -14,11 +14,9 @@ RUN --mount=type=cache,id=pnpm,target=/pnpm/store pnpm install --frozen-lockfile
 
 # Stage 3: Generate Prisma Client
 FROM base AS build
-# git is required because pnpm's postinstall (lefthook install) runs git under the hood
-RUN apt-get update && apt-get install -y --no-install-recommends git && rm -rf /var/lib/apt/lists/*
 COPY . .
 COPY --from=prod-deps /app/node_modules ./node_modules
-RUN pnpm run prepare
+RUN pnpm --config.verify-deps-before-run=false run prepare
 
 # Stage 4: Final slim image
 FROM node:26-slim
