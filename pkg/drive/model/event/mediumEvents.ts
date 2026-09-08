@@ -2,7 +2,7 @@ import { Result } from '@mikuroxina/mini-fn';
 
 import type { AccountID } from '../../../accounts/model/account.ts';
 import { eventIDGenerator } from '../../../internal/event/idGenerator.ts';
-import type { DomainEvent } from '../../../internal/event/type.ts';
+import type { DomainEvent, EventID } from '../../../internal/event/type.ts';
 import type { MediumID } from '../medium.ts';
 
 export type MediumCreatedEvent = DomainEvent<
@@ -42,59 +42,67 @@ export const mediumEventFactory = {
     actor: AccountID;
     authorID: AccountID;
     occurredAt?: Date;
-  }): MediumCreatedEvent {
-    return {
-      id: Result.unwrap(eventIDGenerator.generate<'Event'>()),
-      eventName: 'medium.created' as const,
-      target: args.target,
-      actor: args.actor,
-      occurredAt: args.occurredAt ?? new Date(),
-      payload: { authorID: args.authorID },
-    };
+  }): Result.Result<Error, MediumCreatedEvent> {
+    return Result.map(
+      (id: EventID): MediumCreatedEvent => ({
+        id,
+        eventName: 'medium.created' as const,
+        target: args.target,
+        actor: args.actor,
+        occurredAt: args.occurredAt ?? new Date(),
+        payload: { authorID: args.authorID },
+      }),
+    )(eventIDGenerator.generate<'Event'>());
   },
 
   deleted(args: {
     target: MediumID;
     actor: AccountID;
     occurredAt?: Date;
-  }): MediumDeletedEvent {
-    return {
-      id: Result.unwrap(eventIDGenerator.generate<'Event'>()),
-      eventName: 'medium.deleted' as const,
-      target: args.target,
-      actor: args.actor,
-      occurredAt: args.occurredAt ?? new Date(),
-      payload: {},
-    };
+  }): Result.Result<Error, MediumDeletedEvent> {
+    return Result.map(
+      (id: EventID): MediumDeletedEvent => ({
+        id,
+        eventName: 'medium.deleted' as const,
+        target: args.target,
+        actor: args.actor,
+        occurredAt: args.occurredAt ?? new Date(),
+        payload: {},
+      }),
+    )(eventIDGenerator.generate<'Event'>());
   },
 
   adminFlagged(args: {
     target: MediumID;
     actor: AccountID;
     occurredAt?: Date;
-  }): MediumAdminFlaggedEvent {
-    return {
-      id: Result.unwrap(eventIDGenerator.generate<'Event'>()),
-      eventName: 'medium.admin.flagged' as const,
-      target: args.target,
-      actor: args.actor,
-      occurredAt: args.occurredAt ?? new Date(),
-      payload: {},
-    };
+  }): Result.Result<Error, MediumAdminFlaggedEvent> {
+    return Result.map(
+      (id: EventID): MediumAdminFlaggedEvent => ({
+        id,
+        eventName: 'medium.admin.flagged' as const,
+        target: args.target,
+        actor: args.actor,
+        occurredAt: args.occurredAt ?? new Date(),
+        payload: {},
+      }),
+    )(eventIDGenerator.generate<'Event'>());
   },
 
   adminUnflagged(args: {
     target: MediumID;
     actor: AccountID;
     occurredAt?: Date;
-  }): MediumAdminUnflaggedEvent {
-    return {
-      id: Result.unwrap(eventIDGenerator.generate<'Event'>()),
-      eventName: 'medium.admin.unflagged' as const,
-      target: args.target,
-      actor: args.actor,
-      occurredAt: args.occurredAt ?? new Date(),
-      payload: {},
-    };
+  }): Result.Result<Error, MediumAdminUnflaggedEvent> {
+    return Result.map(
+      (id: EventID): MediumAdminUnflaggedEvent => ({
+        id,
+        eventName: 'medium.admin.unflagged' as const,
+        target: args.target,
+        actor: args.actor,
+        occurredAt: args.occurredAt ?? new Date(),
+        payload: {},
+      }),
+    )(eventIDGenerator.generate<'Event'>());
   },
 };
