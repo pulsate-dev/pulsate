@@ -55,7 +55,9 @@ export class List {
     List
   > {
     const validationErr = List.#checkArgs(args);
-    if (Result.isErr(validationErr)) return validationErr;
+    if (Result.isErr(validationErr)) {
+      return validationErr;
+    }
 
     const list = new List(args);
     list.#events.push(
