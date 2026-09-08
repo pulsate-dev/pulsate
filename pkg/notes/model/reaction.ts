@@ -4,6 +4,10 @@ import * as v from 'valibot';
 import type { AccountID } from '../../accounts/model/account.ts';
 import type { ID } from '../../internal/id/type.ts';
 import { NoteInvalidReactionError } from './errors.ts';
+import {
+  type ReactionEvent,
+  reactionEventFactory,
+} from './event/reactionEvents.ts';
 import type { Note, NoteID } from './note.ts';
 
 const unicodeEmojiSchema = v.pipe(
@@ -33,6 +37,7 @@ export class Reaction {
   readonly #accountID: AccountID;
   readonly #noteID: NoteID;
   readonly #emoji: Emoji;
+  #events: ReactionEvent[] = [];
 
   private constructor(args: {
     id: ReactionID;
@@ -48,6 +53,7 @@ export class Reaction {
 
   static new(
     arg: CreateReactionArgs,
+    actor: AccountID,
   ): Result.Result<NoteInvalidReactionError, Reaction> {
     if (!v.safeParse(EmojiSchema, arg.body).success) {
       return Result.err(
@@ -57,14 +63,25 @@ export class Reaction {
 
     const noteID = arg.note.getReactionTargetNoteID();
 
-    return Result.ok(
-      new Reaction({
-        id: arg.id,
+    const reaction = new Reaction({
+      id: arg.id,
+      accountID: arg.accountID,
+      noteID,
+      emoji: arg.body as Emoji,
+    });
+    reaction.#events.push(
+      reactionEventFactory.created({
+        target: noteID,
+        actor,
         accountID: arg.accountID,
-        noteID,
-        emoji: arg.body as Emoji,
+        emoji: arg.body,
       }),
     );
+    return Result.ok(reaction);
+  }
+
+  pullEvents(): ReactionEvent[] {
+    return this.#events.splice(0);
   }
 
   static reconstruct(arg: {

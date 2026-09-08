@@ -121,7 +121,7 @@ export class InMemoryBookmarkRepository implements BookmarkRepository {
     noteID: NoteID;
     accountID: AccountID;
   }): Promise<Result.Result<Error, void>> {
-    const bookmark = Bookmark.new(id);
+    const bookmark = Bookmark.reconstruct(id);
     this.#bookmarks.set([id.noteID, id.accountID], bookmark);
     return Result.ok(undefined);
   }

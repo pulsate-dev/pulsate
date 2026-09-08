@@ -57,17 +57,20 @@ export class CreateService {
         .addM('id', Promise.resolve(this.#deps.idGenerator.generate<Note>()))
         .addMWith('note', ({ id }) =>
           Promise.resolve(
-            Note.new({
-              id: id as NoteID,
-              content: content,
-              contentsWarningComment: contentsWarningComment,
-              createdAt: new Date(Number(now)),
-              sendTo: Option.none(),
-              originalNoteID: Option.none(),
-              attachmentFileID: attachmentFileID,
-              visibility: visibility,
-              authorID: authorID,
-            }),
+            Note.new(
+              {
+                id: id as NoteID,
+                content: content,
+                contentsWarningComment: contentsWarningComment,
+                createdAt: new Date(Number(now)),
+                sendTo: Option.none(),
+                originalNoteID: Option.none(),
+                attachmentFileID: attachmentFileID,
+                visibility: visibility,
+                authorID: authorID,
+              },
+              authorID,
+            ),
           ),
         )
         .runWith(({ note }) =>

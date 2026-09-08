@@ -99,22 +99,22 @@ describe('PushTimelineService', () => {
 
   it('if Cache limit reached, delete oldest note', async () => {
     const data = [...new Array(300)].map((_, i) => {
-      return Result.unwrap(
-        Note.new({
-          id: (i + 1).toString() as NoteID,
-          authorID: '100' as AccountID,
-          content: `Hello world ${i}`,
-          contentsWarningComment: '',
-          originalNoteID: Option.none(),
-          attachmentFileID: [],
-          sendTo: Option.none(),
-          visibility: 'PUBLIC',
-          createdAt: addSecondsToDate(
-            new Date('2023/09/10 00:00:00'),
-            3600 * 24 * i,
-          ),
-        }),
-      );
+      return Note.reconstruct({
+        id: (i + 1).toString() as NoteID,
+        authorID: '100' as AccountID,
+        content: `Hello world ${i}`,
+        contentsWarningComment: '',
+        originalNoteID: Option.none(),
+        attachmentFileID: [],
+        sendTo: Option.none(),
+        visibility: 'PUBLIC',
+        createdAt: addSecondsToDate(
+          new Date('2023/09/10 00:00:00'),
+          3600 * 24 * i,
+        ),
+        updatedAt: Option.none(),
+        deletedAt: Option.none(),
+      });
     });
 
     for (const v of data) {

@@ -11,7 +11,7 @@ const noteID = '1' as NoteID;
 const accountID = '1' as AccountID;
 
 const bookmarkRepository = new InMemoryBookmarkRepository([
-  Bookmark.new({ noteID, accountID }),
+  Bookmark.reconstruct({ noteID, accountID }),
 ]);
 const deleteBookmarkService = new DeleteBookmarkService(bookmarkRepository);
 

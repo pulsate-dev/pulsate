@@ -14,19 +14,19 @@ import {
 import { Note, type NoteID } from '../model/note.ts';
 import { FetchService } from './fetch.ts';
 
-const testNote = Result.unwrap(
-  Note.new({
-    id: '1' as NoteID,
-    authorID: '3' as AccountID,
-    content: 'Hello world',
-    contentsWarningComment: '',
-    createdAt: new Date('2023-09-10T00:00:00Z'),
-    sendTo: Option.none(),
-    originalNoteID: Option.none(),
-    attachmentFileID: ['300' as MediumID, '301' as MediumID],
-    visibility: 'PUBLIC',
-  }),
-);
+const testNote = Note.reconstruct({
+  id: '1' as NoteID,
+  authorID: '3' as AccountID,
+  content: 'Hello world',
+  contentsWarningComment: '',
+  createdAt: new Date('2023-09-10T00:00:00Z'),
+  sendTo: Option.none(),
+  originalNoteID: Option.none(),
+  attachmentFileID: ['300' as MediumID, '301' as MediumID],
+  visibility: 'PUBLIC',
+  updatedAt: Option.none(),
+  deletedAt: Option.none(),
+});
 const deletedNote = Note.reconstruct({
   id: '2' as NoteID,
   authorID: '3' as AccountID,
@@ -135,19 +135,19 @@ describe('FetchService', () => {
 
   it('fetchMany: should fetch notes', async () => {
     const testNotes = [...new Array<Note>(5)].map((_, i) =>
-      Result.unwrap(
-        Note.new({
-          id: i.toString() as NoteID,
-          authorID: '3' as AccountID,
-          content: `Hello world ${i}`,
-          contentsWarningComment: '',
-          createdAt: new Date('2023-09-10T00:00:00Z'),
-          sendTo: Option.none(),
-          originalNoteID: Option.none(),
-          attachmentFileID: ['300' as MediumID, '301' as MediumID],
-          visibility: 'PUBLIC',
-        }),
-      ),
+      Note.reconstruct({
+        id: i.toString() as NoteID,
+        authorID: '3' as AccountID,
+        content: `Hello world ${i}`,
+        contentsWarningComment: '',
+        createdAt: new Date('2023-09-10T00:00:00Z'),
+        sendTo: Option.none(),
+        originalNoteID: Option.none(),
+        attachmentFileID: ['300' as MediumID, '301' as MediumID],
+        visibility: 'PUBLIC',
+        updatedAt: Option.none(),
+        deletedAt: Option.none(),
+      }),
     );
     testNotes.map(async (v) => await repository.create(v));
     const res = await service.fetchNotesByID(testNotes.map((v) => v.getID()));
