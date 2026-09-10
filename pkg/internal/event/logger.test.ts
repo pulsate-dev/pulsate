@@ -1,5 +1,7 @@
+import { Logger } from 'tslog';
 import { describe, expect, it, vi } from 'vitest';
-import { LoggingEventBus } from './logging.ts';
+
+import { LoggerEventPublisher } from './logger.ts';
 import type { EventID } from './type.ts';
 
 const event = {
@@ -11,12 +13,13 @@ const event = {
   payload: { secret: 'must not be logged' },
 };
 
-describe('LoggingEventBus', () => {
+describe('LoggerEventPublisher', () => {
   it('logs event metadata without the payload', () => {
-    const info = vi.fn();
-    const eventBus = new LoggingEventBus({ info });
+    const logger = new Logger<unknown>();
+    const info = vi.spyOn(logger, 'info').mockImplementation(() => undefined);
+    const eventPublisher = new LoggerEventPublisher(logger);
 
-    const result = eventBus.publish(event);
+    const result = eventPublisher.publish(event);
 
     expect(result).toBeUndefined();
     expect(info).toHaveBeenCalledWith('Domain event published', {
@@ -29,12 +32,12 @@ describe('LoggingEventBus', () => {
   });
 
   it('does not throw when logging fails', () => {
-    const eventBus = new LoggingEventBus({
-      info: () => {
-        throw new Error('logging failed');
-      },
+    const logger = new Logger<unknown>();
+    vi.spyOn(logger, 'info').mockImplementation(() => {
+      throw new Error('logging failed');
     });
+    const eventPublisher = new LoggerEventPublisher(logger);
 
-    expect(() => eventBus.publish(event)).not.toThrow();
+    expect(() => eventPublisher.publish(event)).not.toThrow();
   });
 });

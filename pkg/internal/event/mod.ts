@@ -1,8 +1,7 @@
-export { type EventBus, eventBusSymbol } from './bus.ts';
 export {
-  type EventLogger,
-  eventBus,
-  eventBusEther,
-  LoggingEventBus,
-} from './logging.ts';
+  eventPublisher,
+  eventPublisherEther,
+  LoggerEventPublisher,
+} from './logger.ts';
+export { type EventPublisher, eventPublisherSymbol } from './publisher.ts';
 export type { AnyDomainEvent, DomainEvent, EventID } from './type.ts';
