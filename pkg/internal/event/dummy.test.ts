@@ -1,7 +1,7 @@
 import { Logger } from 'tslog';
 import { describe, expect, it, vi } from 'vitest';
 
-import { LoggerEventPublisher } from './logger.ts';
+import { DummyEventPublisher } from './dummy.ts';
 import type { EventID } from './type.ts';
 
 const event = {
@@ -13,11 +13,11 @@ const event = {
   payload: { secret: 'must not be logged' },
 };
 
-describe('LoggerEventPublisher', () => {
+describe('DummyEventPublisher', () => {
   it('logs event metadata without the payload', () => {
-    const logger = new Logger<unknown>();
+    const logger = new Logger();
     const info = vi.spyOn(logger, 'info').mockImplementation(() => undefined);
-    const eventPublisher = new LoggerEventPublisher(logger);
+    const eventPublisher = new DummyEventPublisher(logger);
 
     const result = eventPublisher.publish(event);
 
@@ -32,11 +32,11 @@ describe('LoggerEventPublisher', () => {
   });
 
   it('does not throw when logging fails', () => {
-    const logger = new Logger<unknown>();
+    const logger = new Logger();
     vi.spyOn(logger, 'info').mockImplementation(() => {
       throw new Error('logging failed');
     });
-    const eventPublisher = new LoggerEventPublisher(logger);
+    const eventPublisher = new DummyEventPublisher(logger);
 
     expect(() => eventPublisher.publish(event)).not.toThrow();
   });

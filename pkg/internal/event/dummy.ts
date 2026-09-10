@@ -8,10 +8,10 @@ import type { AnyDomainEvent } from './type.ts';
  * Publishes event metadata with a logger and deliberately excludes the event
  * payload.
  */
-export class LoggerEventPublisher implements EventPublisher {
-  readonly #logger: Logger<unknown>;
+export class DummyEventPublisher<LogObj> implements EventPublisher {
+  readonly #logger: Logger<LogObj>;
 
-  constructor(logger: Logger<unknown>) {
+  constructor(logger: Logger<LogObj>) {
     this.#logger = logger;
   }
 
@@ -31,12 +31,12 @@ export class LoggerEventPublisher implements EventPublisher {
   }
 }
 
-const eventPublisherLogger = new Logger<unknown>({
+const eventPublisherLogger = new Logger({
   type: 'pretty',
   name: 'EventPublisher',
 });
 
-export const eventPublisher = new LoggerEventPublisher(eventPublisherLogger);
+export const eventPublisher = new DummyEventPublisher(eventPublisherLogger);
 
 export const eventPublisherEther = Ether.newEther(
   eventPublisherSymbol,
