@@ -18,3 +18,6 @@ export interface DomainEvent<
   readonly payload: Payload;
   readonly occurredAt: Date;
 }
+
+/** A domain event accepted by an EventPublisher. */
+export type AnyDomainEvent = DomainEvent<unknown, string, unknown, unknown>;
