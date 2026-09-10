@@ -18,3 +18,12 @@ export interface DomainEvent<
   readonly payload: Payload;
   readonly occurredAt: Date;
 }
+
+/**
+ * A domain event accepted by the event bus.
+ *
+ * The event bus intentionally does not depend on a specific domain module or
+ * event payload. Concrete event types remain responsible for describing their
+ * own payloads.
+ */
+export type AnyDomainEvent = DomainEvent<unknown, string, unknown, unknown>;
