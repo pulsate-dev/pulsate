@@ -35,13 +35,4 @@ describe('DummyEventPublisher', () => {
       occurredAt: event.occurredAt,
     });
   });
-
-  it('does not throw when logging fails', () => {
-    vi.spyOn(eventModuleLogger, 'info').mockImplementation(() => {
-      throw new Error('logging failed');
-    });
-    const eventPublisher = new DummyEventPublisher();
-
-    expect(() => eventPublisher.publish(event)).not.toThrow();
-  });
 });

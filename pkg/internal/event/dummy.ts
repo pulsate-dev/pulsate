@@ -10,18 +10,13 @@ import type { AnyDomainEvent } from './type.ts';
  */
 export class DummyEventPublisher implements EventPublisher {
   publish(event: AnyDomainEvent): void {
-    try {
-      eventModuleLogger.info('Domain event published', {
-        id: event.id,
-        eventName: event.eventName,
-        target: event.target,
-        actor: event.actor,
-        occurredAt: event.occurredAt,
-      });
-    } catch {
-      // Event publishing must never make the originating operation fail.
-      return;
-    }
+    eventModuleLogger.info('Domain event published', {
+      id: event.id,
+      eventName: event.eventName,
+      target: event.target,
+      actor: event.actor,
+      occurredAt: event.occurredAt,
+    });
   }
 }
 

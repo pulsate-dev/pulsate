@@ -3,7 +3,7 @@ import { Ether } from '@mikuroxina/mini-fn';
 import type { AnyDomainEvent } from './type.ts';
 
 export interface EventPublisher {
-  /** Publishes a domain event without propagating publishing errors. */
+  /** Publishes a domain event. */
   publish(event: AnyDomainEvent): void;
 }
 
