@@ -1,6 +1,6 @@
 import { Ether } from '@mikuroxina/mini-fn';
-import { Logger } from 'tslog';
 
+import { eventModuleLogger } from './adaptor/logger.ts';
 import { type EventPublisher, eventPublisherSymbol } from './publisher.ts';
 import type { AnyDomainEvent } from './type.ts';
 
@@ -8,16 +8,10 @@ import type { AnyDomainEvent } from './type.ts';
  * Publishes event metadata with a logger and deliberately excludes the event
  * payload.
  */
-export class DummyEventPublisher<LogObj> implements EventPublisher {
-  readonly #logger: Logger<LogObj>;
-
-  constructor(logger: Logger<LogObj>) {
-    this.#logger = logger;
-  }
-
+export class DummyEventPublisher implements EventPublisher {
   publish(event: AnyDomainEvent): void {
     try {
-      this.#logger.info('Domain event published', {
+      eventModuleLogger.info('Domain event published', {
         id: event.id,
         eventName: event.eventName,
         target: event.target,
@@ -31,12 +25,7 @@ export class DummyEventPublisher<LogObj> implements EventPublisher {
   }
 }
 
-const eventPublisherLogger = new Logger({
-  type: 'pretty',
-  name: 'EventPublisher',
-});
-
-export const eventPublisher = new DummyEventPublisher(eventPublisherLogger);
+export const eventPublisher = new DummyEventPublisher();
 
 export const eventPublisherEther = Ether.newEther(
   eventPublisherSymbol,

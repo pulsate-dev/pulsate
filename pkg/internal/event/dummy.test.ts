@@ -1,6 +1,6 @@
-import { Logger } from 'tslog';
-import { describe, expect, it, vi } from 'vitest';
+import { afterEach, describe, expect, it, vi } from 'vitest';
 
+import { eventModuleLogger } from './adaptor/logger.ts';
 import { DummyEventPublisher } from './dummy.ts';
 import type { EventID } from './type.ts';
 
@@ -14,10 +14,15 @@ const event = {
 };
 
 describe('DummyEventPublisher', () => {
+  afterEach(() => {
+    vi.restoreAllMocks();
+  });
+
   it('logs event metadata without the payload', () => {
-    const logger = new Logger();
-    const info = vi.spyOn(logger, 'info').mockImplementation(() => undefined);
-    const eventPublisher = new DummyEventPublisher(logger);
+    const info = vi
+      .spyOn(eventModuleLogger, 'info')
+      .mockImplementation(() => undefined);
+    const eventPublisher = new DummyEventPublisher();
 
     const result = eventPublisher.publish(event);
 
@@ -32,11 +37,10 @@ describe('DummyEventPublisher', () => {
   });
 
   it('does not throw when logging fails', () => {
-    const logger = new Logger();
-    vi.spyOn(logger, 'info').mockImplementation(() => {
+    vi.spyOn(eventModuleLogger, 'info').mockImplementation(() => {
       throw new Error('logging failed');
     });
-    const eventPublisher = new DummyEventPublisher(logger);
+    const eventPublisher = new DummyEventPublisher();
 
     expect(() => eventPublisher.publish(event)).not.toThrow();
   });
