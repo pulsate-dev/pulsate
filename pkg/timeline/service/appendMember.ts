@@ -52,7 +52,9 @@ export class AppendListMemberService {
           ),
       )
       .runWith(({ list }) =>
-        monad.map(() => [])(Promise.resolve(list.addMember(accountID))),
+        monad.map(() => [])(
+          Promise.resolve(list.addMember(accountID, actorID)),
+        ),
       )
       .runWith(({ list }) =>
         monad.map(() => [])(this.#listRepository.appendListMember(list)),
@@ -69,5 +71,7 @@ export const appendListMemberSymbol =
 export const appendListMember = Ether.newEther(
   appendListMemberSymbol,
   ({ listRepository }) => new AppendListMemberService(listRepository),
-  { listRepository: listRepoSymbol },
+  {
+    listRepository: listRepoSymbol,
+  },
 );

@@ -11,7 +11,7 @@ import {
   ListNotFoundError,
   TimelineInvalidFilterRangeError,
 } from '../../model/errors.ts';
-import type { List, ListID } from '../../model/list.ts';
+import { List, type ListID } from '../../model/list.ts';
 import {
   type BookmarkTimelineFilter,
   type BookmarkTimelineRepository,
@@ -338,7 +338,15 @@ export class InMemoryListRepository implements ListRepository {
       );
     }
 
-    list.removeMember(accountID);
+    const updatedList = List.reconstruct({
+      id: list.getId(),
+      title: list.getTitle(),
+      publicity: list.isPublic() ? 'PUBLIC' : 'PRIVATE',
+      ownerId: list.getOwnerId(),
+      memberIds: list.getMemberIds().filter((v) => v !== accountID),
+      createdAt: list.getCreatedAt(),
+    });
+    this.#listData.set(listID, updatedList);
     return Result.ok(undefined);
   }
 
