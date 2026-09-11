@@ -100,12 +100,12 @@ describe('DirectNote', () => {
     });
   });
 
-  describe('setDeletedAt', () => {
+  describe('delete', () => {
     it('sets deletedAt when date is after createdAt', () => {
       const note = Result.unwrap(DirectNote.new(exampleInput));
       const deletedAt = new Date('2023-09-11T00:00:00.000Z');
 
-      const result = note.setDeletedAt(deletedAt);
+      const result = note.delete(deletedAt);
       expect(Result.isOk(result)).toBe(true);
       expect(note.getDeletedAt()).toStrictEqual(Option.some(deletedAt));
     });
@@ -114,8 +114,23 @@ describe('DirectNote', () => {
       const note = Result.unwrap(DirectNote.new(exampleInput));
       const deletedAt = new Date('2023-09-09T00:00:00.000Z');
 
-      const result = note.setDeletedAt(deletedAt);
+      const result = note.delete(deletedAt);
       expect(Result.isErr(result)).toBe(true);
+    });
+
+    it('returns a note.deleted event', () => {
+      const note = Result.unwrap(DirectNote.new(exampleInput));
+      const deletedAt = new Date('2023-09-11T00:00:00.000Z');
+
+      const result = note.delete(deletedAt);
+      expect(Result.isOk(result)).toBe(true);
+
+      const events = note.pullEvents();
+      expect(events).toHaveLength(1);
+      expect(events[0]?.eventName).toBe('note.deleted');
+      expect(events[0]?.target).toBe(exampleInput.id);
+      expect(events[0]?.actor).toBe(exampleInput.authorID);
+      expect(events[0]?.payload).toStrictEqual({});
     });
   });
 

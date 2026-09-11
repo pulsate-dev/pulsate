@@ -10,6 +10,7 @@ import {
   DirectNoteSelfSendError,
   DirectNoteTooManyAttachmentsError,
 } from './errors.ts';
+import { type NoteEvent, noteEventFactory } from './event/noteEvents.ts';
 import { cwCommentSchema, noteContentSchema } from './note.ts';
 
 export type DirectNoteID = ID<DirectNote>;
@@ -42,6 +43,7 @@ export class DirectNote {
   readonly #attachmentFileID: readonly MediumID[];
   readonly #createdAt: Date;
   #deletedAt: Option.Option<Date>;
+  #events: NoteEvent[] = [];
 
   private constructor(arg: CreateDirectNoteArgs) {
     this.#id = arg.id;
@@ -148,12 +150,17 @@ export class DirectNote {
     return this.#createdAt;
   }
 
+  pullEvents(): NoteEvent[] {
+    return this.#events.splice(0);
+  }
+
   getDeletedAt(): Option.Option<Date> {
     return this.#deletedAt;
   }
 
-  setDeletedAt(
+  delete(
     deletedAt: Date,
+    actor: AccountID = this.#authorID,
   ): Result.Result<DirectNoteDateInvalidError, void> {
     if (this.#createdAt > deletedAt) {
       return Result.err(
@@ -163,6 +170,19 @@ export class DirectNote {
       );
     }
     this.#deletedAt = Option.some(deletedAt);
+    this.#events.push(
+      noteEventFactory.deleted({
+        target: this.#id,
+        actor,
+      }),
+    );
     return Result.ok(undefined);
+  }
+
+  /** @deprecated Use delete() instead. */
+  setDeletedAt(
+    deletedAt: Date,
+  ): Result.Result<DirectNoteDateInvalidError, void> {
+    return this.delete(deletedAt);
   }
 }

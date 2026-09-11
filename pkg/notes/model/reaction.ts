@@ -113,4 +113,14 @@ export class Reaction {
   getEmoji(): Emoji {
     return this.#emoji;
   }
+
+  deleted(actor: AccountID = this.#accountID): void {
+    this.#events.push(
+      reactionEventFactory.deleted({
+        target: this.#noteID,
+        actor,
+        accountID: this.#accountID,
+      }),
+    );
+  }
 }
