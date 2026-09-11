@@ -272,5 +272,20 @@ describe('List', () => {
         expect(list.pullEvents()).toStrictEqual([]);
       });
     });
+
+    describe('list.deleted', () => {
+      it('should return exactly one list.deleted event', () => {
+        const list = List.reconstruct(args);
+
+        list.deleted();
+
+        const events = list.pullEvents();
+        expect(events).toHaveLength(1);
+        expect(events[0]?.eventName).toBe('list.deleted');
+        expect(events[0]?.target).toBe(args.id);
+        expect(events[0]?.actor).toBe(args.ownerId);
+        expect(events[0]?.payload).toStrictEqual({});
+      });
+    });
   });
 });
