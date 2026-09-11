@@ -1,6 +1,7 @@
 import { Option, Result } from '@mikuroxina/mini-fn';
 import { describe, expect, it } from 'vitest';
 
+import { MockClock } from '../../internal/id/mod.ts';
 import { InMemoryAccountRepository } from '../adaptor/repository/dummy/account.ts';
 import { InMemoryAccountFollowRepository } from '../adaptor/repository/dummy/follow.ts';
 import { Account, type AccountID } from '../model/account.ts';
@@ -42,16 +43,20 @@ await accountRepository.create(
     deletedAt: undefined,
   }),
 );
-const repository = new InMemoryAccountFollowRepository([
-  Result.unwrap(
-    AccountFollow.new({
-      fromID: '1' as AccountID,
-      targetID: '2' as AccountID,
-      createdAt: new Date(),
-    }),
-  ),
-]);
-const service = new UnfollowService(repository, accountRepository);
+const follow = Result.unwrap(
+  AccountFollow.new({
+    fromID: '1' as AccountID,
+    targetID: '2' as AccountID,
+    createdAt: new Date('2023-09-10T00:00:00Z'),
+  }),
+);
+follow.pullEvents();
+const repository = new InMemoryAccountFollowRepository([follow]);
+const service = new UnfollowService(
+  repository,
+  accountRepository,
+  new MockClock(new Date('2023-09-11T00:00:00Z')),
+);
 
 describe('UnfollowService', () => {
   it('should unfollow', async () => {
@@ -61,5 +66,9 @@ describe('UnfollowService', () => {
     );
 
     expect(Option.isSome(res)).toBe(false);
+    expect(follow.getDeletedAt()).toStrictEqual(
+      Option.some(new Date('2023-09-11T00:00:00Z')),
+    );
+    expect(follow.pullEvents()).toHaveLength(1);
   });
 });
