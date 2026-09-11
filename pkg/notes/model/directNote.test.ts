@@ -25,7 +25,9 @@ const exampleInput: Omit<CreateDirectNoteArgs, 'deletedAt'> = {
 
 describe('DirectNote', () => {
   it('generate new instance', () => {
-    const note = Result.unwrap(DirectNote.new(exampleInput));
+    const note = Result.unwrap(
+      DirectNote.new(exampleInput, exampleInput.authorID),
+    );
 
     expect(note.getID()).toBe(exampleInput.id);
     expect(note.getAuthorID()).toBe(exampleInput.authorID);
@@ -35,6 +37,22 @@ describe('DirectNote', () => {
     expect(note.getAttachmentFileID()).toStrictEqual([]);
     expect(note.getCreatedAt()).toBe(exampleInput.createdAt);
     expect(note.getDeletedAt()).toStrictEqual(Option.none());
+  });
+
+  it('generates a note.created event', () => {
+    const note = Result.unwrap(
+      DirectNote.new(exampleInput, exampleInput.authorID),
+    );
+
+    const events = note.pullEvents();
+    expect(events).toHaveLength(1);
+    expect(events[0]?.eventName).toBe('note.created');
+    expect(events[0]?.target).toBe(exampleInput.id);
+    expect(events[0]?.actor).toBe(exampleInput.authorID);
+    expect(events[0]?.payload).toStrictEqual({
+      authorID: exampleInput.authorID,
+      visibility: 'DIRECT',
+    });
   });
 
   it.each([
@@ -54,7 +72,9 @@ describe('DirectNote', () => {
       expected: { content: '', attachmentCount: 0 },
     },
   ])('generate instance $name', ({ args, expected }) => {
-    const note = Result.unwrap(DirectNote.new({ ...exampleInput, ...args }));
+    const note = Result.unwrap(
+      DirectNote.new({ ...exampleInput, ...args }, exampleInput.authorID),
+    );
 
     expect(note.getContent()).toBe(expected.content);
     expect(note.getAttachmentFileID()).toHaveLength(expected.attachmentCount);
@@ -94,7 +114,7 @@ describe('DirectNote', () => {
         expectedError: DirectNoteContentLengthError,
       },
     ])('$name returns error', ({ args, expectedError }) => {
-      const result = DirectNote.new(args);
+      const result = DirectNote.new(args, exampleInput.authorID);
       expect(Result.isErr(result)).toBe(true);
       expect(Result.unwrapErr(result)).toBeInstanceOf(expectedError);
     });
@@ -102,7 +122,10 @@ describe('DirectNote', () => {
 
   describe('delete', () => {
     it('sets deletedAt when date is after createdAt', () => {
-      const note = Result.unwrap(DirectNote.new(exampleInput));
+      const note = Result.unwrap(
+        DirectNote.new(exampleInput, exampleInput.authorID),
+      );
+      note.pullEvents();
       const deletedAt = new Date('2023-09-11T00:00:00.000Z');
 
       const result = note.delete(deletedAt);
@@ -111,7 +134,10 @@ describe('DirectNote', () => {
     });
 
     it('returns error when deletedAt is before createdAt', () => {
-      const note = Result.unwrap(DirectNote.new(exampleInput));
+      const note = Result.unwrap(
+        DirectNote.new(exampleInput, exampleInput.authorID),
+      );
+      note.pullEvents();
       const deletedAt = new Date('2023-09-09T00:00:00.000Z');
 
       const result = note.delete(deletedAt);
@@ -119,7 +145,10 @@ describe('DirectNote', () => {
     });
 
     it('returns a note.deleted event', () => {
-      const note = Result.unwrap(DirectNote.new(exampleInput));
+      const note = Result.unwrap(
+        DirectNote.new(exampleInput, exampleInput.authorID),
+      );
+      note.pullEvents();
       const deletedAt = new Date('2023-09-11T00:00:00.000Z');
 
       const result = note.delete(deletedAt);

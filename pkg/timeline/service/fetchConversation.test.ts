@@ -13,15 +13,18 @@ const directNoteFactory = (
   createdAt: Date,
 ) =>
   Result.unwrap(
-    DirectNote.new({
-      id,
+    DirectNote.new(
+      {
+        id,
+        authorID,
+        recipientID,
+        content: 'This is a test note',
+        contentsWarningComment: '',
+        attachmentFileID: [],
+        createdAt,
+      },
       authorID,
-      recipientID,
-      content: 'This is a test note',
-      contentsWarningComment: '',
-      attachmentFileID: [],
-      createdAt,
-    }),
+    ),
   );
 
 /**

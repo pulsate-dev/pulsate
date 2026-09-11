@@ -79,15 +79,18 @@ export class CreateDirectNoteService {
       )
       .addMWith('note', ({ id }) =>
         Promise.resolve(
-          DirectNote.new({
-            id: id as DirectNoteID,
+          DirectNote.new(
+            {
+              id: id as DirectNoteID,
+              authorID,
+              recipientID,
+              content,
+              contentsWarningComment,
+              attachmentFileID,
+              createdAt: new Date(Number(now)),
+            },
             authorID,
-            recipientID,
-            content,
-            contentsWarningComment,
-            attachmentFileID,
-            createdAt: new Date(Number(now)),
-          }),
+          ),
         ),
       )
       .runWith(({ note }) =>

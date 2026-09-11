@@ -346,15 +346,18 @@ describe('InMemoryConversationRepository', () => {
     createdAt: Date,
   ) =>
     Result.unwrap(
-      DirectNote.new({
-        id,
+      DirectNote.new(
+        {
+          id,
+          authorID,
+          recipientID,
+          content: 'this is a test note',
+          contentsWarningComment: '',
+          attachmentFileID: [],
+          createdAt,
+        },
         authorID,
-        recipientID,
-        content: 'this is a test note',
-        contentsWarningComment: '',
-        attachmentFileID: [],
-        createdAt,
-      }),
+      ),
     );
 
   const testMap = [
