@@ -53,5 +53,20 @@ describe('Bookmark', () => {
 
       expect(bookmark.pullEvents()).toStrictEqual([]);
     });
+
+    it('deleted() returns a note.bookmark.deleted event', () => {
+      const bookmark = Bookmark.reconstruct(exampleInput);
+
+      bookmark.deleted();
+
+      const events = bookmark.pullEvents();
+      expect(events).toHaveLength(1);
+      expect(events[0]?.eventName).toBe('note.bookmark.deleted');
+      expect(events[0]?.target).toBe(exampleInput.noteID);
+      expect(events[0]?.actor).toBe(exampleInput.accountID);
+      expect(events[0]?.payload).toStrictEqual({
+        accountID: exampleInput.accountID,
+      });
+    });
   });
 });

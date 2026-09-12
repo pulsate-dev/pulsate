@@ -131,4 +131,15 @@ export class Medium {
   getThumbnailUrl(): Option.Option<string> {
     return this.#thumbnailUrl;
   }
+
+  deleted(actor: AccountID = this.#authorId): void {
+    this.#events.push(
+      Result.unwrap(
+        mediumEventFactory.deleted({
+          target: this.#id,
+          actor,
+        }),
+      ),
+    );
+  }
 }

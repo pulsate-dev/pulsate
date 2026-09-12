@@ -487,15 +487,12 @@ describe('Note', () => {
       expect(note.pullEvents()).toStrictEqual([]);
     });
 
-    describe('setDeletedAt', () => {
+    describe('delete', () => {
       it('should push exactly one note.deleted event for a normal note', () => {
         const note = Result.unwrap(Note.new(exampleInput, actor));
         note.pullEvents();
 
-        const res = note.setDeletedAt(
-          new Date('2023-09-11T00:00:00.000Z'),
-          actor,
-        );
+        const res = note.delete(new Date('2023-09-11T00:00:00.000Z'), actor);
         expect(Result.isOk(res)).toBe(true);
 
         const events = note.pullEvents();
@@ -522,10 +519,7 @@ describe('Note', () => {
         );
         note.pullEvents();
 
-        const res = note.setDeletedAt(
-          new Date('2023-09-11T00:00:00.000Z'),
-          actor,
-        );
+        const res = note.delete(new Date('2023-09-11T00:00:00.000Z'), actor);
         expect(Result.isOk(res)).toBe(true);
 
         const events = note.pullEvents();
@@ -537,10 +531,7 @@ describe('Note', () => {
         const note = Result.unwrap(Note.new(exampleInput, actor));
         note.pullEvents();
 
-        const res = note.setDeletedAt(
-          new Date('2000-01-01T00:00:00.000Z'),
-          actor,
-        );
+        const res = note.delete(new Date('2000-01-01T00:00:00.000Z'), actor);
         expect(Result.isErr(res)).toBe(true);
         expect(note.pullEvents()).toStrictEqual([]);
       });

@@ -152,6 +152,15 @@ export class List {
     return this.#createdAt;
   }
 
+  deleted(actor: AccountID = this.#ownerId): void {
+    this.#events.push(
+      listEventFactory.deleted({
+        target: this.#id,
+        actor,
+      }),
+    );
+  }
+
   addMember(
     memberId: AccountID,
     actor: AccountID,

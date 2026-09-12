@@ -151,5 +151,25 @@ describe('Reaction', () => {
 
       expect(reaction.pullEvents()).toStrictEqual([]);
     });
+
+    it('deleted() returns a note.reaction.deleted event', () => {
+      const reaction = Reaction.reconstruct({
+        id: baseArgs.id,
+        accountID: baseArgs.accountID,
+        noteID: normalNote.getID(),
+        body: baseArgs.body,
+      });
+
+      reaction.deleted();
+
+      const events = reaction.pullEvents();
+      expect(events).toHaveLength(1);
+      expect(events[0]?.eventName).toBe('note.reaction.deleted');
+      expect(events[0]?.target).toBe(normalNote.getID());
+      expect(events[0]?.actor).toBe(baseArgs.accountID);
+      expect(events[0]?.payload).toStrictEqual({
+        accountID: baseArgs.accountID,
+      });
+    });
   });
 });

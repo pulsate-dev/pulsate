@@ -52,4 +52,14 @@ export class Bookmark {
   getAccountID(): AccountID {
     return this.#accountID;
   }
+
+  deleted(actor: AccountID = this.#accountID): void {
+    this.#events.push(
+      bookmarkEventFactory.deleted({
+        target: this.#noteID,
+        actor,
+        accountID: this.#accountID,
+      }),
+    );
+  }
 }

@@ -89,9 +89,7 @@ export class AccountFollow {
     return this.#deletedAt;
   }
 
-  setDeletedAt(
-    deletedAt: Date,
-  ): Result.Result<AccountFollowDateInvalidError, void> {
+  delete(deletedAt: Date): Result.Result<AccountFollowDateInvalidError, void> {
     if (this.#createdAt > deletedAt) {
       return Result.err(
         new AccountFollowDateInvalidError(
@@ -111,5 +109,12 @@ export class AccountFollow {
       ),
     );
     return Result.ok(undefined);
+  }
+
+  /** @deprecated Use delete() instead. */
+  setDeletedAt(
+    deletedAt: Date,
+  ): Result.Result<AccountFollowDateInvalidError, void> {
+    return this.delete(deletedAt);
   }
 }

@@ -3,16 +3,19 @@ import { Result } from '@mikuroxina/mini-fn';
 import type { AccountID } from '../../../accounts/model/account.ts';
 import { eventIDGenerator } from '../../../internal/event/idGenerator.ts';
 import type { DomainEvent } from '../../../internal/event/type.ts';
+import type { DirectNoteID } from '../directNote.ts';
 import type { NoteID, NoteVisibility } from '../note.ts';
 
+export type NoteTargetID = NoteID | DirectNoteID;
+
 export type NoteCreatedEvent = DomainEvent<
-  NoteID,
+  NoteTargetID,
   'note.created',
   { authorID: AccountID; visibility: NoteVisibility },
   AccountID
 >;
 export type NoteDeletedEvent = DomainEvent<
-  NoteID,
+  NoteTargetID,
   'note.deleted',
   Record<string, never>,
   AccountID
@@ -38,7 +41,7 @@ export type NoteEvent =
 
 export const noteEventFactory = {
   created(args: {
-    target: NoteID;
+    target: NoteTargetID;
     actor: AccountID;
     authorID: AccountID;
     visibility: NoteVisibility;
@@ -55,7 +58,7 @@ export const noteEventFactory = {
   },
 
   deleted(args: {
-    target: NoteID;
+    target: NoteTargetID;
     actor: AccountID;
     occurredAt?: Date;
   }): NoteDeletedEvent {

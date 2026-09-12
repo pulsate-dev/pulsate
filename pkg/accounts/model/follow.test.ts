@@ -48,12 +48,12 @@ describe('AccountFollow domain events', () => {
     expect(follow.pullEvents()).toStrictEqual([]);
   });
 
-  it('setDeletedAt() generates an account.follow.unfollowed event', () => {
+  it('delete() generates an account.follow.unfollowed event', () => {
     const follow = Result.unwrap(AccountFollow.new(exampleInput));
     follow.pullEvents();
 
     const deletedAt = new Date('2023-09-11T00:00:00.000Z');
-    const result = follow.setDeletedAt(deletedAt);
+    const result = follow.delete(deletedAt);
     expect(Result.isOk(result)).toBe(true);
 
     const events = follow.pullEvents();
@@ -67,11 +67,11 @@ describe('AccountFollow domain events', () => {
     });
   });
 
-  it('setDeletedAt() does not push an event when validation fails', () => {
+  it('delete() does not push an event when validation fails', () => {
     const follow = Result.unwrap(AccountFollow.new(exampleInput));
     follow.pullEvents();
 
-    const result = follow.setDeletedAt(new Date('2023-09-09T00:00:00.000Z'));
+    const result = follow.delete(new Date('2023-09-09T00:00:00.000Z'));
     expect(Result.isErr(result)).toBe(true);
     expect(follow.pullEvents()).toStrictEqual([]);
   });

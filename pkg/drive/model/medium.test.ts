@@ -109,4 +109,17 @@ describe('Medium.new events', () => {
     expect(medium.pullEvents()).toHaveLength(1);
     expect(medium.pullEvents()).toHaveLength(0);
   });
+
+  it('deleted() returns a medium.deleted event', () => {
+    const medium = Medium.reconstruct(baseArgs);
+
+    medium.deleted();
+
+    const events = medium.pullEvents();
+    expect(events).toHaveLength(1);
+    expect(events[0]?.eventName).toBe('medium.deleted');
+    expect(events[0]?.target).toBe(baseArgs.id);
+    expect(events[0]?.actor).toBe(baseArgs.authorId);
+    expect(events[0]?.payload).toStrictEqual({});
+  });
 });

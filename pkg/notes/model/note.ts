@@ -396,7 +396,7 @@ export class Note {
     return this.#deletedAt;
   }
 
-  setDeletedAt(
+  delete(
     deletedAt: Date,
     actor: AccountID,
   ): Result.Result<NoteDateInvalidError, void> {
@@ -415,5 +415,13 @@ export class Note {
     this.#deletedAt = Option.some(deletedAt);
     this.#events.push(event);
     return Result.ok(undefined);
+  }
+
+  /** @deprecated Use delete() instead. */
+  setDeletedAt(
+    deletedAt: Date,
+    actor: AccountID,
+  ): Result.Result<NoteDateInvalidError, void> {
+    return this.delete(deletedAt, actor);
   }
 }
