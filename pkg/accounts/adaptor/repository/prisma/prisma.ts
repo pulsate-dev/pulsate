@@ -306,21 +306,20 @@ export class PrismaAccountFollowRepository implements AccountFollowRepository {
     }
   }
 
-  async unfollow(
-    fromID: AccountID,
-    targetID: AccountID,
-  ): Promise<Result.Result<Error, void>> {
+  async unfollow(follow: AccountFollow): Promise<Result.Result<Error, void>> {
     try {
       // ToDo: Should replace with a hard delete. It can't follow it back again due to a composite primary key.
       await this.#prisma.following.update({
         where: {
           fromId_toId: {
-            fromId: fromID,
-            toId: targetID,
+            fromId: follow.getFromID(),
+            toId: follow.getTargetID(),
           },
         },
         data: {
-          deletedAt: new Date(),
+          deletedAt: Option.isNone(follow.getDeletedAt())
+            ? undefined
+            : Option.unwrap(follow.getDeletedAt()),
         },
       });
       return Result.ok(undefined);

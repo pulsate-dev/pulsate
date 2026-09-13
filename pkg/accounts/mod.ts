@@ -201,7 +201,8 @@ export const controller = new AccountController({
   unFollowService: Ether.runEther(
     Cat.cat(unfollow)
       .feed(Ether.compose(accountFollowRepository))
-      .feed(Ether.compose(accountRepository)).value,
+      .feed(Ether.compose(accountRepository))
+      .feed(Ether.compose(clock)).value,
   ),
   resendTokenService: Ether.runEther(
     Cat.cat(resendToken)
