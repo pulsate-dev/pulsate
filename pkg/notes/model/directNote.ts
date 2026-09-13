@@ -58,10 +58,20 @@ export class DirectNote {
 
   static new(
     args: Omit<CreateDirectNoteArgs, 'deletedAt'>,
+    actor: AccountID,
   ): Result.Result<DirectNoteValidationError, DirectNote> {
     const err = DirectNote.#checkArgs(args);
     if (Result.isErr(err)) return err;
-    return Result.ok(new DirectNote({ ...args, deletedAt: Option.none() }));
+    const note = new DirectNote({ ...args, deletedAt: Option.none() });
+    note.#events.push(
+      noteEventFactory.created({
+        target: args.id,
+        actor,
+        authorID: args.authorID,
+        visibility: 'DIRECT',
+      }),
+    );
+    return Result.ok(note);
   }
 
   static reconstruct(arg: CreateDirectNoteArgs): DirectNote {
