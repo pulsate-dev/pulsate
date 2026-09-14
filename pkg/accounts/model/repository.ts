@@ -54,10 +54,7 @@ export interface AccountFollowCount {
 }
 export interface AccountFollowRepository {
   follow(follow: AccountFollow): Promise<Result.Result<Error, void>>;
-  unfollow(
-    fromID: AccountID,
-    targetID: AccountID,
-  ): Promise<Result.Result<Error, void>>;
+  unfollow(follow: AccountFollow): Promise<Result.Result<Error, void>>;
   fetchAllFollowers(
     accountID: AccountID,
   ): Promise<Result.Result<Error, AccountFollow[]>>;

@@ -1,5 +1,6 @@
 import { Cat, Ether, Option, Promise, Result } from '@mikuroxina/mini-fn';
 
+import { type Clock, clockSymbol } from '../../internal/id/mod.ts';
 import type { AccountName } from '../model/account.ts';
 import { AccountNotFoundError } from '../model/errors.ts';
 import {
@@ -12,12 +13,15 @@ import {
 export class UnfollowService {
   readonly #followRepository: AccountFollowRepository;
   readonly #accountRepository: AccountRepository;
+  readonly #clock: Clock;
   constructor(
     followRepository: AccountFollowRepository,
     accountRepository: AccountRepository,
+    clock: Clock,
   ) {
     this.#followRepository = followRepository;
     this.#accountRepository = accountRepository;
+    this.#clock = clock;
   }
 
   async handle(
@@ -47,12 +51,30 @@ export class UnfollowService {
           ),
         ),
       )
-      .finishM(({ fromAccount, targetAccount }) =>
-        this.#followRepository.unfollow(
-          fromAccount.getID(),
-          targetAccount.getID(),
-        ),
-      );
+      .addMWith('allFollows', ({ fromAccount }) =>
+        this.#followRepository.fetchAllFollowing(fromAccount.getID()),
+      )
+      .addMWith('follow', async ({ allFollows, targetAccount }) => {
+        const follow = allFollows.find(
+          (item) => item.getTargetID() === targetAccount.getID(),
+        );
+        return follow
+          ? Result.ok(follow)
+          : Result.err(
+              new AccountNotFoundError('follow not found', {
+                cause: null,
+              }),
+            );
+      })
+      .runWith(({ follow }) =>
+        Promise.resolve(
+          follow.delete(new Date(Number(this.#clock.now()))),
+        ).then(Result.map(() => [])),
+      )
+      .runWith(({ follow }) =>
+        monad.map(() => [])(this.#followRepository.unfollow(follow)),
+      )
+      .finish(() => []);
 
     return Result.optionErr(res);
   }
@@ -61,10 +83,11 @@ export class UnfollowService {
 export const unfollowSymbol = Ether.newEtherSymbol<UnfollowService>();
 export const unfollow = Ether.newEther(
   unfollowSymbol,
-  ({ accountFollowRepository, accountRepository }) =>
-    new UnfollowService(accountFollowRepository, accountRepository),
+  ({ accountFollowRepository, accountRepository, clock }) =>
+    new UnfollowService(accountFollowRepository, accountRepository, clock),
   {
     accountFollowRepository: followRepoSymbol,
     accountRepository: accountRepoSymbol,
+    clock: clockSymbol,
   },
 );
