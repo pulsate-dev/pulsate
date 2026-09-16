@@ -1,5 +1,9 @@
 import { Cat, Ether, Option, Promise, Result } from '@mikuroxina/mini-fn';
 
+import {
+  type EventPublisher,
+  eventPublisherSymbol,
+} from '../../internal/event/mod.ts';
 import type { Account, AccountName } from '../model/account.ts';
 import { AccountNotFoundError } from '../model/errors.ts';
 import {
@@ -9,9 +13,14 @@ import {
 
 export class SilenceService {
   readonly #accountRepository: AccountRepository;
+  readonly #eventPublisher: EventPublisher;
 
-  constructor(accountRepository: AccountRepository) {
+  constructor(
+    accountRepository: AccountRepository,
+    eventPublisher: EventPublisher,
+  ) {
     this.#accountRepository = accountRepository;
+    this.#eventPublisher = eventPublisher;
   }
 
   async setSilence(
@@ -33,6 +42,7 @@ export class SilenceService {
       .runWith(({ account }) =>
         monad.map(() => [])(this.#accountRepository.edit(account)),
       )
+      .runWith(({ account }) => monad.map(() => [])(this.publish(account)))
       .finish(() => true);
   }
 
@@ -57,7 +67,13 @@ export class SilenceService {
       .runWith(({ account }) =>
         monad.map(() => [])(this.#accountRepository.edit(account)),
       )
+      .runWith(({ account }) => monad.map(() => [])(this.publish(account)))
       .finish(() => true);
+  }
+
+  private async publish(account: Account): Promise<Result.Result<never, void>> {
+    this.#eventPublisher.publishMany(account.pullEvents());
+    return Result.ok(undefined);
   }
 
   private findAccount(
@@ -136,8 +152,10 @@ export class SilenceService {
 export const silenceSymbol = Ether.newEtherSymbol<SilenceService>();
 export const silence = Ether.newEther(
   silenceSymbol,
-  ({ accountRepository }) => new SilenceService(accountRepository),
+  ({ accountRepository, eventPublisher }) =>
+    new SilenceService(accountRepository, eventPublisher),
   {
     accountRepository: accountRepoSymbol,
+    eventPublisher: eventPublisherSymbol,
   },
 );

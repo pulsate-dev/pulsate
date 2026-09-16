@@ -201,7 +201,9 @@ export const controller = new AccountController({
       .feed(Ether.compose(eventPublisherEther)).value,
   ),
   silenceService: Ether.runEther(
-    Cat.cat(silence).feed(Ether.compose(accountRepository)).value,
+    Cat.cat(silence)
+      .feed(Ether.compose(accountRepository))
+      .feed(Ether.compose(eventPublisherEther)).value,
   ),
   verifyAccountTokenService: Ether.runEther(verifyAccountTokenService),
   unFollowService: Ether.runEther(
