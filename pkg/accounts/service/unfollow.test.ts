@@ -1,6 +1,7 @@
 import { Option, Result } from '@mikuroxina/mini-fn';
-import { describe, expect, it } from 'vitest';
+import { describe, expect, it, vi } from 'vitest';
 
+import type { EventPublisher } from '../../internal/event/mod.ts';
 import { MockClock } from '../../internal/id/mod.ts';
 import { InMemoryAccountRepository } from '../adaptor/repository/dummy/account.ts';
 import { InMemoryAccountFollowRepository } from '../adaptor/repository/dummy/follow.ts';
@@ -52,10 +53,12 @@ const follow = Result.unwrap(
 );
 follow.pullEvents();
 const repository = new InMemoryAccountFollowRepository([follow]);
+const eventPublisher: EventPublisher = { publishMany: vi.fn() };
 const service = new UnfollowService(
   repository,
   accountRepository,
   new MockClock(new Date('2023-09-11T00:00:00Z')),
+  eventPublisher,
 );
 
 describe('UnfollowService', () => {
@@ -69,6 +72,8 @@ describe('UnfollowService', () => {
     expect(follow.getDeletedAt()).toStrictEqual(
       Option.some(new Date('2023-09-11T00:00:00Z')),
     );
-    expect(follow.pullEvents()).toHaveLength(1);
+    expect(eventPublisher.publishMany).toHaveBeenCalledWith([
+      expect.objectContaining({ eventName: 'account.follow.unfollowed' }),
+    ]);
   });
 });

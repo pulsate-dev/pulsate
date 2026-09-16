@@ -1,5 +1,9 @@
 import { Cat, Ether, Option, Promise, Result } from '@mikuroxina/mini-fn';
 
+import {
+  type EventPublisher,
+  eventPublisherSymbol,
+} from '../../internal/event/mod.ts';
 import { type Clock, clockSymbol } from '../../internal/id/mod.ts';
 import type { AccountName } from '../model/account.ts';
 import { AccountNotFoundError } from '../model/errors.ts';
@@ -14,14 +18,17 @@ export class UnfollowService {
   readonly #followRepository: AccountFollowRepository;
   readonly #accountRepository: AccountRepository;
   readonly #clock: Clock;
+  readonly #eventPublisher: EventPublisher;
   constructor(
     followRepository: AccountFollowRepository,
     accountRepository: AccountRepository,
     clock: Clock,
+    eventPublisher: EventPublisher,
   ) {
     this.#followRepository = followRepository;
     this.#accountRepository = accountRepository;
     this.#clock = clock;
+    this.#eventPublisher = eventPublisher;
   }
 
   async handle(
@@ -74,6 +81,10 @@ export class UnfollowService {
       .runWith(({ follow }) =>
         monad.map(() => [])(this.#followRepository.unfollow(follow)),
       )
+      .runWith(({ follow }) => {
+        this.#eventPublisher.publishMany(follow.pullEvents());
+        return monad.map(() => [])(Promise.resolve(Result.ok(undefined)));
+      })
       .finish(() => []);
 
     return Result.optionErr(res);
@@ -83,11 +94,17 @@ export class UnfollowService {
 export const unfollowSymbol = Ether.newEtherSymbol<UnfollowService>();
 export const unfollow = Ether.newEther(
   unfollowSymbol,
-  ({ accountFollowRepository, accountRepository, clock }) =>
-    new UnfollowService(accountFollowRepository, accountRepository, clock),
+  ({ accountFollowRepository, accountRepository, clock, eventPublisher }) =>
+    new UnfollowService(
+      accountFollowRepository,
+      accountRepository,
+      clock,
+      eventPublisher,
+    ),
   {
     accountFollowRepository: followRepoSymbol,
     accountRepository: accountRepoSymbol,
     clock: clockSymbol,
+    eventPublisher: eventPublisherSymbol,
   },
 );
