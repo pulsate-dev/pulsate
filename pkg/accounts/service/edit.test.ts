@@ -1,6 +1,7 @@
 import { Option, Result } from '@mikuroxina/mini-fn';
-import { afterEach, beforeEach, describe, expect, it } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
+import type { EventPublisher } from '../../internal/event/mod.ts';
 import { Argon2idPasswordEncoder } from '../../internal/password/mod.ts';
 import { InMemoryAccountRepository } from '../adaptor/repository/dummy/account.ts';
 import { Account, type AccountID } from '../model/account.ts';
@@ -8,7 +9,12 @@ import { EditService } from './edit.ts';
 
 const passwordEncoder = new Argon2idPasswordEncoder();
 const repository = new InMemoryAccountRepository();
-const editService = new EditService(repository, passwordEncoder);
+const eventPublisher: EventPublisher = { publishMany: vi.fn() };
+const editService = new EditService(
+  repository,
+  passwordEncoder,
+  eventPublisher,
+);
 
 describe('EditService', () => {
   let account: Account;
@@ -34,7 +40,10 @@ describe('EditService', () => {
 
     account = res[1];
   });
-  afterEach(() => repository.reset());
+  afterEach(() => {
+    repository.reset();
+    vi.clearAllMocks();
+  });
 
   describe('nickname', () => {
     it.each([
@@ -67,6 +76,9 @@ describe('EditService', () => {
       expect((await repository.findByName('@john@example.com'))[1]).toBe(
         account,
       );
+      expect(eventPublisher.publishMany).toHaveBeenCalledWith([
+        expect.objectContaining({ eventName: 'account.nickname.updated' }),
+      ]);
     });
 
     it.each([
@@ -124,6 +136,8 @@ describe('EditService', () => {
       expect((await repository.findByName('@john@example.com'))[1]).toBe(
         account,
       );
+      // NOTE: passphrase changes intentionally do not emit a domain event
+      expect(eventPublisher.publishMany).toHaveBeenCalledWith([]);
     });
 
     it.each([
@@ -185,6 +199,9 @@ describe('EditService', () => {
       expect((await repository.findByName('@john@example.com'))[1]).toBe(
         account,
       );
+      expect(eventPublisher.publishMany).toHaveBeenCalledWith([
+        expect.objectContaining({ eventName: 'account.email.updated' }),
+      ]);
     });
 
     it.each([
@@ -229,6 +246,9 @@ describe('EditService', () => {
       expect((await repository.findByName('@john@example.com'))[1]).toBe(
         account,
       );
+      expect(eventPublisher.publishMany).toHaveBeenCalledWith([
+        expect.objectContaining({ eventName: 'account.bio.updated' }),
+      ]);
     });
 
     it.each([

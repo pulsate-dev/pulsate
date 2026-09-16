@@ -167,7 +167,8 @@ export const controller = new AccountController({
   editService: Ether.runEther(
     Cat.cat(edit)
       .feed(Ether.compose(accountRepository))
-      .feed(Ether.compose(argon2idPasswordEncoder)).value,
+      .feed(Ether.compose(argon2idPasswordEncoder))
+      .feed(Ether.compose(eventPublisherEther)).value,
   ),
   fetchService: Ether.runEther(
     Cat.cat(fetch).feed(Ether.compose(accountRepository)).value,
