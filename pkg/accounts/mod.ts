@@ -143,7 +143,8 @@ const verifyAccountTokenService = Cat.cat(verifyAccountToken)
     ),
   )
   .feed(Ether.compose(inactiveAccountRepository))
-  .feed(Ether.compose(accountRepository)).value;
+  .feed(Ether.compose(accountRepository))
+  .feed(Ether.compose(eventPublisherEther)).value;
 
 const composer = Ether.composeT(Promise.monad);
 const liftOverPromise = Ether.liftEther(Promise.monad);

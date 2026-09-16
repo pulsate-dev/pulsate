@@ -1,6 +1,7 @@
 import { Option } from '@mikuroxina/mini-fn';
 import { afterEach, describe, expect, it } from 'vitest';
 import { notificationModule } from '../../intermodule/notification.ts';
+import { DummyEventPublisher } from '../../internal/event/mod.ts';
 import { MockClock } from '../../internal/id/mod.ts';
 import { InMemoryAccountRepository } from '../adaptor/repository/dummy/account.ts';
 import { InMemoryInactiveAccountRepository } from '../adaptor/repository/dummy/inactiveAccount.ts';
@@ -31,6 +32,7 @@ const verifyAccountTokenService = new VerifyAccountTokenService(
   inactiveAccountRepository,
   accountRepository,
   mockClock,
+  new DummyEventPublisher(),
 );
 
 describe('ResendVerifyTokenService', () => {
