@@ -33,8 +33,8 @@ importers:
         specifier: 0.5.3
         version: 0.5.3
       '@upyo/smtp':
-        specifier: 0.5.3
-        version: 0.5.3(@upyo/core@0.5.3)
+        specifier: 0.6.0
+        version: 0.6.0(@upyo/core@0.5.3)
       argon2:
         specifier: 0.45.1
         version: 0.45.1
@@ -586,6 +586,10 @@ packages:
   '@mikuroxina/mini-fn@7.4.0':
     resolution: {integrity: sha512-eLlhw7evaSoXZT5wi0nk8lSkezjvpyh9eniMTkuLMJBf7NGPT17Ec0sJPNyy2yy/cggxaWSaYCG3l29yEK7XgA==}
 
+  '@noble/hashes@1.8.0':
+    resolution: {integrity: sha512-jCs9ldd7NwzpgXDIf6P3+NrHh9/sD6CQdxHyjQI+h/6rDNo88ypBxxz45UDuZHz9r3tNz7N/VInSVoVdtXEI4A==}
+    engines: {node: ^14.21.3 || >=16}
+
   '@npmcli/agent@5.0.2':
     resolution: {integrity: sha512-EkzGmEsgbQ1rqWkRJe2P0oQHx/ylZozDUNPMXCklLuSFL3GY+QyEfBUjhjCsgGXzh4OGpnHvkboSQgczjP/jJg==}
     engines: {node: ^22.22.2 || ^24.15.0 || >=26.0.0}
@@ -1049,11 +1053,17 @@ packages:
     resolution: {integrity: sha512-fgwRJflbGnNVhj1iw7HDTEYovSdxB0P7X8hshvW5FO1PElhDUYieez6itouexfWIWMH9j+v26MggLIaSEJNN/g==}
     engines: {bun: '>=1.2.0', deno: '>=2.3.0', node: '>=20.0.0'}
 
-  '@upyo/smtp@0.5.3':
-    resolution: {integrity: sha512-hJZMmrCZov1BPXuf/tcvChJdQJAukwieRP95wDrGDw7D41nmpLJ2Wtv1gg3N7cRsM5p0ok44LKGlotX78yiE/A==}
+  '@upyo/mime@0.6.0':
+    resolution: {integrity: sha512-mcRKpQpGEEkVcOGIch0jg9qa8g6D/NoAm7IGieE7+DLUekYC9xpGC7XrRfHFIyXrgKNpPxqVlVKrZm+B2rdaHw==}
     engines: {bun: '>=1.2.0', deno: '>=2.3.0', node: '>=20.0.0'}
     peerDependencies:
-      '@upyo/core': 0.5.3
+      '@upyo/core': 0.6.0
+
+  '@upyo/smtp@0.6.0':
+    resolution: {integrity: sha512-0x9IhMYXoQjMDSwe0gu4t6q6IMMUZg9f9zrvTdW57dIwATik8ejp1uv1gyK3zZoSa6IOdWboPgCfvdo9993F/g==}
+    engines: {bun: '>=1.2.0', deno: '>=2.3.0', node: '>=20.0.0'}
+    peerDependencies:
+      '@upyo/core': 0.6.0
 
   '@visx/curve@4.0.1-alpha.0':
     resolution: {integrity: sha512-jRu61Uz274pV1zyioXmboyrLutYbnKsgjj4njSGCnhdXj5GkZvZbg+ThDb6oOzoAnJOBRLz4rzPlWvNJOzuVMg==}
@@ -2556,6 +2566,8 @@ snapshots:
 
   '@mikuroxina/mini-fn@7.4.0': {}
 
+  '@noble/hashes@1.8.0': {}
+
   '@npmcli/agent@5.0.2(supports-color@7.2.0)':
     dependencies:
       agent-base: 9.0.0
@@ -3017,9 +3029,15 @@ snapshots:
 
   '@upyo/core@0.5.3': {}
 
-  '@upyo/smtp@0.5.3(@upyo/core@0.5.3)':
+  '@upyo/mime@0.6.0(@upyo/core@0.5.3)':
+    dependencies:
+      '@noble/hashes': 1.8.0
+      '@upyo/core': 0.5.3
+
+  '@upyo/smtp@0.6.0(@upyo/core@0.5.3)':
     dependencies:
       '@upyo/core': 0.5.3
+      '@upyo/mime': 0.6.0(@upyo/core@0.5.3)
 
   '@visx/curve@4.0.1-alpha.0':
     dependencies:
