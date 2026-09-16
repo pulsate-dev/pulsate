@@ -4,6 +4,10 @@ import {
   notificationModuleFacadeSymbol,
 } from '../../intermodule/notification.ts';
 import {
+  type EventPublisher,
+  eventPublisherSymbol,
+} from '../../internal/event/mod.ts';
+import {
   type SnowflakeIDGenerator,
   snowflakeIDGeneratorSymbol,
 } from '../../internal/id/mod.ts';
@@ -40,6 +44,7 @@ export class RegisterService {
   readonly #passwordEncoder: PasswordEncoder;
   readonly #notificationModule: NotificationModuleFacade;
   readonly #verifyAccountTokenService: VerifyAccountTokenService;
+  readonly #eventPublisher: EventPublisher;
 
   constructor(arg: {
     repository: InactiveAccountRepository;
@@ -47,12 +52,14 @@ export class RegisterService {
     passwordEncoder: PasswordEncoder;
     notificationModule: NotificationModuleFacade;
     verifyAccountTokenService: VerifyAccountTokenService;
+    eventPublisher: EventPublisher;
   }) {
     this.#inactiveAccountRepository = arg.repository;
     this.#snowflakeIDGenerator = arg.idGenerator;
     this.#passwordEncoder = arg.passwordEncoder;
     this.#notificationModule = arg.notificationModule;
     this.#verifyAccountTokenService = arg.verifyAccountTokenService;
+    this.#eventPublisher = arg.eventPublisher;
   }
 
   public async handle(
@@ -102,6 +109,10 @@ export class RegisterService {
       .runWith(({ account }) =>
         monad.map(() => [])(this.#inactiveAccountRepository.create(account)),
       )
+      .runWith(({ account }) => {
+        this.#eventPublisher.publishMany(account.pullEvents());
+        return monad.map(() => [])(Promise.resolve(Result.ok(undefined)));
+      })
       .addMWith('token', ({ account }) =>
         this.#verifyAccountTokenService.generate(account.getName()),
       )
@@ -135,5 +146,6 @@ export const register = Ether.newEther(
     passwordEncoder: passwordEncoderSymbol,
     notificationModule: notificationModuleFacadeSymbol,
     verifyAccountTokenService: verifyAccountTokenSymbol,
+    eventPublisher: eventPublisherSymbol,
   },
 );

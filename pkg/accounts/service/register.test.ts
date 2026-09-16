@@ -1,6 +1,7 @@
 import { Result } from '@mikuroxina/mini-fn';
-import { afterEach, describe, expect, it } from 'vitest';
+import { afterEach, describe, expect, it, vi } from 'vitest';
 import { notificationModule } from '../../intermodule/notification.ts';
+import type { EventPublisher } from '../../internal/event/mod.ts';
 import { MockClock, SnowflakeIDGenerator } from '../../internal/id/mod.ts';
 import { Argon2idPasswordEncoder } from '../../internal/password/mod.ts';
 import { InMemoryAccountRepository } from '../adaptor/repository/dummy/account.ts';
@@ -14,6 +15,7 @@ const inactiveAccountRepository = new InMemoryInactiveAccountRepository();
 const accountRepository = new InMemoryAccountRepository();
 const verifyRepository = new InMemoryAccountVerifyTokenRepository();
 const mockClock = new MockClock(new Date('2023-09-10T00:00:00Z'));
+const eventPublisher: EventPublisher = { publishMany: vi.fn() };
 
 const registerService: RegisterService = new RegisterService({
   repository: inactiveAccountRepository,
@@ -25,7 +27,9 @@ const registerService: RegisterService = new RegisterService({
     inactiveAccountRepository,
     accountRepository,
     mockClock,
+    eventPublisher,
   ),
+  eventPublisher,
 });
 
 const exampleInput = {
@@ -36,7 +40,10 @@ const exampleInput = {
 };
 
 describe('RegisterService', () => {
-  afterEach(() => inactiveAccountRepository.reset());
+  afterEach(() => {
+    inactiveAccountRepository.reset();
+    vi.clearAllMocks();
+  });
 
   it('register account', async () => {
     const res = await registerService.handle(
@@ -51,6 +58,20 @@ describe('RegisterService', () => {
     expect(res[1].getMail()).toBe(exampleInput.mail);
     expect(res[1].getRole()).toBe(exampleInput.role);
     expect(res[1].isActivated()).toBe(false);
+  });
+
+  it('publishes account.registered event', async () => {
+    const res = await registerService.handle(
+      exampleInput.name,
+      exampleInput.mail,
+      exampleInput.passphrase,
+      exampleInput.role,
+    );
+    if (Result.isErr(res)) return;
+
+    expect(eventPublisher.publishMany).toHaveBeenCalledWith([
+      expect.objectContaining({ eventName: 'account.registered' }),
+    ]);
   });
 
   it('rejects passphrase shorter than requirements', async () => {

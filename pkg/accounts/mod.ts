@@ -11,6 +11,7 @@ import {
   notificationModule,
   notificationModuleFacadeSymbol,
 } from '../intermodule/notification.ts';
+import { eventPublisherEther } from '../internal/event/mod.ts';
 import { clockSymbol, snowflakeIDGenerator } from '../internal/id/mod.ts';
 import { argon2idPasswordEncoder } from '../internal/password/mod.ts';
 import { newTurnstileCaptchaValidator } from './adaptor/captcha/turnstile.ts';
@@ -192,7 +193,8 @@ export const controller = new AccountController({
           ),
         ),
       )
-      .feed(Ether.compose(verifyAccountTokenService)).value,
+      .feed(Ether.compose(verifyAccountTokenService))
+      .feed(Ether.compose(eventPublisherEther)).value,
   ),
   silenceService: Ether.runEther(
     Cat.cat(silence).feed(Ether.compose(accountRepository)).value,
