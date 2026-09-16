@@ -177,7 +177,8 @@ export const controller = new AccountController({
     Cat.cat(follow)
       .feed(Ether.compose(clock))
       .feed(Ether.compose(accountRepository))
-      .feed(Ether.compose(accountFollowRepository)).value,
+      .feed(Ether.compose(accountFollowRepository))
+      .feed(Ether.compose(eventPublisherEther)).value,
   ),
   freezeService: Ether.runEther(
     Cat.cat(freeze)
