@@ -180,7 +180,9 @@ export const controller = new AccountController({
       .feed(Ether.compose(accountFollowRepository)).value,
   ),
   freezeService: Ether.runEther(
-    Cat.cat(freeze).feed(Ether.compose(accountRepository)).value,
+    Cat.cat(freeze)
+      .feed(Ether.compose(accountRepository))
+      .feed(Ether.compose(eventPublisherEther)).value,
   ),
   registerService: Ether.runEther(
     Cat.cat(register)

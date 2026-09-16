@@ -1,6 +1,7 @@
 import { Option, Result } from '@mikuroxina/mini-fn';
-import { beforeEach, describe, expect, it } from 'vitest';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
 
+import type { EventPublisher } from '../../internal/event/mod.ts';
 import { InMemoryAccountRepository } from '../adaptor/repository/dummy/account.ts';
 import { Account, type AccountID } from '../model/account.ts';
 import { FreezeService } from './freeze.ts';
@@ -78,10 +79,14 @@ const testAccounts = [
   }),
 ];
 const repository = new InMemoryAccountRepository();
-const freezeService = new FreezeService(repository);
+const eventPublisher: EventPublisher = { publishMany: vi.fn() };
+const freezeService = new FreezeService(repository, eventPublisher);
 
 describe('FreezeService', () => {
-  beforeEach(() => repository.reset(testAccounts));
+  beforeEach(() => {
+    repository.reset(testAccounts);
+    vi.clearAllMocks();
+  });
 
   it('set account freeze', async () => {
     const account = Option.unwrap(
@@ -91,6 +96,9 @@ describe('FreezeService', () => {
     await freezeService.setFreeze('@john@example.com', '@alice@example.com');
 
     expect(account.isFrozen()).toBe(true);
+    expect(eventPublisher.publishMany).toHaveBeenCalledWith([
+      expect.objectContaining({ eventName: 'account.admin.frozen' }),
+    ]);
   });
 
   it('unset account freeze', async () => {
@@ -103,6 +111,9 @@ describe('FreezeService', () => {
     );
 
     expect(account.isFrozen()).toBe(false);
+    expect(eventPublisher.publishMany).toHaveBeenCalledWith([
+      expect.objectContaining({ eventName: 'account.admin.unfrozen' }),
+    ]);
   });
 
   describe('permission check', () => {
