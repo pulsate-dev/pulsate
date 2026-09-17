@@ -83,7 +83,7 @@ export class UnfollowService {
       )
       .runWith(({ follow }) => {
         this.#eventPublisher.publishMany(follow.pullEvents());
-        return monad.map(() => [])(Promise.resolve(Result.ok(undefined)));
+        return monad.pure([]);
       })
       .finish(() => []);
 

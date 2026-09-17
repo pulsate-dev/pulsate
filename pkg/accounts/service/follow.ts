@@ -1,4 +1,4 @@
-import { Cat, Ether, Option, Promise, Result } from '@mikuroxina/mini-fn';
+import { Cat, Ether, Option, Promise, type Result } from '@mikuroxina/mini-fn';
 
 import {
   type EventPublisher,
@@ -73,7 +73,7 @@ export class FollowService {
       )
       .runWith(({ follow }) => {
         this.#eventPublisher.publishMany(follow.pullEvents());
-        return monad.map(() => [])(Promise.resolve(Result.ok(undefined)));
+        return monad.pure([]);
       })
       .finish(({ follow }) => follow);
   }

@@ -111,7 +111,7 @@ export class RegisterService {
       )
       .runWith(({ account }) => {
         this.#eventPublisher.publishMany(account.pullEvents());
-        return monad.map(() => [])(Promise.resolve(Result.ok(undefined)));
+        return monad.pure([]);
       })
       .addMWith('token', ({ account }) =>
         this.#verifyAccountTokenService.generate(account.getName()),
