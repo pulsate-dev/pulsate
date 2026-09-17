@@ -1,5 +1,5 @@
 import { Option, Result } from '@mikuroxina/mini-fn';
-import { describe, expect, it } from 'vitest';
+import { beforeEach, describe, expect, it } from 'vitest';
 
 import type { AccountID } from '../../accounts/model/account.ts';
 import {
@@ -14,7 +14,6 @@ const anotherNoteID = 'noteID_2' as NoteID;
 const accountID = 'accountID_1' as AccountID;
 const anotherAccountID = 'accountID_2' as AccountID;
 
-const bookmarkRepository = new InMemoryBookmarkRepository();
 const noteRepository = new InMemoryNoteRepository([
   Note.reconstruct({
     id: 'noteID_1' as NoteID,
@@ -43,12 +42,17 @@ const noteRepository = new InMemoryNoteRepository([
     deletedAt: Option.none(),
   }),
 ]);
+const bookmarkRepository = new InMemoryBookmarkRepository();
 const createBookmarkService = new CreateBookmarkService(
   bookmarkRepository,
   noteRepository,
 );
 
 describe('CreateBookmarkService', () => {
+  beforeEach(() => {
+    bookmarkRepository.reset();
+  });
+
   it('success to create bookmark', async () => {
     const res = await createBookmarkService.handle(noteID, accountID);
 
@@ -59,6 +63,7 @@ describe('CreateBookmarkService', () => {
   });
 
   it('fail to re-create bookmark from same account', async () => {
+    await createBookmarkService.handle(noteID, accountID);
     const res = await createBookmarkService.handle(noteID, accountID);
 
     expect(Result.isErr(res)).toBe(true);

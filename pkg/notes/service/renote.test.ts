@@ -1,5 +1,5 @@
 import { Option, Result } from '@mikuroxina/mini-fn';
-import { describe, expect, it, vi } from 'vitest';
+import { afterEach, describe, expect, it, vi } from 'vitest';
 
 import type { AccountID } from '../../accounts/model/account.ts';
 import { Medium, type MediumID } from '../../drive/model/medium.ts';
@@ -60,6 +60,10 @@ const service = new RenoteService({
 });
 
 describe('RenoteService', () => {
+  afterEach(() => {
+    vi.restoreAllMocks();
+  });
+
   it('should create renote', async () => {
     const renote = await service.handle(
       '2' as NoteID,

@@ -136,7 +136,7 @@ describe('FetchService', () => {
   it('fetchMany: should fetch notes', async () => {
     const testNotes = [...new Array<Note>(5)].map((_, i) =>
       Note.reconstruct({
-        id: i.toString() as NoteID,
+        id: `many-${i}` as NoteID,
         authorID: '3' as AccountID,
         content: `Hello world ${i}`,
         contentsWarningComment: '',

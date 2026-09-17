@@ -9,29 +9,29 @@ class DummyClock implements Clock {
   }
 }
 
-const generator = new SnowflakeIDGenerator(1, new DummyClock());
-
 describe('SnowflakeIDGenerator', () => {
   it('generate id', () => {
+    const generator = new SnowflakeIDGenerator(1, new DummyClock());
     const expected = '223593313075204096';
     const result = generator.generate();
 
+    expect(Result.isErr(result)).toBe(false);
     if (Result.isOk(result)) {
       expect(result[1]).toBe(expected);
     }
-    expect(Result.isErr(result)).toBe(false);
   });
 
   it('generate at the same time but do not output the same ID', () => {
+    const generator = new SnowflakeIDGenerator(1, new DummyClock());
     let oldID = '';
-    for (let i = 0; i < 4095; i++) {
+    for (let i = 0; i < 4096; i++) {
       const newID = generator.generate<string>();
 
+      expect(Result.isErr(newID)).toBe(false);
       if (Result.isOk(newID)) {
         expect(newID[1]).not.toBe(oldID);
         oldID = newID[1];
       }
-      expect(Result.isErr(newID)).toBe(false);
     }
 
     const res = generator.generate();
