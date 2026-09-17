@@ -51,7 +51,7 @@ const timelineCacheRepository = new InMemoryTimelineCacheRepository();
 const service = new RenoteService({
   noteRepository: repository,
   idGenerator: new SnowflakeIDGenerator(0, {
-    now: () => BigInt(Date.UTC(2023, 9, 10, 0, 0)),
+    now: () => BigInt(new Date('2023-10-10T00:00:00Z').getTime()),
   }),
   noteAttachmentRepository: attachmentRepository,
   accountModule: dummyAccountModuleFacade,
@@ -87,7 +87,7 @@ describe('RenoteService', () => {
     const testService = new RenoteService({
       noteRepository: repository,
       idGenerator: new SnowflakeIDGenerator(0, {
-        now: () => BigInt(Date.UTC(2023, 9, 10, 0, 0)),
+        now: () => BigInt(new Date('2023-10-10T00:00:00Z').getTime()),
       }),
       noteAttachmentRepository: attachmentRepository,
       accountModule: dummyAccountModuleFacade,
@@ -357,7 +357,7 @@ describe('RenoteService', () => {
     const dummyService = new RenoteService({
       noteRepository: repository,
       idGenerator: new SnowflakeIDGenerator(0, {
-        now: () => BigInt(Date.UTC(0, 0, 0, 0, 0)),
+        now: () => BigInt(new Date('1899-12-31T00:00:00Z').getTime()),
       }),
       noteAttachmentRepository: attachmentRepository,
       accountModule: dummyAccountModuleFacade,

@@ -8,7 +8,7 @@ import { EditListService } from './editList.ts';
 
 const testListData: CreateListArgs = {
   id: '1' as ListID,
-  createdAt: new Date(2023, 9, 10, 0, 0),
+  createdAt: new Date('2023-10-10T00:00:00Z'),
   memberIds: [],
   ownerId: '' as AccountID,
   publicity: 'PUBLIC',

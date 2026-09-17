@@ -39,7 +39,7 @@ const timelineCacheRepository = new InMemoryTimelineCacheRepository([
 const createService = new CreateService({
   noteRepository,
   idGenerator: new SnowflakeIDGenerator(0, {
-    now: () => BigInt(Date.UTC(2023, 9, 10, 0, 0)),
+    now: () => BigInt(new Date('2023-10-10T00:00:00Z').getTime()),
   }),
   noteAttachmentRepository: attachmentRepository,
   accountModule: dummyAccountModuleFacade,

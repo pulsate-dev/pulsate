@@ -5,7 +5,7 @@ import { type Clock, IDSchema, SnowflakeIDGenerator } from './mod.ts';
 
 class DummyClock implements Clock {
   now(): bigint {
-    return BigInt(new Date('2023/9/10 00:00:00 UTC').getTime());
+    return BigInt(new Date('2023-09-10T00:00:00Z').getTime());
   }
 }
 

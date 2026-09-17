@@ -37,14 +37,14 @@ const normalNote = noteFactory(
   '2' as AccountID,
   'this is a test note',
   Option.none(),
-  new Date(2023, 9, 10, 0, 0),
+  new Date('2023-10-10T00:00:00Z'),
 );
 const renoteNote = noteFactory(
   '2' as NoteID,
   '3' as AccountID,
   '',
   Option.some('1' as NoteID),
-  new Date(2023, 9, 10, 1, 0),
+  new Date('2023-10-10T01:00:00Z'),
 );
 
 let reactionRepository = new InMemoryReactionRepository();
