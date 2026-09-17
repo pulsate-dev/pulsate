@@ -52,12 +52,12 @@ describe('RegisterService', () => {
       exampleInput.passphrase,
       exampleInput.role,
     );
-    if (Result.isErr(res)) return;
+    const account = Result.unwrap(res);
 
-    expect(res[1].getName()).toBe(exampleInput.name);
-    expect(res[1].getMail()).toBe(exampleInput.mail);
-    expect(res[1].getRole()).toBe(exampleInput.role);
-    expect(res[1].isActivated()).toBe(false);
+    expect(account.getName()).toBe(exampleInput.name);
+    expect(account.getMail()).toBe(exampleInput.mail);
+    expect(account.getRole()).toBe(exampleInput.role);
+    expect(account.isActivated()).toBe(false);
   });
 
   it('publishes account.registered event', async () => {

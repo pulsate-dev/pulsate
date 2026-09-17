@@ -102,7 +102,8 @@ export class VerifyAccountTokenService {
           ),
       )
       .when(
-        ({ verifyToken }) => verifyToken.isExpired(new Date()),
+        ({ verifyToken }) =>
+          verifyToken.isExpired(new Date(Number(this.#clock.now()))),
         () =>
           Promise.resolve(
             Result.err(

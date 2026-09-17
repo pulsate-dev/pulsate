@@ -15,6 +15,10 @@ export class InMemoryAccountVerifyTokenRepository
     this.#data = new Map();
   }
 
+  reset(): void {
+    this.#data.clear();
+  }
+
   async create(
     accountID: AccountID,
     token: string,
