@@ -149,10 +149,14 @@ describe('FetchService', () => {
         deletedAt: Option.none(),
       }),
     );
-    testNotes.map(async (v) => await repository.create(v));
+    await Promise.all(testNotes.map((v) => repository.create(v)));
     const res = await service.fetchNotesByID(testNotes.map((v) => v.getID()));
     expect(Result.isOk(res)).toBe(true);
-    expect(res).toStrictEqual;
+
+    const fetchedIDs = Result.unwrap(res)
+      .map((v) => v.getID())
+      .sort();
+    expect(fetchedIDs).toStrictEqual(testNotes.map((v) => v.getID()).sort());
   });
 
   it('account frozen', async () => {
