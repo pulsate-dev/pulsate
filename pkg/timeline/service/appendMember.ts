@@ -1,6 +1,10 @@
 import { Cat, Ether, Promise, Result } from '@mikuroxina/mini-fn';
 import type { AccountID } from '../../accounts/model/account.ts';
 import {
+  type EventPublisher,
+  eventPublisherSymbol,
+} from '../../internal/event/mod.ts';
+import {
   ListNotFoundError,
   TimelineInsufficientPermissionError,
 } from '../model/errors.ts';
@@ -9,8 +13,10 @@ import { type ListRepository, listRepoSymbol } from '../model/repository.ts';
 
 export class AppendListMemberService {
   readonly #listRepository: ListRepository;
-  constructor(listRepository: ListRepository) {
+  readonly #eventPublisher: EventPublisher;
+  constructor(listRepository: ListRepository, eventPublisher: EventPublisher) {
     this.#listRepository = listRepository;
+    this.#eventPublisher = eventPublisher;
   }
 
   /**
@@ -59,6 +65,10 @@ export class AppendListMemberService {
       .runWith(({ list }) =>
         monad.map(() => [])(this.#listRepository.appendListMember(list)),
       )
+      .runWith(({ list }) => {
+        this.#eventPublisher.publishMany(list.pullEvents());
+        return monad.pure([]);
+      })
       .finish(() => undefined);
   }
 
@@ -70,8 +80,10 @@ export const appendListMemberSymbol =
   Ether.newEtherSymbol<AppendListMemberService>();
 export const appendListMember = Ether.newEther(
   appendListMemberSymbol,
-  ({ listRepository }) => new AppendListMemberService(listRepository),
+  ({ listRepository, eventPublisher }) =>
+    new AppendListMemberService(listRepository, eventPublisher),
   {
     listRepository: listRepoSymbol,
+    eventPublisher: eventPublisherSymbol,
   },
 );

@@ -18,6 +18,7 @@ import {
   listRepositoryInstance,
   timelineCacheRepositoryInstance,
 } from '../intermodule/timeline.ts';
+import { eventPublisherEther } from '../internal/event/mod.ts';
 import { clockSymbol, snowflakeIDGenerator } from '../internal/id/mod.ts';
 import { TimelineController } from './adaptor/controller/timeline.ts';
 import { timelineModuleLogger } from './adaptor/logger.ts';
@@ -133,7 +134,8 @@ const controller = new TimelineController({
     Cat.cat(createList)
       .feed(Ether.compose(clock))
       .feed(Ether.compose(idGenerator))
-      .feed(Ether.compose(listRepository)).value,
+      .feed(Ether.compose(listRepository))
+      .feed(Ether.compose(eventPublisherEther)).value,
   ),
   editListService: Ether.runEther(
     Cat.cat(editList).feed(Ether.compose(listRepository)).value,
@@ -142,7 +144,9 @@ const controller = new TimelineController({
     Cat.cat(fetchList).feed(Ether.compose(listRepository)).value,
   ),
   deleteListService: Ether.runEther(
-    Cat.cat(deleteList).feed(Ether.compose(listRepository)).value,
+    Cat.cat(deleteList)
+      .feed(Ether.compose(listRepository))
+      .feed(Ether.compose(eventPublisherEther)).value,
   ),
   accountModule: isProduction ? accountModule : dummyAccountModuleFacade,
   fetchMemberService: Ether.runEther(
@@ -162,10 +166,14 @@ const controller = new TimelineController({
       .feed(Ether.compose(timelineRepository)).value,
   ),
   appendListMemberService: Ether.runEther(
-    Cat.cat(appendListMember).feed(Ether.compose(listRepository)).value,
+    Cat.cat(appendListMember)
+      .feed(Ether.compose(listRepository))
+      .feed(Ether.compose(eventPublisherEther)).value,
   ),
   removeListMemberService: Ether.runEther(
-    Cat.cat(removeListMember).feed(Ether.compose(listRepository)).value,
+    Cat.cat(removeListMember)
+      .feed(Ether.compose(listRepository))
+      .feed(Ether.compose(eventPublisherEther)).value,
   ),
   fetchBookmarkTimelineService: Ether.runEther(
     Cat.cat(fetchBookmark)

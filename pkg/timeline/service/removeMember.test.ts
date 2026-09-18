@@ -1,6 +1,7 @@
 import { Result } from '@mikuroxina/mini-fn';
-import { beforeEach, describe, expect, it } from 'vitest';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
 import type { AccountID } from '../../accounts/model/account.ts';
+import type { EventPublisher } from '../../internal/event/mod.ts';
 import { InMemoryListRepository } from '../adaptor/repository/dummy.ts';
 import {
   ListNotFoundError,
@@ -21,10 +22,12 @@ describe('RemoveListMemberService', () => {
     }),
   ];
   const listRepository = new InMemoryListRepository(listData);
-  const service = new RemoveListMemberService(listRepository);
+  const eventPublisher: EventPublisher = { publishMany: vi.fn() };
+  const service = new RemoveListMemberService(listRepository, eventPublisher);
 
   beforeEach(() => {
     listRepository.reset(listData);
+    vi.clearAllMocks();
   });
 
   it('should remove member from list', async () => {
@@ -37,6 +40,9 @@ describe('RemoveListMemberService', () => {
 
     expect(Result.isErr(res)).toBe(false);
     expect(Result.unwrap(listRes)).toHaveLength(1);
+    expect(eventPublisher.publishMany).toHaveBeenCalledWith([
+      expect.objectContaining({ eventName: 'list.member.removed' }),
+    ]);
   });
 
   it("should return error if list doesn't exist", async () => {

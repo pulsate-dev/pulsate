@@ -1,6 +1,7 @@
 import { Result } from '@mikuroxina/mini-fn';
-import { beforeEach, describe, expect, it } from 'vitest';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
 import type { AccountID } from '../../accounts/model/account.ts';
+import type { EventPublisher } from '../../internal/event/mod.ts';
 import { InMemoryListRepository } from '../adaptor/repository/dummy.ts';
 import {
   ListNotFoundError,
@@ -22,10 +23,12 @@ describe('AppendListMemberService', () => {
     }),
   ];
   const listRepository = new InMemoryListRepository(createListData());
-  const service = new AppendListMemberService(listRepository);
+  const eventPublisher: EventPublisher = { publishMany: vi.fn() };
+  const service = new AppendListMemberService(listRepository, eventPublisher);
 
   beforeEach(() => {
     listRepository.reset(createListData());
+    vi.clearAllMocks();
   });
 
   it('should append member to list', async () => {
@@ -36,6 +39,9 @@ describe('AppendListMemberService', () => {
     );
 
     expect(Result.isErr(res)).toBe(false);
+    expect(eventPublisher.publishMany).toHaveBeenCalledWith([
+      expect.objectContaining({ eventName: 'list.member.appended' }),
+    ]);
   });
 
   it("should return error if list doesn't exist", async () => {

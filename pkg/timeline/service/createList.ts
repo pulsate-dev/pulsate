@@ -2,6 +2,10 @@ import { Cat, Ether, Promise, type Result } from '@mikuroxina/mini-fn';
 
 import type { AccountID } from '../../accounts/model/account.ts';
 import {
+  type EventPublisher,
+  eventPublisherSymbol,
+} from '../../internal/event/mod.ts';
+import {
   type Clock,
   clockSymbol,
   type SnowflakeIDGenerator,
@@ -14,14 +18,17 @@ export class CreateListService {
   readonly #idGenerator: SnowflakeIDGenerator;
   readonly #listRepository: ListRepository;
   readonly #clock: Clock;
+  readonly #eventPublisher: EventPublisher;
   constructor(
     idGenerator: SnowflakeIDGenerator,
     listRepository: ListRepository,
     clock: Clock,
+    eventPublisher: EventPublisher,
   ) {
     this.#idGenerator = idGenerator;
     this.#listRepository = listRepository;
     this.#clock = clock;
+    this.#eventPublisher = eventPublisher;
   }
 
   async handle(
@@ -51,6 +58,10 @@ export class CreateListService {
       .runWith(({ list }) =>
         monad.map(() => [])(this.#listRepository.create(list)),
       )
+      .runWith(({ list }) => {
+        this.#eventPublisher.publishMany(list.pullEvents());
+        return monad.pure([]);
+      })
       .finish(({ list }) => list);
   }
 }
@@ -58,11 +69,12 @@ export class CreateListService {
 export const createListSymbol = Ether.newEtherSymbol<CreateListService>();
 export const createList = Ether.newEther(
   createListSymbol,
-  ({ idGenerator, listRepository, clock }) =>
-    new CreateListService(idGenerator, listRepository, clock),
+  ({ idGenerator, listRepository, clock, eventPublisher }) =>
+    new CreateListService(idGenerator, listRepository, clock, eventPublisher),
   {
     idGenerator: snowflakeIDGeneratorSymbol,
     listRepository: listRepoSymbol,
     clock: clockSymbol,
+    eventPublisher: eventPublisherSymbol,
   },
 );
