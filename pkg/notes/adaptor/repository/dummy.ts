@@ -117,7 +117,7 @@ export class InMemoryBookmarkRepository implements BookmarkRepository {
     );
   }
 
-  reset(bookmarks: Bookmark[] = []): void {
+  reset(bookmarks: readonly Bookmark[] = []): void {
     this.#bookmarks.clear();
     for (const bookmark of bookmarks) {
       this.#bookmarks.set(
