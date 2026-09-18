@@ -56,7 +56,7 @@ describe('upload', () => {
       nsfw: false,
       file: a,
     });
-    if (Result.isErr(res)) return;
+    Result.unwrap(res);
 
     expect(eventPublisher.publishMany).toHaveBeenCalledWith([
       expect.objectContaining({ eventName: 'medium.created' }),
