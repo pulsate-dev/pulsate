@@ -1,5 +1,9 @@
 import { Cat, Ether, Option, Promise, Result } from '@mikuroxina/mini-fn';
 
+import {
+  type EventPublisher,
+  eventPublisherSymbol,
+} from '../../internal/event/mod.ts';
 import type { Account, AccountName } from '../model/account.ts';
 import { AccountNotFoundError } from '../model/errors.ts';
 import {
@@ -9,8 +13,13 @@ import {
 
 export class FreezeService {
   readonly #accountRepository: AccountRepository;
-  constructor(accountRepository: AccountRepository) {
+  readonly #eventPublisher: EventPublisher;
+  constructor(
+    accountRepository: AccountRepository,
+    eventPublisher: EventPublisher,
+  ) {
     this.#accountRepository = accountRepository;
+    this.#eventPublisher = eventPublisher;
   }
 
   async setFreeze(
@@ -32,6 +41,7 @@ export class FreezeService {
       .runWith(({ account }) =>
         monad.map(() => [])(this.#accountRepository.edit(account)),
       )
+      .runWith(({ account }) => monad.map(() => [])(this.publish(account)))
       .finish(() => true);
   }
 
@@ -56,7 +66,13 @@ export class FreezeService {
       .runWith(({ account }) =>
         monad.map(() => [])(this.#accountRepository.edit(account)),
       )
+      .runWith(({ account }) => monad.map(() => [])(this.publish(account)))
       .finish(() => true);
+  }
+
+  private async publish(account: Account): Promise<Result.Result<never, void>> {
+    this.#eventPublisher.publishMany(account.pullEvents());
+    return Result.ok(undefined);
   }
 
   private findAccount(
@@ -135,8 +151,10 @@ export class FreezeService {
 export const freezeSymbol = Ether.newEtherSymbol<FreezeService>();
 export const freeze = Ether.newEther(
   freezeSymbol,
-  ({ accountRepository }) => new FreezeService(accountRepository),
+  ({ accountRepository, eventPublisher }) =>
+    new FreezeService(accountRepository, eventPublisher),
   {
     accountRepository: accountRepoSymbol,
+    eventPublisher: eventPublisherSymbol,
   },
 );

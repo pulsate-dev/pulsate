@@ -1,12 +1,14 @@
 import { Option } from '@mikuroxina/mini-fn';
-import { beforeEach, describe, expect, it } from 'vitest';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
 
+import type { EventPublisher } from '../../internal/event/mod.ts';
 import { InMemoryAccountRepository } from '../adaptor/repository/dummy/account.ts';
 import { Account, type AccountID } from '../model/account.ts';
 import { SilenceService } from './silence.ts';
 
 const repository = new InMemoryAccountRepository();
-const silenceService = new SilenceService(repository);
+const eventPublisher: EventPublisher = { publishMany: vi.fn() };
+const silenceService = new SilenceService(repository, eventPublisher);
 
 const resetRepository = () => {
   repository.reset([
@@ -40,7 +42,10 @@ const resetRepository = () => {
 };
 
 describe('SilenceService', () => {
-  beforeEach(() => resetRepository());
+  beforeEach(() => {
+    resetRepository();
+    vi.clearAllMocks();
+  });
 
   it('set account silence', async () => {
     await silenceService.setSilence('@john@example.com', '@alice@example.com');
@@ -48,6 +53,9 @@ describe('SilenceService', () => {
     const account = await repository.findByName('@john@example.com');
     if (Option.isNone(account)) return;
     expect(account[1].isSilenced()).toBe(true);
+    expect(eventPublisher.publishMany).toHaveBeenCalledWith([
+      expect.objectContaining({ eventName: 'account.admin.silenced' }),
+    ]);
   });
 
   it('unset account silence', async () => {
@@ -58,5 +66,8 @@ describe('SilenceService', () => {
     const account = await repository.findByName('@john@example.com');
     if (Option.isNone(account)) return;
     expect(account[1].isSilenced()).toBe(false);
+    expect(eventPublisher.publishMany).toHaveBeenCalledWith([
+      expect.objectContaining({ eventName: 'account.admin.unsilenced' }),
+    ]);
   });
 });

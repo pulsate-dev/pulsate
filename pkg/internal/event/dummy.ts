@@ -9,7 +9,7 @@ import type { AnyDomainEvent } from './type.ts';
  * payload.
  */
 export class DummyEventPublisher implements EventPublisher {
-  publish(event: AnyDomainEvent): void {
+  #publish(event: AnyDomainEvent): void {
     eventModuleLogger.info('Domain event published', {
       id: event.id,
       eventName: event.eventName,
@@ -17,6 +17,12 @@ export class DummyEventPublisher implements EventPublisher {
       actor: event.actor,
       occurredAt: event.occurredAt,
     });
+  }
+
+  publishMany(events: readonly AnyDomainEvent[]): void {
+    for (const event of events) {
+      this.#publish(event);
+    }
   }
 }
 

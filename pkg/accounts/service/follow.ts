@@ -1,5 +1,9 @@
 import { Cat, Ether, Option, Promise, type Result } from '@mikuroxina/mini-fn';
 
+import {
+  type EventPublisher,
+  eventPublisherSymbol,
+} from '../../internal/event/mod.ts';
 import { type Clock, clockSymbol } from '../../internal/id/mod.ts';
 import type { AccountName } from '../model/account.ts';
 import { AccountNotFoundError } from '../model/errors.ts';
@@ -15,14 +19,17 @@ export class FollowService {
   readonly #followRepository: AccountFollowRepository;
   readonly #accountRepository: AccountRepository;
   readonly #clock: Clock;
+  readonly #eventPublisher: EventPublisher;
   constructor(
     followRepository: AccountFollowRepository,
     accountRepository: AccountRepository,
     clock: Clock,
+    eventPublisher: EventPublisher,
   ) {
     this.#followRepository = followRepository;
     this.#accountRepository = accountRepository;
     this.#clock = clock;
+    this.#eventPublisher = eventPublisher;
   }
 
   async handle(
@@ -64,6 +71,10 @@ export class FollowService {
       .runWith(({ follow }) =>
         monad.map(() => [])(this.#followRepository.follow(follow)),
       )
+      .runWith(({ follow }) => {
+        this.#eventPublisher.publishMany(follow.pullEvents());
+        return monad.pure([]);
+      })
       .finish(({ follow }) => follow);
   }
 }
@@ -71,11 +82,17 @@ export class FollowService {
 export const followSymbol = Ether.newEtherSymbol<FollowService>();
 export const follow = Ether.newEther(
   followSymbol,
-  ({ followRepository, accountRepository, clock }) =>
-    new FollowService(followRepository, accountRepository, clock),
+  ({ followRepository, accountRepository, clock, eventPublisher }) =>
+    new FollowService(
+      followRepository,
+      accountRepository,
+      clock,
+      eventPublisher,
+    ),
   {
     followRepository: followRepoSymbol,
     accountRepository: accountRepoSymbol,
     clock: clockSymbol,
+    eventPublisher: eventPublisherSymbol,
   },
 );

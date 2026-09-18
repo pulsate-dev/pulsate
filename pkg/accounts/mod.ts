@@ -11,6 +11,7 @@ import {
   notificationModule,
   notificationModuleFacadeSymbol,
 } from '../intermodule/notification.ts';
+import { eventPublisherEther } from '../internal/event/mod.ts';
 import { clockSymbol, snowflakeIDGenerator } from '../internal/id/mod.ts';
 import { argon2idPasswordEncoder } from '../internal/password/mod.ts';
 import { newTurnstileCaptchaValidator } from './adaptor/captcha/turnstile.ts';
@@ -142,7 +143,8 @@ const verifyAccountTokenService = Cat.cat(verifyAccountToken)
     ),
   )
   .feed(Ether.compose(inactiveAccountRepository))
-  .feed(Ether.compose(accountRepository)).value;
+  .feed(Ether.compose(accountRepository))
+  .feed(Ether.compose(eventPublisherEther)).value;
 
 const composer = Ether.composeT(Promise.monad);
 const liftOverPromise = Ether.liftEther(Promise.monad);
@@ -165,7 +167,8 @@ export const controller = new AccountController({
   editService: Ether.runEther(
     Cat.cat(edit)
       .feed(Ether.compose(accountRepository))
-      .feed(Ether.compose(argon2idPasswordEncoder)).value,
+      .feed(Ether.compose(argon2idPasswordEncoder))
+      .feed(Ether.compose(eventPublisherEther)).value,
   ),
   fetchService: Ether.runEther(
     Cat.cat(fetch).feed(Ether.compose(accountRepository)).value,
@@ -174,10 +177,13 @@ export const controller = new AccountController({
     Cat.cat(follow)
       .feed(Ether.compose(clock))
       .feed(Ether.compose(accountRepository))
-      .feed(Ether.compose(accountFollowRepository)).value,
+      .feed(Ether.compose(accountFollowRepository))
+      .feed(Ether.compose(eventPublisherEther)).value,
   ),
   freezeService: Ether.runEther(
-    Cat.cat(freeze).feed(Ether.compose(accountRepository)).value,
+    Cat.cat(freeze)
+      .feed(Ether.compose(accountRepository))
+      .feed(Ether.compose(eventPublisherEther)).value,
   ),
   registerService: Ether.runEther(
     Cat.cat(register)
@@ -192,17 +198,21 @@ export const controller = new AccountController({
           ),
         ),
       )
-      .feed(Ether.compose(verifyAccountTokenService)).value,
+      .feed(Ether.compose(verifyAccountTokenService))
+      .feed(Ether.compose(eventPublisherEther)).value,
   ),
   silenceService: Ether.runEther(
-    Cat.cat(silence).feed(Ether.compose(accountRepository)).value,
+    Cat.cat(silence)
+      .feed(Ether.compose(accountRepository))
+      .feed(Ether.compose(eventPublisherEther)).value,
   ),
   verifyAccountTokenService: Ether.runEther(verifyAccountTokenService),
   unFollowService: Ether.runEther(
     Cat.cat(unfollow)
       .feed(Ether.compose(accountFollowRepository))
       .feed(Ether.compose(accountRepository))
-      .feed(Ether.compose(clock)).value,
+      .feed(Ether.compose(clock))
+      .feed(Ether.compose(eventPublisherEther)).value,
   ),
   resendTokenService: Ether.runEther(
     Cat.cat(resendToken)

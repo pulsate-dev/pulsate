@@ -1,5 +1,6 @@
 import { Option, Result } from '@mikuroxina/mini-fn';
-import { describe, expect, it } from 'vitest';
+import { describe, expect, it, vi } from 'vitest';
+import type { EventPublisher } from '../../internal/event/mod.ts';
 import { MockClock } from '../../internal/id/mod.ts';
 import { InMemoryAccountRepository } from '../adaptor/repository/dummy/account.ts';
 import { InMemoryInactiveAccountRepository } from '../adaptor/repository/dummy/inactiveAccount.ts';
@@ -23,12 +24,14 @@ await inactiveAccountRepository.create(
 );
 
 const mockClock = new MockClock(new Date('2023-09-10T00:00:00Z'));
+const eventPublisher: EventPublisher = { publishMany: vi.fn() };
 
 const service = new VerifyAccountTokenService(
   repository,
   inactiveAccountRepository,
   accountRepository,
   mockClock,
+  eventPublisher,
 );
 
 describe('VerifyAccountTokenService', () => {
@@ -50,6 +53,9 @@ describe('VerifyAccountTokenService', () => {
     expect(Option.isNone(await repository.findByID('1' as AccountID))).toBe(
       true,
     );
+    expect(eventPublisher.publishMany).toHaveBeenCalledWith([
+      expect.objectContaining({ eventName: 'account.activated' }),
+    ]);
   });
 
   it('expired token', async () => {
@@ -58,6 +64,7 @@ describe('VerifyAccountTokenService', () => {
       inactiveAccountRepository,
       accountRepository,
       mockClock,
+      eventPublisher,
     );
     const token = await dummyService.generate('@johndoe@example.com');
     if (Result.isErr(token)) {

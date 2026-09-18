@@ -1,5 +1,9 @@
 import { Cat, Ether, Option, Promise, Result } from '@mikuroxina/mini-fn';
 
+import {
+  type EventPublisher,
+  eventPublisherSymbol,
+} from '../../internal/event/mod.ts';
 import { type Clock, clockSymbol } from '../../internal/id/mod.ts';
 import type { AccountName } from '../model/account.ts';
 import {
@@ -21,16 +25,19 @@ export class VerifyAccountTokenService {
   readonly #inactiveAccountRepository: InactiveAccountRepository;
   readonly #accountRepository: AccountRepository;
   readonly #clock: Clock;
+  readonly #eventPublisher: EventPublisher;
   constructor(
     repository: AccountVerifyTokenRepository,
     inactiveAccountRepository: InactiveAccountRepository,
     accountRepository: AccountRepository,
     clock: Clock,
+    eventPublisher: EventPublisher,
   ) {
     this.#repository = repository;
     this.#inactiveAccountRepository = inactiveAccountRepository;
     this.#accountRepository = accountRepository;
     this.#clock = clock;
+    this.#eventPublisher = eventPublisher;
   }
 
   async generate(
@@ -137,6 +144,10 @@ export class VerifyAccountTokenService {
           this.#inactiveAccountRepository.delete(inactiveAccount.getID()),
         ),
       )
+      .runWith(({ account }) => {
+        this.#eventPublisher.publishMany(account.pullEvents());
+        return monad.pure([]);
+      })
       .finish(() => undefined);
   }
 }
@@ -150,17 +161,20 @@ export const verifyAccountToken = Ether.newEther(
     inactiveAccountRepository,
     accountRepository,
     clock,
+    eventPublisher,
   }) =>
     new VerifyAccountTokenService(
       verifyTokenRepository,
       inactiveAccountRepository,
       accountRepository,
       clock,
+      eventPublisher,
     ),
   {
     verifyTokenRepository: verifyTokenRepoSymbol,
     inactiveAccountRepository: inactiveAccountRepoSymbol,
     accountRepository: accountRepoSymbol,
     clock: clockSymbol,
+    eventPublisher: eventPublisherSymbol,
   },
 );

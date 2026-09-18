@@ -1,6 +1,10 @@
 import { Cat, Ether, Option, Promise, Result } from '@mikuroxina/mini-fn';
 
 import {
+  type EventPublisher,
+  eventPublisherSymbol,
+} from '../../internal/event/mod.ts';
+import {
   type PasswordEncoder,
   passwordEncoderSymbol,
 } from '../../internal/password/mod.ts';
@@ -14,12 +18,15 @@ import {
 export class EditService {
   #accountRepository: AccountRepository;
   #passwordEncoder: PasswordEncoder;
+  #eventPublisher: EventPublisher;
   constructor(
     accountRepository: AccountRepository,
     passwordEncoder: PasswordEncoder,
+    eventPublisher: EventPublisher,
   ) {
     this.#accountRepository = accountRepository;
     this.#passwordEncoder = passwordEncoder;
+    this.#eventPublisher = eventPublisher;
   }
 
   async editNickname(
@@ -44,6 +51,7 @@ export class EditService {
       .runWith(({ account }) =>
         monad.map(() => [])(this.#accountRepository.edit(account)),
       )
+      .runWith(({ account }) => monad.map(() => [])(this.publish(account)))
       .finish(() => true);
   }
 
@@ -86,6 +94,7 @@ export class EditService {
       .runWith(({ account }) =>
         monad.map(() => [])(this.#accountRepository.edit(account)),
       )
+      .runWith(({ account }) => monad.map(() => [])(this.publish(account)))
       .finish(() => true);
   }
 
@@ -112,6 +121,7 @@ export class EditService {
       .runWith(({ account }) =>
         monad.map(() => [])(this.#accountRepository.edit(account)),
       )
+      .runWith(({ account }) => monad.map(() => [])(this.publish(account)))
       .finish(() => true);
   }
 
@@ -137,7 +147,13 @@ export class EditService {
       .runWith(({ account }) =>
         monad.map(() => [])(this.#accountRepository.edit(account)),
       )
+      .runWith(({ account }) => monad.map(() => [])(this.publish(account)))
       .finish(() => true);
+  }
+
+  private async publish(account: Account): Promise<Result.Result<never, void>> {
+    this.#eventPublisher.publishMany(account.pullEvents());
+    return Result.ok(undefined);
   }
 
   private findAccount(
@@ -174,10 +190,11 @@ export class EditService {
 export const editSymbol = Ether.newEtherSymbol<EditService>();
 export const edit = Ether.newEther(
   editSymbol,
-  ({ accountRepository, passwordEncoder }) =>
-    new EditService(accountRepository, passwordEncoder),
+  ({ accountRepository, passwordEncoder, eventPublisher }) =>
+    new EditService(accountRepository, passwordEncoder, eventPublisher),
   {
     accountRepository: accountRepoSymbol,
     passwordEncoder: passwordEncoderSymbol,
+    eventPublisher: eventPublisherSymbol,
   },
 );
