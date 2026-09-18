@@ -4,6 +4,7 @@ import { fileTypeFromBuffer } from 'file-type';
 import sharp from 'sharp';
 
 import type { AccountID } from '../../accounts/model/account.ts';
+import type { EventPublisher } from '../../internal/event/mod.ts';
 import type { SnowflakeIDGenerator } from '../../internal/id/mod.ts';
 import { DriveInternalError, MediaTypeInvalidError } from '../model/errors.ts';
 import { Medium } from '../model/medium.ts';
@@ -21,16 +22,19 @@ export class UploadMediaService {
   readonly #repository: MediaRepository;
   readonly #storage: Storage;
   readonly #MAX_MEDIA_SIZE: number;
+  readonly #eventPublisher: EventPublisher;
   constructor(
     idGenerator: SnowflakeIDGenerator,
     repository: MediaRepository,
     storage: Storage,
     MAX_MEDIA_SIZE: number,
+    eventPublisher: EventPublisher,
   ) {
     this.#idGenerator = idGenerator;
     this.#repository = repository;
     this.#storage = storage;
     this.#MAX_MEDIA_SIZE = MAX_MEDIA_SIZE;
+    this.#eventPublisher = eventPublisher;
   }
 
   /**
@@ -112,6 +116,10 @@ export class UploadMediaService {
             .then(() => Result.ok([])),
         )
         .addMWith('result', ({ medium }) => this.#repository.create(medium))
+        .runWith(({ medium }) => {
+          this.#eventPublisher.publishMany(medium.pullEvents());
+          return monad.pure([]);
+        })
         .finish(({ result }) => result)
     );
   }
