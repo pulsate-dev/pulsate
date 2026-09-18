@@ -134,9 +134,6 @@ describe('FreezeService', () => {
     });
 
     it('cannot freeze/unFreeze if actor is not admin or moderator', async () => {
-      const account = await repository.findByName('@john@example.com');
-      if (Option.isNone(account)) return;
-
       const result = await freezeService.setFreeze(
         '@john@example.com',
         '@carol@example.com',
@@ -154,9 +151,6 @@ describe('FreezeService', () => {
     });
 
     it('moderator can freeze/unFreeze only normal account', async () => {
-      const account = await repository.findByName('@john@example.com');
-      if (Option.isNone(account)) return;
-
       const result = await freezeService.setFreeze(
         '@john@example.com',
         '@carol@example.com',

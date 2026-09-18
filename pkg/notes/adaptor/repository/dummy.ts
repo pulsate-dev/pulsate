@@ -117,6 +117,16 @@ export class InMemoryBookmarkRepository implements BookmarkRepository {
     );
   }
 
+  reset(bookmarks: readonly Bookmark[] = []): void {
+    this.#bookmarks.clear();
+    for (const bookmark of bookmarks) {
+      this.#bookmarks.set(
+        [bookmark.getNoteID(), bookmark.getAccountID()],
+        bookmark,
+      );
+    }
+  }
+
   async create(id: {
     noteID: NoteID;
     accountID: AccountID;

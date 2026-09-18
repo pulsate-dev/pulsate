@@ -1,5 +1,5 @@
 import { Option, Result } from '@mikuroxina/mini-fn';
-import { describe, expect, it, vi } from 'vitest';
+import { afterEach, describe, expect, it, vi } from 'vitest';
 
 import type { AccountID } from '../../accounts/model/account.ts';
 import { Medium, type MediumID } from '../../drive/model/medium.ts';
@@ -51,7 +51,7 @@ const timelineCacheRepository = new InMemoryTimelineCacheRepository();
 const service = new RenoteService({
   noteRepository: repository,
   idGenerator: new SnowflakeIDGenerator(0, {
-    now: () => BigInt(Date.UTC(2023, 9, 10, 0, 0)),
+    now: () => BigInt(new Date('2023-10-10T00:00:00Z').getTime()),
   }),
   noteAttachmentRepository: attachmentRepository,
   accountModule: dummyAccountModuleFacade,
@@ -60,6 +60,10 @@ const service = new RenoteService({
 });
 
 describe('RenoteService', () => {
+  afterEach(() => {
+    vi.restoreAllMocks();
+  });
+
   it('should create renote', async () => {
     const renote = await service.handle(
       '2' as NoteID,
@@ -87,7 +91,7 @@ describe('RenoteService', () => {
     const testService = new RenoteService({
       noteRepository: repository,
       idGenerator: new SnowflakeIDGenerator(0, {
-        now: () => BigInt(Date.UTC(2023, 9, 10, 0, 0)),
+        now: () => BigInt(new Date('2023-10-10T00:00:00Z').getTime()),
       }),
       noteAttachmentRepository: attachmentRepository,
       accountModule: dummyAccountModuleFacade,
@@ -357,7 +361,7 @@ describe('RenoteService', () => {
     const dummyService = new RenoteService({
       noteRepository: repository,
       idGenerator: new SnowflakeIDGenerator(0, {
-        now: () => BigInt(Date.UTC(0, 0, 0, 0, 0)),
+        now: () => BigInt(new Date('1899-12-31T00:00:00Z').getTime()),
       }),
       noteAttachmentRepository: attachmentRepository,
       accountModule: dummyAccountModuleFacade,

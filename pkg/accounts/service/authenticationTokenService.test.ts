@@ -11,11 +11,8 @@ describe('AuthenticationTokenService', () => {
       new MockClock(new Date()),
     );
     const token = await service.generate('', '');
-    if (Option.isNone(token)) {
-      return;
-    }
 
-    expect(Result.isOk(await service.verify(token[1]))).toBe(true);
+    expect(Result.isOk(await service.verify(Option.unwrap(token)))).toBe(true);
   });
 
   it('if token expired', async () => {

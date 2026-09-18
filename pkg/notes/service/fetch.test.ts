@@ -136,7 +136,7 @@ describe('FetchService', () => {
   it('fetchMany: should fetch notes', async () => {
     const testNotes = [...new Array<Note>(5)].map((_, i) =>
       Note.reconstruct({
-        id: i.toString() as NoteID,
+        id: `many-${i}` as NoteID,
         authorID: '3' as AccountID,
         content: `Hello world ${i}`,
         contentsWarningComment: '',
@@ -149,10 +149,14 @@ describe('FetchService', () => {
         deletedAt: Option.none(),
       }),
     );
-    testNotes.map(async (v) => await repository.create(v));
+    await Promise.all(testNotes.map((v) => repository.create(v)));
     const res = await service.fetchNotesByID(testNotes.map((v) => v.getID()));
     expect(Result.isOk(res)).toBe(true);
-    expect(res).toStrictEqual;
+
+    const fetchedIDs = Result.unwrap(res)
+      .map((v) => v.getID())
+      .sort();
+    expect(fetchedIDs).toStrictEqual(testNotes.map((v) => v.getID()).sort());
   });
 
   it('account frozen', async () => {

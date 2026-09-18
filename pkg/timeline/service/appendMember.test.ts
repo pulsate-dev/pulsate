@@ -11,9 +11,9 @@ import { List, type ListID } from '../model/list.ts';
 import { AppendListMemberService } from './appendMember.ts';
 
 describe('AppendListMemberService', () => {
-  const listData = [
+  const createListData = () => [
     List.reconstruct({
-      createdAt: new Date('2023-09-10T00:00:00.000Z'),
+      createdAt: new Date('2023-09-10T00:00:00Z'),
       id: '10' as ListID,
       memberIds: [],
       ownerId: '1' as AccountID,
@@ -21,11 +21,11 @@ describe('AppendListMemberService', () => {
       title: 'ABC',
     }),
   ];
-  const listRepository = new InMemoryListRepository(listData);
+  const listRepository = new InMemoryListRepository(createListData());
   const service = new AppendListMemberService(listRepository);
 
   beforeEach(() => {
-    listRepository.reset(listData);
+    listRepository.reset(createListData());
   });
 
   it('should append member to list', async () => {
