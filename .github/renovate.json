@@ -3,5 +3,11 @@
   "extends": [
     "github>pulsate-dev/renovate-conf",
     "customManagers:biomeVersions"
-  ]
+  ],
+  "lockFileMaintenance": {
+    "enabled": true,
+    "schedule": ["before 3am on monday"],
+    "automerge": true,
+    "commitMessageAction": "Lock file maintenance"
+  }
 }
