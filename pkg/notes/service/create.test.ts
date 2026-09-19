@@ -5,6 +5,7 @@ import type { AccountID } from '../../accounts/model/account.ts';
 import { Medium, type MediumID } from '../../drive/model/medium.ts';
 import { dummyAccountModuleFacade } from '../../intermodule/account.ts';
 import { dummyTimelineModuleFacade } from '../../intermodule/timeline.ts';
+import type { EventPublisher } from '../../internal/event/mod.ts';
 import { MockClock, SnowflakeIDGenerator } from '../../internal/id/mod.ts';
 import { InMemoryTimelineCacheRepository } from '../../timeline/adaptor/repository/dummyCache.ts';
 import {
@@ -36,6 +37,7 @@ const timelineCacheRepository = new InMemoryTimelineCacheRepository([
   ['102' as AccountID, []],
   ['103' as AccountID, []],
 ]);
+const eventPublisher: EventPublisher = { publishMany: vi.fn() };
 const createService = new CreateService({
   noteRepository,
   idGenerator: new SnowflakeIDGenerator(0, {
@@ -45,6 +47,7 @@ const createService = new CreateService({
   accountModule: dummyAccountModuleFacade,
   timelineModule: dummyTimelineModuleFacade(timelineCacheRepository),
   clock: new MockClock(new Date('2023-09-10T00:00:00Z')),
+  eventPublisher,
 });
 
 describe('CreateService', () => {
@@ -58,6 +61,9 @@ describe('CreateService', () => {
     );
 
     expect(Result.isOk(res)).toBe(true);
+    expect(eventPublisher.publishMany).toHaveBeenCalledWith([
+      expect.objectContaining({ eventName: 'note.created' }),
+    ]);
   });
 
   it('does not create attachments when none are provided', async () => {

@@ -1,5 +1,9 @@
-import { Cat, Ether, Option, Promise, type Result } from '@mikuroxina/mini-fn';
+import { Cat, Ether, Option, Promise, Result } from '@mikuroxina/mini-fn';
 import type { AccountID } from '../../accounts/model/account.ts';
+import {
+  type EventPublisher,
+  eventPublisherSymbol,
+} from '../../internal/event/mod.ts';
 import { NoteNotFoundError } from '../model/errors.ts';
 import type { NoteID } from '../model/note.ts';
 import {
@@ -12,12 +16,15 @@ import {
 export class DeleteReactionService {
   readonly #reactionRepository: ReactionRepository;
   readonly #noteRepository: NoteRepository;
+  readonly #eventPublisher: EventPublisher;
   constructor(
     reactionRepository: ReactionRepository,
     noteRepository: NoteRepository,
+    eventPublisher: EventPublisher,
   ) {
     this.#reactionRepository = reactionRepository;
     this.#noteRepository = noteRepository;
+    this.#eventPublisher = eventPublisher;
   }
 
   async handle(
@@ -41,19 +48,32 @@ export class DeleteReactionService {
           accountID,
         }),
       )
-      .finishM(({ reaction }) =>
-        this.#reactionRepository.deleteByID(reaction.getID()),
-      );
+      .runWith(({ reaction }) =>
+        this.#reactionRepository
+          .deleteByID(reaction.getID())
+          .then(Result.map(() => [])),
+      )
+      .runWith(({ reaction }) => {
+        reaction.deleted(accountID);
+        this.#eventPublisher.publishMany(reaction.pullEvents());
+        return Promise.resolve(Result.ok([]));
+      })
+      .finish(() => undefined);
   }
 }
 export const deleteReactionSymbol =
   Ether.newEtherSymbol<DeleteReactionService>();
 export const deleteReaction = Ether.newEther(
   deleteReactionSymbol,
-  ({ reactionRepository, noteRepository }) =>
-    new DeleteReactionService(reactionRepository, noteRepository),
+  ({ reactionRepository, noteRepository, eventPublisher }) =>
+    new DeleteReactionService(
+      reactionRepository,
+      noteRepository,
+      eventPublisher,
+    ),
   {
     reactionRepository: reactionRepoSymbol,
     noteRepository: noteRepoSymbol,
+    eventPublisher: eventPublisherSymbol,
   },
 );

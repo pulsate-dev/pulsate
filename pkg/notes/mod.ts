@@ -16,6 +16,7 @@ import {
   dummyAccountModuleFacade,
 } from '../intermodule/account.ts';
 import { timelineModuleFacadeEther } from '../intermodule/timeline.ts';
+import { eventPublisherEther } from '../internal/event/mod.ts';
 import { clockSymbol, snowflakeIDGenerator } from '../internal/id/mod.ts';
 import { BookmarkController } from './adaptor/controller/bookmark.ts';
 import { NoteController } from './adaptor/controller/note.ts';
@@ -108,7 +109,8 @@ export const noteCreateServiceInstance = Ether.runEther(
     .feed(Ether.compose(noteIdGeneratorEther))
     .feed(Ether.compose(noteAttachmentRepoEther))
     .feed(Ether.compose(accountModuleFacade))
-    .feed(Ether.compose(timelineModuleFacadeEther)).value,
+    .feed(Ether.compose(timelineModuleFacadeEther))
+    .feed(Ether.compose(eventPublisherEther)).value,
 );
 export const noteHandlers = new OpenAPIHono<{
   Variables: AuthMiddlewareVariable;
@@ -127,7 +129,8 @@ const renoteServiceObj = Ether.runEther(
     .feed(Ether.compose(noteIdGeneratorEther))
     .feed(Ether.compose(noteAttachmentRepoEther))
     .feed(Ether.compose(accountModuleEther))
-    .feed(Ether.compose(timelineModuleFacadeEther)).value,
+    .feed(Ether.compose(timelineModuleFacadeEther))
+    .feed(Ether.compose(eventPublisherEther)).value,
 );
 
 const controller = new NoteController(
@@ -141,13 +144,15 @@ const controller = new NoteController(
 const createBookmarkServiceObj = Ether.runEther(
   Cat.cat(createBookmark)
     .feed(Ether.compose(noteRepoEther))
-    .feed(Ether.compose(bookmarkRepository)).value,
+    .feed(Ether.compose(bookmarkRepository))
+    .feed(Ether.compose(eventPublisherEther)).value,
 );
 const bookmarkController = new BookmarkController(
   createBookmarkServiceObj,
   Ether.runEther(
-    Cat.cat(deleteBookmarkService).feed(Ether.compose(bookmarkRepository))
-      .value,
+    Cat.cat(deleteBookmarkService)
+      .feed(Ether.compose(bookmarkRepository))
+      .feed(Ether.compose(eventPublisherEther)).value,
   ),
   noteFetchServiceInstance,
 );
@@ -157,12 +162,14 @@ const createReactionServiceObj = Ether.runEther(
   Cat.cat(createReactionService)
     .feed(Ether.compose(noteIdGeneratorEther))
     .feed(Ether.compose(noteReactionRepoEther))
-    .feed(Ether.compose(noteRepoEther)).value,
+    .feed(Ether.compose(noteRepoEther))
+    .feed(Ether.compose(eventPublisherEther)).value,
 );
 const deleteReactionServiceObj = Ether.runEther(
   Cat.cat(deleteReaction)
     .feed(Ether.compose(noteReactionRepoEther))
-    .feed(Ether.compose(noteRepoEther)).value,
+    .feed(Ether.compose(noteRepoEther))
+    .feed(Ether.compose(eventPublisherEther)).value,
 );
 const reactionController = new ReactionController(
   createReactionServiceObj,

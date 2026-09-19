@@ -1,6 +1,7 @@
 import { Option, Result } from '@mikuroxina/mini-fn';
-import { describe, expect, it } from 'vitest';
+import { describe, expect, it, vi } from 'vitest';
 import type { AccountID } from '../../accounts/model/account.ts';
+import type { EventPublisher } from '../../internal/event/mod.ts';
 import {
   InMemoryNoteRepository,
   InMemoryReactionRepository,
@@ -48,11 +49,19 @@ describe('DeleteReactionService', () => {
     }),
   ]);
   const noteRepo = new InMemoryNoteRepository([normalNote, renoteNote]);
-  const service = new DeleteReactionService(reactionRepo, noteRepo);
+  const eventPublisher: EventPublisher = { publishMany: vi.fn() };
+  const service = new DeleteReactionService(
+    reactionRepo,
+    noteRepo,
+    eventPublisher,
+  );
 
   it('should delete a reaction', async () => {
     const res = await service.handle('1' as NoteID, '2' as AccountID);
     expect(Result.isOk(res)).toBe(true);
+    expect(eventPublisher.publishMany).toHaveBeenCalledWith([
+      expect.objectContaining({ eventName: 'note.reaction.deleted' }),
+    ]);
   });
 
   it('if note not found, should return NoteNotFoundError', async () => {

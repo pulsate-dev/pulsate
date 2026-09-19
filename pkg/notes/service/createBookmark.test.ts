@@ -1,7 +1,8 @@
 import { Option, Result } from '@mikuroxina/mini-fn';
-import { beforeEach, describe, expect, it } from 'vitest';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 import type { AccountID } from '../../accounts/model/account.ts';
+import type { EventPublisher } from '../../internal/event/mod.ts';
 import {
   InMemoryBookmarkRepository,
   InMemoryNoteRepository,
@@ -43,9 +44,11 @@ const noteRepository = new InMemoryNoteRepository([
   }),
 ]);
 const bookmarkRepository = new InMemoryBookmarkRepository();
+const eventPublisher: EventPublisher = { publishMany: vi.fn() };
 const createBookmarkService = new CreateBookmarkService(
   bookmarkRepository,
   noteRepository,
+  eventPublisher,
 );
 
 describe('CreateBookmarkService', () => {
@@ -60,6 +63,9 @@ describe('CreateBookmarkService', () => {
     expect(
       Option.isSome(await bookmarkRepository.findByID({ noteID, accountID })),
     ).toBe(true);
+    expect(eventPublisher.publishMany).toHaveBeenCalledWith([
+      expect.objectContaining({ eventName: 'note.bookmark.created' }),
+    ]);
   });
 
   it('fail to re-create bookmark from same account', async () => {
