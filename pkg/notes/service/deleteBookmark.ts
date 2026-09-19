@@ -1,6 +1,11 @@
-import { Ether, type Result } from '@mikuroxina/mini-fn';
+import { Ether, Result } from '@mikuroxina/mini-fn';
 
 import type { AccountID } from '../../accounts/model/account.ts';
+import {
+  type EventPublisher,
+  eventPublisherSymbol,
+} from '../../internal/event/mod.ts';
+import { Bookmark } from '../model/bookmark.ts';
 import type { NoteID } from '../model/note.ts';
 import {
   type BookmarkRepository,
@@ -9,23 +14,42 @@ import {
 
 export class DeleteBookmarkService {
   readonly #bookmarkRepository: BookmarkRepository;
-  constructor(bookmarkRepository: BookmarkRepository) {
+  readonly #eventPublisher: EventPublisher;
+  constructor(
+    bookmarkRepository: BookmarkRepository,
+    eventPublisher: EventPublisher,
+  ) {
     this.#bookmarkRepository = bookmarkRepository;
+    this.#eventPublisher = eventPublisher;
   }
 
   async handle(
     noteID: NoteID,
     accountID: AccountID,
   ): Promise<Result.Result<Error, void>> {
-    return await this.#bookmarkRepository.deleteByID({ noteID, accountID });
+    const bookmark = Bookmark.reconstruct({ noteID, accountID });
+    bookmark.deleted();
+
+    const res = await this.#bookmarkRepository.deleteByID({
+      noteID,
+      accountID,
+    });
+    if (Result.isErr(res)) {
+      return res;
+    }
+
+    this.#eventPublisher.publishMany(bookmark.pullEvents());
+    return Result.ok(undefined);
   }
 }
 export const deleteBookmarkServiceSymbol =
   Ether.newEtherSymbol<DeleteBookmarkService>();
 export const deleteBookmarkService = Ether.newEther(
   deleteBookmarkServiceSymbol,
-  ({ bookmarkRepository }) => new DeleteBookmarkService(bookmarkRepository),
+  ({ bookmarkRepository, eventPublisher }) =>
+    new DeleteBookmarkService(bookmarkRepository, eventPublisher),
   {
     bookmarkRepository: bookmarkRepoSymbol,
+    eventPublisher: eventPublisherSymbol,
   },
 );

@@ -1,7 +1,8 @@
 import { Result } from '@mikuroxina/mini-fn';
-import { describe, expect, it } from 'vitest';
+import { describe, expect, it, vi } from 'vitest';
 
 import type { AccountID } from '../../accounts/model/account.ts';
+import type { EventPublisher } from '../../internal/event/mod.ts';
 import { InMemoryBookmarkRepository } from '../adaptor/repository/dummy.ts';
 import { Bookmark } from '../model/bookmark.ts';
 import type { NoteID } from '../model/note.ts';
@@ -13,12 +14,19 @@ const accountID = '1' as AccountID;
 const bookmarkRepository = new InMemoryBookmarkRepository([
   Bookmark.reconstruct({ noteID, accountID }),
 ]);
-const deleteBookmarkService = new DeleteBookmarkService(bookmarkRepository);
+const eventPublisher: EventPublisher = { publishMany: vi.fn() };
+const deleteBookmarkService = new DeleteBookmarkService(
+  bookmarkRepository,
+  eventPublisher,
+);
 
 describe('DeleteBookmarkService', () => {
   it('should delete bookmark', async () => {
     const res = await deleteBookmarkService.handle(noteID, accountID);
     expect(Result.isOk(res)).toBe(true);
+    expect(eventPublisher.publishMany).toHaveBeenCalledWith([
+      expect.objectContaining({ eventName: 'note.bookmark.deleted' }),
+    ]);
   });
 
   it('should fail to delete bookmark when does not exist bookmark', async () => {

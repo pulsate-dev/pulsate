@@ -1,6 +1,7 @@
 import { Option, Result } from '@mikuroxina/mini-fn';
-import { afterEach, describe, expect, it } from 'vitest';
+import { afterEach, describe, expect, it, vi } from 'vitest';
 import type { AccountID } from '../../accounts/model/account.ts';
+import type { EventPublisher } from '../../internal/event/mod.ts';
 import { MockClock, SnowflakeIDGenerator } from '../../internal/id/mod.ts';
 import {
   InMemoryNoteRepository,
@@ -49,20 +50,24 @@ const renoteNote = noteFactory(
 
 let reactionRepository = new InMemoryReactionRepository();
 let noteRepository = new InMemoryNoteRepository([normalNote, renoteNote]);
+const eventPublisher: EventPublisher = { publishMany: vi.fn() };
 let service = new CreateReactionService(
   idGenerator,
   reactionRepository,
   noteRepository,
+  eventPublisher,
 );
 
 describe('CreateReactionService', () => {
   afterEach(() => {
     reactionRepository = new InMemoryReactionRepository();
     noteRepository = new InMemoryNoteRepository([normalNote, renoteNote]);
+    vi.clearAllMocks();
     service = new CreateReactionService(
       idGenerator,
       reactionRepository,
       noteRepository,
+      eventPublisher,
     );
   });
 
@@ -78,6 +83,9 @@ describe('CreateReactionService', () => {
         }),
       ),
     ).toBe(true);
+    expect(eventPublisher.publishMany).toHaveBeenCalledWith([
+      expect.objectContaining({ eventName: 'note.reaction.created' }),
+    ]);
   });
 
   it('error when already reacted', async () => {

@@ -8,6 +8,10 @@ import {
   accountModuleFacadeSymbol,
 } from '../../intermodule/account.ts';
 import {
+  type EventPublisher,
+  eventPublisherSymbol,
+} from '../../internal/event/mod.ts';
+import {
   type Clock,
   clockSymbol,
   type SnowflakeIDGenerator,
@@ -28,6 +32,7 @@ export class CreateDirectNoteService {
     idGenerator: SnowflakeIDGenerator;
     clock: Clock;
     accountModule: AccountModuleFacade;
+    eventPublisher: EventPublisher;
   };
   constructor(deps: {
     directNoteRepository: DirectNoteRepository;
@@ -35,6 +40,7 @@ export class CreateDirectNoteService {
     idGenerator: SnowflakeIDGenerator;
     clock: Clock;
     accountModule: AccountModuleFacade;
+    eventPublisher: EventPublisher;
   }) {
     this.#deps = deps;
   }
@@ -103,6 +109,10 @@ export class CreateDirectNoteService {
             .create(note.getID(), note.getAttachmentFileID())
             .then(Result.map(() => [])),
       )
+      .runWith(({ note }) => {
+        this.#deps.eventPublisher.publishMany(note.pullEvents());
+        return Promise.resolve(Result.ok([]));
+      })
       .finish(({ note }) => note);
   }
 }
@@ -118,5 +128,6 @@ export const createDirectNoteService = Ether.newEther(
     idGenerator: snowflakeIDGeneratorSymbol,
     clock: clockSymbol,
     accountModule: accountModuleFacadeSymbol,
+    eventPublisher: eventPublisherSymbol,
   },
 );
