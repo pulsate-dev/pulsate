@@ -40,7 +40,7 @@ export const timelineModuleFacadeEther = Ether.newEther(
 
 // NOTE: Shared TimelineCacheRepository instance to ensure it's the same instance used across modules
 export const timelineCacheRepositoryInstance = isProduction
-  ? new ValkeyTimelineCacheRepository(valkeyClient())
+  ? new ValkeyTimelineCacheRepository(valkeyClient)
   : new InMemoryTimelineCacheRepository();
 
 // NOTE: Shared ListRepository instance

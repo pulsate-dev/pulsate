@@ -110,7 +110,7 @@ const noteVisibilityService = Cat.cat(noteVisibility).feed(
 
 // NOTE: Use shared instance from intermodule to ensure it's the same instance used by NoteModule
 const timelineCacheRepository = isProduction
-  ? valkeyTimelineCacheRepo(valkeyClient())
+  ? valkeyTimelineCacheRepo(valkeyClient)
   : Ether.newEther(
       timelineNotesCacheRepoSymbol,
       () => timelineCacheRepositoryInstance,

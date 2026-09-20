@@ -1,13 +1,8 @@
 import { Redis } from 'ioredis';
 
-const clients: Redis[] = [];
+const redisHost = process.env.VALKEY_REDIS_HOST || 'localhost';
 
-export const valkeyClient = (): Redis => {
-  const redisHost = process.env.VALKEY_REDIS_HOST || 'localhost';
-  const client = new Redis(`${redisHost}:6379`);
-  clients.push(client);
-  return client;
-};
+// NOTE: Single shared instance to avoid creating multiple valkey connections across modules
+export const valkeyClient = new Redis(`${redisHost}:6379`);
 
-export const closeValkeyClients = () =>
-  Promise.all(clients.map((client) => client.quit()));
+export const closeValkeyClients = () => valkeyClient.quit();
