@@ -11,6 +11,10 @@ import {
   timelineModuleFacadeSymbol,
 } from '../../intermodule/timeline.ts';
 import {
+  type EventPublisher,
+  eventPublisherSymbol,
+} from '../../internal/event/mod.ts';
+import {
   type Clock,
   clockSymbol,
   type SnowflakeIDGenerator,
@@ -83,6 +87,10 @@ export class CreateService {
               .create(note.getID(), note.getAttachmentFileID())
               .then(Result.map(() => [])),
         )
+        .runWith(({ note }) => {
+          this.#deps.eventPublisher.publishMany(note.pullEvents());
+          return Promise.resolve(Result.ok([]));
+        })
         // ToDo: Even if the note cannot be pushed to the timeline, the note is created successfully, so there is no error here.
         // ToDo: use job queue to push note to timeline
         .runWith(({ note }) =>
@@ -104,6 +112,7 @@ export class CreateService {
     accountModule: AccountModuleFacade;
     timelineModule: TimelineModuleFacade;
     clock: Clock;
+    eventPublisher: EventPublisher;
   };
   constructor(deps: {
     noteRepository: NoteRepository;
@@ -112,6 +121,7 @@ export class CreateService {
     accountModule: AccountModuleFacade;
     timelineModule: TimelineModuleFacade;
     clock: Clock;
+    eventPublisher: EventPublisher;
   }) {
     this.#deps = deps;
   }
@@ -141,5 +151,6 @@ export const createService = Ether.newEther(
     accountModule: accountModuleFacadeSymbol,
     timelineModule: timelineModuleFacadeSymbol,
     clock: clockSymbol,
+    eventPublisher: eventPublisherSymbol,
   },
 );

@@ -1,6 +1,10 @@
 import { Cat, Ether, Option, Promise, Result } from '@mikuroxina/mini-fn';
 
 import type { AccountID } from '../../accounts/model/account.ts';
+import {
+  type EventPublisher,
+  eventPublisherSymbol,
+} from '../../internal/event/mod.ts';
 import { Bookmark } from '../model/bookmark.ts';
 import {
   NoteBookmarkAlreadyCreatedError,
@@ -17,12 +21,15 @@ import {
 export class CreateBookmarkService {
   readonly #bookmarkRepository: BookmarkRepository;
   readonly #noteRepository: NoteRepository;
+  readonly #eventPublisher: EventPublisher;
   constructor(
     bookmarkRepository: BookmarkRepository,
     noteRepository: NoteRepository,
+    eventPublisher: EventPublisher,
   ) {
     this.#bookmarkRepository = bookmarkRepository;
     this.#noteRepository = noteRepository;
+    this.#eventPublisher = eventPublisher;
   }
 
   async handle(
@@ -64,6 +71,10 @@ export class CreateBookmarkService {
           .create({ noteID, accountID })
           .then(Result.map(() => [])),
       )
+      .runWith(({ bookmark }) => {
+        this.#eventPublisher.publishMany(bookmark.pullEvents());
+        return Promise.resolve(Result.ok([]));
+      })
       .finish(({ result }) => result);
   }
 }
@@ -72,10 +83,15 @@ export const createBookmarkSymbol =
   Ether.newEtherSymbol<CreateBookmarkService>();
 export const createBookmark = Ether.newEther(
   createBookmarkSymbol,
-  ({ bookmarkRepository, noteRepository }) =>
-    new CreateBookmarkService(bookmarkRepository, noteRepository),
+  ({ bookmarkRepository, noteRepository, eventPublisher }) =>
+    new CreateBookmarkService(
+      bookmarkRepository,
+      noteRepository,
+      eventPublisher,
+    ),
   {
     bookmarkRepository: bookmarkRepoSymbol,
     noteRepository: noteRepoSymbol,
+    eventPublisher: eventPublisherSymbol,
   },
 );

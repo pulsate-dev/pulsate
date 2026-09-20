@@ -5,6 +5,7 @@ import type { AccountID } from '../../accounts/model/account.ts';
 import { Medium, type MediumID } from '../../drive/model/medium.ts';
 import { dummyAccountModuleFacade } from '../../intermodule/account.ts';
 import { dummyTimelineModuleFacade } from '../../intermodule/timeline.ts';
+import type { EventPublisher } from '../../internal/event/mod.ts';
 import { MockClock, SnowflakeIDGenerator } from '../../internal/id/mod.ts';
 import { InMemoryTimelineCacheRepository } from '../../timeline/adaptor/repository/dummyCache.ts';
 import {
@@ -48,6 +49,7 @@ const attachmentRepository = new InMemoryNoteAttachmentRepository(
   [],
 );
 const timelineCacheRepository = new InMemoryTimelineCacheRepository();
+const eventPublisher: EventPublisher = { publishMany: vi.fn() };
 const service = new RenoteService({
   noteRepository: repository,
   idGenerator: new SnowflakeIDGenerator(0, {
@@ -57,6 +59,7 @@ const service = new RenoteService({
   accountModule: dummyAccountModuleFacade,
   timelineModule: dummyTimelineModuleFacade(timelineCacheRepository),
   clock: new MockClock(new Date('2023-09-10T00:00:00Z')),
+  eventPublisher,
 });
 
 describe('RenoteService', () => {
@@ -81,6 +84,9 @@ describe('RenoteService', () => {
     expect(Result.unwrap(renote).getVisibility()).toBe('PUBLIC');
     expect(Result.unwrap(renote).isRenote()).toBe(true);
     expect(Result.unwrap(renote).isQuote()).toBe(false);
+    expect(eventPublisher.publishMany).toHaveBeenCalledWith([
+      expect.objectContaining({ eventName: 'note.renoted' }),
+    ]);
   });
 
   it('should push renote to timeline', async () => {
@@ -97,6 +103,7 @@ describe('RenoteService', () => {
       accountModule: dummyAccountModuleFacade,
       timelineModule,
       clock: new MockClock(new Date('2023-09-10T00:00:00Z')),
+      eventPublisher,
     });
 
     const renote = await testService.handle(
@@ -369,6 +376,7 @@ describe('RenoteService', () => {
         new InMemoryTimelineCacheRepository(),
       ),
       clock: new MockClock(new Date('2023-09-10T00:00:00Z')),
+      eventPublisher,
     });
 
     const res = await dummyService.handle(

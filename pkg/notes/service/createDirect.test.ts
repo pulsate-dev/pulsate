@@ -5,6 +5,7 @@ import type { Account, AccountID } from '../../accounts/model/account.ts';
 import { generateDummyAccount } from '../../accounts/testData/testData.ts';
 import type { MediumID } from '../../drive/model/medium.ts';
 import type { AccountModuleFacade } from '../../intermodule/account.ts';
+import type { EventPublisher } from '../../internal/event/mod.ts';
 import { MockClock, SnowflakeIDGenerator } from '../../internal/id/mod.ts';
 import type {
   DirectNoteAttachmentRepository,
@@ -47,6 +48,7 @@ const mockDirectNoteAttachmentRepo: DirectNoteAttachmentRepository = {
 const mockAccountModule = {
   fetchAccount: vi.fn(),
 } as unknown as AccountModuleFacade;
+const eventPublisher: EventPublisher = { publishMany: vi.fn() };
 
 const service = new CreateDirectNoteService({
   directNoteRepository: mockDirectNoteRepo,
@@ -56,6 +58,7 @@ const service = new CreateDirectNoteService({
   }),
   clock: new MockClock(new Date('2023-09-10T00:00:00Z')),
   accountModule: mockAccountModule,
+  eventPublisher,
 });
 
 describe('CreateDirectNoteService', () => {
@@ -88,6 +91,9 @@ describe('CreateDirectNoteService', () => {
     expect(Result.unwrap(res).getContent()).toBe('Hello');
     expect(Result.unwrap(res).getAuthorID()).toBe('1');
     expect(Result.unwrap(res).getRecipientID()).toBe('2');
+    expect(eventPublisher.publishMany).toHaveBeenCalledWith([
+      expect.objectContaining({ eventName: 'note.created' }),
+    ]);
   });
 
   it('should return error when author not found', async () => {
