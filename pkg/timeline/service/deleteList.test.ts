@@ -1,6 +1,7 @@
 import { Result } from '@mikuroxina/mini-fn';
-import { describe, expect, it } from 'vitest';
+import { describe, expect, it, vi } from 'vitest';
 import type { AccountID } from '../../accounts/model/account.ts';
+import type { EventPublisher } from '../../internal/event/mod.ts';
 import { InMemoryListRepository } from '../adaptor/repository/dummy.ts';
 import { List, type ListID } from '../model/list.ts';
 import { DeleteListService } from './deleteList.ts';
@@ -16,12 +17,16 @@ const testList = List.reconstruct({
 
 describe('DeleteListService', () => {
   const repository = new InMemoryListRepository([testList]);
-  const service = new DeleteListService(repository);
+  const eventPublisher: EventPublisher = { publishMany: vi.fn() };
+  const service = new DeleteListService(repository, eventPublisher);
 
   it('should delete a list', async () => {
     const res = await service.handle('1' as ListID);
 
     expect(Result.isOk(res)).toBe(true);
+    expect(eventPublisher.publishMany).toHaveBeenCalledWith([
+      expect.objectContaining({ eventName: 'list.deleted' }),
+    ]);
   });
   it('should be error when try delete not existing list', async () => {
     const res = await service.handle('2' as ListID);

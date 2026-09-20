@@ -1,6 +1,10 @@
 import { Cat, Ether, Promise, Result } from '@mikuroxina/mini-fn';
 import type { AccountID } from '../../accounts/model/account.ts';
 import {
+  type EventPublisher,
+  eventPublisherSymbol,
+} from '../../internal/event/mod.ts';
+import {
   ListNotFoundError,
   TimelineInsufficientPermissionError,
 } from '../model/errors.ts';
@@ -9,8 +13,10 @@ import { type ListRepository, listRepoSymbol } from '../model/repository.ts';
 
 export class RemoveListMemberService {
   readonly #listRepository: ListRepository;
-  constructor(listRepository: ListRepository) {
+  readonly #eventPublisher: EventPublisher;
+  constructor(listRepository: ListRepository, eventPublisher: EventPublisher) {
     this.#listRepository = listRepository;
+    this.#eventPublisher = eventPublisher;
   }
 
   /**
@@ -54,6 +60,15 @@ export class RemoveListMemberService {
           this.#listRepository.removeListMember(listID, accountID),
         ),
       )
+      .runWith(({ list }) =>
+        monad.map(() => [])(
+          Promise.resolve(list.removeMember(accountID, actorID)),
+        ),
+      )
+      .runWith(({ list }) => {
+        this.#eventPublisher.publishMany(list.pullEvents());
+        return monad.pure([]);
+      })
       .finish(() => undefined);
   }
 
@@ -65,8 +80,10 @@ export const removeListMemberSymbol =
   Ether.newEtherSymbol<RemoveListMemberService>();
 export const removeListMember = Ether.newEther(
   removeListMemberSymbol,
-  ({ listRepository }) => new RemoveListMemberService(listRepository),
+  ({ listRepository, eventPublisher }) =>
+    new RemoveListMemberService(listRepository, eventPublisher),
   {
     listRepository: listRepoSymbol,
+    eventPublisher: eventPublisherSymbol,
   },
 );
