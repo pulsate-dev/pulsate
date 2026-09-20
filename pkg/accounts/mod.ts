@@ -12,7 +12,7 @@ import {
   notificationModuleFacadeSymbol,
 } from '../intermodule/notification.ts';
 import { eventPublisherEther } from '../internal/event/mod.ts';
-import { clockSymbol, snowflakeIDGenerator } from '../internal/id/mod.ts';
+import { snowflakeIDGenerator } from '../internal/id/mod.ts';
 import { argon2idPasswordEncoder } from '../internal/password/mod.ts';
 import { newTurnstileCaptchaValidator } from './adaptor/captcha/turnstile.ts';
 import { AccountController } from './adaptor/controller/account.ts';
@@ -32,6 +32,7 @@ import {
   prismaFollowRepo,
   prismaVerifyTokenRepo,
 } from './adaptor/repository/prisma/prisma.ts';
+import { authenticationTokenService, authToken, clock } from './deps.ts';
 import {
   AccountAlreadyFollowingError,
   AccountAlreadyFrozenError,
@@ -56,7 +57,6 @@ import {
   AccountRefreshTokenInvalidError,
 } from './model/errors.ts';
 import { accountRepoSymbol } from './model/repository.ts';
-
 import {
   CreateAccountRoute,
   FollowAccountRoute,
@@ -80,10 +80,6 @@ import {
   VerifyEmailRoute,
 } from './router.ts';
 import { authenticate } from './service/authenticate.ts';
-import {
-  authenticateToken,
-  authenticateTokenSymbol,
-} from './service/authenticationTokenService.ts';
 import { accountAvatar } from './service/avatar.ts';
 import { edit } from './service/edit.ts';
 import { fetch } from './service/fetch.ts';
@@ -123,12 +119,6 @@ const accountAvatarRepository = isProduction
   ? prismaAccountAvatarRepo(prismaClient)
   : inMemoryAccountAvatarRepo([], []);
 
-class Clock {
-  now() {
-    return BigInt(Date.now());
-  }
-}
-const clock = Ether.newEther(clockSymbol, () => new Clock());
 const idGenerator = Ether.compose(clock)(snowflakeIDGenerator(0));
 
 const inactiveAccountRepository = isProduction
@@ -148,14 +138,6 @@ const verifyAccountTokenService = Cat.cat(verifyAccountToken)
 
 const composer = Ether.composeT(Promise.monad);
 const liftOverPromise = Ether.liftEther(Promise.monad);
-
-const authTokenObj = Ether.runEtherT(
-  Cat.cat(authenticateToken).feed(composer(liftOverPromise(clock))).value,
-);
-const authToken = Ether.newEtherT<Promise.PromiseHkt>()(
-  authenticateTokenSymbol,
-  () => authTokenObj,
-);
 
 export const controller = new AccountController({
   authenticateService: await Ether.runEtherT(
@@ -242,7 +224,7 @@ export const controller = new AccountController({
       .feed(Ether.compose(accountAvatarRepository))
       .feed(Ether.compose(mediaModuleFacadeEther)).value,
   ),
-  authenticationTokenService: await Ether.runEtherT(authToken),
+  authenticationTokenService: await authenticationTokenService,
   fetchRelationshipService: Ether.runEther(
     Cat.cat(fetchRelationship)
       .feed(Ether.compose(accountRepository))
