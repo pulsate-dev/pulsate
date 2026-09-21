@@ -2,7 +2,7 @@ import { z } from '@hono/zod-openapi';
 import { Ether, Option, Result } from '@mikuroxina/mini-fn';
 import type { MiddlewareHandler } from 'hono';
 import { createMiddleware } from 'hono/factory';
-import { controller } from '../accounts/mod.ts';
+import { authenticationTokenService } from '../accounts/deps.ts';
 
 /* eslint-disable-next-line @typescript-eslint/consistent-type-definitions */
 export type AuthMiddlewareVariable = {
@@ -72,7 +72,9 @@ export class AuthenticateMiddlewareService {
       }
       c.set('token', token);
 
-      const isValidToken = Result.isOk(await controller.verifyAuthToken(token));
+      const isValidToken = Result.isOk(
+        await (await authenticationTokenService).verify(token),
+      );
       const parsed = this.parseToken(token);
       if (!isValidToken) {
         return c.json({ error: 'UNAUTHORIZED' }, { status: 401 });
