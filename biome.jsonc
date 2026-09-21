@@ -41,7 +41,8 @@
     "rules": {
       "preset": "recommended",
       "suspicious": {
-        "noShadowRestrictedNames": "off"
+        "noShadowRestrictedNames": "off",
+        "noImportCycles": "error"
       },
       "style": {
         "noParameterAssign": "error",
