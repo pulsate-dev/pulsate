@@ -71,8 +71,8 @@ export class FollowService {
       .runWith(({ follow }) =>
         monad.map(() => [])(this.#followRepository.follow(follow)),
       )
-      .runWith(({ follow }) => {
-        this.#eventPublisher.publishMany(follow.pullEvents());
+      .runWith(async ({ follow }) => {
+        await this.#eventPublisher.publishMany(follow.pullEvents());
         return monad.pure([]);
       })
       .finish(({ follow }) => follow);

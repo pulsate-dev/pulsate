@@ -18,7 +18,9 @@ describe('upload', () => {
   const idGenerator = new SnowflakeIDGenerator(0, clock);
   const repository = new InMemoryMediaRepository([]);
   const storageService = new LocalStorage();
-  const eventPublisher: EventPublisher = { publishMany: vi.fn() };
+  const eventPublisher: EventPublisher = {
+    publishMany: vi.fn(async () => undefined),
+  };
   const service = new UploadMediaService(
     idGenerator,
     repository,

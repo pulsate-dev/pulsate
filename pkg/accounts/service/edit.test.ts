@@ -9,7 +9,9 @@ import { EditService } from './edit.ts';
 
 const passwordEncoder = new Argon2idPasswordEncoder();
 const repository = new InMemoryAccountRepository();
-const eventPublisher: EventPublisher = { publishMany: vi.fn() };
+const eventPublisher: EventPublisher = {
+  publishMany: vi.fn(async () => undefined),
+};
 const editService = new EditService(
   repository,
   passwordEncoder,

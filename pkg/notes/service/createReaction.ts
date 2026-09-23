@@ -58,8 +58,8 @@ export class CreateReactionService {
       .runWith(({ reaction }) =>
         this.#reactionRepository.create(reaction).then(Result.map(() => [])),
       )
-      .runWith(({ reaction }) => {
-        this.#eventPublisher.publishMany(reaction.pullEvents());
+      .runWith(async ({ reaction }) => {
+        await this.#eventPublisher.publishMany(reaction.pullEvents());
         return Promise.resolve(Result.ok([]));
       })
       .addMWith('result', async ({ note }) => {

@@ -44,7 +44,9 @@ await accountRepository.create(
 );
 const repository = new InMemoryAccountFollowRepository();
 const mockClock = new MockClock(new Date('2023-09-10T00:00:00Z'));
-const eventPublisher: EventPublisher = { publishMany: vi.fn() };
+const eventPublisher: EventPublisher = {
+  publishMany: vi.fn(async () => undefined),
+};
 const service = new FollowService(
   repository,
   accountRepository,

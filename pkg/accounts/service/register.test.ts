@@ -15,7 +15,9 @@ const inactiveAccountRepository = new InMemoryInactiveAccountRepository();
 const accountRepository = new InMemoryAccountRepository();
 const verifyRepository = new InMemoryAccountVerifyTokenRepository();
 const mockClock = new MockClock(new Date('2023-09-10T00:00:00Z'));
-const eventPublisher: EventPublisher = { publishMany: vi.fn() };
+const eventPublisher: EventPublisher = {
+  publishMany: vi.fn(async () => undefined),
+};
 
 const registerService: RegisterService = new RegisterService({
   repository: inactiveAccountRepository,

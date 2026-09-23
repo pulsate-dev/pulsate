@@ -3,8 +3,8 @@ import { Ether } from '@mikuroxina/mini-fn';
 import type { AnyDomainEvent } from './type.ts';
 
 export interface EventPublisher {
-  /** Publishes domain events, e.g. as a single batch/transaction. */
-  publishMany(events: readonly AnyDomainEvent[]): void;
+  /** Waits for every event to be published (or logged on failure). */
+  publishMany(events: readonly AnyDomainEvent[]): Promise<void>;
 }
 
 export const eventPublisherSymbol = Ether.newEtherSymbol<EventPublisher>();

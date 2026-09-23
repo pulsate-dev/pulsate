@@ -9,7 +9,9 @@ import { CreateListService } from './createList.ts';
 
 describe('CreateListService', () => {
   const repository = new InMemoryListRepository();
-  const eventPublisher: EventPublisher = { publishMany: vi.fn() };
+  const eventPublisher: EventPublisher = {
+    publishMany: vi.fn(async () => undefined),
+  };
   const service = new CreateListService(
     new SnowflakeIDGenerator(0, {
       now: () => BigInt(new Date('2023-10-10T00:00:00Z').getTime()),

@@ -44,7 +44,9 @@ const noteRepository = new InMemoryNoteRepository([
   }),
 ]);
 const bookmarkRepository = new InMemoryBookmarkRepository();
-const eventPublisher: EventPublisher = { publishMany: vi.fn() };
+const eventPublisher: EventPublisher = {
+  publishMany: vi.fn(async () => undefined),
+};
 const createBookmarkService = new CreateBookmarkService(
   bookmarkRepository,
   noteRepository,

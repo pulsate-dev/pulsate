@@ -49,7 +49,9 @@ describe('DeleteReactionService', () => {
     }),
   ]);
   const noteRepo = new InMemoryNoteRepository([normalNote, renoteNote]);
-  const eventPublisher: EventPublisher = { publishMany: vi.fn() };
+  const eventPublisher: EventPublisher = {
+    publishMany: vi.fn(async () => undefined),
+  };
   const service = new DeleteReactionService(
     reactionRepo,
     noteRepo,

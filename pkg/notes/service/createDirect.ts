@@ -109,8 +109,8 @@ export class CreateDirectNoteService {
             .create(note.getID(), note.getAttachmentFileID())
             .then(Result.map(() => [])),
       )
-      .runWith(({ note }) => {
-        this.#deps.eventPublisher.publishMany(note.pullEvents());
+      .runWith(async ({ note }) => {
+        await this.#deps.eventPublisher.publishMany(note.pullEvents());
         return Promise.resolve(Result.ok([]));
       })
       .finish(({ note }) => note);

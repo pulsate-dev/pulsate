@@ -53,7 +53,9 @@ const follow = Result.unwrap(
 );
 follow.pullEvents();
 const repository = new InMemoryAccountFollowRepository([follow]);
-const eventPublisher: EventPublisher = { publishMany: vi.fn() };
+const eventPublisher: EventPublisher = {
+  publishMany: vi.fn(async () => undefined),
+};
 const service = new UnfollowService(
   repository,
   accountRepository,

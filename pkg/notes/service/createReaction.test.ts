@@ -50,7 +50,9 @@ const renoteNote = noteFactory(
 
 let reactionRepository = new InMemoryReactionRepository();
 let noteRepository = new InMemoryNoteRepository([normalNote, renoteNote]);
-const eventPublisher: EventPublisher = { publishMany: vi.fn() };
+const eventPublisher: EventPublisher = {
+  publishMany: vi.fn(async () => undefined),
+};
 let service = new CreateReactionService(
   idGenerator,
   reactionRepository,

@@ -72,7 +72,7 @@ export class SilenceService {
   }
 
   private async publish(account: Account): Promise<Result.Result<never, void>> {
-    this.#eventPublisher.publishMany(account.pullEvents());
+    await this.#eventPublisher.publishMany(account.pullEvents());
     return Result.ok(undefined);
   }
 

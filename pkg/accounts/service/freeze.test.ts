@@ -79,7 +79,9 @@ const testAccounts = [
   }),
 ];
 const repository = new InMemoryAccountRepository();
-const eventPublisher: EventPublisher = { publishMany: vi.fn() };
+const eventPublisher: EventPublisher = {
+  publishMany: vi.fn(async () => undefined),
+};
 const freezeService = new FreezeService(repository, eventPublisher);
 
 describe('FreezeService', () => {

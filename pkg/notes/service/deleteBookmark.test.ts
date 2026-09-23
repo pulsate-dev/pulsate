@@ -14,7 +14,9 @@ const accountID = '1' as AccountID;
 const bookmarkRepository = new InMemoryBookmarkRepository([
   Bookmark.reconstruct({ noteID, accountID }),
 ]);
-const eventPublisher: EventPublisher = { publishMany: vi.fn() };
+const eventPublisher: EventPublisher = {
+  publishMany: vi.fn(async () => undefined),
+};
 const deleteBookmarkService = new DeleteBookmarkService(
   bookmarkRepository,
   eventPublisher,

@@ -65,8 +65,8 @@ export class AppendListMemberService {
       .runWith(({ list }) =>
         monad.map(() => [])(this.#listRepository.appendListMember(list)),
       )
-      .runWith(({ list }) => {
-        this.#eventPublisher.publishMany(list.pullEvents());
+      .runWith(async ({ list }) => {
+        await this.#eventPublisher.publishMany(list.pullEvents());
         return monad.pure([]);
       })
       .finish(() => undefined);

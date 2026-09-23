@@ -109,8 +109,8 @@ export class RegisterService {
       .runWith(({ account }) =>
         monad.map(() => [])(this.#inactiveAccountRepository.create(account)),
       )
-      .runWith(({ account }) => {
-        this.#eventPublisher.publishMany(account.pullEvents());
+      .runWith(async ({ account }) => {
+        await this.#eventPublisher.publishMany(account.pullEvents());
         return monad.pure([]);
       })
       .addMWith('token', ({ account }) =>

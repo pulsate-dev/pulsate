@@ -22,7 +22,9 @@ describe('RemoveListMemberService', () => {
     }),
   ];
   const listRepository = new InMemoryListRepository(listData);
-  const eventPublisher: EventPublisher = { publishMany: vi.fn() };
+  const eventPublisher: EventPublisher = {
+    publishMany: vi.fn(async () => undefined),
+  };
   const service = new RemoveListMemberService(listRepository, eventPublisher);
 
   beforeEach(() => {

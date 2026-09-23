@@ -23,7 +23,9 @@ describe('AppendListMemberService', () => {
     }),
   ];
   const listRepository = new InMemoryListRepository(createListData());
-  const eventPublisher: EventPublisher = { publishMany: vi.fn() };
+  const eventPublisher: EventPublisher = {
+    publishMany: vi.fn(async () => undefined),
+  };
   const service = new AppendListMemberService(listRepository, eventPublisher);
 
   beforeEach(() => {

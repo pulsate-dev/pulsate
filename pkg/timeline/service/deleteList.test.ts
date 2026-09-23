@@ -17,7 +17,9 @@ const testList = List.reconstruct({
 
 describe('DeleteListService', () => {
   const repository = new InMemoryListRepository([testList]);
-  const eventPublisher: EventPublisher = { publishMany: vi.fn() };
+  const eventPublisher: EventPublisher = {
+    publishMany: vi.fn(async () => undefined),
+  };
   const service = new DeleteListService(repository, eventPublisher);
 
   it('should delete a list', async () => {

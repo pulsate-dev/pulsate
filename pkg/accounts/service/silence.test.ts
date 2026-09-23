@@ -7,7 +7,9 @@ import { Account, type AccountID } from '../model/account.ts';
 import { SilenceService } from './silence.ts';
 
 const repository = new InMemoryAccountRepository();
-const eventPublisher: EventPublisher = { publishMany: vi.fn() };
+const eventPublisher: EventPublisher = {
+  publishMany: vi.fn(async () => undefined),
+};
 const silenceService = new SilenceService(repository, eventPublisher);
 
 const resetRepository = () => {

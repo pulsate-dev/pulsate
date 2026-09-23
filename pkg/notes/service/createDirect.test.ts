@@ -48,7 +48,9 @@ const mockDirectNoteAttachmentRepo: DirectNoteAttachmentRepository = {
 const mockAccountModule = {
   fetchAccount: vi.fn(),
 } as unknown as AccountModuleFacade;
-const eventPublisher: EventPublisher = { publishMany: vi.fn() };
+const eventPublisher: EventPublisher = {
+  publishMany: vi.fn(async () => undefined),
+};
 
 const service = new CreateDirectNoteService({
   directNoteRepository: mockDirectNoteRepo,

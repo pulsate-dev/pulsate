@@ -49,7 +49,9 @@ const attachmentRepository = new InMemoryNoteAttachmentRepository(
   [],
 );
 const timelineCacheRepository = new InMemoryTimelineCacheRepository();
-const eventPublisher: EventPublisher = { publishMany: vi.fn() };
+const eventPublisher: EventPublisher = {
+  publishMany: vi.fn(async () => undefined),
+};
 const service = new RenoteService({
   noteRepository: repository,
   idGenerator: new SnowflakeIDGenerator(0, {
