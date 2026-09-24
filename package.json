@@ -34,6 +34,8 @@
     "@hono/swagger-ui": "0.6.1",
     "@hono/zod-openapi": "1.6.3",
     "@mikuroxina/mini-fn": "7.4.0",
+    "@nats-io/jetstream": "^3.4.0",
+    "@nats-io/transport-node": "^3.4.0",
     "@prisma/adapter-pg": "7.9.1",
     "@prisma/client": "7.9.1",
     "@scalar/hono-api-reference": "0.12.1",
