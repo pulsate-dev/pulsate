@@ -39,11 +39,14 @@ async function setup() {
     `test${suffix}.created`,
     `test${suffix}.renoted`,
   ];
-  await (await a.jetstream.jetstreamManager()).streams.add({
-    name: stream,
-    subjects,
-  });
-  streams.push(stream);
+  try {
+    await (await a.jetstream.jetstreamManager()).streams.add({
+      name: stream,
+      subjects,
+    });
+  } finally {
+    streams.push(stream);
+  }
   const id = `timeline-push-${suffix}-v1`;
   return { a, b, stream, subjects, id };
 }

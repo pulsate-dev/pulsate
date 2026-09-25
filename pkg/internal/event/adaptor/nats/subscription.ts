@@ -11,12 +11,18 @@ import { decodeEvent } from './codec.ts';
 import { maxDeliver } from './consumer-config.ts';
 
 const retryDelaysMs = [1000, 2000, 4000, 8000] as const;
+if (retryDelaysMs.length !== maxDeliver - 1) {
+  throw new Error(
+    `retryDelaysMs must have ${maxDeliver - 1} entries to match maxDeliver (${maxDeliver})`,
+  );
+}
 const toError = (cause: unknown): Error =>
   cause instanceof Error ? cause : new Error(String(cause));
 const attempt = Result.wrapAsyncThrowable(toError);
 
 export class RunningSubscription implements EventSubscription {
   #stopping = false;
+  #notifyStopping: (() => void) | undefined;
   readonly #finished: Promise<void>;
   readonly #consumer: Consumer;
   readonly #options: EventSubscriptionOptions;
@@ -29,7 +35,23 @@ export class RunningSubscription implements EventSubscription {
 
   async stop(): Promise<Result.Result<Error, void>> {
     this.#stopping = true;
+    this.#notifyStopping?.();
     return attempt(() => this.#finished)();
+  }
+
+  async #sleepUnlessStopping(ms: number): Promise<void> {
+    if (this.#stopping) {
+      return;
+    }
+
+    await new Promise<void>((resolve) => {
+      const timer = setTimeout(resolve, ms);
+      this.#notifyStopping = () => {
+        clearTimeout(timer);
+        resolve();
+      };
+    });
+    this.#notifyStopping = undefined;
   }
 
   async #run(): Promise<void> {
@@ -49,7 +71,7 @@ export class RunningSubscription implements EventSubscription {
           error: { name: error.name, message: error.message },
         });
 
-        await new Promise((resolve) => setTimeout(resolve, 1000));
+        await this.#sleepUnlessStopping(1000);
 
         continue;
       }

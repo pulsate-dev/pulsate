@@ -29,6 +29,7 @@ export class NatsEventPublisher implements EventPublisher {
           eventName: event.eventName,
           error: { name: error.name, message: error.message },
         });
+        throw error;
       }
     }
   }

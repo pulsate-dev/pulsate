@@ -36,7 +36,7 @@ describe('NatsEventPublisher', () => {
     });
   });
 
-  it('logs failures safely and continues the batch', async () => {
+  it('logs and rethrows on the first failure, aborting the batch', async () => {
     const publish = vi
       .fn()
       .mockRejectedValueOnce(new Error('offline'))
@@ -50,8 +50,8 @@ describe('NatsEventPublisher', () => {
 
     await expect(
       publisher.publishMany([event('event-1'), event('event-2')]),
-    ).resolves.toBeUndefined();
-    expect(publish).toHaveBeenCalledTimes(2);
+    ).rejects.toThrow('offline');
+    expect(publish).toHaveBeenCalledTimes(1);
     expect(log).toHaveBeenCalledWith('Domain event publish failed', {
       id: 'event-1',
       eventName: 'note.created',
