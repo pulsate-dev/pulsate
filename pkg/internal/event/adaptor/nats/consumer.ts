@@ -26,10 +26,10 @@ async function findConfig(
 ): Promise<Result.Result<Error, ConsumerConfig | undefined>> {
   const info = await attempt(() => api.info(stream, id))();
   if (Result.isOk(info)) {
-    const [, consumerInfo] = info;
+    const consumerInfo = Result.unwrap(info);
     return Result.ok(consumerInfo.config);
   }
-  const [, error] = info;
+  const error = Result.unwrapErr(info);
 
   return error instanceof JetStreamApiError &&
     error.code === JetStreamApiCodes.ConsumerNotFound
@@ -48,17 +48,17 @@ async function ensureConfig(
     return existing;
   }
 
-  const [, existingConfig] = existing;
+  const existingConfig = Result.unwrap(existing);
   if (existingConfig) {
     return Result.ok(existingConfig);
   }
 
   const created = await attempt(() => api.add(stream, config))();
   if (Result.isOk(created)) {
-    const [, consumerInfo] = created;
+    const consumerInfo = Result.unwrap(created);
     return Result.ok(consumerInfo.config);
   }
-  const [, createError] = created;
+  const createError = Result.unwrapErr(created);
 
   // Another replica may have created the durable concurrently.
   const concurrent = await findConfig(api, stream, id);
@@ -66,7 +66,7 @@ async function ensureConfig(
     return Result.err(createError);
   }
 
-  const [, concurrentConfig] = concurrent;
+  const concurrentConfig = Result.unwrap(concurrent);
   if (concurrentConfig) {
     return Result.ok(concurrentConfig);
   }

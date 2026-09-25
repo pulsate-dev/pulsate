@@ -31,7 +31,7 @@ export class NatsEventSubscriber implements EventSubscriber {
       return consumer;
     }
 
-    const [, runningConsumer] = consumer;
+    const runningConsumer = Result.unwrap(consumer);
     return Result.ok(new RunningSubscription(runningConsumer, options));
   }
 }

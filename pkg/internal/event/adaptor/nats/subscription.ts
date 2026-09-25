@@ -87,7 +87,7 @@ export class RunningSubscription implements EventSubscription {
       return this.#retry(message, event, Result.unwrapErr(handled));
     }
 
-    const [, result] = handled;
+    const result = Result.unwrap(handled);
     if (Result.isErr(result)) {
       return this.#retry(message, event, Result.unwrapErr(result));
     }
