@@ -1,5 +1,5 @@
 import { Result } from '@mikuroxina/mini-fn';
-import { afterEach, describe, expect, it, vi } from 'vitest';
+import { afterEach, describe, expect, it, type MockedObject, vi } from 'vitest';
 import { notificationModule } from '../../intermodule/notification.ts';
 import type { EventPublisher } from '../../internal/event/mod.ts';
 import { MockClock, SnowflakeIDGenerator } from '../../internal/id/mod.ts';
@@ -15,7 +15,9 @@ const inactiveAccountRepository = new InMemoryInactiveAccountRepository();
 const accountRepository = new InMemoryAccountRepository();
 const verifyRepository = new InMemoryAccountVerifyTokenRepository();
 const mockClock = new MockClock(new Date('2023-09-10T00:00:00Z'));
-const eventPublisher: EventPublisher = { publishMany: vi.fn() };
+const eventPublisher = {
+  publishMany: vi.fn(async () => undefined),
+} as const satisfies MockedObject<EventPublisher>;
 
 const registerService: RegisterService = new RegisterService({
   repository: inactiveAccountRepository,

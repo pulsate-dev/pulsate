@@ -1,5 +1,13 @@
 import { Option, Result } from '@mikuroxina/mini-fn';
-import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
+import {
+  afterEach,
+  beforeEach,
+  describe,
+  expect,
+  it,
+  type MockedObject,
+  vi,
+} from 'vitest';
 
 import type { EventPublisher } from '../../internal/event/mod.ts';
 import { Argon2idPasswordEncoder } from '../../internal/password/mod.ts';
@@ -9,7 +17,9 @@ import { EditService } from './edit.ts';
 
 const passwordEncoder = new Argon2idPasswordEncoder();
 const repository = new InMemoryAccountRepository();
-const eventPublisher: EventPublisher = { publishMany: vi.fn() };
+const eventPublisher = {
+  publishMany: vi.fn(async () => undefined),
+} as const satisfies MockedObject<EventPublisher>;
 const editService = new EditService(
   repository,
   passwordEncoder,

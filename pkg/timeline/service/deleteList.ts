@@ -29,7 +29,7 @@ export class DeleteListService {
 
     const list = Result.unwrap(listRes);
     list.deleted();
-    this.#eventPublisher.publishMany(list.pullEvents());
+    await this.#eventPublisher.publishMany(list.pullEvents());
 
     return Result.ok(undefined);
   }

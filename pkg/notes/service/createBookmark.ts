@@ -71,8 +71,8 @@ export class CreateBookmarkService {
           .create({ noteID, accountID })
           .then(Result.map(() => [])),
       )
-      .runWith(({ bookmark }) => {
-        this.#eventPublisher.publishMany(bookmark.pullEvents());
+      .runWith(async ({ bookmark }) => {
+        await this.#eventPublisher.publishMany(bookmark.pullEvents());
         return Promise.resolve(Result.ok([]));
       })
       .finish(({ result }) => result);

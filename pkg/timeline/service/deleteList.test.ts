@@ -1,5 +1,5 @@
 import { Result } from '@mikuroxina/mini-fn';
-import { describe, expect, it, vi } from 'vitest';
+import { describe, expect, it, type MockedObject, vi } from 'vitest';
 import type { AccountID } from '../../accounts/model/account.ts';
 import type { EventPublisher } from '../../internal/event/mod.ts';
 import { InMemoryListRepository } from '../adaptor/repository/dummy.ts';
@@ -17,7 +17,9 @@ const testList = List.reconstruct({
 
 describe('DeleteListService', () => {
   const repository = new InMemoryListRepository([testList]);
-  const eventPublisher: EventPublisher = { publishMany: vi.fn() };
+  const eventPublisher = {
+    publishMany: vi.fn(async () => undefined),
+  } as const satisfies MockedObject<EventPublisher>;
   const service = new DeleteListService(repository, eventPublisher);
 
   it('should delete a list', async () => {

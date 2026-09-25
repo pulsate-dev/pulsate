@@ -1,5 +1,5 @@
 import { Option, Result } from '@mikuroxina/mini-fn';
-import { afterEach, describe, expect, it, vi } from 'vitest';
+import { afterEach, describe, expect, it, type MockedObject, vi } from 'vitest';
 
 import type { AccountID } from '../../accounts/model/account.ts';
 import { Medium, type MediumID } from '../../drive/model/medium.ts';
@@ -49,7 +49,9 @@ const attachmentRepository = new InMemoryNoteAttachmentRepository(
   [],
 );
 const timelineCacheRepository = new InMemoryTimelineCacheRepository();
-const eventPublisher: EventPublisher = { publishMany: vi.fn() };
+const eventPublisher = {
+  publishMany: vi.fn(async () => undefined),
+} as const satisfies MockedObject<EventPublisher>;
 const service = new RenoteService({
   noteRepository: repository,
   idGenerator: new SnowflakeIDGenerator(0, {

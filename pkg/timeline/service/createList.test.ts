@@ -1,5 +1,5 @@
 import { Result } from '@mikuroxina/mini-fn';
-import { describe, expect, it, vi } from 'vitest';
+import { describe, expect, it, type MockedObject, vi } from 'vitest';
 
 import type { AccountID } from '../../accounts/model/account.ts';
 import type { EventPublisher } from '../../internal/event/mod.ts';
@@ -9,7 +9,9 @@ import { CreateListService } from './createList.ts';
 
 describe('CreateListService', () => {
   const repository = new InMemoryListRepository();
-  const eventPublisher: EventPublisher = { publishMany: vi.fn() };
+  const eventPublisher = {
+    publishMany: vi.fn(async () => undefined),
+  } as const satisfies MockedObject<EventPublisher>;
   const service = new CreateListService(
     new SnowflakeIDGenerator(0, {
       now: () => BigInt(new Date('2023-10-10T00:00:00Z').getTime()),

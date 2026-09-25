@@ -1,5 +1,12 @@
 import { Option, Result } from '@mikuroxina/mini-fn';
-import { beforeEach, describe, expect, it, vi } from 'vitest';
+import {
+  beforeEach,
+  describe,
+  expect,
+  it,
+  type MockedObject,
+  vi,
+} from 'vitest';
 
 import type { EventPublisher } from '../../internal/event/mod.ts';
 import { InMemoryAccountRepository } from '../adaptor/repository/dummy/account.ts';
@@ -79,7 +86,9 @@ const testAccounts = [
   }),
 ];
 const repository = new InMemoryAccountRepository();
-const eventPublisher: EventPublisher = { publishMany: vi.fn() };
+const eventPublisher = {
+  publishMany: vi.fn(async () => undefined),
+} as const satisfies MockedObject<EventPublisher>;
 const freezeService = new FreezeService(repository, eventPublisher);
 
 describe('FreezeService', () => {

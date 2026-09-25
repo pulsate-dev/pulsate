@@ -19,7 +19,7 @@ export class DummyEventPublisher implements EventPublisher {
     });
   }
 
-  publishMany(events: readonly AnyDomainEvent[]): void {
+  async publishMany(events: readonly AnyDomainEvent[]): Promise<void> {
     for (const event of events) {
       this.#publish(event);
     }

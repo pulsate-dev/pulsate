@@ -87,8 +87,8 @@ export class CreateService {
               .create(note.getID(), note.getAttachmentFileID())
               .then(Result.map(() => [])),
         )
-        .runWith(({ note }) => {
-          this.#deps.eventPublisher.publishMany(note.pullEvents());
+        .runWith(async ({ note }) => {
+          await this.#deps.eventPublisher.publishMany(note.pullEvents());
           return Promise.resolve(Result.ok([]));
         })
         // ToDo: Even if the note cannot be pushed to the timeline, the note is created successfully, so there is no error here.

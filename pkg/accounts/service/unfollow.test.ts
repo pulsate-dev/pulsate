@@ -1,5 +1,5 @@
 import { Option, Result } from '@mikuroxina/mini-fn';
-import { describe, expect, it, vi } from 'vitest';
+import { describe, expect, it, type MockedObject, vi } from 'vitest';
 
 import type { EventPublisher } from '../../internal/event/mod.ts';
 import { MockClock } from '../../internal/id/mod.ts';
@@ -53,7 +53,9 @@ const follow = Result.unwrap(
 );
 follow.pullEvents();
 const repository = new InMemoryAccountFollowRepository([follow]);
-const eventPublisher: EventPublisher = { publishMany: vi.fn() };
+const eventPublisher = {
+  publishMany: vi.fn(async () => undefined),
+} as const satisfies MockedObject<EventPublisher>;
 const service = new UnfollowService(
   repository,
   accountRepository,

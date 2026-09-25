@@ -1,5 +1,5 @@
 import { Option, Result } from '@mikuroxina/mini-fn';
-import { describe, expect, it, vi } from 'vitest';
+import { describe, expect, it, type MockedObject, vi } from 'vitest';
 
 import type { AccountID } from '../../accounts/model/account.ts';
 import { Medium, type MediumID } from '../../drive/model/medium.ts';
@@ -37,7 +37,9 @@ const timelineCacheRepository = new InMemoryTimelineCacheRepository([
   ['102' as AccountID, []],
   ['103' as AccountID, []],
 ]);
-const eventPublisher: EventPublisher = { publishMany: vi.fn() };
+const eventPublisher = {
+  publishMany: vi.fn(async () => undefined),
+} as const satisfies MockedObject<EventPublisher>;
 const createService = new CreateService({
   noteRepository,
   idGenerator: new SnowflakeIDGenerator(0, {
@@ -51,6 +53,32 @@ const createService = new CreateService({
 });
 
 describe('CreateService', () => {
+  it('waits for event publication before completing', async () => {
+    let release: (() => void) | undefined;
+    const pending = new Promise<void>((resolve) => {
+      release = resolve;
+    });
+    const publisher = vi
+      .spyOn(eventPublisher, 'publishMany')
+      .mockImplementationOnce(() => pending);
+    let completed = false;
+    const creation = createService
+      .handle('Hello world', '', '102' as AccountID, [], 'PUBLIC')
+      .then((result) => {
+        completed = true;
+        return result;
+      });
+
+    try {
+      await vi.waitFor(() => expect(publisher).toHaveBeenCalled());
+      expect(completed).toBe(false);
+    } finally {
+      release?.();
+    }
+    expect(Result.isOk(await creation)).toBe(true);
+    publisher.mockRestore();
+  });
+
   it('should create a note', async () => {
     const res = await createService.handle(
       'Hello world',

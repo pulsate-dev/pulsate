@@ -1,5 +1,5 @@
 import { Option, Result } from '@mikuroxina/mini-fn';
-import { afterEach, describe, expect, it, vi } from 'vitest';
+import { afterEach, describe, expect, it, type MockedObject, vi } from 'vitest';
 import type { AccountID } from '../../accounts/model/account.ts';
 import type { EventPublisher } from '../../internal/event/mod.ts';
 import { MockClock, SnowflakeIDGenerator } from '../../internal/id/mod.ts';
@@ -50,7 +50,9 @@ const renoteNote = noteFactory(
 
 let reactionRepository = new InMemoryReactionRepository();
 let noteRepository = new InMemoryNoteRepository([normalNote, renoteNote]);
-const eventPublisher: EventPublisher = { publishMany: vi.fn() };
+const eventPublisher = {
+  publishMany: vi.fn(async () => undefined),
+} as const satisfies MockedObject<EventPublisher>;
 let service = new CreateReactionService(
   idGenerator,
   reactionRepository,

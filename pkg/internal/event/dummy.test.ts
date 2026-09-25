@@ -27,13 +27,13 @@ describe('DummyEventPublisher', () => {
     vi.restoreAllMocks();
   });
 
-  it('logs event metadata without the payload', () => {
+  it('logs event metadata without the payload', async () => {
     const info = vi
       .spyOn(eventModuleLogger, 'info')
       .mockImplementation(() => undefined);
     const eventPublisher = new DummyEventPublisher();
 
-    const result = eventPublisher.publishMany([event]);
+    const result = await eventPublisher.publishMany([event]);
 
     expect(result).toBeUndefined();
     expect(info).toHaveBeenCalledWith('Domain event published', {
@@ -45,13 +45,13 @@ describe('DummyEventPublisher', () => {
     });
   });
 
-  it('logs metadata for every event when publishing many', () => {
+  it('logs metadata for every event when publishing many', async () => {
     const info = vi
       .spyOn(eventModuleLogger, 'info')
       .mockImplementation(() => undefined);
     const eventPublisher = new DummyEventPublisher();
 
-    const result = eventPublisher.publishMany([event, anotherEvent]);
+    const result = await eventPublisher.publishMany([event, anotherEvent]);
 
     expect(result).toBeUndefined();
     expect(info).toHaveBeenNthCalledWith(1, 'Domain event published', {
@@ -70,13 +70,13 @@ describe('DummyEventPublisher', () => {
     });
   });
 
-  it('logs nothing when publishing an empty list', () => {
+  it('logs nothing when publishing an empty list', async () => {
     const info = vi
       .spyOn(eventModuleLogger, 'info')
       .mockImplementation(() => undefined);
     const eventPublisher = new DummyEventPublisher();
 
-    eventPublisher.publishMany([]);
+    await eventPublisher.publishMany([]);
 
     expect(info).not.toHaveBeenCalled();
   });
