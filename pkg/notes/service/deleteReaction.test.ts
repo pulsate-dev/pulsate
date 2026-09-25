@@ -1,5 +1,5 @@
 import { Option, Result } from '@mikuroxina/mini-fn';
-import { describe, expect, it, vi } from 'vitest';
+import { describe, expect, it, type MockedObject, vi } from 'vitest';
 import type { AccountID } from '../../accounts/model/account.ts';
 import type { EventPublisher } from '../../internal/event/mod.ts';
 import {
@@ -49,9 +49,9 @@ describe('DeleteReactionService', () => {
     }),
   ]);
   const noteRepo = new InMemoryNoteRepository([normalNote, renoteNote]);
-  const eventPublisher: EventPublisher = {
+  const eventPublisher = {
     publishMany: vi.fn(async () => undefined),
-  };
+  } as const satisfies MockedObject<EventPublisher>;
   const service = new DeleteReactionService(
     reactionRepo,
     noteRepo,

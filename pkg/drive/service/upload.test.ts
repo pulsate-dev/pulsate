@@ -1,6 +1,6 @@
 import { readFile } from 'node:fs/promises';
 import { Result } from '@mikuroxina/mini-fn';
-import { afterEach, describe, expect, it, vi } from 'vitest';
+import { afterEach, describe, expect, it, type MockedObject, vi } from 'vitest';
 
 import type { AccountID } from '../../accounts/model/account.ts';
 import type { EventPublisher } from '../../internal/event/mod.ts';
@@ -18,9 +18,9 @@ describe('upload', () => {
   const idGenerator = new SnowflakeIDGenerator(0, clock);
   const repository = new InMemoryMediaRepository([]);
   const storageService = new LocalStorage();
-  const eventPublisher: EventPublisher = {
+  const eventPublisher = {
     publishMany: vi.fn(async () => undefined),
-  };
+  } as const satisfies MockedObject<EventPublisher>;
   const service = new UploadMediaService(
     idGenerator,
     repository,

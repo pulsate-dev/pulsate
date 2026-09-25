@@ -1,5 +1,12 @@
 import { Option, Result } from '@mikuroxina/mini-fn';
-import { beforeEach, describe, expect, it, vi } from 'vitest';
+import {
+  beforeEach,
+  describe,
+  expect,
+  it,
+  type MockedObject,
+  vi,
+} from 'vitest';
 
 import type { AccountID } from '../../accounts/model/account.ts';
 import type { EventPublisher } from '../../internal/event/mod.ts';
@@ -44,9 +51,9 @@ const noteRepository = new InMemoryNoteRepository([
   }),
 ]);
 const bookmarkRepository = new InMemoryBookmarkRepository();
-const eventPublisher: EventPublisher = {
+const eventPublisher = {
   publishMany: vi.fn(async () => undefined),
-};
+} as const satisfies MockedObject<EventPublisher>;
 const createBookmarkService = new CreateBookmarkService(
   bookmarkRepository,
   noteRepository,

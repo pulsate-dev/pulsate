@@ -1,5 +1,12 @@
 import { Option, Result } from '@mikuroxina/mini-fn';
-import { beforeEach, describe, expect, it, vi } from 'vitest';
+import {
+  beforeEach,
+  describe,
+  expect,
+  it,
+  type MockedObject,
+  vi,
+} from 'vitest';
 import type { EventPublisher } from '../../internal/event/mod.ts';
 import { MockClock } from '../../internal/id/mod.ts';
 import { InMemoryAccountRepository } from '../adaptor/repository/dummy/account.ts';
@@ -22,9 +29,9 @@ const inactiveAccountRepository = new InMemoryInactiveAccountRepository();
 const accountRepository = new InMemoryAccountRepository();
 
 const mockClock = new MockClock(new Date('2023-09-10T00:00:00Z'));
-const eventPublisher: EventPublisher = {
+const eventPublisher = {
   publishMany: vi.fn(async () => undefined),
-};
+} as const satisfies MockedObject<EventPublisher>;
 
 const service = new VerifyAccountTokenService(
   repository,

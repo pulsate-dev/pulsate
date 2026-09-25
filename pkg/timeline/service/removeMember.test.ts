@@ -1,5 +1,12 @@
 import { Result } from '@mikuroxina/mini-fn';
-import { beforeEach, describe, expect, it, vi } from 'vitest';
+import {
+  beforeEach,
+  describe,
+  expect,
+  it,
+  type MockedObject,
+  vi,
+} from 'vitest';
 import type { AccountID } from '../../accounts/model/account.ts';
 import type { EventPublisher } from '../../internal/event/mod.ts';
 import { InMemoryListRepository } from '../adaptor/repository/dummy.ts';
@@ -22,9 +29,9 @@ describe('RemoveListMemberService', () => {
     }),
   ];
   const listRepository = new InMemoryListRepository(listData);
-  const eventPublisher: EventPublisher = {
+  const eventPublisher = {
     publishMany: vi.fn(async () => undefined),
-  };
+  } as const satisfies MockedObject<EventPublisher>;
   const service = new RemoveListMemberService(listRepository, eventPublisher);
 
   beforeEach(() => {

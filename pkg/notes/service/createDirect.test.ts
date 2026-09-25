@@ -1,5 +1,12 @@
 import { Result } from '@mikuroxina/mini-fn';
-import { beforeEach, describe, expect, it, vi } from 'vitest';
+import {
+  beforeEach,
+  describe,
+  expect,
+  it,
+  type MockedObject,
+  vi,
+} from 'vitest';
 
 import type { Account, AccountID } from '../../accounts/model/account.ts';
 import { generateDummyAccount } from '../../accounts/testData/testData.ts';
@@ -48,9 +55,9 @@ const mockDirectNoteAttachmentRepo: DirectNoteAttachmentRepository = {
 const mockAccountModule = {
   fetchAccount: vi.fn(),
 } as unknown as AccountModuleFacade;
-const eventPublisher: EventPublisher = {
+const eventPublisher = {
   publishMany: vi.fn(async () => undefined),
-};
+} as const satisfies MockedObject<EventPublisher>;
 
 const service = new CreateDirectNoteService({
   directNoteRepository: mockDirectNoteRepo,

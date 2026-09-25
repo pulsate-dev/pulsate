@@ -1,5 +1,5 @@
 import { Option, Result } from '@mikuroxina/mini-fn';
-import { describe, expect, it, vi } from 'vitest';
+import { describe, expect, it, type MockedObject, vi } from 'vitest';
 
 import type { AccountID } from '../../accounts/model/account.ts';
 import { Medium, type MediumID } from '../../drive/model/medium.ts';
@@ -37,9 +37,9 @@ const timelineCacheRepository = new InMemoryTimelineCacheRepository([
   ['102' as AccountID, []],
   ['103' as AccountID, []],
 ]);
-const eventPublisher: EventPublisher = {
+const eventPublisher = {
   publishMany: vi.fn(async () => undefined),
-};
+} as const satisfies MockedObject<EventPublisher>;
 const createService = new CreateService({
   noteRepository,
   idGenerator: new SnowflakeIDGenerator(0, {
