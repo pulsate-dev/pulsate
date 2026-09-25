@@ -1,5 +1,5 @@
 import { Result } from '@mikuroxina/mini-fn';
-import type { JsMsg } from '@nats-io/jetstream';
+import type { JsMsg as JetStreamMessage } from '@nats-io/jetstream';
 import { describe, expect, it, vi } from 'vitest';
 
 import { decodeEvent } from './codec.ts';
@@ -14,11 +14,11 @@ const event = {
   occurredAt: '2026-01-01T00:00:00.000Z',
 };
 
-const message = (value: unknown, receivedSubject = subject): JsMsg =>
+const message = (value: unknown, receivedSubject = subject): JetStreamMessage =>
   ({
     subject: receivedSubject,
     data: new TextEncoder().encode(JSON.stringify(value)),
-  }) as JsMsg;
+  }) as JetStreamMessage;
 
 describe('decodeEvent', () => {
   it('revives timestamps and validates the decoded event payload', () => {
