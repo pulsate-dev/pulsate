@@ -41,7 +41,7 @@
     "@upyo/smtp": "0.6.0",
     "argon2": "0.45.1",
     "blurhash": "2.0.5",
-    "file-type": "22.0.2",
+    "file-type": "22.1.1",
     "hono": "4.13.8",
     "ioredis": "5.11.1",
     "jose": "6.2.12",
