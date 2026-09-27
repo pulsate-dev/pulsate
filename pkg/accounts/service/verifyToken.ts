@@ -145,10 +145,11 @@ export class VerifyAccountTokenService {
           this.#inactiveAccountRepository.delete(inactiveAccount.getID()),
         ),
       )
-      .runWith(({ account }) => {
-        this.#eventPublisher.publishMany(account.pullEvents());
-        return monad.pure([]);
-      })
+      .runWith(({ account }) =>
+        monad.map(() => [])(
+          this.#eventPublisher.publishMany(account.pullEvents()),
+        ),
+      )
       .finish(() => undefined);
   }
 }

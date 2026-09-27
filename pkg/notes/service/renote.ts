@@ -126,7 +126,7 @@ export class RenoteService {
     }
     const renote = Result.unwrap(res);
 
-    this.#deps.eventPublisher.publishMany(renote.pullEvents());
+    await this.#deps.eventPublisher.publishMany(renote.pullEvents());
 
     // ToDo: Even if the note cannot be pushed to the timeline, the note is created successfully, so there is no error here.
     // ToDo: use job queue to push note to timeline

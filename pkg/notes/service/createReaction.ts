@@ -58,10 +58,11 @@ export class CreateReactionService {
       .runWith(({ reaction }) =>
         this.#reactionRepository.create(reaction).then(Result.map(() => [])),
       )
-      .runWith(({ reaction }) => {
-        this.#eventPublisher.publishMany(reaction.pullEvents());
-        return Promise.resolve(Result.ok([]));
-      })
+      .runWith(({ reaction }) =>
+        Promise.resultMonad<Error>().map(() => [])(
+          this.#eventPublisher.publishMany(reaction.pullEvents()),
+        ),
+      )
       .addMWith('result', async ({ note }) => {
         const redirectTo = getReactionRedirectTargetID(note);
         if (Option.isNone(redirectTo)) {

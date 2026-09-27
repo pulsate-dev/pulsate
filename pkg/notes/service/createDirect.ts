@@ -109,10 +109,11 @@ export class CreateDirectNoteService {
             .create(note.getID(), note.getAttachmentFileID())
             .then(Result.map(() => [])),
       )
-      .runWith(({ note }) => {
-        this.#deps.eventPublisher.publishMany(note.pullEvents());
-        return Promise.resolve(Result.ok([]));
-      })
+      .runWith(({ note }) =>
+        Promise.resultMonad<Error>().map(() => [])(
+          this.#deps.eventPublisher.publishMany(note.pullEvents()),
+        ),
+      )
       .finish(({ note }) => note);
   }
 }

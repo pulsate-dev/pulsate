@@ -38,7 +38,7 @@ export class DeleteBookmarkService {
       return res;
     }
 
-    this.#eventPublisher.publishMany(bookmark.pullEvents());
+    await this.#eventPublisher.publishMany(bookmark.pullEvents());
     return Result.ok(undefined);
   }
 }

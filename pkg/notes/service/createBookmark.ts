@@ -71,10 +71,11 @@ export class CreateBookmarkService {
           .create({ noteID, accountID })
           .then(Result.map(() => [])),
       )
-      .runWith(({ bookmark }) => {
-        this.#eventPublisher.publishMany(bookmark.pullEvents());
-        return Promise.resolve(Result.ok([]));
-      })
+      .runWith(({ bookmark }) =>
+        Promise.resultMonad<Error>().map(() => [])(
+          this.#eventPublisher.publishMany(bookmark.pullEvents()),
+        ),
+      )
       .finish(({ result }) => result);
   }
 }

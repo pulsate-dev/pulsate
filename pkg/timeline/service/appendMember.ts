@@ -65,10 +65,11 @@ export class AppendListMemberService {
       .runWith(({ list }) =>
         monad.map(() => [])(this.#listRepository.appendListMember(list)),
       )
-      .runWith(({ list }) => {
-        this.#eventPublisher.publishMany(list.pullEvents());
-        return monad.pure([]);
-      })
+      .runWith(({ list }) =>
+        monad.map(() => [])(
+          this.#eventPublisher.publishMany(list.pullEvents()),
+        ),
+      )
       .finish(() => undefined);
   }
 

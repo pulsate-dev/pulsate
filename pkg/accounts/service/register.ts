@@ -109,10 +109,11 @@ export class RegisterService {
       .runWith(({ account }) =>
         monad.map(() => [])(this.#inactiveAccountRepository.create(account)),
       )
-      .runWith(({ account }) => {
-        this.#eventPublisher.publishMany(account.pullEvents());
-        return monad.pure([]);
-      })
+      .runWith(({ account }) =>
+        monad.map(() => [])(
+          this.#eventPublisher.publishMany(account.pullEvents()),
+        ),
+      )
       .addMWith('token', ({ account }) =>
         this.#verifyAccountTokenService.generate(account.getName()),
       )

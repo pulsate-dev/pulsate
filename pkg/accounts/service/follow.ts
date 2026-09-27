@@ -71,10 +71,11 @@ export class FollowService {
       .runWith(({ follow }) =>
         monad.map(() => [])(this.#followRepository.follow(follow)),
       )
-      .runWith(({ follow }) => {
-        this.#eventPublisher.publishMany(follow.pullEvents());
-        return monad.pure([]);
-      })
+      .runWith(({ follow }) =>
+        monad.map(() => [])(
+          this.#eventPublisher.publishMany(follow.pullEvents()),
+        ),
+      )
       .finish(({ follow }) => follow);
   }
 }
