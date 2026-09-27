@@ -1,3 +1,4 @@
+import { Result } from '@mikuroxina/mini-fn';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 
 import { eventModuleLogger } from './adaptor/logger.ts';
@@ -35,7 +36,7 @@ describe('DummyEventPublisher', () => {
 
     const result = await eventPublisher.publishMany([event]);
 
-    expect(result).toBeUndefined();
+    expect(result).toStrictEqual(Result.ok(undefined));
     expect(info).toHaveBeenCalledWith('Domain event published', {
       id: event.id,
       eventName: event.eventName,
@@ -53,7 +54,7 @@ describe('DummyEventPublisher', () => {
 
     const result = await eventPublisher.publishMany([event, anotherEvent]);
 
-    expect(result).toBeUndefined();
+    expect(result).toStrictEqual(Result.ok(undefined));
     expect(info).toHaveBeenNthCalledWith(1, 'Domain event published', {
       id: event.id,
       eventName: event.eventName,

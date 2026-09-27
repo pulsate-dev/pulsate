@@ -51,7 +51,7 @@ const renoteNote = noteFactory(
 let reactionRepository = new InMemoryReactionRepository();
 let noteRepository = new InMemoryNoteRepository([normalNote, renoteNote]);
 const eventPublisher = {
-  publishMany: vi.fn(async () => undefined),
+  publishMany: vi.fn(async () => Result.ok(undefined)),
 } as const satisfies MockedObject<EventPublisher>;
 let service = new CreateReactionService(
   idGenerator,

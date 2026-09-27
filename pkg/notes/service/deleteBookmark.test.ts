@@ -15,7 +15,7 @@ const bookmarkRepository = new InMemoryBookmarkRepository([
   Bookmark.reconstruct({ noteID, accountID }),
 ]);
 const eventPublisher = {
-  publishMany: vi.fn(async () => undefined),
+  publishMany: vi.fn(async () => Result.ok(undefined)),
 } as const satisfies MockedObject<EventPublisher>;
 const deleteBookmarkService = new DeleteBookmarkService(
   bookmarkRepository,

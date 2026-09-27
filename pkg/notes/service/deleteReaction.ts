@@ -53,10 +53,11 @@ export class DeleteReactionService {
           .deleteByID(reaction.getID())
           .then(Result.map(() => [])),
       )
-      .runWith(async ({ reaction }) => {
+      .runWith(({ reaction }) => {
         reaction.deleted(accountID);
-        await this.#eventPublisher.publishMany(reaction.pullEvents());
-        return Promise.resolve(Result.ok([]));
+        return Promise.resultMonad<Error>().map(() => [])(
+          this.#eventPublisher.publishMany(reaction.pullEvents()),
+        );
       })
       .finish(() => undefined);
   }

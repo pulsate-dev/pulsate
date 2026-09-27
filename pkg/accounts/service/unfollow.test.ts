@@ -54,7 +54,7 @@ const follow = Result.unwrap(
 follow.pullEvents();
 const repository = new InMemoryAccountFollowRepository([follow]);
 const eventPublisher = {
-  publishMany: vi.fn(async () => undefined),
+  publishMany: vi.fn(async () => Result.ok(undefined)),
 } as const satisfies MockedObject<EventPublisher>;
 const service = new UnfollowService(
   repository,

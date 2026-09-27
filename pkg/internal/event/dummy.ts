@@ -1,4 +1,4 @@
-import { Ether } from '@mikuroxina/mini-fn';
+import { Ether, Result } from '@mikuroxina/mini-fn';
 
 import { eventModuleLogger } from './adaptor/logger.ts';
 import { type EventPublisher, eventPublisherSymbol } from './publisher.ts';
@@ -19,10 +19,13 @@ export class DummyEventPublisher implements EventPublisher {
     });
   }
 
-  async publishMany(events: readonly AnyDomainEvent[]): Promise<void> {
+  async publishMany(
+    events: readonly AnyDomainEvent[],
+  ): Promise<Result.Result<Error, void>> {
     for (const event of events) {
       this.#publish(event);
     }
+    return Result.ok(undefined);
   }
 }
 

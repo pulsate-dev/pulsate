@@ -116,10 +116,11 @@ export class UploadMediaService {
             .then(() => Result.ok([])),
         )
         .addMWith('result', ({ medium }) => this.#repository.create(medium))
-        .runWith(async ({ medium }) => {
-          await this.#eventPublisher.publishMany(medium.pullEvents());
-          return monad.pure([]);
-        })
+        .runWith(({ medium }) =>
+          monad.map(() => [])(
+            this.#eventPublisher.publishMany(medium.pullEvents()),
+          ),
+        )
         .finish(({ result }) => result)
     );
   }

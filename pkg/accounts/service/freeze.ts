@@ -70,9 +70,8 @@ export class FreezeService {
       .finish(() => true);
   }
 
-  private async publish(account: Account): Promise<Result.Result<never, void>> {
-    await this.#eventPublisher.publishMany(account.pullEvents());
-    return Result.ok(undefined);
+  private publish(account: Account): Promise<Result.Result<Error, void>> {
+    return this.#eventPublisher.publishMany(account.pullEvents());
   }
 
   private findAccount(

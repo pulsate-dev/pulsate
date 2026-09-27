@@ -1,3 +1,4 @@
+import { Result } from '@mikuroxina/mini-fn';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import type { EventID } from '../../type.ts';
 import { eventModuleLogger } from '../logger.ts';
@@ -36,7 +37,7 @@ describe('NatsEventPublisher', () => {
     });
   });
 
-  it('logs and rethrows on the first failure, aborting the batch', async () => {
+  it('logs and returns an error on the first failure, aborting the batch', async () => {
     const publish = vi
       .fn()
       .mockRejectedValueOnce(new Error('offline'))
@@ -48,9 +49,13 @@ describe('NatsEventPublisher', () => {
       jetstream: { publish },
     } as unknown as NatsEventClient);
 
-    await expect(
-      publisher.publishMany([event('event-1'), event('event-2')]),
-    ).rejects.toThrow('offline');
+    const result = await publisher.publishMany([
+      event('event-1'),
+      event('event-2'),
+    ]);
+
+    expect(Result.isErr(result)).toBe(true);
+    expect(Result.unwrapErr(result).message).toBe('offline');
     expect(publish).toHaveBeenCalledTimes(1);
     expect(log).toHaveBeenCalledWith('Domain event publish failed', {
       id: 'event-1',

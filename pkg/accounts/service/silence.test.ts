@@ -1,4 +1,4 @@
-import { Option } from '@mikuroxina/mini-fn';
+import { Option, Result } from '@mikuroxina/mini-fn';
 import {
   beforeEach,
   describe,
@@ -15,7 +15,7 @@ import { SilenceService } from './silence.ts';
 
 const repository = new InMemoryAccountRepository();
 const eventPublisher = {
-  publishMany: vi.fn(async () => undefined),
+  publishMany: vi.fn(async () => Result.ok(undefined)),
 } as const satisfies MockedObject<EventPublisher>;
 const silenceService = new SilenceService(repository, eventPublisher);
 

@@ -58,10 +58,11 @@ export class CreateListService {
       .runWith(({ list }) =>
         monad.map(() => [])(this.#listRepository.create(list)),
       )
-      .runWith(async ({ list }) => {
-        await this.#eventPublisher.publishMany(list.pullEvents());
-        return monad.pure([]);
-      })
+      .runWith(({ list }) =>
+        monad.map(() => [])(
+          this.#eventPublisher.publishMany(list.pullEvents()),
+        ),
+      )
       .finish(({ list }) => list);
   }
 }

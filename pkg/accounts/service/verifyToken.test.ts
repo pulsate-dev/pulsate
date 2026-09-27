@@ -30,7 +30,7 @@ const accountRepository = new InMemoryAccountRepository();
 
 const mockClock = new MockClock(new Date('2023-09-10T00:00:00Z'));
 const eventPublisher = {
-  publishMany: vi.fn(async () => undefined),
+  publishMany: vi.fn(async () => Result.ok(undefined)),
 } as const satisfies MockedObject<EventPublisher>;
 
 const service = new VerifyAccountTokenService(

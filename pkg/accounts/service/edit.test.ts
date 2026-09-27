@@ -18,7 +18,7 @@ import { EditService } from './edit.ts';
 const passwordEncoder = new Argon2idPasswordEncoder();
 const repository = new InMemoryAccountRepository();
 const eventPublisher = {
-  publishMany: vi.fn(async () => undefined),
+  publishMany: vi.fn(async () => Result.ok(undefined)),
 } as const satisfies MockedObject<EventPublisher>;
 const editService = new EditService(
   repository,

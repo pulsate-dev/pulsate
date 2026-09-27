@@ -31,7 +31,7 @@ describe('AppendListMemberService', () => {
   ];
   const listRepository = new InMemoryListRepository(createListData());
   const eventPublisher = {
-    publishMany: vi.fn(async () => undefined),
+    publishMany: vi.fn(async () => Result.ok(undefined)),
   } as const satisfies MockedObject<EventPublisher>;
   const service = new AppendListMemberService(listRepository, eventPublisher);
 

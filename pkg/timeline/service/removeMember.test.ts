@@ -30,7 +30,7 @@ describe('RemoveListMemberService', () => {
   ];
   const listRepository = new InMemoryListRepository(listData);
   const eventPublisher = {
-    publishMany: vi.fn(async () => undefined),
+    publishMany: vi.fn(async () => Result.ok(undefined)),
   } as const satisfies MockedObject<EventPublisher>;
   const service = new RemoveListMemberService(listRepository, eventPublisher);
 

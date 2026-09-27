@@ -10,7 +10,7 @@ import { CreateListService } from './createList.ts';
 describe('CreateListService', () => {
   const repository = new InMemoryListRepository();
   const eventPublisher = {
-    publishMany: vi.fn(async () => undefined),
+    publishMany: vi.fn(async () => Result.ok(undefined)),
   } as const satisfies MockedObject<EventPublisher>;
   const service = new CreateListService(
     new SnowflakeIDGenerator(0, {

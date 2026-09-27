@@ -12,7 +12,9 @@ export class NatsEventPublisher implements EventPublisher {
     this.#client = client;
   }
 
-  async publishMany(events: readonly AnyDomainEvent[]): Promise<void> {
+  async publishMany(
+    events: readonly AnyDomainEvent[],
+  ): Promise<Result.Result<Error, void>> {
     for (const event of events) {
       const published = await Result.wrapAsyncThrowable((cause) =>
         cause instanceof Error ? cause : new Error(String(cause)),
@@ -29,8 +31,9 @@ export class NatsEventPublisher implements EventPublisher {
           eventName: event.eventName,
           error: { name: error.name, message: error.message },
         });
-        throw error;
+        return Result.err(error);
       }
     }
+    return Result.ok(undefined);
   }
 }

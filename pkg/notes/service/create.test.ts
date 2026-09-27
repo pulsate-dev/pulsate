@@ -38,7 +38,7 @@ const timelineCacheRepository = new InMemoryTimelineCacheRepository([
   ['103' as AccountID, []],
 ]);
 const eventPublisher = {
-  publishMany: vi.fn(async () => undefined),
+  publishMany: vi.fn(async () => Result.ok(undefined)),
 } as const satisfies MockedObject<EventPublisher>;
 const createService = new CreateService({
   noteRepository,
@@ -54,8 +54,8 @@ const createService = new CreateService({
 
 describe('CreateService', () => {
   it('waits for event publication before completing', async () => {
-    let release: (() => void) | undefined;
-    const pending = new Promise<void>((resolve) => {
+    let release: ((result: Result.Result<Error, void>) => void) | undefined;
+    const pending = new Promise<Result.Result<Error, void>>((resolve) => {
       release = resolve;
     });
     const publisher = vi
@@ -73,7 +73,7 @@ describe('CreateService', () => {
       await vi.waitFor(() => expect(publisher).toHaveBeenCalled());
       expect(completed).toBe(false);
     } finally {
-      release?.();
+      release?.(Result.ok(undefined));
     }
     expect(Result.isOk(await creation)).toBe(true);
     publisher.mockRestore();

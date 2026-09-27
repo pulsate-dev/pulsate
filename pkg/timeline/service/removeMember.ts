@@ -65,10 +65,11 @@ export class RemoveListMemberService {
           Promise.resolve(list.removeMember(accountID, actorID)),
         ),
       )
-      .runWith(async ({ list }) => {
-        await this.#eventPublisher.publishMany(list.pullEvents());
-        return monad.pure([]);
-      })
+      .runWith(({ list }) =>
+        monad.map(() => [])(
+          this.#eventPublisher.publishMany(list.pullEvents()),
+        ),
+      )
       .finish(() => undefined);
   }
 

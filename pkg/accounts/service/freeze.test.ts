@@ -87,7 +87,7 @@ const testAccounts = [
 ];
 const repository = new InMemoryAccountRepository();
 const eventPublisher = {
-  publishMany: vi.fn(async () => undefined),
+  publishMany: vi.fn(async () => Result.ok(undefined)),
 } as const satisfies MockedObject<EventPublisher>;
 const freezeService = new FreezeService(repository, eventPublisher);
 

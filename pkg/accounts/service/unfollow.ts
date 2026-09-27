@@ -81,10 +81,11 @@ export class UnfollowService {
       .runWith(({ follow }) =>
         monad.map(() => [])(this.#followRepository.unfollow(follow)),
       )
-      .runWith(async ({ follow }) => {
-        await this.#eventPublisher.publishMany(follow.pullEvents());
-        return monad.pure([]);
-      })
+      .runWith(({ follow }) =>
+        monad.map(() => [])(
+          this.#eventPublisher.publishMany(follow.pullEvents()),
+        ),
+      )
       .finish(() => []);
 
     return Result.optionErr(res);
