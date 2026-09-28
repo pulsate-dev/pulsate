@@ -1,4 +1,4 @@
-import { Ether, type Result } from '@mikuroxina/mini-fn';
+import { Ether, Option, type Result } from '@mikuroxina/mini-fn';
 import type { AccountID } from '../accounts/model/account.ts';
 import type { Medium } from '../drive/model/medium.ts';
 import {
@@ -10,6 +10,7 @@ import {
   noteReactionRepoEther,
   noteRepoEther,
 } from '../notes/mod.ts';
+import { NoteNotFoundError } from '../notes/model/errors.ts';
 import type { Note, NoteID } from '../notes/model/note.ts';
 import type { Reaction } from '../notes/model/reaction.ts';
 import type { RenoteStatus } from '../notes/model/renoteStatus.ts';
@@ -58,6 +59,21 @@ export class NoteModuleFacade {
     noteIDs: NoteID[],
   ): Promise<RenoteStatus[]> {
     return await this.#fetchService.fetchRenoteStatus(accountID, noteIDs);
+  }
+
+  /**
+   * @description Fetch a note by ID
+   * @param noteID note ID
+   * @returns {@link Note} the note, or {@link NoteNotFoundError} if it does not exist, was deleted, or its author is frozen
+   */
+  async fetchNoteByID(noteID: NoteID): Promise<Result.Result<Error, Note>> {
+    return this.#fetchService
+      .fetchNoteByID(noteID)
+      .then(
+        Option.okOrElse(
+          () => new NoteNotFoundError('Note not found', { cause: null }),
+        ),
+      );
   }
 
   // NOTE: The following section is used only in development mode to synchronize Note data between the Note and Timeline modules. Calls from production mode or from modules other than Timeline are prohibited.
