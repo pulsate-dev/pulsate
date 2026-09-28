@@ -2,7 +2,7 @@ import { Result } from '@mikuroxina/mini-fn';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 
 import { eventModuleLogger } from './adaptor/logger.ts';
-import { DummyEventPublisher } from './dummy.ts';
+import { DummyEventPublisher, DummyEventSubscriber } from './dummy.ts';
 import type { EventID } from './type.ts';
 
 const event = {
@@ -80,5 +80,52 @@ describe('DummyEventPublisher', () => {
     await eventPublisher.publishMany([]);
 
     expect(info).not.toHaveBeenCalled();
+  });
+});
+
+describe('DummyEventSubscriber', () => {
+  afterEach(() => {
+    vi.restoreAllMocks();
+  });
+
+  it('logs the subscription request and returns a no-op subscription', async () => {
+    const info = vi
+      .spyOn(eventModuleLogger, 'info')
+      .mockImplementation(() => undefined);
+    const subscriber = new DummyEventSubscriber();
+    const handler = vi.fn();
+
+    const result = await subscriber.subscribe({
+      id: 'timeline-push-note-v1',
+      subjects: ['note.created', 'note.renoted'],
+      handler,
+      validatePayload: () => true,
+      ackWaitMs: 10000,
+    });
+
+    expect(Result.isOk(result)).toBe(true);
+    expect(info).toHaveBeenCalledWith('Domain event subscription started', {
+      id: 'timeline-push-note-v1',
+      subjects: ['note.created', 'note.renoted'],
+    });
+    expect(handler).not.toHaveBeenCalled();
+  });
+
+  it('resolves stop() without delivering any event', async () => {
+    vi.spyOn(eventModuleLogger, 'info').mockImplementation(() => undefined);
+    const subscriber = new DummyEventSubscriber();
+
+    const result = await subscriber.subscribe({
+      id: 'timeline-push-note-v1',
+      subjects: ['note.created'],
+      handler: vi.fn(),
+      validatePayload: () => true,
+      ackWaitMs: 10000,
+    });
+
+    const subscription = Result.unwrap(result);
+    await expect(subscription.stop()).resolves.toStrictEqual(
+      Result.ok(undefined),
+    );
   });
 });

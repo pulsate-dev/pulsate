@@ -1,4 +1,4 @@
-import type { Result } from '@mikuroxina/mini-fn';
+import { Ether, type Result } from '@mikuroxina/mini-fn';
 
 import type { AnyDomainEvent } from './type.ts';
 
@@ -37,3 +37,5 @@ export interface EventSubscriber {
     options: EventSubscriptionOptions,
   ): Promise<Result.Result<Error, EventSubscription>>;
 }
+
+export const eventSubscriberSymbol = Ether.newEtherSymbol<EventSubscriber>();
