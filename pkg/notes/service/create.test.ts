@@ -4,10 +4,8 @@ import { describe, expect, it, type MockedObject, vi } from 'vitest';
 import type { AccountID } from '../../accounts/model/account.ts';
 import { Medium, type MediumID } from '../../drive/model/medium.ts';
 import { dummyAccountModuleFacade } from '../../intermodule/account.ts';
-import { dummyTimelineModuleFacade } from '../../intermodule/timeline.ts';
 import type { EventPublisher } from '../../internal/event/mod.ts';
 import { MockClock, SnowflakeIDGenerator } from '../../internal/id/mod.ts';
-import { InMemoryTimelineCacheRepository } from '../../timeline/adaptor/repository/dummyCache.ts';
 import {
   InMemoryNoteAttachmentRepository,
   InMemoryNoteRepository,
@@ -32,11 +30,6 @@ const attachmentRepository = new InMemoryNoteAttachmentRepository(
   [],
 );
 
-const timelineCacheRepository = new InMemoryTimelineCacheRepository([
-  ['101' as AccountID, []],
-  ['102' as AccountID, []],
-  ['103' as AccountID, []],
-]);
 const eventPublisher = {
   publishMany: vi.fn(async () => Result.ok(undefined)),
 } as const satisfies MockedObject<EventPublisher>;
@@ -47,7 +40,6 @@ const createService = new CreateService({
   }),
   noteAttachmentRepository: attachmentRepository,
   accountModule: dummyAccountModuleFacade,
-  timelineModule: dummyTimelineModuleFacade(timelineCacheRepository),
   clock: new MockClock(new Date('2023-09-10T00:00:00Z')),
   eventPublisher,
 });
@@ -91,6 +83,25 @@ describe('CreateService', () => {
     expect(Result.isOk(res)).toBe(true);
     expect(eventPublisher.publishMany).toHaveBeenCalledWith([
       expect.objectContaining({ eventName: 'note.created' }),
+    ]);
+  });
+
+  it('publishes note.created with the note pushed to timelines by its subscriber', async () => {
+    const res = await createService.handle(
+      'Hello world',
+      '',
+      '102' as AccountID,
+      [],
+      'PUBLIC',
+    );
+    const note = Result.unwrap(res);
+
+    expect(eventPublisher.publishMany).toHaveBeenCalledWith([
+      expect.objectContaining({
+        eventName: 'note.created',
+        target: note.getID(),
+        payload: { authorID: '102' as AccountID, visibility: 'PUBLIC' },
+      }),
     ]);
   });
 
@@ -155,22 +166,6 @@ describe('CreateService', () => {
     );
 
     expect(Result.isErr(res)).toBe(true);
-  });
-
-  it('should push note to timeline', async () => {
-    await createService.handle(
-      'Hello world',
-      '',
-      '101' as AccountID,
-      [],
-      'PUBLIC',
-    );
-
-    const res1 = await timelineCacheRepository.getHomeTimeline(
-      '103' as AccountID,
-    );
-    expect(Result.isOk(res1)).toBe(true);
-    expect(Result.unwrap(res1)).toHaveLength(1);
   });
 
   it('if actor silenced, must not set PUBLIC', async () => {

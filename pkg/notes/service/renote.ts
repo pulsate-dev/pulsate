@@ -7,10 +7,6 @@ import {
   accountModuleFacadeSymbol,
 } from '../../intermodule/account.ts';
 import {
-  type TimelineModuleFacade,
-  timelineModuleFacadeSymbol,
-} from '../../intermodule/timeline.ts';
-import {
   type EventPublisher,
   eventPublisherSymbol,
 } from '../../internal/event/mod.ts';
@@ -41,7 +37,6 @@ export class RenoteService {
     idGenerator: SnowflakeIDGenerator;
     noteAttachmentRepository: NoteAttachmentRepository;
     accountModule: AccountModuleFacade;
-    timelineModule: TimelineModuleFacade;
     clock: Clock;
     eventPublisher: EventPublisher;
   };
@@ -50,7 +45,6 @@ export class RenoteService {
     idGenerator: SnowflakeIDGenerator;
     noteAttachmentRepository: NoteAttachmentRepository;
     accountModule: AccountModuleFacade;
-    timelineModule: TimelineModuleFacade;
     clock: Clock;
     eventPublisher: EventPublisher;
   }) {
@@ -128,10 +122,6 @@ export class RenoteService {
 
     await this.#deps.eventPublisher.publishMany(renote.pullEvents());
 
-    // ToDo: Even if the note cannot be pushed to the timeline, the note is created successfully, so there is no error here.
-    // ToDo: use job queue to push note to timeline
-    await this.#deps.timelineModule.pushNoteToTimeline(renote);
-
     return Result.ok(renote);
   }
 
@@ -187,7 +177,6 @@ export const renote = Ether.newEther(
     idGenerator: snowflakeIDGeneratorSymbol,
     noteAttachmentRepository: noteAttachmentRepoSymbol,
     accountModule: accountModuleFacadeSymbol,
-    timelineModule: timelineModuleFacadeSymbol,
     clock: clockSymbol,
     eventPublisher: eventPublisherSymbol,
   },

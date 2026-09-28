@@ -20,6 +20,7 @@ import {
 } from '../intermodule/timeline.ts';
 import { eventPublisherEther } from '../internal/event/mod.ts';
 import { clockSymbol, snowflakeIDGenerator } from '../internal/id/mod.ts';
+import { NoteEventHandler } from './adaptor/controller/noteEvent.ts';
 import { TimelineController } from './adaptor/controller/timeline.ts';
 import { timelineModuleLogger } from './adaptor/logger.ts';
 import {
@@ -70,10 +71,12 @@ import { fetchBookmark } from './service/fetchBookmark.ts';
 import { fetchConversation } from './service/fetchConversation.ts';
 import { fetchList } from './service/fetchList.ts';
 import { fetchListMember } from './service/fetchMember.ts';
+import { FetchSubscribedListService } from './service/fetchSubscribed.ts';
 import { homeTimeline } from './service/home.ts';
 import { listTimeline } from './service/list.ts';
 import { noteVisibility } from './service/noteVisibility.ts';
 import { publicTimeline } from './service/public.ts';
+import { pushTimeline } from './service/push.ts';
 import { removeListMember } from './service/removeMember.ts';
 
 const isProduction = process.env.NODE_ENV === 'production';
@@ -123,6 +126,10 @@ const bookmarkTimelineRepository = isProduction
 const conversationRepository = isProduction
   ? prismaConversationRepo(prismaClient)
   : inMemoryConversationRepo();
+
+const fetchSubscribedListServiceInstance = new FetchSubscribedListService(
+  listRepositoryInstance,
+);
 
 const controller = new TimelineController({
   accountTimelineService: Ether.runEther(
@@ -187,6 +194,25 @@ const controller = new TimelineController({
   publicTimelineService: Ether.runEther(
     Cat.cat(publicTimeline).feed(Ether.compose(timelineRepository)).value,
   ),
+});
+
+// NOTE: Shared instance used by the note.created/note.renoted event handler
+export const noteEventHandlerInstance = new NoteEventHandler({
+  pushTimelineService: Ether.runEther(
+    Cat.cat(pushTimeline)
+      .feed(Ether.compose(accountModuleEther))
+      .feed(Ether.compose(noteVisibilityService))
+      .feed(Ether.compose(timelineCacheRepository))
+      .feed(
+        Ether.compose(
+          Ether.newEther(
+            Ether.newEtherSymbol<FetchSubscribedListService>(),
+            () => fetchSubscribedListServiceInstance,
+          ),
+        ),
+      ).value,
+  ),
+  noteModule: noteModule,
 });
 
 export const timeline = new OpenAPIHono<{

@@ -15,7 +15,6 @@ import {
   accountModuleFacadeSymbol,
   dummyAccountModuleFacade,
 } from '../intermodule/account.ts';
-import { timelineModuleFacadeEther } from '../intermodule/timeline.ts';
 import { eventPublisherEther } from '../internal/event/mod.ts';
 import { clockSymbol, snowflakeIDGenerator } from '../internal/id/mod.ts';
 import { BookmarkController } from './adaptor/controller/bookmark.ts';
@@ -109,7 +108,6 @@ export const noteCreateServiceInstance = Ether.runEther(
     .feed(Ether.compose(noteIdGeneratorEther))
     .feed(Ether.compose(noteAttachmentRepoEther))
     .feed(Ether.compose(accountModuleFacade))
-    .feed(Ether.compose(timelineModuleFacadeEther))
     .feed(Ether.compose(eventPublisherEther)).value,
 );
 export const noteHandlers = new OpenAPIHono<{
@@ -129,7 +127,6 @@ const renoteServiceObj = Ether.runEther(
     .feed(Ether.compose(noteIdGeneratorEther))
     .feed(Ether.compose(noteAttachmentRepoEther))
     .feed(Ether.compose(accountModuleEther))
-    .feed(Ether.compose(timelineModuleFacadeEther))
     .feed(Ether.compose(eventPublisherEther)).value,
 );
 
