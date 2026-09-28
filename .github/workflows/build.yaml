@@ -43,9 +43,15 @@ jobs:
         run: |
           pnpm check:filename
 
+      - name: Start NATS with JetStream
+        run: |
+          docker run -d --name nats -p 4222:4222 nats:2-alpine -js
+
       - name: Run test
         run: |
           pnpm test:coverage
+        env:
+          NATS_TEST_URL: nats://localhost:4222
 
 
       - name: Upload coverage to codecov

@@ -1,4 +1,5 @@
 import { serve } from '@hono/node-server';
+import { Result } from '@mikuroxina/mini-fn';
 import { Scalar } from '@scalar/hono-api-reference';
 import { Hono } from 'hono';
 import { cors } from 'hono/cors';
@@ -8,10 +9,15 @@ import { drive } from './pkg/drive/mod.ts';
 import { noteHandlers } from './pkg/notes/mod.ts';
 import { timeline } from './pkg/timeline/mod.ts';
 import { Logger } from 'tslog';
+import { closeNatsClient, connectNats, ensureStream, natsStreamName } from './pkg/adaptors/nats.ts';
 import { isProduction } from './pkg/adaptors/env.ts';
 import { prismaClient } from './pkg/adaptors/prisma.ts';
 import { closeValkeyClients } from './pkg/adaptors/valkey.ts';
 import { notification } from './pkg/notification/mod.ts';
+import { eventSubscriber } from './pkg/internal/event/mod.ts';
+import { NatsEventSubscriber } from './pkg/internal/event/adaptor/nats/subscriber.ts';
+import type { EventSubscriber } from './pkg/internal/event/mod.ts';
+import { startTimelineEventSubscriptions } from './pkg/timeline/subscription.ts';
 
 const coreLogger = new Logger({
   name: "Pulsate",
@@ -94,24 +100,67 @@ app.get(
   }),
 );
 
-const server = serve({ fetch: app.fetch, port: 3000 }, (addr) => {
-  coreLogger.info("Pulsate v0.1");
-  if (isProduction) {
-    coreLogger.info("Production mode");
-  } else {
-    coreLogger.info("Development mode");
+async function setUpNatsSubscriber(): Promise<EventSubscriber> {
+  const clientRes = await connectNats();
+  if (Result.isErr(clientRes)) {
+    coreLogger.error('Failed to connect to NATS', Result.unwrapErr(clientRes));
+    process.exit(1);
+  }
+  const client = Result.unwrap(clientRes);
+
+  const streamRes = await ensureStream(client);
+  if (Result.isErr(streamRes)) {
+    coreLogger.error(
+      'Failed to ensure the NATS event stream',
+      Result.unwrapErr(streamRes),
+    );
+    process.exit(1);
   }
 
-  coreLogger.info(`Server started at ${addr.address}:${addr.port} ${addr.family}`);
-});
+  return new NatsEventSubscriber(client, natsStreamName);
+}
 
-const shutdown = () => {
-  coreLogger.info('Shutting down gracefully...');
-  server.close(async () => {
-    await Promise.all([prismaClient.$disconnect(), closeValkeyClients()]);
-    process.exit(0);
+async function main() {
+  const subscriber: EventSubscriber = isProduction
+    ? await setUpNatsSubscriber()
+    : eventSubscriber;
+
+  const subscriptionRes = await startTimelineEventSubscriptions(subscriber);
+  if (Result.isErr(subscriptionRes)) {
+    coreLogger.error(
+      'Failed to start timeline event subscriptions',
+      Result.unwrapErr(subscriptionRes),
+    );
+    process.exit(1);
+  }
+  const subscription = Result.unwrap(subscriptionRes);
+
+  const server = serve({ fetch: app.fetch, port: 3000 }, (addr) => {
+    coreLogger.info("Pulsate v0.1");
+    if (isProduction) {
+      coreLogger.info("Production mode");
+    } else {
+      coreLogger.info("Development mode");
+    }
+
+    coreLogger.info(`Server started at ${addr.address}:${addr.port} ${addr.family}`);
   });
-};
 
-process.on('SIGTERM', shutdown);
-process.on('SIGINT', shutdown);
+  const shutdown = () => {
+    coreLogger.info('Shutting down gracefully...');
+    server.close(async () => {
+      await subscription.stop();
+      await Promise.all([
+        prismaClient.$disconnect(),
+        closeValkeyClients(),
+        closeNatsClient(),
+      ]);
+      process.exit(0);
+    });
+  };
+
+  process.on('SIGTERM', shutdown);
+  process.on('SIGINT', shutdown);
+}
+
+await main();
