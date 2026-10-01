@@ -1,8 +1,6 @@
 import { Ether, type Result } from '@mikuroxina/mini-fn';
-import { isProduction } from '../adaptors/env.ts';
-import { prismaClient } from '../adaptors/prisma.ts';
-import { InMemoryMediaRepository } from '../drive/adaptor/repository/dummy.ts';
-import { PrismaMediaRepository } from '../drive/adaptor/repository/prisma.ts';
+import type { InMemoryMediaRepository } from '../drive/adaptor/repository/dummy.ts';
+import { fetchMediaServiceInstance } from '../drive/deps.ts';
 import type { Medium, MediumID } from '../drive/model/medium.ts';
 import { FetchMediaService } from '../drive/service/fetch.ts';
 
@@ -30,11 +28,7 @@ export const mediaModuleFacadeEther = Ether.newEther(
  * Media module facade object for dependency injection.
  */
 export const mediaModuleFacade = new MediaModuleFacade(
-  new FetchMediaService(
-    isProduction
-      ? new PrismaMediaRepository(prismaClient)
-      : new InMemoryMediaRepository([]),
-  ),
+  fetchMediaServiceInstance,
 );
 
 /**
