@@ -1,4 +1,3 @@
-export { DummyEventPublisher } from './dummy.ts';
 export { type EventPublisher, eventPublisherSymbol } from './publisher.ts';
 export {
   configureEventPublisher,
