@@ -4,10 +4,8 @@ import { afterEach, describe, expect, it, type MockedObject, vi } from 'vitest';
 import type { AccountID } from '../../accounts/model/account.ts';
 import { Medium, type MediumID } from '../../drive/model/medium.ts';
 import { dummyAccountModuleFacade } from '../../intermodule/account.ts';
-import { dummyTimelineModuleFacade } from '../../intermodule/timeline.ts';
 import type { EventPublisher } from '../../internal/event/mod.ts';
 import { MockClock, SnowflakeIDGenerator } from '../../internal/id/mod.ts';
-import { InMemoryTimelineCacheRepository } from '../../timeline/adaptor/repository/dummyCache.ts';
 import {
   InMemoryNoteAttachmentRepository,
   InMemoryNoteRepository,
@@ -48,9 +46,10 @@ const attachmentRepository = new InMemoryNoteAttachmentRepository(
   }),
   [],
 );
-const timelineCacheRepository = new InMemoryTimelineCacheRepository();
 const eventPublisher = {
-  publishMany: vi.fn(async () => Result.ok(undefined)),
+  publishMany: vi.fn<EventPublisher['publishMany']>(async () =>
+    Result.ok(undefined),
+  ),
 } as const satisfies MockedObject<EventPublisher>;
 const service = new RenoteService({
   noteRepository: repository,
@@ -59,7 +58,6 @@ const service = new RenoteService({
   }),
   noteAttachmentRepository: attachmentRepository,
   accountModule: dummyAccountModuleFacade,
-  timelineModule: dummyTimelineModuleFacade(timelineCacheRepository),
   clock: new MockClock(new Date('2023-09-10T00:00:00Z')),
   eventPublisher,
 });
@@ -91,24 +89,11 @@ describe('RenoteService', () => {
     ]);
   });
 
-  it('should push renote to timeline', async () => {
-    const cacheRepo = new InMemoryTimelineCacheRepository();
-    const timelineModule = dummyTimelineModuleFacade(cacheRepo);
-    const pushSpy = vi.spyOn(timelineModule, 'pushNoteToTimeline');
+  it('does not fail renote creation when event publication fails', async () => {
+    const error = new Error('event transport unavailable');
+    eventPublisher.publishMany.mockResolvedValueOnce(Result.err(error));
 
-    const testService = new RenoteService({
-      noteRepository: repository,
-      idGenerator: new SnowflakeIDGenerator(0, {
-        now: () => BigInt(new Date('2023-10-10T00:00:00Z').getTime()),
-      }),
-      noteAttachmentRepository: attachmentRepository,
-      accountModule: dummyAccountModuleFacade,
-      timelineModule,
-      clock: new MockClock(new Date('2023-09-10T00:00:00Z')),
-      eventPublisher,
-    });
-
-    const renote = await testService.handle(
+    const result = await service.handle(
       '2' as NoteID,
       '',
       '',
@@ -117,8 +102,7 @@ describe('RenoteService', () => {
       'PUBLIC',
     );
 
-    expect(Result.isOk(renote)).toBe(true);
-    expect(pushSpy).toHaveBeenCalledWith(Result.unwrap(renote));
+    expect(Result.isOk(result)).toBe(true);
   });
 
   it('should create quote when content is provided', async () => {
@@ -374,9 +358,6 @@ describe('RenoteService', () => {
       }),
       noteAttachmentRepository: attachmentRepository,
       accountModule: dummyAccountModuleFacade,
-      timelineModule: dummyTimelineModuleFacade(
-        new InMemoryTimelineCacheRepository(),
-      ),
       clock: new MockClock(new Date('2023-09-10T00:00:00Z')),
       eventPublisher,
     });

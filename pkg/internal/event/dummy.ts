@@ -1,7 +1,7 @@
-import { Ether, Result } from '@mikuroxina/mini-fn';
+import { Result } from '@mikuroxina/mini-fn';
 
 import { eventModuleLogger } from './adaptor/logger.ts';
-import { type EventPublisher, eventPublisherSymbol } from './publisher.ts';
+import type { EventPublisher } from './publisher.ts';
 import type { AnyDomainEvent } from './type.ts';
 
 /**
@@ -28,10 +28,3 @@ export class DummyEventPublisher implements EventPublisher {
     return Result.ok(undefined);
   }
 }
-
-export const eventPublisher = new DummyEventPublisher();
-
-export const eventPublisherEther = Ether.newEther(
-  eventPublisherSymbol,
-  () => eventPublisher,
-);

@@ -7,10 +7,6 @@ import {
   accountModuleFacadeSymbol,
 } from '../../intermodule/account.ts';
 import {
-  type TimelineModuleFacade,
-  timelineModuleFacadeSymbol,
-} from '../../intermodule/timeline.ts';
-import {
   type EventPublisher,
   eventPublisherSymbol,
 } from '../../internal/event/mod.ts';
@@ -36,12 +32,13 @@ import {
 import { fetchActor } from './fetchActor.ts';
 
 export class RenoteService {
+  #subscribers: Array<(note: Note) => Promise<void>> = [];
+
   readonly #deps: {
     noteRepository: NoteRepository;
     idGenerator: SnowflakeIDGenerator;
     noteAttachmentRepository: NoteAttachmentRepository;
     accountModule: AccountModuleFacade;
-    timelineModule: TimelineModuleFacade;
     clock: Clock;
     eventPublisher: EventPublisher;
   };
@@ -50,7 +47,6 @@ export class RenoteService {
     idGenerator: SnowflakeIDGenerator;
     noteAttachmentRepository: NoteAttachmentRepository;
     accountModule: AccountModuleFacade;
-    timelineModule: TimelineModuleFacade;
     clock: Clock;
     eventPublisher: EventPublisher;
   }) {
@@ -127,12 +123,20 @@ export class RenoteService {
     const renote = Result.unwrap(res);
 
     await this.#deps.eventPublisher.publishMany(renote.pullEvents());
-
-    // ToDo: Even if the note cannot be pushed to the timeline, the note is created successfully, so there is no error here.
-    // ToDo: use job queue to push note to timeline
-    await this.#deps.timelineModule.pushNoteToTimeline(renote);
+    await this.notifyToSubscribers(renote);
 
     return Result.ok(renote);
+  }
+
+  /** Subscribe to persisted notes for development-only repository syncing. */
+  subscribeNoteCreated(callback: (note: Note) => Promise<void>): void {
+    this.#subscribers.push(callback);
+  }
+
+  private async notifyToSubscribers(note: Note): Promise<void> {
+    await Promise.allSettled(
+      this.#subscribers.map((subscriber) => subscriber(note)),
+    );
   }
 
   private async resolveOriginalNote(
@@ -187,7 +191,6 @@ export const renote = Ether.newEther(
     idGenerator: snowflakeIDGeneratorSymbol,
     noteAttachmentRepository: noteAttachmentRepoSymbol,
     accountModule: accountModuleFacadeSymbol,
-    timelineModule: timelineModuleFacadeSymbol,
     clock: clockSymbol,
     eventPublisher: eventPublisherSymbol,
   },

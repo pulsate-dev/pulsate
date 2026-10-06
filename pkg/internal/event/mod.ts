@@ -1,9 +1,13 @@
+export { DummyEventPublisher } from './dummy.ts';
+export { type EventPublisher, eventPublisherSymbol } from './publisher.ts';
 export {
-  DummyEventPublisher,
+  configureEventPublisher,
   eventPublisher,
   eventPublisherEther,
-} from './dummy.ts';
-export { type EventPublisher, eventPublisherSymbol } from './publisher.ts';
+  eventSubscriber,
+  localEventTransport,
+  resetEventPublisher,
+} from './runtime.ts';
 export type {
   EventHandler,
   EventSubscriber,

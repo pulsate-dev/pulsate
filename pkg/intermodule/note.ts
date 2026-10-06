@@ -1,4 +1,4 @@
-import { Ether, type Result } from '@mikuroxina/mini-fn';
+import { Ether, Option, Result } from '@mikuroxina/mini-fn';
 import type { AccountID } from '../accounts/model/account.ts';
 import type { Medium } from '../drive/model/medium.ts';
 import {
@@ -8,8 +8,10 @@ import {
   noteFetchServiceInstance,
   noteIdGeneratorEther,
   noteReactionRepoEther,
+  noteRenoteServiceInstance,
   noteRepoEther,
 } from '../notes/mod.ts';
+import { NoteNotFoundError } from '../notes/model/errors.ts';
 import type { Note, NoteID } from '../notes/model/note.ts';
 import type { Reaction } from '../notes/model/reaction.ts';
 import type { RenoteStatus } from '../notes/model/renoteStatus.ts';
@@ -17,12 +19,25 @@ import type { RenoteStatus } from '../notes/model/renoteStatus.ts';
 export class NoteModuleFacade {
   readonly #fetchService: typeof noteFetchServiceInstance;
   readonly #createNoteService: typeof noteCreateServiceInstance;
+  readonly #renoteService: typeof noteRenoteServiceInstance;
   constructor(
     fetchService: typeof noteFetchServiceInstance,
     createNoteService: typeof noteCreateServiceInstance,
+    renoteService: typeof noteRenoteServiceInstance,
   ) {
     this.#fetchService = fetchService;
     this.#createNoteService = createNoteService;
+    this.#renoteService = renoteService;
+  }
+
+  async fetchNoteByID(noteID: NoteID): Promise<Result.Result<Error, Note>> {
+    const note = await this.#fetchService.fetchNoteByID(noteID);
+    if (Option.isNone(note)) {
+      return Result.err(
+        new NoteNotFoundError('Note not found', { cause: null }),
+      );
+    }
+    return Result.ok(Option.unwrap(note));
   }
 
   /**
@@ -64,6 +79,7 @@ export class NoteModuleFacade {
 
   subscribeNoteCreation(callback: (note: Note) => Promise<void>): void {
     this.#createNoteService.subscribeNoteCreated(callback);
+    this.#renoteService.subscribeNoteCreated(callback);
   }
 }
 
@@ -75,6 +91,7 @@ export {
   noteFetchServiceInstance,
   noteIdGeneratorEther,
   noteReactionRepoEther,
+  noteRenoteServiceInstance,
   noteRepoEther,
 };
 
@@ -87,6 +104,7 @@ export const noteModuleFacadeSymbol = Ether.newEtherSymbol<NoteModuleFacade>();
 export const noteModule = new NoteModuleFacade(
   noteFetchServiceInstance,
   noteCreateServiceInstance,
+  noteRenoteServiceInstance,
 );
 
 /**

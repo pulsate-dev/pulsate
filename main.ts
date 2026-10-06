@@ -1,17 +1,28 @@
 import { serve } from '@hono/node-server';
+import { Result } from '@mikuroxina/mini-fn';
 import { Scalar } from '@scalar/hono-api-reference';
 import { Hono } from 'hono';
 import { cors } from 'hono/cors';
+import { Logger } from 'tslog';
 
 import { accounts } from './pkg/accounts/mod.ts';
-import { drive } from './pkg/drive/mod.ts';
-import { noteHandlers } from './pkg/notes/mod.ts';
-import { timeline } from './pkg/timeline/mod.ts';
-import { Logger } from 'tslog';
+import {
+  closeNatsClient,
+  connectNats,
+  ensureNatsStream,
+  natsStreamName,
+} from './pkg/adaptors/nats.ts';
 import { isProduction } from './pkg/adaptors/env.ts';
 import { prismaClient } from './pkg/adaptors/prisma.ts';
 import { closeValkeyClients } from './pkg/adaptors/valkey.ts';
+import { drive } from './pkg/drive/mod.ts';
+import { configureEventPublisher, eventSubscriber } from './pkg/internal/event/mod.ts';
+import { NatsEventPublisher } from './pkg/internal/event/adaptor/nats/publisher.ts';
+import { NatsEventSubscriber } from './pkg/internal/event/adaptor/nats/subscriber.ts';
+import type { EventSubscriber, EventSubscription } from './pkg/internal/event/mod.ts';
+import { noteHandlers } from './pkg/notes/mod.ts';
 import { notification } from './pkg/notification/mod.ts';
+import { startTimelineEventSubscriptions, timeline } from './pkg/timeline/mod.ts';
 
 const coreLogger = new Logger({
   name: "Pulsate",
@@ -94,24 +105,77 @@ app.get(
   }),
 );
 
-const server = serve({ fetch: app.fetch, port: 3000 }, (addr) => {
-  coreLogger.info("Pulsate v0.1");
+async function startEventSubscriptions(): Promise<EventSubscription> {
+  let subscriber: EventSubscriber = eventSubscriber;
+
   if (isProduction) {
-    coreLogger.info("Production mode");
-  } else {
-    coreLogger.info("Development mode");
+    const clientResult = await connectNats();
+    if (Result.isErr(clientResult)) {
+      coreLogger.error('Failed to connect to NATS', Result.unwrapErr(clientResult));
+      process.exit(1);
+    }
+    const client = Result.unwrap(clientResult);
+
+    const streamResult = await ensureNatsStream(client);
+    if (Result.isErr(streamResult)) {
+      coreLogger.error(
+        'Failed to ensure the NATS event stream',
+        Result.unwrapErr(streamResult),
+      );
+      await closeNatsClient();
+      process.exit(1);
+    }
+
+    configureEventPublisher(new NatsEventPublisher(client));
+    subscriber = new NatsEventSubscriber(client, natsStreamName);
   }
 
-  coreLogger.info(`Server started at ${addr.address}:${addr.port} ${addr.family}`);
-});
+  const subscriptionResult = await startTimelineEventSubscriptions(subscriber);
+  if (Result.isErr(subscriptionResult)) {
+    coreLogger.error(
+      'Failed to start timeline event subscriptions',
+      Result.unwrapErr(subscriptionResult),
+    );
+    await closeNatsClient();
+    process.exit(1);
+  }
+  return Result.unwrap(subscriptionResult);
+}
 
-const shutdown = () => {
-  coreLogger.info('Shutting down gracefully...');
-  server.close(async () => {
-    await Promise.all([prismaClient.$disconnect(), closeValkeyClients()]);
-    process.exit(0);
+async function main() {
+  const subscription = await startEventSubscriptions();
+  const server = serve({ fetch: app.fetch, port: 3000 }, (addr) => {
+    coreLogger.info('Pulsate v0.1');
+    coreLogger.info(isProduction ? 'Production mode' : 'Development mode');
+    coreLogger.info(
+      `Server started at ${addr.address}:${addr.port} ${addr.family}`,
+    );
   });
-};
 
-process.on('SIGTERM', shutdown);
-process.on('SIGINT', shutdown);
+  const shutdown = () => {
+    coreLogger.info('Shutting down gracefully...');
+    server.close(async () => {
+      const subscriptionResult = await subscription.stop();
+      if (Result.isErr(subscriptionResult)) {
+        coreLogger.error(
+          'Failed to stop timeline event subscriptions',
+          Result.unwrapErr(subscriptionResult),
+        );
+      }
+      const [, , natsResult] = await Promise.all([
+        prismaClient.$disconnect(),
+        closeValkeyClients(),
+        closeNatsClient(),
+      ]);
+      if (Result.isErr(natsResult)) {
+        coreLogger.error('Failed to close NATS connection', Result.unwrapErr(natsResult));
+      }
+      process.exit(0);
+    });
+  };
+
+  process.on('SIGTERM', shutdown);
+  process.on('SIGINT', shutdown);
+}
+
+await main();

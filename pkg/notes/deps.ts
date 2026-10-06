@@ -8,7 +8,6 @@ import {
   accountModuleFacadeSymbol,
   dummyAccountModuleFacade,
 } from '../intermodule/account.ts';
-import { timelineModuleFacadeEther } from '../intermodule/timeline.ts';
 import { eventPublisherEther } from '../internal/event/mod.ts';
 import { clockSymbol, snowflakeIDGenerator } from '../internal/id/mod.ts';
 import { BookmarkController } from './adaptor/controller/bookmark.ts';
@@ -79,7 +78,6 @@ export const noteCreateServiceInstance = Ether.runEther(
     .feed(Ether.compose(noteIdGeneratorEther))
     .feed(Ether.compose(noteAttachmentRepoEther))
     .feed(Ether.compose(accountModuleFacade))
-    .feed(Ether.compose(timelineModuleFacadeEther))
     .feed(Ether.compose(eventPublisherEther)).value,
 );
 
@@ -87,21 +85,20 @@ const bookmarkRepository = isProduction
   ? prismaBookmarkRepo(prismaClient)
   : inMemoryBookmarkRepo([]);
 
-const renoteServiceObj = Ether.runEther(
+export const noteRenoteServiceInstance = Ether.runEther(
   Cat.cat(renote)
     .feed(Ether.compose(noteClockEther))
     .feed(Ether.compose(noteRepoEther))
     .feed(Ether.compose(noteIdGeneratorEther))
     .feed(Ether.compose(noteAttachmentRepoEther))
     .feed(Ether.compose(accountModuleEther))
-    .feed(Ether.compose(timelineModuleFacadeEther))
     .feed(Ether.compose(eventPublisherEther)).value,
 );
 
 export const noteController = new NoteController(
   noteCreateServiceInstance,
   noteFetchServiceInstance,
-  renoteServiceObj,
+  noteRenoteServiceInstance,
   isProduction ? accountModule : dummyAccountModuleFacade,
 );
 
