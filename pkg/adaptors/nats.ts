@@ -46,20 +46,27 @@ function subjectPatternMatches(pattern: string, subject: string): boolean {
   const patternParts = pattern.split('.');
   const subjectParts = subject.split('.');
 
-  for (let index = 0; index < patternParts.length; index += 1) {
-    const part = patternParts[index];
-    if (part === '>') {
-      return index < subjectParts.length;
+  const matchesParts = (
+    patternIndex: number,
+    subjectIndex: number,
+  ): boolean => {
+    if (patternIndex === patternParts.length) {
+      return subjectIndex === subjectParts.length;
     }
-    if (
-      index >= subjectParts.length ||
-      (part !== '*' && part !== subjectParts[index])
-    ) {
-      return false;
-    }
-  }
 
-  return patternParts.length === subjectParts.length;
+    const part = patternParts[patternIndex];
+    if (part === '>') {
+      return subjectIndex < subjectParts.length;
+    }
+
+    return (
+      subjectIndex < subjectParts.length &&
+      (part === '*' || part === subjectParts[subjectIndex]) &&
+      matchesParts(patternIndex + 1, subjectIndex + 1)
+    );
+  };
+
+  return matchesParts(0, 0);
 }
 
 /** Creates the shared JetStream stream if it does not exist yet. */

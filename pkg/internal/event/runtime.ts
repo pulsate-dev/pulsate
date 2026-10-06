@@ -1,5 +1,6 @@
 import { Ether } from '@mikuroxina/mini-fn';
-import { InMemoryEventTransport } from './local.ts';
+
+import { InMemoryEventBus } from './inmemory.ts';
 import type { EventPublisher } from './publisher.ts';
 import { eventPublisherSymbol } from './publisher.ts';
 
@@ -19,11 +20,9 @@ class ConfigurableEventPublisher implements EventPublisher {
   }
 }
 
-export const localEventTransport = new InMemoryEventTransport();
-export const eventPublisher = new ConfigurableEventPublisher(
-  localEventTransport,
-);
-export const eventSubscriber = localEventTransport;
+const inMemoryEventBus = new InMemoryEventBus();
+export const eventPublisher = new ConfigurableEventPublisher(inMemoryEventBus);
+export const eventSubscriber = inMemoryEventBus;
 
 export const eventPublisherEther = Ether.newEther(
   eventPublisherSymbol,
@@ -33,9 +32,4 @@ export const eventPublisherEther = Ether.newEther(
 /** Replaces the in-process publisher with the configured application transport. */
 export function configureEventPublisher(publisher: EventPublisher): void {
   eventPublisher.setPublisher(publisher);
-}
-
-/** Resets the publisher to the in-process transport, primarily for tests. */
-export function resetEventPublisher(): void {
-  eventPublisher.setPublisher(localEventTransport);
 }

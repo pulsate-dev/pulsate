@@ -105,30 +105,32 @@ app.get(
   }),
 );
 
-async function startEventSubscriptions(): Promise<EventSubscription> {
-  let subscriber: EventSubscriber = eventSubscriber;
-
-  if (isProduction) {
-    const clientResult = await connectNats();
-    if (Result.isErr(clientResult)) {
-      coreLogger.error('Failed to connect to NATS', Result.unwrapErr(clientResult));
-      process.exit(1);
-    }
-    const client = Result.unwrap(clientResult);
-
-    const streamResult = await ensureNatsStream(client);
-    if (Result.isErr(streamResult)) {
-      coreLogger.error(
-        'Failed to ensure the NATS event stream',
-        Result.unwrapErr(streamResult),
-      );
-      await closeNatsClient();
-      process.exit(1);
-    }
-
-    configureEventPublisher(new NatsEventPublisher(client));
-    subscriber = new NatsEventSubscriber(client, natsStreamName);
+async function connectProductionEventSubscriber(): Promise<EventSubscriber> {
+  const clientResult = await connectNats();
+  if (Result.isErr(clientResult)) {
+    coreLogger.error('Failed to connect to NATS', Result.unwrapErr(clientResult));
+    process.exit(1);
   }
+  const client = Result.unwrap(clientResult);
+
+  const streamResult = await ensureNatsStream(client);
+  if (Result.isErr(streamResult)) {
+    coreLogger.error(
+      'Failed to ensure the NATS event stream',
+      Result.unwrapErr(streamResult),
+    );
+    await closeNatsClient();
+    process.exit(1);
+  }
+
+  configureEventPublisher(new NatsEventPublisher(client));
+  return new NatsEventSubscriber(client, natsStreamName);
+}
+
+async function startEventSubscriptions(): Promise<EventSubscription> {
+  const subscriber = isProduction
+    ? await connectProductionEventSubscriber()
+    : eventSubscriber;
 
   const subscriptionResult = await startTimelineEventSubscriptions(subscriber);
   if (Result.isErr(subscriptionResult)) {

@@ -9,8 +9,8 @@ import type {
 } from './subscriber.ts';
 import type { AnyDomainEvent } from './type.ts';
 
-/** In-process event transport for development and tests. */
-export class InMemoryEventTransport implements EventPublisher, EventSubscriber {
+/** In-process event bus for development and tests. */
+export class InMemoryEventBus implements EventPublisher, EventSubscriber {
   readonly #subscriptions = new Map<string, EventSubscriptionOptions>();
 
   async publishMany(
@@ -30,14 +30,13 @@ export class InMemoryEventTransport implements EventPublisher, EventSubscriber {
           continue;
         }
 
-        let valid = false;
         try {
-          valid = options.validatePayload(event);
+          if (!options.validatePayload(event)) {
+            continue;
+          }
         } catch {
           // Invalid events are ignored just like messages rejected by the NATS
           // codec. The event payload is intentionally not logged.
-        }
-        if (!valid) {
           continue;
         }
 

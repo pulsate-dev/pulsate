@@ -5,8 +5,6 @@ export {
   eventPublisher,
   eventPublisherEther,
   eventSubscriber,
-  localEventTransport,
-  resetEventPublisher,
 } from './runtime.ts';
 export type {
   EventHandler,
