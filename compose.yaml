@@ -10,8 +10,11 @@ services:
       - SMTP_HOST=mailpit
       - SMTP_PORT=1025
       - SMTP_FROM=noreply@pulsate.test
+      - NATS_URL=nats:4222
     ports:
       - "3000:3000"
+    depends_on:
+      - nats
   db:
     image: postgres:18
     container_name: db
@@ -29,6 +32,14 @@ services:
       - "6379:6379"
     volumes:
       - kv_data:/data
+  nats:
+    image: nats:2-alpine
+    container_name: nats
+    command: ["-js", "-sd", "/data"]
+    ports:
+      - "4222:4222"
+    volumes:
+      - nats_data:/data
   # Development-only mail catcher. Not started by a plain `docker compose up`;
   # use `docker compose --profile dev up` so it never runs in production.
   mailpit:
@@ -44,3 +55,4 @@ services:
 volumes:
   db_data:
   kv_data:
+  nats_data:

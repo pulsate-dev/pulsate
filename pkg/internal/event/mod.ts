@@ -1,9 +1,10 @@
+export { type EventPublisher, eventPublisherSymbol } from './publisher.ts';
 export {
-  DummyEventPublisher,
+  configureEventPublisher,
   eventPublisher,
   eventPublisherEther,
-} from './dummy.ts';
-export { type EventPublisher, eventPublisherSymbol } from './publisher.ts';
+  eventSubscriber,
+} from './runtime.ts';
 export type {
   EventHandler,
   EventSubscriber,

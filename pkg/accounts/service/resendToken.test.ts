@@ -1,7 +1,7 @@
-import { Option } from '@mikuroxina/mini-fn';
-import { afterEach, describe, expect, it } from 'vitest';
+import { Option, Result } from '@mikuroxina/mini-fn';
+import { afterEach, describe, expect, it, vi } from 'vitest';
 import { notificationModule } from '../../intermodule/notification.ts';
-import { DummyEventPublisher } from '../../internal/event/mod.ts';
+import type { EventPublisher } from '../../internal/event/mod.ts';
 import { MockClock } from '../../internal/id/mod.ts';
 import { InMemoryAccountRepository } from '../adaptor/repository/dummy/account.ts';
 import { InMemoryInactiveAccountRepository } from '../adaptor/repository/dummy/inactiveAccount.ts';
@@ -26,13 +26,18 @@ await inactiveAccountRepository.create(
 const verifyRepository = new InMemoryAccountVerifyTokenRepository();
 const accountRepository = new InMemoryAccountRepository();
 const mockClock = new MockClock(new Date('2023-09-10T00:00:00Z'));
+const eventPublisher = {
+  publishMany: vi.fn<EventPublisher['publishMany']>(async () =>
+    Result.ok(undefined),
+  ),
+};
 
 const verifyAccountTokenService = new VerifyAccountTokenService(
   verifyRepository,
   inactiveAccountRepository,
   accountRepository,
   mockClock,
-  new DummyEventPublisher(),
+  eventPublisher,
 );
 
 describe('ResendVerifyTokenService', () => {
