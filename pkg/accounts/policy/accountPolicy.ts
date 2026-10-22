@@ -3,7 +3,7 @@ import type {
   Policy,
   PolicyArgs,
   PolicyAuthorizedActionFunc,
-} from '../../internal/policy/policy.ts';
+} from '../../internal/policy/legacyPolicy.ts';
 import { accountModuleLogger } from '../adaptor/logger.ts';
 import { AccountAlreadyFrozenError } from '../model/account.errors.ts';
 import type { Account } from '../model/account.ts';
