@@ -40,7 +40,7 @@ export interface Policy<
   Resource,
   Authorized = void,
   PolicyError extends Error = Error,
-  Context extends object = Record<string, never>,
+  Context extends Record<string, unknown> = Record<string, never>,
 > {
   readonly authorize: (
     actor: Actor,
