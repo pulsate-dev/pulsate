@@ -11,6 +11,11 @@ export class PolicyAction<PolicyName extends string> {
     modelName: string,
     actionName: string,
   ) {
+    for (const name of [policyName, modelName, actionName]) {
+      if (/[.:]/.test(name)) {
+        throw new Error('Policy action names must not contain "." or ":"');
+      }
+    }
     this.#policyName = policyName;
     this.#modelName = modelName;
     this.#actionName = actionName;
@@ -24,7 +29,7 @@ export class PolicyAction<PolicyName extends string> {
     );
   }
 
-  toString(): string {
+  toString(): `${PolicyName}.${string}:${string}` {
     return `${this.#policyName}.${this.#modelName}:${this.#actionName}`;
   }
 }

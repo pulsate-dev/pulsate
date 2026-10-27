@@ -36,4 +36,17 @@ describe('PolicyAction', () => {
 
     expect(action.toString()).toBe('Notes.Note:read');
   });
+
+  it.each([
+    ['Notes.Invalid', 'Note', 'read'],
+    ['Notes:Invalid', 'Note', 'read'],
+    ['Notes', 'Note.Invalid', 'read'],
+    ['Notes', 'Note:Invalid', 'read'],
+    ['Notes', 'Note', 'read.invalid'],
+    ['Notes', 'Note', 'read:invalid'],
+  ])('rejects delimiters in action names: %s, %s, %s', (...names) => {
+    expect(() => new TestAction(...names)).toThrow(
+      'Policy action names must not contain "." or ":"',
+    );
+  });
 });
