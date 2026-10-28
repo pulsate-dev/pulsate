@@ -81,7 +81,7 @@ export class FetchService {
 
   async fetchRenoteStatus(
     accountID: AccountID,
-    noteIDs: NoteID[],
+    noteIDs: readonly NoteID[],
   ): Promise<RenoteStatus[]> {
     return await this.#noteRepository.fetchRenoteStatus(accountID, noteIDs);
   }
