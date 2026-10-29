@@ -204,14 +204,14 @@ export class PrismaNoteRepository implements NoteRepository {
 
   async fetchRenoteStatus(
     accountId: AccountID,
-    noteIDs: NoteID[],
+    noteIDs: readonly NoteID[],
   ): Promise<RenoteStatus[]> {
     try {
       const renotes = await this.#client.note.findMany({
         where: {
           authorId: accountId,
           renoteId: {
-            in: noteIDs,
+            in: noteIDs as NoteID[],
           },
           deletedAt: null,
         },

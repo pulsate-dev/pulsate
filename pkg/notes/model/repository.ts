@@ -27,7 +27,7 @@ export interface NoteRepository {
   deleteByID(id: NoteID): Promise<Result.Result<Error, void>>;
   fetchRenoteStatus(
     accountId: AccountID,
-    noteIDs: NoteID[],
+    noteIDs: readonly NoteID[],
   ): Promise<RenoteStatus[]>;
 }
 export const noteRepoSymbol = Ether.newEtherSymbol<NoteRepository>();

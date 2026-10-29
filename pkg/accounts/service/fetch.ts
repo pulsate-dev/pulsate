@@ -35,7 +35,7 @@ export class FetchService {
   }
 
   async fetchManyAccountsByID(
-    id: AccountID[],
+    id: readonly AccountID[],
   ): Promise<Result.Result<Error, Account[]>> {
     return await this.#accountRepository.findManyByID(id);
   }

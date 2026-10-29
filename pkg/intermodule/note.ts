@@ -70,7 +70,7 @@ export class NoteModuleFacade {
    */
   async fetchRenoteStatus(
     accountID: AccountID,
-    noteIDs: NoteID[],
+    noteIDs: readonly NoteID[],
   ): Promise<RenoteStatus[]> {
     return await this.#fetchService.fetchRenoteStatus(accountID, noteIDs);
   }

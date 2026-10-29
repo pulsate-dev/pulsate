@@ -82,7 +82,7 @@ export class InMemoryNoteRepository implements NoteRepository {
 
   async fetchRenoteStatus(
     accountId: AccountID,
-    noteIDs: NoteID[],
+    noteIDs: readonly NoteID[],
   ): Promise<RenoteStatus[]> {
     return noteIDs.map((noteID) => {
       return RenoteStatus.new(

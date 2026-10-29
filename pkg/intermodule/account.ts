@@ -65,7 +65,7 @@ export class AccountModuleFacade {
   }
 
   async fetchAccounts(
-    id: AccountID[],
+    id: readonly AccountID[],
   ): Promise<Result.Result<Error, Account[]>> {
     return await this.#fetchService.fetchManyAccountsByID(id);
   }
