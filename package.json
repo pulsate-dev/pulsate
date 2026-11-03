@@ -38,7 +38,7 @@
     "@nats-io/transport-node": "^3.4.0",
     "@prisma/adapter-pg": "7.10.1",
     "@prisma/client": "7.10.1",
-    "@scalar/hono-api-reference": "0.12.14",
+    "@scalar/hono-api-reference": "0.12.17",
     "@upyo/core": "0.6.0",
     "@upyo/smtp": "0.6.0",
     "argon2": "0.45.1",
