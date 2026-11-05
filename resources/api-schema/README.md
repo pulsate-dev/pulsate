@@ -30,7 +30,8 @@ import schema from '@pulsate-dev/api-schema/schema.json' with { type: 'json' };
 This package is published automatically by
 [`.github/workflows/publish-api-schema.yaml`](../../.github/workflows/publish-api-schema.yaml)
 to the public npm registry. The schema is regenerated on every pull request
-and published only when it differs from the latest published version.
+to verify it builds, and published after merge to `main` (or by a manual run on
+`main`) only when it differs from the latest published version.
 Changes are never committed back to the repository.
 
 Publishing uses npm's

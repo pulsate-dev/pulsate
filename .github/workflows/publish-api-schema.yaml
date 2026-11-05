@@ -1,6 +1,8 @@
 name: Publish API Schema
 
 on:
+  push:
+    branches: [main]
   pull_request:
   workflow_dispatch:
 
@@ -9,18 +11,46 @@ on:
 concurrency:
   group: publish-api-schema
 
-# NOTE: id-token/attestations are required for npm Trusted Publishing and
-# provenance. GitHub only grants these to same-repo pull_request runs; forked
-# PRs are downgraded to read-only regardless of this block, so this workflow
-# cannot publish from an untrusted fork.
+# Pull-request runs must not hold id-token/attestations: an unreviewed branch
+# would otherwise be able to publish to npm through Trusted Publishing.
+# Only the `publish` job below gets them, and only for runs on `main`.
 permissions:
   contents: read
-  id-token: write
-  attestations: write
 
 jobs:
-  publish:
+  check:
+    if: github.event_name == 'pull_request'
     runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@ea17c68df8912ef543352723c149a84f56e3d413 # v6.1.0
+
+      - name: Setup Node.js
+        uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version-file: '.tool-versions'
+          cache: 'pnpm'
+
+      - name: Run install
+        run: pnpm i --frozen-lockfile
+
+      - name: Generate API schema
+        run: pnpm run build:api
+
+      - name: Check for schema changes
+        id: diff
+        run: node scripts/checkApiSchemaChanged.ts
+
+  publish:
+    if: github.event_name != 'pull_request' && github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      id-token: write
+      attestations: write
     steps:
       - name: Checkout
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
