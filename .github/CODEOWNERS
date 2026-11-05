@@ -1,0 +1,6 @@
+# Only privileged files are listed on purpose: owning `*` would route every
+# ordinary code review to the core team instead of the maintainers.
+/.github/CODEOWNERS                           @pulsate-dev/core
+/.github/renovate.json                        @pulsate-dev/core
+/.github/workflows/docker-publish.yaml        @pulsate-dev/core
+/.github/workflows/publish-api-schema.yaml    @pulsate-dev/core
