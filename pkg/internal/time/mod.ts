@@ -8,7 +8,31 @@ export type PulsateTime = number & {
 };
 
 export function addSecondsToDate(date: Date, seconds: number): Date {
-  return new Date(date.getTime() + seconds * 1000);
+  return addDuration(date, { seconds });
+}
+
+export interface Duration {
+  days?: number;
+  hours?: number;
+  minutes?: number;
+  seconds?: number;
+  milliseconds?: number;
+}
+
+/**
+ * @returns a new Date shifted from `date` by `duration` (negative values shift it backward)
+ */
+export function addDuration(date: Date, duration: Duration): Date {
+  const {
+    days = 0,
+    hours = 0,
+    minutes = 0,
+    seconds = 0,
+    milliseconds = 0,
+  } = duration;
+  const totalMilliseconds =
+    (((days * 24 + hours) * 60 + minutes) * 60 + seconds) * 1000 + milliseconds;
+  return new Date(date.getTime() + totalMilliseconds);
 }
 
 export function convertTo(date: Date): PulsateTime {
