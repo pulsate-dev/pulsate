@@ -82,6 +82,16 @@ describe('FreezeService', () => {
       expect(account.isFrozen()).toBe(false);
     });
 
+    it('cannot unFreeze self', async () => {
+      const result = await freezeService.undoFreeze(
+        '@alice@example.com',
+        '@alice@example.com',
+      );
+
+      expect(Result.isErr(result)).toBe(true);
+      expect(result[1]).toStrictEqual(new Error('not allowed'));
+    });
+
     it('cannot freeze/unFreeze if actor is not admin or moderator', async () => {
       const result = await freezeService.setFreeze(
         '@john@example.com',
