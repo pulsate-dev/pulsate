@@ -12,7 +12,8 @@ import {
 import type { EventPublisher } from '../../internal/event/mod.ts';
 import { Argon2idPasswordEncoder } from '../../internal/password/mod.ts';
 import { InMemoryAccountRepository } from '../adaptor/repository/dummy/account.ts';
-import { Account, type AccountID } from '../model/account.ts';
+import type { Account } from '../model/account.ts';
+import { generateDummyAccount } from '../testData/testData.ts';
 import { EditService } from './edit.ts';
 
 const passwordEncoder = new Argon2idPasswordEncoder();
@@ -31,19 +32,7 @@ describe('EditService', () => {
 
   beforeEach(async () => {
     await repository.create(
-      Account.reconstruct({
-        id: '1' as AccountID,
-        name: '@john@example.com',
-        mail: 'johndoe@example.com',
-        nickname: 'John Doe',
-        passphraseHash: 'hash',
-        bio: '',
-        role: 'normal',
-        frozen: 'normal',
-        silenced: 'normal',
-        status: 'active',
-        createdAt: new Date(),
-      }),
+      generateDummyAccount({ name: '@john@example.com' }),
     );
     const res = await repository.findByName('@john@example.com');
     if (Option.isNone(res)) return;
@@ -279,44 +268,16 @@ describe('EditService', () => {
   });
 
   describe('access controll', async () => {
-    const testNormalAccount = Account.reconstruct({
-      id: '2' as AccountID,
+    const testNormalAccount = generateDummyAccount({
       name: '@alice@example.com',
-      mail: 'alice@example.com',
-      nickname: 'Alice',
-      passphraseHash: 'hash',
-      bio: '',
-      role: 'normal',
-      frozen: 'normal',
-      silenced: 'normal',
-      status: 'active',
-      createdAt: new Date(),
     });
-    const testFrozenAccount = Account.reconstruct({
-      id: '3' as AccountID,
+    const testFrozenAccount = generateDummyAccount({
       name: '@bob@example.com',
-      mail: 'bob@example.com',
-      nickname: 'Bob',
-      passphraseHash: 'hash',
-      bio: '',
-      role: 'normal',
       frozen: 'frozen',
-      silenced: 'normal',
-      status: 'active',
-      createdAt: new Date(),
     });
-    const testNotAcvivatedAccount = Account.reconstruct({
-      id: '4' as AccountID,
+    const testNotAcvivatedAccount = generateDummyAccount({
       name: '@carol@example.com',
-      mail: 'carol@example.com',
-      nickname: 'Carol',
-      passphraseHash: 'hash',
-      bio: '',
-      role: 'normal',
-      frozen: 'normal',
-      silenced: 'normal',
       status: 'notActivated',
-      createdAt: new Date(),
     });
     beforeEach(async () => {
       repository.create(testNormalAccount);

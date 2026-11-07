@@ -3,7 +3,7 @@ import { describe, expect, it } from 'vitest';
 import { MockClock } from '../../internal/id/mod.ts';
 import { Argon2idPasswordEncoder } from '../../internal/password/mod.ts';
 import { InMemoryAccountRepository } from '../adaptor/repository/dummy/account.ts';
-import { Account, type AccountID } from '../model/account.ts';
+import { generateDummyAccount } from '../testData/testData.ts';
 import { AuthenticateService } from './authenticate.ts';
 import { AuthenticationTokenService } from './authenticationTokenService.ts';
 
@@ -16,21 +16,7 @@ describe('AuthenticateService', () => {
 
     const accountRepository = new InMemoryAccountRepository();
     await accountRepository.create(
-      Account.reconstruct({
-        id: '1' as AccountID,
-        name: '@test@example.com',
-        mail: 'test@example.com',
-        bio: '',
-        frozen: 'normal',
-        nickname: 'test',
-        passphraseHash: passphraseHash,
-        role: 'normal',
-        silenced: 'normal',
-        status: 'active',
-        createdAt: new Date(),
-        updatedAt: undefined,
-        deletedAt: undefined,
-      }),
+      generateDummyAccount({ mail: 'test@example.com', passphraseHash }),
     );
 
     const authenticationTokenService = await AuthenticationTokenService.new(

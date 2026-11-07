@@ -3,116 +3,69 @@ import { describe, expect, it } from 'vitest';
 
 import { InMemoryAccountRepository } from '../adaptor/repository/dummy/account.ts';
 import { InMemoryAccountFollowRepository } from '../adaptor/repository/dummy/follow.ts';
-import { Account, type AccountID } from '../model/account.ts';
-import { AccountFollow } from '../model/follow.ts';
+import {
+  generateDummyAccount,
+  generateDummyFollow,
+} from '../testData/testData.ts';
 import { FetchFollowService } from './fetchFollow.ts';
 
-const newFollow = (fromID: AccountID, targetID: AccountID, createdAt: Date) =>
-  Result.unwrap(AccountFollow.new({ fromID, targetID, createdAt }));
+const user = generateDummyAccount({ name: '@johndoe@example.com' });
+const other = generateDummyAccount({ name: '@testuser@example.com' });
+const accountRepository = new InMemoryAccountRepository([user, other]);
 
-const accountRepository = new InMemoryAccountRepository();
-
-await accountRepository.create(
-  Account.reconstruct({
-    id: '1' as AccountID,
-    name: '@johndoe@example.com',
-    bio: '',
-    mail: '',
-    nickname: '',
-    passphraseHash: undefined,
-    frozen: 'normal',
-    role: 'normal',
-    silenced: 'normal',
-    status: 'active',
-    createdAt: new Date(),
-    updatedAt: undefined,
-    deletedAt: undefined,
-  }),
-);
-
-await accountRepository.create(
-  Account.reconstruct({
-    id: '2' as AccountID,
-    name: '@testuser@example.com',
-    bio: '',
-    mail: '',
-    nickname: '',
-    passphraseHash: undefined,
-    frozen: 'normal',
-    role: 'normal',
-    silenced: 'normal',
-    status: 'active',
-    createdAt: new Date(),
-    updatedAt: undefined,
-    deletedAt: undefined,
-  }),
-);
-
-const createdAt = new Date();
+const following = generateDummyFollow({
+  fromID: user.getID(),
+  targetID: other.getID(),
+});
+const follower = generateDummyFollow({
+  fromID: other.getID(),
+  targetID: user.getID(),
+});
 const repository = new InMemoryAccountFollowRepository();
-
-await repository.follow(
-  newFollow('1' as AccountID, '2' as AccountID, createdAt),
-);
-
-await repository.follow(
-  newFollow('2' as AccountID, '1' as AccountID, createdAt),
-);
+await repository.follow(following);
+await repository.follow(follower);
 
 const service = new FetchFollowService(repository, accountRepository);
 
 describe('FetchFollowService', () => {
-  const USER = {
-    id: '1' as AccountID,
-    name: '@johndoe@example.com' as const,
-  };
-
   it('fetch followings by id', async () => {
-    const resFollows = await service.fetchFollowingsByID(USER.id);
+    const resFollows = await service.fetchFollowingsByID(user.getID());
     if (Result.isErr(resFollows)) {
       return;
     }
 
-    expect(resFollows[1]).toStrictEqual([
-      newFollow('1' as AccountID, '2' as AccountID, createdAt),
-    ]);
+    expect(resFollows[1]).toStrictEqual([following]);
   });
 
   it('fetch followings by name', async () => {
-    const resFollows = await service.fetchFollowingsByName(USER.name);
+    const resFollows = await service.fetchFollowingsByName(user.getName());
     if (Result.isErr(resFollows)) {
       return;
     }
 
-    expect(resFollows[1]).toStrictEqual([
-      newFollow('1' as AccountID, '2' as AccountID, createdAt),
-    ]);
+    expect(resFollows[1]).toStrictEqual([following]);
   });
 
   it('fetch followers by id', async () => {
-    const resFollows = await service.fetchFollowersByID(USER.id);
+    const resFollows = await service.fetchFollowersByID(user.getID());
     if (Result.isErr(resFollows)) {
       return;
     }
 
-    expect(resFollows[1]).toStrictEqual([
-      newFollow('2' as AccountID, '1' as AccountID, createdAt),
-    ]);
+    expect(resFollows[1]).toStrictEqual([follower]);
   });
 
   it('fetch followers by name', async () => {
-    const resFollows = await service.fetchFollowersByName(USER.name);
+    const resFollows = await service.fetchFollowersByName(user.getName());
     if (Result.isErr(resFollows)) {
       return;
     }
 
-    expect(resFollows[1]).toStrictEqual([
-      newFollow('2' as AccountID, '1' as AccountID, createdAt),
-    ]);
+    expect(resFollows[1]).toStrictEqual([follower]);
   });
 
   it('follow count', async () => {
-    const countRes = await service.fetchFollowCount('1' as AccountID);
+    const countRes = await service.fetchFollowCount(user.getID());
 
     expect(Result.unwrap(countRes)).toStrictEqual({
       followers: 1,

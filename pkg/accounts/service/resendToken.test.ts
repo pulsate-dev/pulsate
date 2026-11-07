@@ -2,11 +2,12 @@ import { Option, Result } from '@mikuroxina/mini-fn';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import { notificationModule } from '../../intermodule/notification.ts';
 import type { EventPublisher } from '../../internal/event/mod.ts';
+import { generateDummyID } from '../../internal/id/dummy.ts';
 import { MockClock } from '../../internal/id/mod.ts';
 import { InMemoryAccountRepository } from '../adaptor/repository/dummy/account.ts';
 import { InMemoryInactiveAccountRepository } from '../adaptor/repository/dummy/inactiveAccount.ts';
 import { InMemoryAccountVerifyTokenRepository } from '../adaptor/repository/dummy/verifyToken.ts';
-import type { AccountID } from '../model/account.ts';
+import type { Account } from '../model/account.ts';
 import { AccountNotFoundError } from '../model/errors.ts';
 import { InactiveAccount } from '../model/inactiveAccount.ts';
 import { ResendVerifyTokenService } from './resendToken.ts';
@@ -15,7 +16,7 @@ import { VerifyAccountTokenService } from './verifyToken.ts';
 const inactiveAccountRepository = new InMemoryInactiveAccountRepository();
 await inactiveAccountRepository.create(
   InactiveAccount.reconstruct({
-    id: '1' as AccountID,
+    id: generateDummyID<Account>(),
     name: '@john@example.com',
     mail: 'johndoe@example.com',
     passphraseHash: 'hash',
@@ -46,7 +47,7 @@ describe('ResendVerifyTokenService', () => {
   it('resend verify token', async () => {
     await inactiveAccountRepository.create(
       InactiveAccount.reconstruct({
-        id: '1' as AccountID,
+        id: generateDummyID<Account>(),
         name: '@john@example.com',
         mail: 'johndoe@example.com',
         passphraseHash: 'hash',

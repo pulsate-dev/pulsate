@@ -1,7 +1,8 @@
 import { Option, Result } from '@mikuroxina/mini-fn';
 import { describe, expect, it } from 'vitest';
 
-import type { AccountID } from './account.ts';
+import { generateDummyID } from '../../internal/id/dummy.ts';
+import type { Account } from './account.ts';
 import {
   type ActivateArgs,
   type CreateInactiveAccountArgs,
@@ -9,7 +10,7 @@ import {
 } from './inactiveAccount.ts';
 
 const exampleInput: CreateInactiveAccountArgs = {
-  id: '1' as AccountID,
+  id: generateDummyID<Account>(),
   name: '@johndoe@social.example.com',
   mail: 'test@mail.example.com',
   passphraseHash: 'leknflkwnrigohidvlk',

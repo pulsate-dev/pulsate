@@ -5,53 +5,20 @@ import type { EventPublisher } from '../../internal/event/mod.ts';
 import { MockClock } from '../../internal/id/mod.ts';
 import { InMemoryAccountRepository } from '../adaptor/repository/dummy/account.ts';
 import { InMemoryAccountFollowRepository } from '../adaptor/repository/dummy/follow.ts';
-import { Account, type AccountID } from '../model/account.ts';
-import { AccountFollow } from '../model/follow.ts';
+import {
+  generateDummyAccount,
+  generateDummyFollow,
+} from '../testData/testData.ts';
 import { UnfollowService } from './unfollow.ts';
 
-const accountRepository = new InMemoryAccountRepository();
-await accountRepository.create(
-  Account.reconstruct({
-    id: '1' as AccountID,
-    name: '@johndoe@example.com',
-    bio: '',
-    mail: '',
-    nickname: '',
-    passphraseHash: undefined,
-    frozen: 'normal',
-    role: 'normal',
-    silenced: 'normal',
-    status: 'active',
-    createdAt: new Date(),
-    updatedAt: undefined,
-    deletedAt: undefined,
-  }),
-);
-await accountRepository.create(
-  Account.reconstruct({
-    id: '2' as AccountID,
-    name: '@testuser@example.com',
-    bio: '',
-    mail: '',
-    nickname: '',
-    passphraseHash: undefined,
-    frozen: 'normal',
-    role: 'normal',
-    silenced: 'normal',
-    status: 'active',
-    createdAt: new Date(),
-    updatedAt: undefined,
-    deletedAt: undefined,
-  }),
-);
-const follow = Result.unwrap(
-  AccountFollow.new({
-    fromID: '1' as AccountID,
-    targetID: '2' as AccountID,
-    createdAt: new Date('2023-09-10T00:00:00Z'),
-  }),
-);
-follow.pullEvents();
+const follower = generateDummyAccount({ name: '@johndoe@example.com' });
+const target = generateDummyAccount({ name: '@testuser@example.com' });
+const accountRepository = new InMemoryAccountRepository([follower, target]);
+const follow = generateDummyFollow({
+  fromID: follower.getID(),
+  targetID: target.getID(),
+  createdAt: new Date('2023-09-10T00:00:00Z'),
+});
 const repository = new InMemoryAccountFollowRepository([follow]);
 const eventPublisher = {
   publishMany: vi.fn(async () => Result.ok(undefined)),

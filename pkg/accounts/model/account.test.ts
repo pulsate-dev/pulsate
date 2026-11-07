@@ -2,15 +2,15 @@ import { Option, Result } from '@mikuroxina/mini-fn';
 import * as v from 'valibot';
 import { describe, expect, it } from 'vitest';
 
+import { generateDummyID } from '../../internal/id/dummy.ts';
 import {
   Account,
-  type AccountID,
   accountNameSchema,
   type CreateAccountArgs,
 } from './account.ts';
 
 const exampleInput: CreateAccountArgs = {
-  id: '1' as AccountID,
+  id: generateDummyID<Account>(),
   bio: "this is john doe's account!",
   createdAt: new Date('2023-09-10T00:00:00.000Z'),
   mail: 'test@mail.example.com',

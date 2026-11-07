@@ -1,8 +1,9 @@
 import { describe, expect, it } from 'vitest';
-import type { AccountID } from './account.ts';
+import { generateDummyID } from '../../internal/id/dummy.ts';
+import type { Account } from './account.ts';
 import { VerifyToken } from './verifyToken.ts';
 
-const accountID = '1' as AccountID;
+const accountID = generateDummyID<Account>();
 const future = new Date('2099-01-01T00:00:00Z');
 const past = new Date('2000-01-01T00:00:00Z');
 

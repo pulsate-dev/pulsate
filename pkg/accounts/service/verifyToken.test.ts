@@ -8,16 +8,17 @@ import {
   vi,
 } from 'vitest';
 import type { EventPublisher } from '../../internal/event/mod.ts';
+import { generateDummyID } from '../../internal/id/dummy.ts';
 import { MockClock } from '../../internal/id/mod.ts';
 import { InMemoryAccountRepository } from '../adaptor/repository/dummy/account.ts';
 import { InMemoryInactiveAccountRepository } from '../adaptor/repository/dummy/inactiveAccount.ts';
 import { InMemoryAccountVerifyTokenRepository } from '../adaptor/repository/dummy/verifyToken.ts';
-import type { AccountID } from '../model/account.ts';
+import type { Account } from '../model/account.ts';
 import { InactiveAccount } from '../model/inactiveAccount.ts';
 import { VerifyAccountTokenService } from './verifyToken.ts';
 
 const testInactiveAccount = InactiveAccount.reconstruct({
-  id: '1' as AccountID,
+  id: generateDummyID<Account>(),
   name: '@johndoe@example.com',
   mail: 'johndoe@example.com',
   passphraseHash: 'hash',
@@ -52,9 +53,9 @@ describe('VerifyAccountTokenService', () => {
 
   it('generate/verify account verify token', async () => {
     const token = await service.generate('@johndoe@example.com');
-    expect(Option.isNone(await repository.findByID('1' as AccountID))).toBe(
-      false,
-    );
+    expect(
+      Option.isNone(await repository.findByID(testInactiveAccount.getID())),
+    ).toBe(false);
     const verify = await service.verify(
       '@johndoe@example.com',
       Result.unwrap(token),
@@ -62,9 +63,9 @@ describe('VerifyAccountTokenService', () => {
 
     expect(Result.isOk(token)).toBe(true);
     expect(Result.isOk(verify)).toBe(true);
-    expect(Option.isNone(await repository.findByID('1' as AccountID))).toBe(
-      true,
-    );
+    expect(
+      Option.isNone(await repository.findByID(testInactiveAccount.getID())),
+    ).toBe(true);
     expect(eventPublisher.publishMany).toHaveBeenCalledWith([
       expect.objectContaining({ eventName: 'account.activated' }),
     ]);
