@@ -1,10 +1,13 @@
 import { Option, Result } from '@mikuroxina/mini-fn';
 import { describe, expect, it, vi } from 'vitest';
 
-import { Account, type AccountID } from '../../accounts/model/account.ts';
+import type { Account } from '../../accounts/model/account.ts';
+import { generateDummyAccount } from '../../accounts/testData/testData.ts';
 import type { PartialAccount } from '../../intermodule/account.ts';
 import { dummyAccountModuleFacade } from '../../intermodule/account.ts';
-import { Note, type NoteID } from '../../notes/model/note.ts';
+import { DUMMY_BASE_DATE, generateDummyID } from '../../internal/id/dummy.ts';
+import { addDuration } from '../../internal/time/mod.ts';
+import { generateDummyNote } from '../../notes/testData/testData.ts';
 import { InMemoryTimelineRepository } from '../adaptor/repository/dummy.ts';
 import { AccountTimelineService } from './account.ts';
 import { NoteVisibilityService } from './noteVisibility.ts';
@@ -14,71 +17,33 @@ describe('AccountTimelineService', () => {
     dummyAccountModuleFacade,
   );
 
-  const dummyPublicNote = Note.reconstruct({
-    id: '1' as NoteID,
-    authorID: '100' as AccountID,
+  const author = generateDummyAccount();
+  const dummyAccount1 = generateDummyAccount();
+  const dummyPublicNote = generateDummyNote({
+    authorID: author.getID(),
     content: 'Hello world',
-    contentsWarningComment: '',
-    createdAt: new Date('2023-09-10T00:00:00Z'),
-    originalNoteID: Option.none(),
-    attachmentFileID: [],
-    sendTo: Option.none(),
+    createdAt: DUMMY_BASE_DATE,
     visibility: 'PUBLIC',
-    updatedAt: Option.none(),
-    deletedAt: Option.none(),
   });
-  const dummyHomeNote = Note.reconstruct({
-    id: '2' as NoteID,
-    authorID: '100' as AccountID,
+  const dummyHomeNote = generateDummyNote({
+    authorID: author.getID(),
     content: 'Hello world to Home',
-    contentsWarningComment: '',
-    createdAt: new Date('2023-09-11T00:00:00Z'),
-    originalNoteID: Option.none(),
-    attachmentFileID: [],
-    sendTo: Option.none(),
+    createdAt: addDuration(DUMMY_BASE_DATE, { days: 1 }),
     visibility: 'HOME',
-    updatedAt: Option.none(),
-    deletedAt: Option.none(),
   });
-  const dummyFollowersNote = Note.reconstruct({
-    id: '3' as NoteID,
-    authorID: '100' as AccountID,
+  const dummyFollowersNote = generateDummyNote({
+    authorID: author.getID(),
     content: 'Hello world to followers',
-    contentsWarningComment: '',
-    createdAt: new Date('2023-09-12T00:00:00Z'),
-    originalNoteID: Option.none(),
-    attachmentFileID: [],
-    sendTo: Option.none(),
+    createdAt: addDuration(DUMMY_BASE_DATE, { days: 2 }),
     visibility: 'FOLLOWERS',
-    updatedAt: Option.none(),
-    deletedAt: Option.none(),
   });
-  const dummyDirectNote = Note.reconstruct({
-    id: '4' as NoteID,
-    authorID: '100' as AccountID,
+  const dummyDirectNote = generateDummyNote({
+    authorID: author.getID(),
     content: 'Hello world to direct',
-    contentsWarningComment: '',
-    createdAt: new Date('2023-09-13T00:00:00Z'),
-    originalNoteID: Option.none(),
-    attachmentFileID: [],
-    sendTo: Option.some('101' as AccountID),
+    createdAt: addDuration(DUMMY_BASE_DATE, { days: 3 }),
+    sendTo: Option.some(dummyAccount1.getID()),
     visibility: 'DIRECT',
-    updatedAt: Option.none(),
-    deletedAt: Option.none(),
   });
-  const dummyAccount1 = Account.new(
-    {
-      id: '101' as AccountID,
-      bio: 'this is test user',
-      mail: 'john@example.com',
-      name: '@john@example.com',
-      nickname: 'John Doe',
-      passphraseHash: '',
-      role: 'normal',
-      createdAt: new Date(),
-    },
-    Option.none(),
-  );
   const partialAccount1: PartialAccount = {
     id: dummyAccount1.getID(),
     name: dummyAccount1.getName(),
@@ -103,8 +68,8 @@ describe('AccountTimelineService', () => {
         return Result.ok([partialAccount1]);
       },
     );
-    const res = await accountTimelineService.handle('100' as AccountID, {
-      id: '101' as AccountID,
+    const res = await accountTimelineService.handle(author.getID(), {
+      id: dummyAccount1.getID(),
       hasAttachment: false,
       noNsfw: false,
     });
@@ -123,8 +88,8 @@ describe('AccountTimelineService', () => {
         return Result.ok([partialAccount1]);
       },
     );
-    const res = await accountTimelineService.handle('100' as AccountID, {
-      id: '0' as AccountID,
+    const res = await accountTimelineService.handle(author.getID(), {
+      id: generateDummyID<Account>(),
       hasAttachment: false,
       noNsfw: false,
     });

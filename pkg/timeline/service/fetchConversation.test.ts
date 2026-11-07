@@ -2,12 +2,14 @@ import { Option, Result } from '@mikuroxina/mini-fn';
 import { describe, expect, it } from 'vitest';
 
 import type { AccountID } from '../../accounts/model/account.ts';
-import { DirectNote, type DirectNoteID } from '../../notes/model/directNote.ts';
+import { generateDummyAccount } from '../../accounts/testData/testData.ts';
+import { DUMMY_BASE_DATE, generateDummyID } from '../../internal/id/dummy.ts';
+import { addDuration } from '../../internal/time/mod.ts';
+import { DirectNote } from '../../notes/model/directNote.ts';
 import { InMemoryConversationRepository } from '../adaptor/repository/dummy.ts';
 import { FetchConversationService } from './fetchConversation.ts';
 
 const directNoteFactory = (
-  id: DirectNoteID,
   authorID: AccountID,
   recipientID: AccountID,
   createdAt: Date,
@@ -15,7 +17,7 @@ const directNoteFactory = (
   Result.unwrap(
     DirectNote.new(
       {
-        id,
+        id: generateDummyID<DirectNote>(createdAt),
         authorID,
         recipientID,
         content: 'This is a test note',
@@ -27,93 +29,88 @@ const directNoteFactory = (
     ),
   );
 
+const accountA = generateDummyAccount().getID();
+const accountB = generateDummyAccount().getID();
+const accountWithoutNotes = generateDummyAccount().getID();
+const accountC = generateDummyAccount().getID();
+
 /**
- * 1 received 2 notes from 2
- *   1 sent 2 notes to 2
- * 2 received 2 notes from 1
- *   2 sent 2 notes to 1
- *   2 sent 1 note to 4 (via 4-->2 below)
- * 4 received 1 note from 2
+ * A received 2 notes from B
+ *   A sent 2 notes to B
+ * B received 2 notes from A
+ *   B sent 2 notes to A
+ *   B sent 1 note to C (via C-->B below)
+ * C received 1 note from B
  */
-const dummyDirectNotes = [
-  // 1-->2
-  directNoteFactory(
-    '100' as DirectNoteID,
-    '1' as AccountID,
-    '2' as AccountID,
-    new Date('2023-09-10T00:00:00Z'),
-  ),
-  // 1-->2
-  directNoteFactory(
-    '101' as DirectNoteID,
-    '1' as AccountID,
-    '2' as AccountID,
-    new Date('2023-09-11T00:00:00Z'),
-  ),
-  // 2-->1
-  directNoteFactory(
-    '200' as DirectNoteID,
-    '2' as AccountID,
-    '1' as AccountID,
-    new Date('2023-09-12T00:00:00Z'),
-  ),
-  // 2-->1
-  directNoteFactory(
-    '201' as DirectNoteID,
-    '2' as AccountID,
-    '1' as AccountID,
-    new Date('2023-09-13T00:00:00Z'),
-  ),
-  // 4-->2
-  directNoteFactory(
-    '400' as DirectNoteID,
-    '4' as AccountID,
-    '2' as AccountID,
-    new Date('2024-01-01T00:00:00Z'),
-  ),
-];
+// A-->B
+const noteAToB1 = directNoteFactory(accountA, accountB, DUMMY_BASE_DATE);
+// A-->B
+const noteAToB2 = directNoteFactory(
+  accountA,
+  accountB,
+  addDuration(DUMMY_BASE_DATE, { days: 1 }),
+);
+// B-->A
+const noteBToA1 = directNoteFactory(
+  accountB,
+  accountA,
+  addDuration(DUMMY_BASE_DATE, { days: 2 }),
+);
+// B-->A
+const noteBToA2 = directNoteFactory(
+  accountB,
+  accountA,
+  addDuration(DUMMY_BASE_DATE, { days: 3 }),
+);
+// C-->B
+const noteCToB = directNoteFactory(
+  accountC,
+  accountB,
+  addDuration(DUMMY_BASE_DATE, { days: 100 }),
+);
+const dummyDirectNotes = [noteAToB1, noteAToB2, noteBToA1, noteBToA2, noteCToB];
 
 const conversationRepo = new InMemoryConversationRepository(dummyDirectNotes);
 const service = new FetchConversationService(conversationRepo);
 
 describe('FetchConversationService', () => {
   it('should fetch conversations', async () => {
-    const result = await service.fetchConversation('1' as AccountID);
+    const result = await service.fetchConversation(accountA);
 
     expect(Result.isOk(result)).toBe(true);
     expect(Result.unwrap(result)).toStrictEqual([
       {
-        id: dummyDirectNotes[3]?.getAuthorID(),
-        lastSentAt: dummyDirectNotes[3]?.getCreatedAt(),
-        latestNoteID: dummyDirectNotes[3]?.getID(),
-        latestNoteAuthor: dummyDirectNotes[3]?.getAuthorID(),
+        id: noteBToA2.getAuthorID(),
+        lastSentAt: noteBToA2.getCreatedAt(),
+        latestNoteID: noteBToA2.getID(),
+        latestNoteAuthor: noteBToA2.getAuthorID(),
       },
     ]);
   });
 
   it('should return sorted by lastSentAt', async () => {
-    const result = await service.fetchConversation('2' as AccountID);
+    const result = await service.fetchConversation(accountB);
 
     expect(Result.isOk(result)).toBe(true);
     const recipients = Result.unwrap(result);
     expect(recipients).toStrictEqual([
       {
-        id: dummyDirectNotes[4]?.getAuthorID(),
-        lastSentAt: dummyDirectNotes[4]?.getCreatedAt(),
-        latestNoteID: dummyDirectNotes[4]?.getID(),
-        latestNoteAuthor: dummyDirectNotes[4]?.getAuthorID(),
+        id: noteCToB.getAuthorID(),
+        lastSentAt: noteCToB.getCreatedAt(),
+        latestNoteID: noteCToB.getID(),
+        latestNoteAuthor: noteCToB.getAuthorID(),
       },
       {
-        id: '1' as AccountID,
-        lastSentAt: new Date('2023-09-13T00:00:00Z'),
-        latestNoteID: '201' as DirectNoteID,
-        latestNoteAuthor: '2' as AccountID,
+        id: accountA,
+        lastSentAt: noteBToA2.getCreatedAt(),
+        latestNoteID: noteBToA2.getID(),
+        latestNoteAuthor: accountB,
       },
     ]);
   });
 
   it('should return empty array when no conversations exist', async () => {
-    const result = await service.fetchConversation('3' as AccountID);
+    const result = await service.fetchConversation(accountWithoutNotes);
 
     expect(Result.isOk(result)).toBe(true);
     expect(Result.unwrap(result)).toStrictEqual([]);
@@ -121,83 +118,64 @@ describe('FetchConversationService', () => {
 
   describe('fetchConversationNotes', () => {
     it('should pass default limit of 20 when no limit provided', async () => {
-      const result = await service.fetchConversationNotes(
-        '1' as AccountID,
-        '2' as AccountID,
-      );
+      const result = await service.fetchConversationNotes(accountA, accountB);
 
       expect(Result.isOk(result)).toBe(true);
-      // dataset has 4 notes between 1 and 2; all returned since limit=20
+      // dataset has 4 notes between A and B; all returned since limit=20
       expect(Result.unwrap(result)).toHaveLength(4);
     });
 
     it('should pass custom limit to repository', async () => {
-      const result = await service.fetchConversationNotes(
-        '1' as AccountID,
-        '2' as AccountID,
-        {
-          limit: Option.some(2),
-          beforeID: Option.none(),
-          afterID: Option.none(),
-        },
-      );
+      const result = await service.fetchConversationNotes(accountA, accountB, {
+        limit: Option.some(2),
+        beforeID: Option.none(),
+        afterID: Option.none(),
+      });
 
       expect(Result.isOk(result)).toBe(true);
       expect(Result.unwrap(result)).toHaveLength(2);
-      // newest two notes between 1 and 2
+      // newest two notes between A and B
       expect(Result.unwrap(result).map((n) => n.getID())).toStrictEqual([
-        '201',
-        '200',
+        noteBToA2.getID(),
+        noteBToA1.getID(),
       ]);
     });
 
     it('should apply beforeID cursor correctly', async () => {
-      const result = await service.fetchConversationNotes(
-        '1' as AccountID,
-        '2' as AccountID,
-        {
-          limit: Option.none(),
-          beforeID: Option.some('200' as DirectNoteID),
-          afterID: Option.none(),
-        },
-      );
+      const result = await service.fetchConversationNotes(accountA, accountB, {
+        limit: Option.none(),
+        beforeID: Option.some(noteBToA1.getID()),
+        afterID: Option.none(),
+      });
 
       expect(Result.isOk(result)).toBe(true);
-      // notes older than '200' (2023-09-12): '101' and '100'
+      // notes older than the 3rd note: the 2nd and 1st notes
       expect(Result.unwrap(result).map((n) => n.getID())).toStrictEqual([
-        '101',
-        '100',
+        noteAToB2.getID(),
+        noteAToB1.getID(),
       ]);
     });
 
     it('should apply afterID cursor correctly', async () => {
-      const result = await service.fetchConversationNotes(
-        '1' as AccountID,
-        '2' as AccountID,
-        {
-          limit: Option.none(),
-          beforeID: Option.none(),
-          afterID: Option.some('200' as DirectNoteID),
-        },
-      );
+      const result = await service.fetchConversationNotes(accountA, accountB, {
+        limit: Option.none(),
+        beforeID: Option.none(),
+        afterID: Option.some(noteBToA1.getID()),
+      });
 
       expect(Result.isOk(result)).toBe(true);
-      // notes newer than '200' (2023-09-12): '201'
+      // notes newer than the 3rd note: the 4th note
       expect(Result.unwrap(result).map((n) => n.getID())).toStrictEqual([
-        '201',
+        noteBToA2.getID(),
       ]);
     });
 
     it('should return error when both beforeID and afterID are specified', async () => {
-      const result = await service.fetchConversationNotes(
-        '1' as AccountID,
-        '2' as AccountID,
-        {
-          limit: Option.none(),
-          beforeID: Option.some('201' as DirectNoteID),
-          afterID: Option.some('100' as DirectNoteID),
-        },
-      );
+      const result = await service.fetchConversationNotes(accountA, accountB, {
+        limit: Option.none(),
+        beforeID: Option.some(noteBToA2.getID()),
+        afterID: Option.some(noteAToB1.getID()),
+      });
 
       expect(Result.isErr(result)).toBe(true);
       expect(Result.unwrapErr(result).message).toBe(

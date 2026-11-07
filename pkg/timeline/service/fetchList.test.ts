@@ -1,29 +1,22 @@
 import { Result } from '@mikuroxina/mini-fn';
 import { describe, expect, it } from 'vitest';
-import type { AccountID } from '../../accounts/model/account.ts';
+import { generateDummyID } from '../../internal/id/dummy.ts';
 import { InMemoryListRepository } from '../adaptor/repository/dummy.ts';
-import { List, type ListID } from '../model/list.ts';
+import type { List } from '../model/list.ts';
+import { generateDummyList } from '../testData/testData.ts';
 import { FetchListService } from './fetchList.ts';
 
-const repository = new InMemoryListRepository([
-  List.reconstruct({
-    id: '1' as ListID,
-    title: 'Test list',
-    ownerId: '' as AccountID,
-    createdAt: new Date('2023-10-10T00:00:00Z'),
-    memberIds: [],
-    publicity: 'PUBLIC',
-  }),
-]);
+const testList = generateDummyList();
+const repository = new InMemoryListRepository([testList]);
 const service = new FetchListService(repository);
 
 describe('FetchListService', () => {
   it('get existing list', async () => {
-    const res = await service.handle('1' as ListID);
+    const res = await service.handle(testList.getId());
     expect(Result.isOk(res)).toBe(true);
   });
   it('error when not exiting list', async () => {
-    const res = await service.handle('100' as ListID);
+    const res = await service.handle(generateDummyID<List>());
     expect(Result.isErr(res)).toBe(true);
   });
 });

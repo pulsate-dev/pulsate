@@ -1,8 +1,7 @@
-import { Option, Result } from '@mikuroxina/mini-fn';
+import { Result } from '@mikuroxina/mini-fn';
 import { describe, expect, it } from 'vitest';
 
-import type { AccountID } from '../../accounts/model/account.ts';
-import { Note, type NoteID } from '../../notes/model/note.ts';
+import { generateDummyNote } from '../../notes/testData/testData.ts';
 import { InMemoryTimelineRepository } from '../adaptor/repository/dummy.ts';
 import {
   dummyDirectNote,
@@ -12,18 +11,9 @@ import {
 } from '../testData/testData.ts';
 import { PublicTimelineService } from './public.ts';
 
-const dummyPublicNote2 = Note.reconstruct({
-  id: '10' as NoteID,
-  authorID: '200' as AccountID,
+const dummyPublicNote2 = generateDummyNote({
   content: 'Second public note',
-  contentsWarningComment: '',
-  originalNoteID: Option.none(),
-  attachmentFileID: [],
-  sendTo: Option.none(),
-  visibility: 'PUBLIC',
   createdAt: new Date('2023/09/15 00:00:00'),
-  updatedAt: Option.none(),
-  deletedAt: Option.none(),
 });
 
 describe('PublicTimelineService', () => {

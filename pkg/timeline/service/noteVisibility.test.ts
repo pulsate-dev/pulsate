@@ -1,18 +1,25 @@
 import { Result } from '@mikuroxina/mini-fn';
 import { describe, expect, it, vi } from 'vitest';
 
-import type { AccountID } from '../../accounts/model/account.ts';
-import { partialAccount1 } from '../../accounts/testData/testData.ts';
+import type { Account } from '../../accounts/model/account.ts';
+import {
+  dummyNormalAccount1,
+  dummyNormalAccount2,
+  partialAccount1,
+} from '../../accounts/testData/testData.ts';
 import { dummyAccountModuleFacade } from '../../intermodule/account.ts';
+import { generateDummyID } from '../../internal/id/dummy.ts';
 import {
   dummyFollowersNote,
   dummyHomeNote,
+  dummyNoteAuthorID,
   dummyPublicNote,
 } from '../testData/testData.ts';
 import { NoteVisibilityService } from './noteVisibility.ts';
 
 describe('NoteVisibilityService', () => {
   const visibilityService = new NoteVisibilityService(dummyAccountModuleFacade);
+  const unrelatedAccountID = generateDummyID<Account>();
 
   it("when author's note: return true", async () => {
     vi.spyOn(dummyAccountModuleFacade, 'fetchFollowers').mockImplementation(
@@ -25,7 +32,7 @@ describe('NoteVisibilityService', () => {
     for (const note of testObjects) {
       expect(
         await visibilityService.handle({
-          accountID: '100' as AccountID,
+          accountID: dummyNoteAuthorID,
           note,
         }),
       ).toBe(true);
@@ -41,21 +48,21 @@ describe('NoteVisibilityService', () => {
     // public
     expect(
       await visibilityService.handle({
-        accountID: '101' as AccountID,
+        accountID: dummyNormalAccount1.getID(),
         note: dummyPublicNote,
       }),
     ).toBe(true);
     // home
     expect(
       await visibilityService.handle({
-        accountID: '101' as AccountID,
+        accountID: dummyNormalAccount1.getID(),
         note: dummyHomeNote,
       }),
     ).toBe(true);
     // followers
     expect(
       await visibilityService.handle({
-        accountID: '101' as AccountID,
+        accountID: dummyNormalAccount1.getID(),
         note: dummyFollowersNote,
       }),
     ).toBe(true);
@@ -70,20 +77,20 @@ describe('NoteVisibilityService', () => {
 
     expect(
       await visibilityService.handle({
-        accountID: '102' as AccountID,
+        accountID: dummyNormalAccount2.getID(),
         note: dummyPublicNote,
       }),
     ).toBe(true);
     expect(
       await visibilityService.handle({
-        accountID: '102' as AccountID,
+        accountID: dummyNormalAccount2.getID(),
         note: dummyHomeNote,
       }),
     ).toBe(true);
 
     expect(
       await visibilityService.handle({
-        accountID: '102' as AccountID,
+        accountID: dummyNormalAccount2.getID(),
         note: dummyFollowersNote,
       }),
     ).toBe(false);
@@ -97,7 +104,7 @@ describe('NoteVisibilityService', () => {
     );
 
     const res = await visibilityService.handle({
-      accountID: '0' as AccountID,
+      accountID: unrelatedAccountID,
       note: dummyPublicNote,
     });
     expect(res).toBe(true);
@@ -110,19 +117,19 @@ describe('NoteVisibilityService', () => {
 
     expect(
       await visibilityService.isVisibleNoteInList({
-        accountID: '0' as AccountID,
+        accountID: unrelatedAccountID,
         note: dummyPublicNote,
       }),
     ).toBe(true);
     expect(
       await visibilityService.isVisibleNoteInList({
-        accountID: '0' as AccountID,
+        accountID: unrelatedAccountID,
         note: dummyHomeNote,
       }),
     ).toBe(true);
     expect(
       await visibilityService.isVisibleNoteInList({
-        accountID: '0' as AccountID,
+        accountID: unrelatedAccountID,
         note: dummyFollowersNote,
       }),
     ).toBe(false);

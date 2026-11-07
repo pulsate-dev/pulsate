@@ -7,33 +7,31 @@ import {
   type MockedObject,
   vi,
 } from 'vitest';
-import type { AccountID } from '../../accounts/model/account.ts';
+import type { Account } from '../../accounts/model/account.ts';
 import type { EventPublisher } from '../../internal/event/mod.ts';
+import { generateDummyID } from '../../internal/id/dummy.ts';
 import { InMemoryListRepository } from '../adaptor/repository/dummy.ts';
 import {
   ListNotFoundError,
   ListTooManyMembersError,
   TimelineInsufficientPermissionError,
 } from '../model/errors.ts';
-import { List, type ListID } from '../model/list.ts';
+import type { List } from '../model/list.ts';
+import { generateDummyList } from '../testData/testData.ts';
 import { AppendListMemberService } from './appendMember.ts';
 
 describe('AppendListMemberService', () => {
+  const ownerId = generateDummyID<Account>();
+  const listId = generateDummyID<List>();
   const createListData = () => [
-    List.reconstruct({
-      createdAt: new Date('2023-09-10T00:00:00Z'),
-      id: '10' as ListID,
-      memberIds: [],
-      ownerId: '1' as AccountID,
-      publicity: 'PUBLIC',
-      title: 'ABC',
-    }),
+    generateDummyList({ id: listId, ownerId, title: 'ABC' }),
   ];
   const listRepository = new InMemoryListRepository(createListData());
   const eventPublisher = {
     publishMany: vi.fn(async () => Result.ok(undefined)),
   } as const satisfies MockedObject<EventPublisher>;
   const service = new AppendListMemberService(listRepository, eventPublisher);
+  const newMemberId = generateDummyID<Account>();
 
   beforeEach(() => {
     listRepository.reset(createListData());
@@ -41,11 +39,7 @@ describe('AppendListMemberService', () => {
   });
 
   it('should append member to list', async () => {
-    const res = await service.handle(
-      '10' as ListID,
-      '200' as AccountID,
-      '1' as AccountID,
-    );
+    const res = await service.handle(listId, newMemberId, ownerId);
 
     expect(Result.isErr(res)).toBe(false);
     expect(eventPublisher.publishMany).toHaveBeenCalledWith([
@@ -55,9 +49,9 @@ describe('AppendListMemberService', () => {
 
   it("should return error if list doesn't exist", async () => {
     const res = await service.handle(
-      '20' as ListID,
-      '200' as AccountID,
-      '1' as AccountID,
+      generateDummyID<List>(),
+      newMemberId,
+      ownerId,
     );
 
     expect(Result.isErr(res)).toBe(true);
@@ -65,39 +59,30 @@ describe('AppendListMemberService', () => {
   });
 
   it('should return error if member already exists', async () => {
-    await service.handle('10' as ListID, '200' as AccountID, '1' as AccountID);
-    const res = await service.handle(
-      '10' as ListID,
-      '200' as AccountID,
-      '1' as AccountID,
-    );
+    await service.handle(listId, newMemberId, ownerId);
+    const res = await service.handle(listId, newMemberId, ownerId);
 
     expect(Result.isErr(res)).toBe(true);
   });
 
   it('should not append member if member count exceeds the limit (250)', async () => {
-    const testData = Array.from(
-      { length: 250 },
-      (_, i) => (i + 1).toString() as AccountID,
+    const testData = Array.from({ length: 250 }, () =>
+      generateDummyID<Account>(),
     );
     for (const v of testData) {
-      await service.handle('10' as ListID, v, '1' as AccountID);
+      await service.handle(listId, v, ownerId);
     }
 
-    const res = await service.handle(
-      '10' as ListID,
-      '251' as AccountID,
-      '1' as AccountID,
-    );
+    const res = await service.handle(listId, newMemberId, ownerId);
     expect(Result.isErr(res)).toBe(true);
     expect(Result.unwrapErr(res)).toBeInstanceOf(ListTooManyMembersError);
   });
 
   it('should error if actor is not list owner', async () => {
     const res = await service.handle(
-      '10' as ListID,
-      '200' as AccountID,
-      '2' as AccountID,
+      listId,
+      newMemberId,
+      generateDummyID<Account>(),
     );
 
     expect(Result.isErr(res)).toBe(true);

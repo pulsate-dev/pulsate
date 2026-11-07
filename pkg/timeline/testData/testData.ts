@@ -3,9 +3,9 @@
  * */
 import { Option } from '@mikuroxina/mini-fn';
 
-import type { Account, AccountID } from '../../accounts/model/account.ts';
+import type { Account } from '../../accounts/model/account.ts';
+import { dummyNormalAccount1 } from '../../accounts/testData/testData.ts';
 import { DUMMY_BASE_DATE, generateDummyID } from '../../internal/id/dummy.ts';
-import type { NoteID } from '../../notes/model/note.ts';
 import { generateDummyNote } from '../../notes/testData/testData.ts';
 import { type CreateListArgs, List } from '../model/list.ts';
 
@@ -29,40 +29,40 @@ export const generateDummyList = (
   });
 };
 
+/**
+ * Author shared by the dummy notes below. It is not a registered account.
+ */
+export const dummyNoteAuthorID = generateDummyID<Account>();
+
 export const dummyPublicNote = generateDummyNote({
-  id: '1' as NoteID,
-  authorID: '100' as AccountID,
+  authorID: dummyNoteAuthorID,
   content: 'Hello world',
   visibility: 'PUBLIC',
   createdAt: new Date('2023/09/10 00:00:00'),
 });
 export const dummyHomeNote = generateDummyNote({
-  id: '2' as NoteID,
-  authorID: '100' as AccountID,
+  authorID: dummyNoteAuthorID,
   content: 'Hello world to Home',
   visibility: 'HOME',
   createdAt: new Date('2023/09/20 00:00:00'),
 });
 export const dummyFollowersNote = generateDummyNote({
-  id: '3' as NoteID,
-  authorID: '100' as AccountID,
+  authorID: dummyNoteAuthorID,
   content: 'Hello world to followers',
   visibility: 'FOLLOWERS',
   createdAt: new Date('2023/09/30 00:00:00'),
 });
 export const dummyRenote = generateDummyNote({
-  id: '5' as NoteID,
-  authorID: '100' as AccountID,
+  authorID: dummyNoteAuthorID,
   content: '',
-  originalNoteID: Option.some('1' as NoteID),
+  originalNoteID: Option.some(dummyPublicNote.getID()),
   visibility: 'PUBLIC',
   createdAt: new Date('2023/10/05 00:00:00'),
 });
 export const dummyDirectNote = generateDummyNote({
-  id: '4' as NoteID,
-  authorID: '100' as AccountID,
+  authorID: dummyNoteAuthorID,
   content: 'Hello world to direct',
-  sendTo: Option.some('101' as AccountID),
+  sendTo: Option.some(dummyNormalAccount1.getID()),
   visibility: 'DIRECT',
   createdAt: new Date('2023/10/10 00:00:00'),
 });
