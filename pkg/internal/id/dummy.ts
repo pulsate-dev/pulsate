@@ -16,7 +16,7 @@ let sequence = 0;
  * so that sorting dummy data by ID matches sorting by creation date.
  * IDs generated at the same `createdAt` are distinguished by a sequence number.
  */
-export const generateDummyID = <T>(createdAt: Date): ID<T> => {
+export const generateDummyID = <T>(createdAt = DUMMY_BASE_DATE): ID<T> => {
   const timeFromEpoch = BigInt(createdAt.getTime()) - OFFSET_FROM_UNIX_EPOCH;
   if (timeFromEpoch < 0n) {
     throw new Error('createdAt must be later than Pulsate Epoch');
