@@ -1,10 +1,16 @@
-import { Option, Result } from '@mikuroxina/mini-fn';
+import { Result } from '@mikuroxina/mini-fn';
 import { describe, expect, it, type MockedObject, vi } from 'vitest';
 
-import type { AccountID } from '../../accounts/model/account.ts';
-import { Medium, type MediumID } from '../../drive/model/medium.ts';
+import {
+  dummyNormalAccount1,
+  dummyNormalAccount2,
+  dummySilencedAccount,
+} from '../../accounts/testData/testData.ts';
+import type { Medium } from '../../drive/model/medium.ts';
+import { generateDummyMedium } from '../../drive/testData/testData.ts';
 import { dummyAccountModuleFacade } from '../../intermodule/account.ts';
 import type { EventPublisher } from '../../internal/event/mod.ts';
+import { generateDummyID } from '../../internal/id/dummy.ts';
 import { MockClock, SnowflakeIDGenerator } from '../../internal/id/mod.ts';
 import {
   InMemoryNoteAttachmentRepository,
@@ -14,19 +20,11 @@ import { NoteAccountSilencedError } from '../model/errors.ts';
 import { CreateService } from './create.ts';
 
 const noteRepository = new InMemoryNoteRepository();
+const attachments = Array.from({ length: 16 }, () =>
+  generateDummyMedium({ mime: 'image/png', nsfw: false }),
+);
 const attachmentRepository = new InMemoryNoteAttachmentRepository(
-  Array.from({ length: 16 }, (_, i) => {
-    return Medium.reconstruct({
-      id: (i + 10).toString() as MediumID,
-      name: (i + 10).toString(),
-      mime: 'image/png',
-      hash: 'ewkjnfgr]g:ge+ealksmc',
-      url: Option.none(),
-      thumbnailUrl: Option.none(),
-      nsfw: false,
-      authorId: '1' as AccountID,
-    });
-  }),
+  attachments,
   [],
 );
 
@@ -57,7 +55,7 @@ describe('CreateService', () => {
       .mockImplementationOnce(() => pending);
     let completed = false;
     const creation = createService
-      .handle('Hello world', '', '102' as AccountID, [], 'PUBLIC')
+      .handle('Hello world', '', dummyNormalAccount2.getID(), [], 'PUBLIC')
       .then((result) => {
         completed = true;
         return result;
@@ -77,7 +75,7 @@ describe('CreateService', () => {
     const res = await createService.handle(
       'Hello world',
       '',
-      '102' as AccountID,
+      dummyNormalAccount2.getID(),
       [],
       'PUBLIC',
     );
@@ -96,7 +94,7 @@ describe('CreateService', () => {
     const result = await createService.handle(
       'Hello world',
       '',
-      '102' as AccountID,
+      dummyNormalAccount2.getID(),
       [],
       'PUBLIC',
     );
@@ -110,7 +108,7 @@ describe('CreateService', () => {
     const res = await createService.handle(
       'Hello world',
       '',
-      '102' as AccountID,
+      dummyNormalAccount2.getID(),
       [],
       'PUBLIC',
     );
@@ -123,8 +121,8 @@ describe('CreateService', () => {
     const res = await createService.handle(
       'Hello world',
       '',
-      '102' as AccountID,
-      ['10' as MediumID, '11' as MediumID],
+      dummyNormalAccount2.getID(),
+      attachments.slice(0, 2).map((v) => v.getId()),
       'PUBLIC',
     );
 
@@ -135,8 +133,8 @@ describe('CreateService', () => {
     const res = await createService.handle(
       'Hello world',
       '',
-      '1' as AccountID,
-      Array.from({ length: 17 }, (_, i) => i.toString() as MediumID),
+      dummyNormalAccount1.getID(),
+      Array.from({ length: 17 }, () => generateDummyID<Medium>()),
       'PUBLIC',
     );
 
@@ -147,7 +145,7 @@ describe('CreateService', () => {
     const res = await createService.handle(
       'a'.repeat(3001),
       '',
-      '1' as AccountID,
+      dummyNormalAccount1.getID(),
       [],
       'PUBLIC',
     );
@@ -159,7 +157,7 @@ describe('CreateService', () => {
     const res = await createService.handle(
       'Hello world',
       '',
-      '1' as AccountID,
+      dummyNormalAccount1.getID(),
       [],
       'DIRECT',
     );
@@ -171,7 +169,7 @@ describe('CreateService', () => {
     const publicRes = await createService.handle(
       'Hello world',
       '',
-      '105' as AccountID,
+      dummySilencedAccount.getID(),
       [],
       'PUBLIC',
     );
@@ -183,7 +181,7 @@ describe('CreateService', () => {
     const homeRes = await createService.handle(
       'Hello world',
       '',
-      '105' as AccountID,
+      dummySilencedAccount.getID(),
       [],
       'HOME',
     );

@@ -8,11 +8,12 @@ import {
   vi,
 } from 'vitest';
 
-import type { Account, AccountID } from '../../accounts/model/account.ts';
+import type { Account } from '../../accounts/model/account.ts';
 import { generateDummyAccount } from '../../accounts/testData/testData.ts';
-import type { MediumID } from '../../drive/model/medium.ts';
+import type { Medium } from '../../drive/model/medium.ts';
 import type { AccountModuleFacade } from '../../intermodule/account.ts';
 import type { EventPublisher } from '../../internal/event/mod.ts';
+import { generateDummyID } from '../../internal/id/dummy.ts';
 import { MockClock, SnowflakeIDGenerator } from '../../internal/id/mod.ts';
 import type {
   DirectNoteAttachmentRepository,
@@ -21,7 +22,6 @@ import type {
 import { CreateDirectNoteService } from './createDirect.ts';
 
 const author: Account = generateDummyAccount({
-  id: '1' as AccountID,
   name: '@author@example.com',
   role: 'normal',
   silenced: 'normal',
@@ -31,7 +31,6 @@ const author: Account = generateDummyAccount({
 });
 
 const recipient: Account = generateDummyAccount({
-  id: '2' as AccountID,
   name: '@recipient@example.com',
   role: 'normal',
   silenced: 'normal',
@@ -91,15 +90,15 @@ describe('CreateDirectNoteService', () => {
     const res = await service.handle(
       'Hello',
       '',
-      '1' as AccountID,
-      '2' as AccountID,
+      author.getID(),
+      recipient.getID(),
       [],
     );
 
     expect(Result.isOk(res)).toBe(true);
     expect(Result.unwrap(res).getContent()).toBe('Hello');
-    expect(Result.unwrap(res).getAuthorID()).toBe('1');
-    expect(Result.unwrap(res).getRecipientID()).toBe('2');
+    expect(Result.unwrap(res).getAuthorID()).toBe(author.getID());
+    expect(Result.unwrap(res).getRecipientID()).toBe(recipient.getID());
     expect(eventPublisher.publishMany).toHaveBeenCalledWith([
       expect.objectContaining({ eventName: 'note.created' }),
     ]);
@@ -113,8 +112,8 @@ describe('CreateDirectNoteService', () => {
     const res = await service.handle(
       'Hello',
       '',
-      '999' as AccountID,
-      '2' as AccountID,
+      generateDummyID<Account>(),
+      recipient.getID(),
       [],
     );
 
@@ -130,8 +129,8 @@ describe('CreateDirectNoteService', () => {
     const res = await service.handle(
       'Hello',
       '',
-      '1' as AccountID,
-      '999' as AccountID,
+      author.getID(),
+      generateDummyID<Account>(),
       [],
     );
 
@@ -147,8 +146,8 @@ describe('CreateDirectNoteService', () => {
     const res = await service.handle(
       'a'.repeat(3001),
       '',
-      '1' as AccountID,
-      '2' as AccountID,
+      author.getID(),
+      recipient.getID(),
       [],
     );
 
@@ -164,9 +163,9 @@ describe('CreateDirectNoteService', () => {
     const res = await service.handle(
       'Hello',
       '',
-      '1' as AccountID,
-      '2' as AccountID,
-      Array.from({ length: 17 }, (_, i) => i.toString() as MediumID),
+      author.getID(),
+      recipient.getID(),
+      Array.from({ length: 17 }, () => generateDummyID<Medium>()),
     );
 
     expect(Result.isErr(res)).toBe(true);
@@ -183,8 +182,8 @@ describe('CreateDirectNoteService', () => {
     const res = await service.handle(
       '',
       '',
-      '1' as AccountID,
-      '2' as AccountID,
+      author.getID(),
+      recipient.getID(),
       [],
     );
 
@@ -198,7 +197,7 @@ describe('CreateDirectNoteService', () => {
       .mockResolvedValueOnce(Result.ok(recipient));
     vi.mocked(mockDirectNoteAttachmentRepo.create).mockClear();
 
-    await service.handle('Hello', '', '1' as AccountID, '2' as AccountID, []);
+    await service.handle('Hello', '', author.getID(), recipient.getID(), []);
 
     expect(mockDirectNoteAttachmentRepo.create).not.toHaveBeenCalled();
   });
@@ -208,12 +207,12 @@ describe('CreateDirectNoteService', () => {
       .mockResolvedValueOnce(Result.ok(author))
       .mockResolvedValueOnce(Result.ok(recipient));
 
-    const attachments = ['10' as MediumID, '11' as MediumID];
+    const attachments = [generateDummyID<Medium>(), generateDummyID<Medium>()];
     const res = await service.handle(
       'Hello',
       '',
-      '1' as AccountID,
-      '2' as AccountID,
+      author.getID(),
+      recipient.getID(),
       attachments,
     );
 

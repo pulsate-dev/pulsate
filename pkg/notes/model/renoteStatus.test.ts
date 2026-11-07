@@ -1,13 +1,14 @@
 import { describe, expect, it } from 'vitest';
 
-import type { AccountID } from '../../accounts/model/account.ts';
-import type { NoteID } from './note.ts';
+import type { Account } from '../../accounts/model/account.ts';
+import { generateDummyID } from '../../internal/id/dummy.ts';
+import type { Note } from './note.ts';
 import { RenoteStatus } from './renoteStatus.ts';
 
 describe('RenoteStatus', () => {
   it('create renote status with isRenoted true', () => {
-    const actorId = '100' as AccountID;
-    const noteId = '500' as NoteID;
+    const actorId = generateDummyID<Account>();
+    const noteId = generateDummyID<Note>();
     const status = RenoteStatus.new(actorId, noteId, true);
 
     expect(status.getActorID()).toBe(actorId);
@@ -16,8 +17,8 @@ describe('RenoteStatus', () => {
   });
 
   it('create renote status with isRenoted false', () => {
-    const actorId = '200' as AccountID;
-    const noteId = '500' as NoteID;
+    const actorId = generateDummyID<Account>();
+    const noteId = generateDummyID<Note>();
     const status = RenoteStatus.new(actorId, noteId, false);
 
     expect(status.getActorID()).toBe(actorId);

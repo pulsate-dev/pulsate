@@ -2,86 +2,42 @@ import { Option, Result } from '@mikuroxina/mini-fn';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 
 import { InMemoryAccountRepository } from '../../accounts/adaptor/repository/dummy/account.ts';
-import { Account, type AccountID } from '../../accounts/model/account.ts';
-import type { MediumID } from '../../drive/model/medium.ts';
+import { generateDummyAccount } from '../../accounts/testData/testData.ts';
 import { testMedium, testNSFWMedium } from '../../drive/testData/testData.ts';
 import { dummyAccountModuleFacade } from '../../intermodule/account.ts';
+import { generateDummyID } from '../../internal/id/dummy.ts';
 import {
   InMemoryNoteAttachmentRepository,
   InMemoryNoteRepository,
   InMemoryReactionRepository,
 } from '../adaptor/repository/dummy.ts';
-import { Note, type NoteID } from '../model/note.ts';
+import type { Note } from '../model/note.ts';
+import { generateDummyNote, generateDummyNotes } from '../testData/testData.ts';
 import { FetchService } from './fetch.ts';
 
-const testNote = Note.reconstruct({
-  id: '1' as NoteID,
-  authorID: '3' as AccountID,
-  content: 'Hello world',
-  contentsWarningComment: '',
-  createdAt: new Date('2023-09-10T00:00:00Z'),
-  sendTo: Option.none(),
-  originalNoteID: Option.none(),
-  attachmentFileID: ['300' as MediumID, '301' as MediumID],
-  visibility: 'PUBLIC',
-  updatedAt: Option.none(),
-  deletedAt: Option.none(),
-});
-const deletedNote = Note.reconstruct({
-  id: '2' as NoteID,
-  authorID: '3' as AccountID,
-  content: 'Hello world',
-  contentsWarningComment: '',
-  createdAt: new Date('2023-09-10T00:00:00Z'),
-  sendTo: Option.none(),
-  originalNoteID: Option.none(),
-  visibility: 'PUBLIC',
-  attachmentFileID: [],
-  deletedAt: Option.some(new Date('2024-01-01T00:00:00Z')),
-  updatedAt: Option.none(),
-});
-const frozenUserNote = Note.reconstruct({
-  id: '5' as NoteID,
-  authorID: '4' as AccountID,
-  content: 'Hello world',
-  contentsWarningComment: '',
-  createdAt: new Date('2023-09-10T00:00:00Z'),
-  sendTo: Option.none(),
-  originalNoteID: Option.none(),
-  visibility: 'PUBLIC',
-  attachmentFileID: [],
-  deletedAt: Option.some(new Date('2024-01-01T00:00:00Z')),
-  updatedAt: Option.none(),
-});
-const testAccount = Account.reconstruct({
-  id: '3' as AccountID,
-  bio: '',
-  frozen: 'normal',
-  mail: '',
+const testAccount = generateDummyAccount({
   name: '@johndoe@example.com',
-  nickname: '',
-  passphraseHash: undefined,
-  role: 'normal',
-  silenced: 'normal',
-  status: 'active',
-  createdAt: new Date('2023-09-10T00:00:00Z'),
   deletedAt: new Date('2024-01-01T00:00:00Z'),
-  updatedAt: undefined,
 });
-const frozenAccount = Account.reconstruct({
-  id: '4' as AccountID,
-  bio: '',
-  frozen: 'frozen',
-  mail: '',
+const frozenAccount = generateDummyAccount({
   name: '@frozen@example.com',
-  nickname: '',
-  passphraseHash: undefined,
-  role: 'normal',
-  silenced: 'normal',
-  status: 'active',
-  createdAt: new Date('2023-09-10T00:00:00Z'),
+  frozen: 'frozen',
   deletedAt: new Date('2024-01-01T00:00:00Z'),
-  updatedAt: undefined,
+});
+const testNote = generateDummyNote({
+  authorID: testAccount.getID(),
+  content: 'Hello world',
+  attachmentFileID: [testMedium.getId(), testNSFWMedium.getId()],
+});
+const deletedNote = generateDummyNote({
+  authorID: testAccount.getID(),
+  content: 'Hello world',
+  deletedAt: Option.some(new Date('2024-01-01T00:00:00Z')),
+});
+const frozenUserNote = generateDummyNote({
+  authorID: frozenAccount.getID(),
+  content: 'Hello world',
+  deletedAt: Option.some(new Date('2024-01-01T00:00:00Z')),
 });
 
 const repository = new InMemoryNoteRepository([
@@ -95,7 +51,7 @@ const accountRepository = new InMemoryAccountRepository([
 ]);
 const noteAttachmentRepository = new InMemoryNoteAttachmentRepository(
   [testMedium, testNSFWMedium],
-  [['1' as NoteID, ['300' as MediumID, '301' as MediumID]]],
+  [[testNote.getID(), [testMedium.getId(), testNSFWMedium.getId()]]],
 );
 const reactionRepository = new InMemoryReactionRepository();
 
@@ -115,14 +71,14 @@ describe('FetchService', () => {
         return Result.ok(testAccount);
       },
     );
-    const res = await service.fetchNoteByID('1' as NoteID);
+    const res = await service.fetchNoteByID(testNote.getID());
 
     expect(Option.isSome(res)).toBe(true);
     expect(res[1]).toStrictEqual(testNote);
   });
 
   it('note not found', async () => {
-    const res = await service.fetchNoteByID('999' as NoteID);
+    const res = await service.fetchNoteByID(generateDummyID<Note>());
 
     expect(Option.isNone(res)).toBe(true);
   });
@@ -134,21 +90,11 @@ describe('FetchService', () => {
   });
 
   it('fetchMany: should fetch notes', async () => {
-    const testNotes = [...new Array<Note>(5)].map((_, i) =>
-      Note.reconstruct({
-        id: `many-${i}` as NoteID,
-        authorID: '3' as AccountID,
-        content: `Hello world ${i}`,
-        contentsWarningComment: '',
-        createdAt: new Date('2023-09-10T00:00:00Z'),
-        sendTo: Option.none(),
-        originalNoteID: Option.none(),
-        attachmentFileID: ['300' as MediumID, '301' as MediumID],
-        visibility: 'PUBLIC',
-        updatedAt: Option.none(),
-        deletedAt: Option.none(),
-      }),
-    );
+    const testNotes = generateDummyNotes(5, (i) => ({
+      authorID: testAccount.getID(),
+      content: `Hello world ${i}`,
+      attachmentFileID: [testMedium.getId(), testNSFWMedium.getId()],
+    }));
     await Promise.all(testNotes.map((v) => repository.create(v)));
     const res = await service.fetchNotesByID(testNotes.map((v) => v.getID()));
     expect(Result.isOk(res)).toBe(true);
@@ -171,7 +117,7 @@ describe('FetchService', () => {
   });
 
   it('should fetch note attachments', async () => {
-    const res = await service.fetchNoteAttachments('1' as NoteID);
+    const res = await service.fetchNoteAttachments(testNote.getID());
     expect(Result.isOk(res)).toBe(true);
 
     expect(Result.unwrap(res)).toStrictEqual([testMedium, testNSFWMedium]);

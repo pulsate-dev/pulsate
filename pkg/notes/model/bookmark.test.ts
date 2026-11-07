@@ -1,13 +1,14 @@
 import { Result } from '@mikuroxina/mini-fn';
 import { describe, expect, it } from 'vitest';
 
-import type { AccountID } from '../../accounts/model/account.ts';
+import type { Account } from '../../accounts/model/account.ts';
+import { generateDummyID } from '../../internal/id/dummy.ts';
 import { Bookmark, type CreateBookmarkArgs } from './bookmark.ts';
-import type { NoteID } from './note.ts';
+import type { Note } from './note.ts';
 
 const exampleInput: CreateBookmarkArgs = {
-  noteID: '1' as NoteID,
-  accountID: '2' as AccountID,
+  noteID: generateDummyID<Note>(),
+  accountID: generateDummyID<Account>(),
 };
 
 describe('Bookmark', () => {

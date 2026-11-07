@@ -1,30 +1,37 @@
 import { Option, Result } from '@mikuroxina/mini-fn';
 import { describe, expect, it } from 'vitest';
 
-import type { AccountID } from '../../accounts/model/account.ts';
-import type { MediumID } from '../../drive/model/medium.ts';
+import type { Account } from '../../accounts/model/account.ts';
+import type { Medium } from '../../drive/model/medium.ts';
+import { generateDummyID } from '../../internal/id/dummy.ts';
 import {
   NoteContentLengthError,
   NoteNoDestinationError,
   NoteTooManyAttachmentsError,
 } from './errors.ts';
-import { type CreateNoteArgs, Note, type NoteID } from './note.ts';
+import { type CreateNoteArgs, Note } from './note.ts';
 
 const exampleInput: CreateNoteArgs = {
-  id: '1' as NoteID,
-  authorID: '2' as AccountID,
+  id: generateDummyID<Note>(),
+  authorID: generateDummyID<Account>(),
   content: 'hello world!',
   createdAt: new Date('2023-09-10T00:00:00.000Z'),
   visibility: 'PUBLIC',
   contentsWarningComment: '',
   sendTo: Option.none(),
   originalNoteID: Option.none(),
-  attachmentFileID: ['10' as MediumID, '20' as MediumID, '30' as MediumID],
+  attachmentFileID: [
+    generateDummyID<Medium>(),
+    generateDummyID<Medium>(),
+    generateDummyID<Medium>(),
+  ],
   updatedAt: Option.none(),
   deletedAt: Option.none(),
 };
 
 const actor = exampleInput.authorID;
+const otherAccountID = generateDummyID<Account>();
+const originalNoteID = generateDummyID<Note>();
 
 describe('Note', () => {
   it('generate new instance', () => {
@@ -60,9 +67,8 @@ describe('Note', () => {
         name: 'too many attachments',
         args: {
           ...exampleInput,
-          attachmentFileID: Array.from(
-            { length: 17 },
-            (_, i) => (i + 1).toString() as MediumID,
+          attachmentFileID: Array.from({ length: 17 }, () =>
+            generateDummyID<Medium>(),
           ),
         },
         expectedError: NoteTooManyAttachmentsError,
@@ -102,7 +108,7 @@ describe('Note', () => {
           content: '',
           contentsWarningComment: '',
           attachmentFileID: [],
-          originalNoteID: Option.some('999' as NoteID),
+          originalNoteID: Option.some(originalNoteID),
         },
         actor,
       ),
@@ -112,7 +118,7 @@ describe('Note', () => {
     expect(renote.getCwComment()).toBe('');
     expect(renote.getAttachmentFileID()).toHaveLength(0);
     expect(renote.getOriginalNoteID()).toStrictEqual(
-      Option.some('999' as NoteID),
+      Option.some(originalNoteID),
     );
   });
 
@@ -124,7 +130,7 @@ describe('Note', () => {
           content: '',
           contentsWarningComment: 'CW text',
           attachmentFileID: [],
-          originalNoteID: Option.some('999' as NoteID),
+          originalNoteID: Option.some(originalNoteID),
         },
         actor,
       ),
@@ -133,7 +139,7 @@ describe('Note', () => {
     expect(renote.getContent()).toBe('');
     expect(renote.getCwComment()).toBe('CW text');
     expect(renote.getOriginalNoteID()).toStrictEqual(
-      Option.some('999' as NoteID),
+      Option.some(originalNoteID),
     );
   });
 
@@ -144,8 +150,11 @@ describe('Note', () => {
           ...exampleInput,
           content: '',
           contentsWarningComment: '',
-          attachmentFileID: ['10' as MediumID, '11' as MediumID],
-          originalNoteID: Option.some('999' as NoteID),
+          attachmentFileID: [
+            generateDummyID<Medium>(),
+            generateDummyID<Medium>(),
+          ],
+          originalNoteID: Option.some(originalNoteID),
         },
         actor,
       ),
@@ -154,22 +163,24 @@ describe('Note', () => {
     expect(renote.getContent()).toBe('');
     expect(renote.getAttachmentFileID()).toHaveLength(2);
     expect(renote.getOriginalNoteID()).toStrictEqual(
-      Option.some('999' as NoteID),
+      Option.some(originalNoteID),
     );
   });
 
   describe('quote', () => {
+    const quotedNoteID = generateDummyID<Note>();
+
     it('should create a quote with content', () => {
       const quote = Result.unwrap(
         Note.new(
           {
-            id: '200' as NoteID,
-            authorID: '3' as AccountID,
+            id: generateDummyID<Note>(),
+            authorID: generateDummyID<Account>(),
             content: 'quoting this!',
             visibility: 'PUBLIC',
             contentsWarningComment: '',
             sendTo: Option.none(),
-            originalNoteID: Option.some('100' as NoteID),
+            originalNoteID: Option.some(quotedNoteID),
             attachmentFileID: [],
             createdAt: new Date('2023-09-11T00:00:00.000Z'),
           },
@@ -179,7 +190,7 @@ describe('Note', () => {
 
       expect(quote.getContent()).toBe('quoting this!');
       expect(quote.getOriginalNoteID()).toStrictEqual(
-        Option.some('100' as NoteID),
+        Option.some(quotedNoteID),
       );
       expect(quote.isRenote()).toBe(true);
       expect(quote.isQuote()).toBe(true);
@@ -189,13 +200,13 @@ describe('Note', () => {
       const quote = Result.unwrap(
         Note.new(
           {
-            id: '201' as NoteID,
-            authorID: '3' as AccountID,
+            id: generateDummyID<Note>(),
+            authorID: generateDummyID<Account>(),
             content: '',
             visibility: 'PUBLIC',
             contentsWarningComment: 'CW text',
             sendTo: Option.none(),
-            originalNoteID: Option.some('100' as NoteID),
+            originalNoteID: Option.some(quotedNoteID),
             attachmentFileID: [],
             createdAt: new Date('2023-09-11T00:00:00.000Z'),
           },
@@ -212,14 +223,14 @@ describe('Note', () => {
       const quote = Result.unwrap(
         Note.new(
           {
-            id: '202' as NoteID,
-            authorID: '3' as AccountID,
+            id: generateDummyID<Note>(),
+            authorID: generateDummyID<Account>(),
             content: '',
             visibility: 'PUBLIC',
             contentsWarningComment: '',
             sendTo: Option.none(),
-            originalNoteID: Option.some('100' as NoteID),
-            attachmentFileID: ['10' as MediumID],
+            originalNoteID: Option.some(quotedNoteID),
+            attachmentFileID: [generateDummyID<Medium>()],
             createdAt: new Date('2023-09-11T00:00:00.000Z'),
           },
           actor,
@@ -241,13 +252,13 @@ describe('Note', () => {
       const quote = Result.unwrap(
         Note.new(
           {
-            id: '301' as NoteID,
-            authorID: '4' as AccountID,
+            id: generateDummyID<Note>(),
+            authorID: generateDummyID<Account>(),
             content: 'quoting a renote',
             visibility: 'PUBLIC',
             contentsWarningComment: '',
             sendTo: Option.none(),
-            originalNoteID: Option.some('100' as NoteID),
+            originalNoteID: Option.some(quotedNoteID),
             attachmentFileID: [],
             createdAt: new Date('2023-09-12T00:00:00.000Z'),
           },
@@ -256,21 +267,22 @@ describe('Note', () => {
       );
 
       expect(quote.getOriginalNoteID()).toStrictEqual(
-        Option.some('100' as NoteID),
+        Option.some(quotedNoteID),
       );
     });
 
     it('should refer to the quote itself when quoting a quote', () => {
+      const quoteID = generateDummyID<Note>();
       const quote301 = Result.unwrap(
         Note.new(
           {
-            id: '301' as NoteID,
-            authorID: '4' as AccountID,
+            id: generateDummyID<Note>(),
+            authorID: generateDummyID<Account>(),
             content: 'quoting a quote',
             visibility: 'PUBLIC',
             contentsWarningComment: '',
             sendTo: Option.none(),
-            originalNoteID: Option.some('300' as NoteID),
+            originalNoteID: Option.some(quoteID),
             attachmentFileID: [],
             createdAt: new Date('2023-09-12T00:00:00.000Z'),
           },
@@ -278,10 +290,8 @@ describe('Note', () => {
         ),
       );
 
-      // NOTE: 100 <-Quotes- 300 <-Quotes- 301 => 301's original is 300 (not 100)
-      expect(quote301.getOriginalNoteID()).toStrictEqual(
-        Option.some('300' as NoteID),
-      );
+      // NOTE: quotedNoteID <-Quotes- quoteID <-Quotes- quote301 => quote301's original is quoteID (not quotedNoteID)
+      expect(quote301.getOriginalNoteID()).toStrictEqual(Option.some(quoteID));
     });
 
     it.each(['FOLLOWERS', 'DIRECT'] as const)(
@@ -293,9 +303,9 @@ describe('Note', () => {
             visibility,
             sendTo:
               visibility === 'DIRECT'
-                ? Option.some('999' as AccountID)
+                ? Option.some(otherAccountID)
                 : Option.none(),
-            originalNoteID: Option.some('100' as NoteID),
+            originalNoteID: Option.some(quotedNoteID),
           },
           actor,
         );
@@ -306,7 +316,7 @@ describe('Note', () => {
   });
 
   describe('canBeRenotedBy', () => {
-    const author = '2' as AccountID;
+    const author = generateDummyID<Account>();
 
     it.each(['PUBLIC', 'HOME'] as const)(
       '%s note can be renoted by anyone',
@@ -314,7 +324,7 @@ describe('Note', () => {
         const note = Result.unwrap(
           Note.new({ ...exampleInput, visibility }, actor),
         );
-        expect(Result.isOk(note.canBeRenotedBy('999' as AccountID))).toBe(true);
+        expect(Result.isOk(note.canBeRenotedBy(otherAccountID))).toBe(true);
       },
     );
 
@@ -343,7 +353,7 @@ describe('Note', () => {
           actor,
         ),
       );
-      expect(Result.isErr(note.canBeRenotedBy('999' as AccountID))).toBe(true);
+      expect(Result.isErr(note.canBeRenotedBy(otherAccountID))).toBe(true);
     });
 
     it('DIRECT note cannot be renoted', () => {
@@ -353,7 +363,7 @@ describe('Note', () => {
             ...exampleInput,
             authorID: author,
             visibility: 'DIRECT',
-            sendTo: Option.some('999' as AccountID),
+            sendTo: Option.some(otherAccountID),
           },
           actor,
         ),
@@ -376,12 +386,12 @@ describe('Note', () => {
             content: '',
             contentsWarningComment: '',
             attachmentFileID: [],
-            originalNoteID: Option.some('999' as NoteID),
+            originalNoteID: Option.some(originalNoteID),
           },
           actor,
         ),
       );
-      expect(note.getReactionTargetNoteID()).toBe('999' as NoteID);
+      expect(note.getReactionTargetNoteID()).toBe(originalNoteID);
     });
 
     it('returns its own ID for a quote', () => {
@@ -390,7 +400,7 @@ describe('Note', () => {
           {
             ...exampleInput,
             content: 'quoting!',
-            originalNoteID: Option.some('999' as NoteID),
+            originalNoteID: Option.some(originalNoteID),
           },
           actor,
         ),
@@ -434,7 +444,7 @@ describe('Note', () => {
             content: '',
             contentsWarningComment: '',
             attachmentFileID: [],
-            originalNoteID: Option.some('999' as NoteID),
+            originalNoteID: Option.some(originalNoteID),
           },
           actor,
         ),
@@ -448,7 +458,7 @@ describe('Note', () => {
       expect(event?.target).toBe(exampleInput.id);
       expect(event?.actor).toBe(exampleInput.authorID);
       expect(event?.payload).toStrictEqual({
-        originalNoteID: '999' as NoteID,
+        originalNoteID,
       });
     });
 
@@ -458,7 +468,7 @@ describe('Note', () => {
           {
             ...exampleInput,
             content: 'quoting!',
-            originalNoteID: Option.some('999' as NoteID),
+            originalNoteID: Option.some(originalNoteID),
           },
           actor,
         ),
@@ -512,7 +522,7 @@ describe('Note', () => {
               content: '',
               contentsWarningComment: '',
               attachmentFileID: [],
-              originalNoteID: Option.some('999' as NoteID),
+              originalNoteID: Option.some(originalNoteID),
             },
             actor,
           ),

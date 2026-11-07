@@ -8,48 +8,33 @@ import {
   vi,
 } from 'vitest';
 
-import type { AccountID } from '../../accounts/model/account.ts';
+import type { Account } from '../../accounts/model/account.ts';
+import { generateDummyAccount } from '../../accounts/testData/testData.ts';
 import type { EventPublisher } from '../../internal/event/mod.ts';
+import { generateDummyID } from '../../internal/id/dummy.ts';
 import {
   InMemoryBookmarkRepository,
   InMemoryNoteRepository,
 } from '../adaptor/repository/dummy.ts';
-import { Note, type NoteID } from '../model/note.ts';
+import type { Note } from '../model/note.ts';
+import { generateDummyNote } from '../testData/testData.ts';
 import { CreateBookmarkService } from './createBookmark.ts';
 
-const noteID = 'noteID_1' as NoteID;
-const anotherNoteID = 'noteID_2' as NoteID;
-const accountID = 'accountID_1' as AccountID;
-const anotherAccountID = 'accountID_2' as AccountID;
+const author = generateDummyAccount();
+const note = generateDummyNote({
+  authorID: author.getID(),
+  content: 'Hello world',
+});
+const anotherNote = generateDummyNote({
+  authorID: author.getID(),
+  content: 'Another note',
+});
+const noteID = note.getID();
+const anotherNoteID = anotherNote.getID();
+const accountID = generateDummyID<Account>();
+const anotherAccountID = generateDummyID<Account>();
 
-const noteRepository = new InMemoryNoteRepository([
-  Note.reconstruct({
-    id: 'noteID_1' as NoteID,
-    authorID: '3' as AccountID,
-    content: 'Hello world',
-    contentsWarningComment: '',
-    createdAt: new Date('2023-09-10T00:00:00Z'),
-    sendTo: Option.none(),
-    originalNoteID: Option.none(),
-    attachmentFileID: [],
-    visibility: 'PUBLIC',
-    updatedAt: Option.none(),
-    deletedAt: Option.none(),
-  }),
-  Note.reconstruct({
-    id: 'noteID_2' as NoteID,
-    authorID: '3' as AccountID,
-    content: 'Another note',
-    contentsWarningComment: '',
-    createdAt: new Date('2023-09-10T00:00:00Z'),
-    sendTo: Option.none(),
-    originalNoteID: Option.none(),
-    attachmentFileID: [],
-    visibility: 'PUBLIC',
-    updatedAt: Option.none(),
-    deletedAt: Option.none(),
-  }),
-]);
+const noteRepository = new InMemoryNoteRepository([note, anotherNote]);
 const bookmarkRepository = new InMemoryBookmarkRepository();
 const eventPublisher = {
   publishMany: vi.fn(async () => Result.ok(undefined)),
@@ -89,7 +74,7 @@ describe('CreateBookmarkService', () => {
 
   it('fail when note not found', async () => {
     const res = await createBookmarkService.handle(
-      'note_notexist' as NoteID,
+      generateDummyID<Note>(),
       accountID,
     );
     expect(Result.isErr(res)).toBe(true);
