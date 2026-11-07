@@ -10,7 +10,7 @@ import {
 
 import type { EventPublisher } from '../../internal/event/mod.ts';
 import { InMemoryAccountRepository } from '../adaptor/repository/dummy/account.ts';
-import { Account, type AccountID } from '../model/account.ts';
+import { generateDummyAccount } from '../testData/testData.ts';
 import { SilenceService } from './silence.ts';
 
 const repository = new InMemoryAccountRepository();
@@ -21,32 +21,8 @@ const silenceService = new SilenceService(repository, eventPublisher);
 
 const resetRepository = () => {
   repository.reset([
-    Account.reconstruct({
-      id: '1' as AccountID,
-      name: '@john@example.com',
-      mail: 'johndoe@example.com',
-      nickname: 'John Doe',
-      passphraseHash: 'hash',
-      bio: '',
-      role: 'normal',
-      frozen: 'normal',
-      silenced: 'normal',
-      status: 'active',
-      createdAt: new Date(),
-    }),
-    Account.reconstruct({
-      id: '2' as AccountID,
-      name: '@alice@example.com',
-      mail: 'alice@example.com',
-      nickname: 'Alice',
-      passphraseHash: 'hash',
-      bio: '',
-      role: 'admin',
-      frozen: 'normal',
-      silenced: 'normal',
-      status: 'active',
-      createdAt: new Date(),
-    }),
+    generateDummyAccount({ name: '@john@example.com' }),
+    generateDummyAccount({ name: '@alice@example.com', role: 'admin' }),
   ]);
 };
 

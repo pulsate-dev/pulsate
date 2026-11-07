@@ -1,49 +1,22 @@
-import { Option, Result } from '@mikuroxina/mini-fn';
+import { Result } from '@mikuroxina/mini-fn';
 import { afterEach, describe, expect, it } from 'vitest';
-
+import { generateDummyID } from '../../internal/id/dummy.ts';
 import { InMemoryAccountRepository } from '../adaptor/repository/dummy/account.ts';
-import { Account, type AccountID } from '../model/account.ts';
+import type { Account } from '../model/account.ts';
+import { generateDummyAccount } from '../testData/testData.ts';
 import { FetchService } from './fetch.ts';
 
-const testAccounts = [
-  Account.new(
-    {
-      id: '1' as AccountID,
-      name: '@john@example.com',
-      mail: 'johndoe@example.com',
-      nickname: 'John Doe',
-      passphraseHash: 'hash',
-      bio: '',
-      role: 'normal',
-      createdAt: new Date('2023-09-10T12:00:00Z'),
-    },
-    Option.none(),
-  ),
-  Account.new(
-    {
-      id: '2' as AccountID,
-      name: '@alice@example.com',
-      mail: 'alice@example.com',
-      nickname: 'Alice',
-      bio: 'Hello, World!',
-      role: 'normal',
-      createdAt: new Date('2023-09-11T12:00:00Z'),
-    },
-    Option.none(),
-  ),
-  Account.new(
-    {
-      id: '3' as AccountID,
-      name: '@bob@example.com',
-      mail: 'bob@example.com',
-      nickname: 'bob',
-      bio: 'Hello, World!',
-      role: 'normal',
-      createdAt: new Date('2023-09-12T12:00:00Z'),
-    },
-    Option.none(),
-  ),
-];
+const john = generateDummyAccount({
+  name: '@john@example.com',
+  mail: 'johndoe@example.com',
+  nickname: 'John Doe',
+  passphraseHash: 'hash',
+  bio: '',
+  status: 'notActivated',
+});
+const alice = generateDummyAccount({ name: '@alice@example.com' });
+const bob = generateDummyAccount({ name: '@bob@example.com' });
+const testAccounts = [john, alice, bob];
 const repository = new InMemoryAccountRepository(testAccounts);
 const fetchService = new FetchService(repository);
 
@@ -54,7 +27,7 @@ describe('FetchService', () => {
     const account = await fetchService.fetchAccount('@john@example.com');
     if (Result.isErr(account)) return;
 
-    expect(account[1].getID()).toBe('1');
+    expect(account[1].getID()).toBe(john.getID());
     expect(account[1].getName()).toBe('@john@example.com');
     expect(account[1].getMail()).toBe('johndoe@example.com');
     expect(account[1].getNickname()).toBe('John Doe');
@@ -75,43 +48,26 @@ describe('FetchService', () => {
   });
 
   it('fetch account by ID', async () => {
-    const account = await fetchService.fetchAccountByID('1' as AccountID);
+    const account = await fetchService.fetchAccountByID(john.getID());
     if (Result.isErr(account)) {
       return;
     }
-    // NOTE: events carry a non-deterministic ID, so drop them from both
-    // sides before comparing.
-    account[1].pullEvents();
 
-    const expected = Account.new(
-      {
-        id: '1' as AccountID,
-        name: '@john@example.com',
-        mail: 'johndoe@example.com',
-        nickname: 'John Doe',
-        passphraseHash: 'hash',
-        bio: '',
-        role: 'normal',
-        createdAt: new Date('2023-09-10T12:00:00.000Z'),
-      },
-      Option.none(),
-    );
-    expected.pullEvents();
-
-    expect(account[1]).toStrictEqual(expected);
+    expect(account[1]).toStrictEqual(john);
   });
 
   it("fetch account by ID doesn't exist", async () => {
-    // `20` is not registered.
-    const account = await fetchService.fetchAccountByID('20' as AccountID);
+    const account = await fetchService.fetchAccountByID(
+      generateDummyID<Account>(),
+    );
 
     expect(Result.isErr(account)).toBe(true);
   });
 
   it('should fetch many account by ID', async () => {
     const accounts = await fetchService.fetchManyAccountsByID([
-      '2' as AccountID,
-      '3' as AccountID,
+      alice.getID(),
+      bob.getID(),
     ]);
 
     expect(Result.isOk(accounts)).toBe(true);

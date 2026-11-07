@@ -1,12 +1,13 @@
 import { Option, Result } from '@mikuroxina/mini-fn';
 import { describe, expect, it } from 'vitest';
 
-import type { AccountID } from './account.ts';
+import { generateDummyID } from '../../internal/id/dummy.ts';
+import type { Account } from './account.ts';
 import { AccountFollow } from './follow.ts';
 
 const exampleInput = {
-  fromID: '1' as AccountID,
-  targetID: '2' as AccountID,
+  fromID: generateDummyID<Account>(),
+  targetID: generateDummyID<Account>(),
   createdAt: new Date('2023-09-10T00:00:00.000Z'),
 };
 

@@ -1,73 +1,47 @@
 import { Result } from '@mikuroxina/mini-fn';
 import { describe, expect, it } from 'vitest';
+import { generateDummyID } from '../../internal/id/dummy.ts';
 import { InMemoryAccountRepository } from '../adaptor/repository/dummy/account.ts';
 import { InMemoryAccountFollowRepository } from '../adaptor/repository/dummy/follow.ts';
-import {
-  Account,
-  type AccountFrozen,
-  type AccountID,
-  type AccountRole,
-  type AccountSilenced,
-  type AccountStatus,
-} from '../model/account.ts';
+import type { Account } from '../model/account.ts';
 import { AccountNotFoundError } from '../model/errors.ts';
-import { AccountFollow } from '../model/follow.ts';
+import {
+  generateDummyAccount,
+  generateDummyFollow,
+} from '../testData/testData.ts';
 import { FetchRelationshipService } from './relationships.ts';
 
-// Test factories
-const createMockAccount = (id: string, name: string): Account => {
-  return Account.reconstruct({
-    id: id as AccountID,
-    name: `@${name}@example.com`,
-    nickname: name,
-    mail: `${name}@example.com`,
-    passphraseHash: 'hash',
-    bio: 'bio',
-    role: 'normal' as AccountRole,
-    frozen: 'normal' as AccountFrozen,
-    silenced: 'normal' as AccountSilenced,
-    status: 'active' as AccountStatus,
-    createdAt: new Date(`2024-01-0${id}T10:00:00Z`),
-  });
-};
-
-const createMockFollow = (
-  fromId: string,
-  targetId: string,
-  dayOffset = 0,
-): AccountFollow => {
-  const createdAt = new Date(`2024-01-${10 + dayOffset}T12:00:00Z`);
-  return Result.unwrap(
-    AccountFollow.new({
-      fromID: fromId as AccountID,
-      targetID: targetId as AccountID,
-      createdAt,
-    }),
-  );
-};
+const john = generateDummyAccount({ name: '@john@example.com' });
+const jane = generateDummyAccount({ name: '@jane@example.com' });
+const johnFollowsJane = generateDummyFollow({
+  fromID: john.getID(),
+  targetID: jane.getID(),
+});
+const janeFollowsJohn = generateDummyFollow({
+  fromID: jane.getID(),
+  targetID: john.getID(),
+});
 
 describe('FetchRelationshipService', () => {
   describe('checkRelationships', () => {
     describe('when target account exists', () => {
       it('should return mutual follow relationships', async () => {
-        const account1 = createMockAccount('1', 'john');
-        const account2 = createMockAccount('2', 'jane');
-        const accountRepo = new InMemoryAccountRepository([account1, account2]);
+        const accountRepo = new InMemoryAccountRepository([john, jane]);
         const followRepo = new InMemoryAccountFollowRepository([
-          createMockFollow('1', '2', 0), // john follows jane
-          createMockFollow('2', '1', 1), // jane follows john
+          johnFollowsJane,
+          janeFollowsJohn,
         ]);
         const service = new FetchRelationshipService(followRepo, accountRepo);
 
         const result = await service.checkRelationships(
-          '2' as AccountID,
-          '1' as AccountID,
+          jane.getID(),
+          john.getID(),
         );
 
         expect(Result.isOk(result)).toBe(true);
         const relationships = Result.unwrap(result);
         expect(relationships).toEqual({
-          id: '2',
+          id: jane.getID(),
           isFollowed: true,
           isFollowing: true,
           isFollowRequesting: false,
@@ -75,23 +49,21 @@ describe('FetchRelationshipService', () => {
       });
 
       it('should return one-way follow relationship', async () => {
-        const account1 = createMockAccount('1', 'john');
-        const account2 = createMockAccount('2', 'jane');
-        const accountRepo = new InMemoryAccountRepository([account1, account2]);
+        const accountRepo = new InMemoryAccountRepository([john, jane]);
         const followRepo = new InMemoryAccountFollowRepository([
-          createMockFollow('1', '2'), // john follows jane
+          johnFollowsJane,
         ]);
         const service = new FetchRelationshipService(followRepo, accountRepo);
 
         const result = await service.checkRelationships(
-          '2' as AccountID,
-          '1' as AccountID,
+          jane.getID(),
+          john.getID(),
         );
 
         expect(Result.isOk(result)).toBe(true);
         const relationships = Result.unwrap(result);
         expect(relationships).toEqual({
-          id: '2',
+          id: jane.getID(),
           isFollowed: false,
           isFollowing: true,
           isFollowRequesting: false,
@@ -99,21 +71,19 @@ describe('FetchRelationshipService', () => {
       });
 
       it('should return no relationship when no follows exist', async () => {
-        const account1 = createMockAccount('1', 'john');
-        const account2 = createMockAccount('2', 'jane');
-        const accountRepo = new InMemoryAccountRepository([account1, account2]);
+        const accountRepo = new InMemoryAccountRepository([john, jane]);
         const followRepo = new InMemoryAccountFollowRepository([]);
         const service = new FetchRelationshipService(followRepo, accountRepo);
 
         const result = await service.checkRelationships(
-          '2' as AccountID,
-          '1' as AccountID,
+          jane.getID(),
+          john.getID(),
         );
 
         expect(Result.isOk(result)).toBe(true);
         const relationships = Result.unwrap(result);
         expect(relationships).toEqual({
-          id: '2',
+          id: jane.getID(),
           isFollowed: false,
           isFollowing: false,
           isFollowRequesting: false,
@@ -123,14 +93,13 @@ describe('FetchRelationshipService', () => {
 
     describe('when target account does not exist', () => {
       it('should return AccountNotFoundError', async () => {
-        const account1 = createMockAccount('1', 'john');
-        const accountRepo = new InMemoryAccountRepository([account1]);
+        const accountRepo = new InMemoryAccountRepository([john]);
         const followRepo = new InMemoryAccountFollowRepository([]);
         const service = new FetchRelationshipService(followRepo, accountRepo);
 
         const result = await service.checkRelationships(
-          '999' as AccountID,
-          '1' as AccountID,
+          generateDummyID<Account>(),
+          john.getID(),
         );
 
         expect(Result.isErr(result)).toBe(true);

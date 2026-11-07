@@ -4,44 +4,12 @@ import type { EventPublisher } from '../../internal/event/mod.ts';
 import { MockClock } from '../../internal/id/mod.ts';
 import { InMemoryAccountRepository } from '../adaptor/repository/dummy/account.ts';
 import { InMemoryAccountFollowRepository } from '../adaptor/repository/dummy/follow.ts';
-import { Account, type AccountID } from '../model/account.ts';
+import { generateDummyAccount } from '../testData/testData.ts';
 import { FollowService } from './follow.ts';
 
-const accountRepository = new InMemoryAccountRepository();
-await accountRepository.create(
-  Account.reconstruct({
-    id: '1' as AccountID,
-    name: '@johndoe@example.com',
-    bio: '',
-    mail: '',
-    nickname: '',
-    passphraseHash: undefined,
-    frozen: 'normal',
-    role: 'normal',
-    silenced: 'normal',
-    status: 'active',
-    createdAt: new Date(),
-    updatedAt: undefined,
-    deletedAt: undefined,
-  }),
-);
-await accountRepository.create(
-  Account.reconstruct({
-    id: '2' as AccountID,
-    name: '@testuser@example.com',
-    bio: '',
-    mail: '',
-    nickname: '',
-    passphraseHash: undefined,
-    frozen: 'normal',
-    role: 'normal',
-    silenced: 'normal',
-    status: 'active',
-    createdAt: new Date(),
-    updatedAt: undefined,
-    deletedAt: undefined,
-  }),
-);
+const follower = generateDummyAccount({ name: '@johndoe@example.com' });
+const target = generateDummyAccount({ name: '@testuser@example.com' });
+const accountRepository = new InMemoryAccountRepository([follower, target]);
 const repository = new InMemoryAccountFollowRepository();
 const mockClock = new MockClock(new Date('2023-09-10T00:00:00Z'));
 const eventPublisher = {
@@ -62,8 +30,8 @@ describe('FollowService', () => {
     );
 
     expect(Result.isErr(res)).toBe(false);
-    expect(Result.unwrap(res).getFromID()).toBe('1' as AccountID);
-    expect(Result.unwrap(res).getTargetID()).toBe('2' as AccountID);
+    expect(Result.unwrap(res).getFromID()).toBe(follower.getID());
+    expect(Result.unwrap(res).getTargetID()).toBe(target.getID());
     expect(Result.unwrap(res).getDeletedAt()).toStrictEqual(Option.none());
     expect(eventPublisher.publishMany).toHaveBeenCalledWith([
       expect.objectContaining({ eventName: 'account.follow.requested' }),

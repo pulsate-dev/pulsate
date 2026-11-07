@@ -10,80 +10,20 @@ import {
 
 import type { EventPublisher } from '../../internal/event/mod.ts';
 import { InMemoryAccountRepository } from '../adaptor/repository/dummy/account.ts';
-import { Account, type AccountID } from '../model/account.ts';
+import { generateDummyAccount } from '../testData/testData.ts';
 import { FreezeService } from './freeze.ts';
 
 const testAccounts = [
   // NOTE: target account
-  Account.reconstruct({
-    id: '1' as AccountID,
-    name: '@john@example.com',
-    mail: 'johndoe@example.com',
-    nickname: 'John Doe',
-    passphraseHash: 'hash',
-    bio: '',
-    role: 'normal',
-    frozen: 'normal',
-    silenced: 'normal',
-    status: 'active',
-    createdAt: new Date(),
-  }),
+  generateDummyAccount({ name: '@john@example.com' }),
   // NOTE: actor account
-  Account.reconstruct({
-    id: '2' as AccountID,
-    name: '@alice@example.com',
-    mail: 'alice@example.com',
-    nickname: 'Alice',
-    passphraseHash: 'hash',
-    bio: '',
-    role: 'admin',
-    frozen: 'normal',
-    silenced: 'normal',
-    status: 'active',
-    createdAt: new Date(),
-  }),
+  generateDummyAccount({ name: '@alice@example.com', role: 'admin' }),
   // NOTE: actor account(moderator)
-  Account.reconstruct({
-    id: '3' as AccountID,
-    name: '@bob@example.com',
-    mail: 'bob@example.com',
-    nickname: 'Bob',
-    passphraseHash: 'hash',
-    bio: '',
-    role: 'moderator',
-    frozen: 'normal',
-    silenced: 'normal',
-    status: 'active',
-    createdAt: new Date(),
-  }),
+  generateDummyAccount({ name: '@bob@example.com', role: 'moderator' }),
   // NOTE: actor account(normal)
-  Account.reconstruct({
-    id: '4' as AccountID,
-    name: '@carol@example.com',
-    mail: 'carol@example.com',
-    nickname: 'Carol',
-    passphraseHash: 'hash',
-    bio: '',
-    role: 'normal',
-    frozen: 'normal',
-    silenced: 'normal',
-    status: 'active',
-    createdAt: new Date(),
-  }),
+  generateDummyAccount({ name: '@carol@example.com' }),
   // NOTE: target account(frozen)
-  Account.reconstruct({
-    id: '1' as AccountID,
-    name: '@david@example.com',
-    mail: 'david@example.com',
-    nickname: 'david',
-    passphraseHash: 'hash',
-    bio: '',
-    role: 'normal',
-    frozen: 'frozen',
-    silenced: 'normal',
-    status: 'active',
-    createdAt: new Date(),
-  }),
+  generateDummyAccount({ name: '@david@example.com', frozen: 'frozen' }),
 ];
 const repository = new InMemoryAccountRepository();
 const eventPublisher = {
@@ -140,6 +80,16 @@ describe('FreezeService', () => {
       expect(Result.isErr(result)).toBe(true);
       expect(result[1]).toStrictEqual(new Error('not allowed'));
       expect(account.isFrozen()).toBe(false);
+    });
+
+    it('cannot unFreeze self', async () => {
+      const result = await freezeService.undoFreeze(
+        '@alice@example.com',
+        '@alice@example.com',
+      );
+
+      expect(Result.isErr(result)).toBe(true);
+      expect(result[1]).toStrictEqual(new Error('not allowed'));
     });
 
     it('cannot freeze/unFreeze if actor is not admin or moderator', async () => {
