@@ -1,13 +1,17 @@
 import { Option, Result } from '@mikuroxina/mini-fn';
 import { describe, expect, it } from 'vitest';
-import type { ActorID } from './actor.ts';
-import { ActorKeyPair, type ActorKeyPairID, type PEMKey } from './actorKey.ts';
+import { generateDummyID } from '../../internal/id/dummy.ts';
+import type { Actor } from './actor.ts';
+import { ActorKeyPair, type PEMKey } from './actorKey.ts';
 
 describe('ActorKeyPair', () => {
+  const actorKeyPairID = generateDummyID<ActorKeyPair>();
+  const actorID = generateDummyID<Actor>();
+
   it('should create new instance', () => {
     const res = ActorKeyPair.new({
-      id: '1' as ActorKeyPairID,
-      actorID: '10' as ActorID,
+      id: actorKeyPairID,
+      actorID: actorID,
       publicKeyID: new URL('https://social.example.com/actor/1#main-key'),
       publicKey: `-----BEGIN PUBLIC KEY-----
 MIICIjANBgkqhkiG9w0BAQEFAAOCAg8AMIICCgKCAgEAqKU7f9DTbeIzv0a4M5R9
@@ -79,8 +83,8 @@ vfBYk096qOEdFfQma6qWoXYQa4orPLtI
       ),
     });
 
-    expect(res.getID()).toBe('1');
-    expect(res.getActorID()).toBe('10');
+    expect(res.getID()).toBe(actorKeyPairID);
+    expect(res.getActorID()).toBe(actorID);
     expect(res.getPublicKeyID()).toEqual(
       new URL('https://social.example.com/actor/1#main-key'),
     );
@@ -90,8 +94,8 @@ vfBYk096qOEdFfQma6qWoXYQa4orPLtI
 
   it('should output CryptoKeyPair', async () => {
     const keyPair = ActorKeyPair.new({
-      id: '1' as ActorKeyPairID,
-      actorID: '10' as ActorID,
+      id: actorKeyPairID,
+      actorID: actorID,
       publicKeyID: new URL('https://social.example.com/actor/1#main-key'),
       publicKey: `-----BEGIN PUBLIC KEY-----
 MIICIjANBgkqhkiG9w0BAQEFAAOCAg8AMIICCgKCAgEAqKU7f9DTbeIzv0a4M5R9

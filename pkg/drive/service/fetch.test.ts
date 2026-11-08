@@ -1,27 +1,20 @@
-import { Option, Result } from '@mikuroxina/mini-fn';
+import { Result } from '@mikuroxina/mini-fn';
 import { describe, expect, it } from 'vitest';
 
-import type { AccountID } from '../../accounts/model/account.ts';
+import type { Account } from '../../accounts/model/account.ts';
+import { generateDummyID } from '../../internal/id/dummy.ts';
 import { InMemoryMediaRepository } from '../adaptor/repository/dummy.ts';
-import { Medium, type MediumID } from '../model/medium.ts';
+import { generateDummyMedium } from '../testData/testData.ts';
 import { FetchMediaService } from './fetch.ts';
 
 describe('FetchMediaService', () => {
-  const dummyMedium = Medium.reconstruct({
-    id: '1' as MediumID,
-    authorId: '10' as AccountID,
-    hash: 'ssjrkgnkksjn',
-    mime: 'img/png',
-    name: 'main.png',
-    nsfw: false,
-    thumbnailUrl: Option.some('https://example.com/thumbnail.png'),
-    url: Option.some('https://example.com/main.png'),
-  });
+  const authorId = generateDummyID<Account>();
+  const dummyMedium = generateDummyMedium({ authorId });
   const mediaRepository = new InMemoryMediaRepository([dummyMedium]);
   const service = new FetchMediaService(mediaRepository);
 
   it('should fetch media by author ID', async () => {
-    const res = await service.fetchMediaByAuthorID('10' as AccountID);
+    const res = await service.fetchMediaByAuthorID(authorId);
 
     expect(Result.isOk(res)).toBe(true);
     expect(Result.unwrap(res)).toStrictEqual([dummyMedium]);

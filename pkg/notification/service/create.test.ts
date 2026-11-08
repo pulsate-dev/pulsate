@@ -1,9 +1,10 @@
 import { Result } from '@mikuroxina/mini-fn';
 import { describe, expect, it } from 'vitest';
-import type { AccountID } from '../../accounts/model/account.ts';
+import type { Account } from '../../accounts/model/account.ts';
+import { generateDummyID } from '../../internal/id/dummy.ts';
 import { MockClock, SnowflakeIDGenerator } from '../../internal/id/mod.ts';
-import type { NoteID } from '../../notes/model/note.ts';
-import type { ReactionID } from '../../notes/model/reaction.ts';
+import type { Note } from '../../notes/model/note.ts';
+import type { Reaction } from '../../notes/model/reaction.ts';
 import { InMemoryNotificationRepository } from '../adaptor/repository/dummy/notification.ts';
 import { CreateNotificationService } from './create.ts';
 
@@ -16,10 +17,16 @@ describe('CreateNotificationService', () => {
     clock,
     notificationRepository,
   );
+  const recipientID = generateDummyID<Account>();
+  const actorID = generateDummyID<Account>();
+  const sourceID = generateDummyID<Note>();
+  const noteActivityID = generateDummyID<Note>();
+  const reactionActivityID = generateDummyID<Reaction>();
+
   it('should create followed Notification', async () => {
     const res = await createNotificationService.createFollowed({
-      recipientID: '1' as AccountID,
-      actorID: '2' as AccountID,
+      recipientID: recipientID,
+      actorID: actorID,
     });
 
     expect(Result.isOk(res)).toBe(true);
@@ -27,8 +34,8 @@ describe('CreateNotificationService', () => {
 
   it('should create followRequested Notification', async () => {
     const res = await createNotificationService.createFollowRequested({
-      recipientID: '1' as AccountID,
-      actorID: '2' as AccountID,
+      recipientID: recipientID,
+      actorID: actorID,
     });
 
     expect(Result.isOk(res)).toBe(true);
@@ -36,8 +43,8 @@ describe('CreateNotificationService', () => {
 
   it('should create followAccepted Notification', async () => {
     const res = await createNotificationService.createFollowAccepted({
-      recipientID: '1' as AccountID,
-      actorID: '2' as AccountID,
+      recipientID: recipientID,
+      actorID: actorID,
     });
 
     expect(Result.isOk(res)).toBe(true);
@@ -45,9 +52,9 @@ describe('CreateNotificationService', () => {
 
   it('should create mentioned Notification', async () => {
     const res = await createNotificationService.createMentioned({
-      recipientID: '1' as AccountID,
-      actorID: '2' as AccountID,
-      activityID: '3' as NoteID,
+      recipientID: recipientID,
+      actorID: actorID,
+      activityID: noteActivityID,
     });
 
     expect(Result.isOk(res)).toBe(true);
@@ -55,10 +62,10 @@ describe('CreateNotificationService', () => {
 
   it('should create reacted Notification', async () => {
     const res = await createNotificationService.createReacted({
-      recipientID: '1' as AccountID,
-      actorID: '2' as AccountID,
-      sourceID: '3' as NoteID,
-      activityID: '4' as ReactionID,
+      recipientID: recipientID,
+      actorID: actorID,
+      sourceID,
+      activityID: reactionActivityID,
     });
 
     expect(Result.isOk(res)).toBe(true);
@@ -66,10 +73,10 @@ describe('CreateNotificationService', () => {
 
   it('should create renoted Notification', async () => {
     const res = await createNotificationService.createRenoted({
-      recipientID: '1' as AccountID,
-      actorID: '2' as AccountID,
-      sourceID: '3' as NoteID,
-      activityID: '4' as NoteID,
+      recipientID: recipientID,
+      actorID: actorID,
+      sourceID,
+      activityID: noteActivityID,
     });
 
     expect(Result.isOk(res)).toBe(true);

@@ -1,24 +1,11 @@
 import { Option, Result } from '@mikuroxina/mini-fn';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 
-import type { AccountID } from '../accounts/model/account.ts';
 import { NoteNotFoundError } from '../notes/model/errors.ts';
-import { Note, type NoteID } from '../notes/model/note.ts';
+import { generateDummyNote } from '../notes/testData/testData.ts';
 import { NoteModuleFacade, noteFetchServiceInstance } from './note.ts';
 
-const note = Note.reconstruct({
-  id: '1' as NoteID,
-  authorID: '101' as AccountID,
-  content: 'hello',
-  contentsWarningComment: '',
-  createdAt: new Date(),
-  originalNoteID: Option.none(),
-  attachmentFileID: [],
-  sendTo: Option.none(),
-  visibility: 'PUBLIC',
-  updatedAt: Option.none(),
-  deletedAt: Option.none(),
-});
+const note = generateDummyNote({ content: 'hello' });
 
 describe('NoteModuleFacade', () => {
   afterEach(() => {
