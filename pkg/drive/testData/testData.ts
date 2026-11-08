@@ -1,12 +1,12 @@
 import { Option } from '@mikuroxina/mini-fn';
 
-import type { Account, AccountID } from '../../accounts/model/account.ts';
-import { DUMMY_BASE_DATE, generateDummyID } from '../../internal/id/dummy.ts';
+import type { Account } from '../../accounts/model/account.ts';
 import {
-  type CreateMediumArgs,
-  Medium,
-  type MediumID,
-} from '../model/medium.ts';
+  dummyNormalAccount1,
+  dummyNormalAccount2,
+} from '../../accounts/testData/testData.ts';
+import { DUMMY_BASE_DATE, generateDummyID } from '../../internal/id/dummy.ts';
+import { type CreateMediumArgs, Medium } from '../model/medium.ts';
 
 /**
  * @description generate dummy medium (factory function)
@@ -29,17 +29,14 @@ export const generateDummyMedium = (
   });
 
 export const dummyMedium = generateDummyMedium({
-  id: '300' as MediumID,
-  authorId: '101' as AccountID,
+  authorId: dummyNormalAccount1.getID(),
 });
 
 export const dummyNSFWMedium = generateDummyMedium({
-  id: '301' as MediumID,
-  authorId: '101' as AccountID,
+  authorId: dummyNormalAccount1.getID(),
   nsfw: true,
 });
 
 export const dummyOtherMedium = generateDummyMedium({
-  id: '303' as MediumID,
-  authorId: '102' as AccountID,
+  authorId: dummyNormalAccount2.getID(),
 });
