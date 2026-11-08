@@ -3,7 +3,7 @@ import { afterEach, describe, expect, it, vi } from 'vitest';
 
 import { InMemoryAccountRepository } from '../../accounts/adaptor/repository/dummy/account.ts';
 import { generateDummyAccount } from '../../accounts/testData/testData.ts';
-import { testMedium, testNSFWMedium } from '../../drive/testData/testData.ts';
+import { dummyMedium, dummyNSFWMedium } from '../../drive/testData/testData.ts';
 import { dummyAccountModuleFacade } from '../../intermodule/account.ts';
 import { generateDummyID } from '../../internal/id/dummy.ts';
 import {
@@ -27,7 +27,7 @@ const frozenAccount = generateDummyAccount({
 const testNote = generateDummyNote({
   authorID: testAccount.getID(),
   content: 'Hello world',
-  attachmentFileID: [testMedium.getId(), testNSFWMedium.getId()],
+  attachmentFileID: [dummyMedium.getId(), dummyNSFWMedium.getId()],
 });
 const deletedNote = generateDummyNote({
   authorID: testAccount.getID(),
@@ -50,8 +50,8 @@ const accountRepository = new InMemoryAccountRepository([
   frozenAccount,
 ]);
 const noteAttachmentRepository = new InMemoryNoteAttachmentRepository(
-  [testMedium, testNSFWMedium],
-  [[testNote.getID(), [testMedium.getId(), testNSFWMedium.getId()]]],
+  [dummyMedium, dummyNSFWMedium],
+  [[testNote.getID(), [dummyMedium.getId(), dummyNSFWMedium.getId()]]],
 );
 const reactionRepository = new InMemoryReactionRepository();
 
@@ -93,7 +93,7 @@ describe('FetchService', () => {
     const testNotes = generateDummyNotes(5, (i) => ({
       authorID: testAccount.getID(),
       content: `Hello world ${i}`,
-      attachmentFileID: [testMedium.getId(), testNSFWMedium.getId()],
+      attachmentFileID: [dummyMedium.getId(), dummyNSFWMedium.getId()],
     }));
     await Promise.all(testNotes.map((v) => repository.create(v)));
     const res = await service.fetchNotesByID(testNotes.map((v) => v.getID()));
@@ -120,7 +120,7 @@ describe('FetchService', () => {
     const res = await service.fetchNoteAttachments(testNote.getID());
     expect(Result.isOk(res)).toBe(true);
 
-    expect(Result.unwrap(res)).toStrictEqual([testMedium, testNSFWMedium]);
+    expect(Result.unwrap(res)).toStrictEqual([dummyMedium, dummyNSFWMedium]);
     expect(Result.unwrap(res)).toHaveLength(2);
   });
 });

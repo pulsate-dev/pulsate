@@ -28,18 +28,18 @@ export const generateDummyMedium = (
     ...overrides,
   });
 
-export const testMedium = generateDummyMedium({
+export const dummyMedium = generateDummyMedium({
   id: '300' as MediumID,
   authorId: '101' as AccountID,
 });
 
-export const testNSFWMedium = generateDummyMedium({
+export const dummyNSFWMedium = generateDummyMedium({
   id: '301' as MediumID,
   authorId: '101' as AccountID,
   nsfw: true,
 });
 
-export const testOtherMedium = generateDummyMedium({
+export const dummyOtherMedium = generateDummyMedium({
   id: '303' as MediumID,
   authorId: '102' as AccountID,
 });
