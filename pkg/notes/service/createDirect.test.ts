@@ -13,7 +13,7 @@ import { generateDummyAccount } from '../../accounts/testData/testData.ts';
 import type { Medium } from '../../drive/model/medium.ts';
 import type { AccountModuleFacade } from '../../intermodule/account.ts';
 import type { EventPublisher } from '../../internal/event/mod.ts';
-import { generateDummyID } from '../../internal/id/dummy.ts';
+import { generateDummyID, generateDummyIDs } from '../../internal/id/dummy.ts';
 import { MockClock, SnowflakeIDGenerator } from '../../internal/id/mod.ts';
 import type {
   DirectNoteAttachmentRepository,
@@ -165,7 +165,7 @@ describe('CreateDirectNoteService', () => {
       '',
       author.getID(),
       recipient.getID(),
-      Array.from({ length: 17 }, () => generateDummyID<Medium>()),
+      generateDummyIDs<Medium>(17),
     );
 
     expect(Result.isErr(res)).toBe(true);
@@ -207,7 +207,7 @@ describe('CreateDirectNoteService', () => {
       .mockResolvedValueOnce(Result.ok(author))
       .mockResolvedValueOnce(Result.ok(recipient));
 
-    const attachments = [generateDummyID<Medium>(), generateDummyID<Medium>()];
+    const attachments = generateDummyIDs<Medium>(2);
     const res = await service.handle(
       'Hello',
       '',

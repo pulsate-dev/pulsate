@@ -3,7 +3,7 @@ import { describe, expect, it } from 'vitest';
 
 import type { Account } from '../../accounts/model/account.ts';
 import type { Medium } from '../../drive/model/medium.ts';
-import { generateDummyID } from '../../internal/id/dummy.ts';
+import { generateDummyID, generateDummyIDs } from '../../internal/id/dummy.ts';
 import { type CreateDirectNoteArgs, DirectNote } from './directNote.ts';
 import {
   DirectNoteContentLengthError,
@@ -56,10 +56,7 @@ describe('DirectNote', () => {
     {
       name: 'with attachments',
       args: {
-        attachmentFileID: [
-          generateDummyID<Medium>(),
-          generateDummyID<Medium>(),
-        ],
+        attachmentFileID: generateDummyIDs<Medium>(2),
       },
       expected: { content: exampleInput.content, attachmentCount: 2 },
     },
@@ -98,9 +95,7 @@ describe('DirectNote', () => {
         name: 'too many attachments',
         args: {
           ...exampleInput,
-          attachmentFileID: Array.from({ length: 17 }, () =>
-            generateDummyID<Medium>(),
-          ),
+          attachmentFileID: generateDummyIDs<Medium>(17),
         },
         expectedError: DirectNoteTooManyAttachmentsError,
       },

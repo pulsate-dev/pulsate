@@ -10,7 +10,7 @@ import type { Medium } from '../../drive/model/medium.ts';
 import { generateDummyMedium } from '../../drive/testData/testData.ts';
 import { dummyAccountModuleFacade } from '../../intermodule/account.ts';
 import type { EventPublisher } from '../../internal/event/mod.ts';
-import { generateDummyID } from '../../internal/id/dummy.ts';
+import { generateDummyIDs } from '../../internal/id/dummy.ts';
 import { MockClock, SnowflakeIDGenerator } from '../../internal/id/mod.ts';
 import {
   InMemoryNoteAttachmentRepository,
@@ -134,7 +134,7 @@ describe('CreateService', () => {
       'Hello world',
       '',
       dummyNormalAccount1.getID(),
-      Array.from({ length: 17 }, () => generateDummyID<Medium>()),
+      generateDummyIDs<Medium>(17),
       'PUBLIC',
     );
 

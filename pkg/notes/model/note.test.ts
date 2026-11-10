@@ -3,7 +3,7 @@ import { describe, expect, it } from 'vitest';
 
 import type { Account } from '../../accounts/model/account.ts';
 import type { Medium } from '../../drive/model/medium.ts';
-import { generateDummyID } from '../../internal/id/dummy.ts';
+import { generateDummyID, generateDummyIDs } from '../../internal/id/dummy.ts';
 import {
   NoteContentLengthError,
   NoteNoDestinationError,
@@ -20,11 +20,7 @@ const exampleInput: CreateNoteArgs = {
   contentsWarningComment: '',
   sendTo: Option.none(),
   originalNoteID: Option.none(),
-  attachmentFileID: [
-    generateDummyID<Medium>(),
-    generateDummyID<Medium>(),
-    generateDummyID<Medium>(),
-  ],
+  attachmentFileID: generateDummyIDs<Medium>(3),
   updatedAt: Option.none(),
   deletedAt: Option.none(),
 };
@@ -67,9 +63,7 @@ describe('Note', () => {
         name: 'too many attachments',
         args: {
           ...exampleInput,
-          attachmentFileID: Array.from({ length: 17 }, () =>
-            generateDummyID<Medium>(),
-          ),
+          attachmentFileID: generateDummyIDs<Medium>(17),
         },
         expectedError: NoteTooManyAttachmentsError,
       },
@@ -150,10 +144,7 @@ describe('Note', () => {
           ...exampleInput,
           content: '',
           contentsWarningComment: '',
-          attachmentFileID: [
-            generateDummyID<Medium>(),
-            generateDummyID<Medium>(),
-          ],
+          attachmentFileID: generateDummyIDs<Medium>(2),
           originalNoteID: Option.some(originalNoteID),
         },
         actor,
