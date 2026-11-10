@@ -26,3 +26,12 @@ export const generateDummyID = <T>(createdAt = DUMMY_BASE_DATE): ID<T> => {
   sequence = (sequence + 1) % MAX_SEQUENCE;
   return id.toString() as ID<T>;
 };
+
+/**
+ * Generate `count` dummy IDs at the same `createdAt`.
+ */
+export const generateDummyIDs = <T>(
+  count: number,
+  createdAt = DUMMY_BASE_DATE,
+): ID<T>[] =>
+  Array.from({ length: count }, () => generateDummyID<T>(createdAt));
