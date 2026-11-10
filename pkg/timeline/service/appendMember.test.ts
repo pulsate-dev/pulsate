@@ -9,7 +9,7 @@ import {
 } from 'vitest';
 import type { Account } from '../../accounts/model/account.ts';
 import type { EventPublisher } from '../../internal/event/mod.ts';
-import { generateDummyID } from '../../internal/id/dummy.ts';
+import { generateDummyID, generateDummyIDs } from '../../internal/id/dummy.ts';
 import { InMemoryListRepository } from '../adaptor/repository/dummy.ts';
 import {
   ListNotFoundError,
@@ -66,9 +66,7 @@ describe('AppendListMemberService', () => {
   });
 
   it('should not append member if member count exceeds the limit (250)', async () => {
-    const testData = Array.from({ length: 250 }, () =>
-      generateDummyID<Account>(),
-    );
+    const testData = generateDummyIDs<Account>(250);
     for (const v of testData) {
       await service.handle(listId, v, ownerId);
     }

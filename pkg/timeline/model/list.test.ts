@@ -2,7 +2,7 @@ import { Result } from '@mikuroxina/mini-fn';
 import { describe, expect, it } from 'vitest';
 
 import type { Account } from '../../accounts/model/account.ts';
-import { generateDummyID } from '../../internal/id/dummy.ts';
+import { generateDummyID, generateDummyIDs } from '../../internal/id/dummy.ts';
 import {
   ListMemberAlreadyExistsError,
   ListTitleLengthInvalidError,
@@ -51,9 +51,7 @@ describe('List', () => {
     });
 
     it('should return ListTooManyMembersError when memberIds exceeds 250', () => {
-      const memberIds = Array.from({ length: 251 }, () =>
-        generateDummyID<Account>(),
-      );
+      const memberIds = generateDummyIDs<Account>(251);
       const res = List.new({ ...args, memberIds }, args.ownerId);
 
       expect(Result.isErr(res)).toBe(true);
@@ -84,9 +82,7 @@ describe('List', () => {
   });
 
   it('should reject adding a member when member count reaches the limit (250)', () => {
-    const memberIds = Array.from({ length: 250 }, () =>
-      generateDummyID<Account>(),
-    );
+    const memberIds = generateDummyIDs<Account>(250);
     const list = List.reconstruct({ ...args, memberIds });
 
     const res = list.addMember(newMemberId, args.ownerId);
