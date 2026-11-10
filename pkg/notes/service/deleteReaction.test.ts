@@ -1,50 +1,44 @@
 import { Option, Result } from '@mikuroxina/mini-fn';
 import { describe, expect, it, type MockedObject, vi } from 'vitest';
-import type { AccountID } from '../../accounts/model/account.ts';
+import type { Account } from '../../accounts/model/account.ts';
+import { generateDummyAccount } from '../../accounts/testData/testData.ts';
 import type { EventPublisher } from '../../internal/event/mod.ts';
+import { generateDummyID } from '../../internal/id/dummy.ts';
 import {
   InMemoryNoteRepository,
   InMemoryReactionRepository,
 } from '../adaptor/repository/dummy.ts';
 import { NoteNotFoundError, NoteNotReactedYetError } from '../model/errors.ts';
-import { Note, type NoteID } from '../model/note.ts';
-import { Reaction, type ReactionID } from '../model/reaction.ts';
+import type { Note } from '../model/note.ts';
+import {
+  generateDummyNote,
+  generateDummyReaction,
+} from '../testData/testData.ts';
 import { DeleteReactionService } from './deleteReaction.ts';
 
-const noteFactory = (
-  id: NoteID,
-  content: string,
-  originalNoteID: Option.Option<NoteID>,
-) =>
-  Note.reconstruct({
-    id,
-    authorID: '10' as AccountID,
-    content,
-    visibility: 'PUBLIC',
-    contentsWarningComment: '',
-    attachmentFileID: [],
-    createdAt: new Date(),
-    originalNoteID,
-    sendTo: Option.none(),
-    updatedAt: Option.none(),
-    deletedAt: Option.none(),
-  });
-
-const normalNote = noteFactory('1' as NoteID, 'test note', Option.none());
-const renoteNote = noteFactory('2' as NoteID, '', Option.some('1' as NoteID));
+const author = generateDummyAccount();
+const normalNote = generateDummyNote({
+  authorID: author.getID(),
+  content: 'test note',
+});
+const renoteNote = generateDummyNote({
+  authorID: author.getID(),
+  content: '',
+  originalNoteID: Option.some(normalNote.getID()),
+});
+const reactor = generateDummyAccount();
+const anotherReactor = generateDummyAccount();
 
 describe('DeleteReactionService', () => {
   const reactionRepo = new InMemoryReactionRepository([
-    Reaction.reconstruct({
-      id: '100' as ReactionID,
-      noteID: '1' as NoteID,
-      accountID: '2' as AccountID,
+    generateDummyReaction({
+      noteID: normalNote.getID(),
+      accountID: reactor.getID(),
       body: '👍',
     }),
-    Reaction.reconstruct({
-      id: '101' as ReactionID,
-      noteID: '1' as NoteID,
-      accountID: '3' as AccountID,
+    generateDummyReaction({
+      noteID: normalNote.getID(),
+      accountID: anotherReactor.getID(),
       body: '❤️',
     }),
   ]);
@@ -59,7 +53,7 @@ describe('DeleteReactionService', () => {
   );
 
   it('should delete a reaction', async () => {
-    const res = await service.handle('1' as NoteID, '2' as AccountID);
+    const res = await service.handle(normalNote.getID(), reactor.getID());
     expect(Result.isOk(res)).toBe(true);
     expect(eventPublisher.publishMany).toHaveBeenCalledWith([
       expect.objectContaining({ eventName: 'note.reaction.deleted' }),
@@ -67,19 +61,25 @@ describe('DeleteReactionService', () => {
   });
 
   it('if note not found, should return NoteNotFoundError', async () => {
-    const res = await service.handle('999' as NoteID, '2' as AccountID);
+    const res = await service.handle(generateDummyID<Note>(), reactor.getID());
     expect(Result.isErr(res)).toBe(true);
     expect(Result.unwrapErr(res)).toBeInstanceOf(NoteNotFoundError);
   });
 
   it('if reaction not found, should return NoteNotReactedYetError', async () => {
-    const res = await service.handle('1' as NoteID, '99' as AccountID);
+    const res = await service.handle(
+      normalNote.getID(),
+      generateDummyID<Account>(),
+    );
     expect(Result.isErr(res)).toBe(true);
     expect(Result.unwrapErr(res)).toBeInstanceOf(NoteNotReactedYetError);
   });
 
   it('deleting reaction via renote ID resolves to original note', async () => {
-    const res = await service.handle('2' as NoteID, '3' as AccountID);
+    const res = await service.handle(
+      renoteNote.getID(),
+      anotherReactor.getID(),
+    );
     expect(Result.isOk(res)).toBe(true);
   });
 });

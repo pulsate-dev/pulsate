@@ -1,15 +1,16 @@
 import { Result } from '@mikuroxina/mini-fn';
 import { describe, expect, it, type MockedObject, vi } from 'vitest';
 
-import type { AccountID } from '../../accounts/model/account.ts';
+import type { Account } from '../../accounts/model/account.ts';
 import type { EventPublisher } from '../../internal/event/mod.ts';
+import { generateDummyID } from '../../internal/id/dummy.ts';
 import { InMemoryBookmarkRepository } from '../adaptor/repository/dummy.ts';
 import { Bookmark } from '../model/bookmark.ts';
-import type { NoteID } from '../model/note.ts';
+import type { Note } from '../model/note.ts';
 import { DeleteBookmarkService } from './deleteBookmark.ts';
 
-const noteID = '1' as NoteID;
-const accountID = '1' as AccountID;
+const noteID = generateDummyID<Note>();
+const accountID = generateDummyID<Account>();
 
 const bookmarkRepository = new InMemoryBookmarkRepository([
   Bookmark.reconstruct({ noteID, accountID }),
@@ -33,7 +34,7 @@ describe('DeleteBookmarkService', () => {
 
   it('should fail to delete bookmark when does not exist bookmark', async () => {
     const res = await deleteBookmarkService.handle(
-      'notExistNoteID' as NoteID,
+      generateDummyID<Note>(),
       accountID,
     );
     expect(Result.isErr(res)).toBe(true);

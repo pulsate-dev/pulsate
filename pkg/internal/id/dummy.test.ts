@@ -1,7 +1,7 @@
 import { Result } from '@mikuroxina/mini-fn';
 import { describe, expect, it } from 'vitest';
 
-import { generateDummyID } from './dummy.ts';
+import { generateDummyID, generateDummyIDs } from './dummy.ts';
 import { compareID, IDSchema, MockClock, SnowflakeIDGenerator } from './mod.ts';
 
 describe('generateDummyID', () => {
@@ -36,5 +36,26 @@ describe('generateDummyID', () => {
 
   it('rejects dates before Pulsate Epoch', () => {
     expect(() => generateDummyID(new Date('2021-12-31T23:59:59Z'))).toThrow();
+  });
+});
+
+describe('generateDummyIDs', () => {
+  it('returns the given number of IDs', () => {
+    expect(generateDummyIDs(3)).toHaveLength(3);
+  });
+
+  it('returns distinct IDs', () => {
+    const ids = generateDummyIDs(10);
+
+    expect(new Set(ids).size).toBe(10);
+  });
+
+  it('uses createdAt for the timestamp of every ID', () => {
+    const date = new Date('2024-01-01T00:00:00Z');
+    const expected = BigInt(generateDummyID(date)) >> 22n;
+
+    for (const id of generateDummyIDs(3, date)) {
+      expect(BigInt(id) >> 22n).toBe(expected);
+    }
   });
 });

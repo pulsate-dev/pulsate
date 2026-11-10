@@ -1,16 +1,13 @@
 import { Option, Result } from '@mikuroxina/mini-fn';
 import { describe, expect, it } from 'vitest';
 
-import type { AccountID } from '../../accounts/model/account.ts';
+import type { Account } from '../../accounts/model/account.ts';
+import { generateDummyID } from '../../internal/id/dummy.ts';
 import { NoteInvalidReactionError } from './errors.ts';
 import { Note, type NoteID } from './note.ts';
-import {
-  type CreateReactionArgs,
-  Reaction,
-  type ReactionID,
-} from './reaction.ts';
+import { type CreateReactionArgs, Reaction } from './reaction.ts';
 
-const authorID = '10' as AccountID;
+const authorID = generateDummyID<Account>();
 
 const noteFactory = (
   id: NoteID,
@@ -34,18 +31,26 @@ const noteFactory = (
     ),
   );
 
-const normalNote = noteFactory('1' as NoteID, 'test note', Option.none());
-const renoteNote = noteFactory('2' as NoteID, '', Option.some('1' as NoteID));
+const normalNote = noteFactory(
+  generateDummyID<Note>(),
+  'test note',
+  Option.none(),
+);
+const renoteNote = noteFactory(
+  generateDummyID<Note>(),
+  '',
+  Option.some(normalNote.getID()),
+);
 const quoteNote = noteFactory(
-  '3' as NoteID,
+  generateDummyID<Note>(),
   'quoted content',
-  Option.some('1' as NoteID),
+  Option.some(normalNote.getID()),
 );
 
 const baseArgs: CreateReactionArgs = {
-  id: '100' as ReactionID,
+  id: generateDummyID<Reaction>(),
   note: normalNote,
-  accountID: '2' as AccountID,
+  accountID: generateDummyID<Account>(),
   body: '👍',
 };
 
@@ -92,7 +97,7 @@ describe('Reaction', () => {
       const reaction = Result.unwrap(
         Reaction.new({ ...baseArgs, note: renoteNote }, baseArgs.accountID),
       );
-      expect(reaction.getNoteID()).toBe('1' as NoteID);
+      expect(reaction.getNoteID()).toBe(normalNote.getID());
     });
 
     it('reacting on a quote targets the quote itself', () => {

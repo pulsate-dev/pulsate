@@ -1,22 +1,19 @@
 import { Option, Result } from '@mikuroxina/mini-fn';
 import { describe, expect, it } from 'vitest';
 
-import type { AccountID } from '../../accounts/model/account.ts';
-import type { MediumID } from '../../drive/model/medium.ts';
-import {
-  type CreateDirectNoteArgs,
-  DirectNote,
-  type DirectNoteID,
-} from './directNote.ts';
+import type { Account } from '../../accounts/model/account.ts';
+import type { Medium } from '../../drive/model/medium.ts';
+import { generateDummyID, generateDummyIDs } from '../../internal/id/dummy.ts';
+import { type CreateDirectNoteArgs, DirectNote } from './directNote.ts';
 import {
   DirectNoteContentLengthError,
   DirectNoteTooManyAttachmentsError,
 } from './errors.ts';
 
 const exampleInput: Omit<CreateDirectNoteArgs, 'deletedAt'> = {
-  id: '1' as DirectNoteID,
-  authorID: '2' as AccountID,
-  recipientID: '3' as AccountID,
+  id: generateDummyID<DirectNote>(),
+  authorID: generateDummyID<Account>(),
+  recipientID: generateDummyID<Account>(),
   content: 'hello world!',
   contentsWarningComment: '',
   attachmentFileID: [],
@@ -58,12 +55,14 @@ describe('DirectNote', () => {
   it.each([
     {
       name: 'with attachments',
-      args: { attachmentFileID: ['10' as MediumID, '20' as MediumID] },
+      args: {
+        attachmentFileID: generateDummyIDs<Medium>(2),
+      },
       expected: { content: exampleInput.content, attachmentCount: 2 },
     },
     {
       name: 'with only attachments (no text)',
-      args: { content: '', attachmentFileID: ['10' as MediumID] },
+      args: { content: '', attachmentFileID: [generateDummyID<Medium>()] },
       expected: { content: '', attachmentCount: 1 },
     },
     {
@@ -96,10 +95,7 @@ describe('DirectNote', () => {
         name: 'too many attachments',
         args: {
           ...exampleInput,
-          attachmentFileID: Array.from(
-            { length: 17 },
-            (_, i) => (i + 1).toString() as MediumID,
-          ),
+          attachmentFileID: generateDummyIDs<Medium>(17),
         },
         expectedError: DirectNoteTooManyAttachmentsError,
       },
