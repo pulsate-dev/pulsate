@@ -24,6 +24,11 @@ export const AttachmentNotFound = z.literal('ATTACHMENT_NOT_FOUND').openapi({
 export const NoteNotFound = z.literal('NOTE_NOT_FOUND').openapi({
   description: 'Note not found',
 });
+export const NoteBookmarkNotFound = z
+  .literal('NOTE_BOOKMARK_NOT_FOUND')
+  .openapi({
+    description: 'Note bookmark not found',
+  });
 export const YouAreBlocked = z.literal('YOU_ARE_BLOCKED').openapi({
   description: 'You can not reply to this account note',
 });
