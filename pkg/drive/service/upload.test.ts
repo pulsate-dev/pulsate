@@ -2,8 +2,9 @@ import { readFile } from 'node:fs/promises';
 import { Result } from '@mikuroxina/mini-fn';
 import { afterEach, describe, expect, it, type MockedObject, vi } from 'vitest';
 
-import type { AccountID } from '../../accounts/model/account.ts';
+import type { Account } from '../../accounts/model/account.ts';
 import type { EventPublisher } from '../../internal/event/mod.ts';
+import { generateDummyID } from '../../internal/id/dummy.ts';
 import { MockClock, SnowflakeIDGenerator } from '../../internal/id/mod.ts';
 import { InMemoryMediaRepository } from '../adaptor/repository/dummy.ts';
 import { LocalStorage } from '../adaptor/storage/dummy.ts';
@@ -14,6 +15,7 @@ import {
 import { UploadMediaService } from './upload.ts';
 
 describe('upload', () => {
+  const authorId = generateDummyID<Account>();
   const clock = new MockClock(new Date());
   const idGenerator = new SnowflakeIDGenerator(0, clock);
   const repository = new InMemoryMediaRepository([]);
@@ -37,7 +39,7 @@ describe('upload', () => {
     const a = await readFile('./pkg/drive/testData/flower.jpeg');
     const res = await service.handle({
       name: 'flower.jpg',
-      authorId: '1' as AccountID,
+      authorId: authorId,
       nsfw: false,
       file: a,
     });
@@ -45,7 +47,7 @@ describe('upload', () => {
     expect(unwrapped.getHash()).toStrictEqual(
       'U6IX{S^gnNNH0Kxv?bM{IU%MWBxu~WRiRk%L',
     );
-    expect(unwrapped.getAuthorId()).toStrictEqual('1');
+    expect(unwrapped.getAuthorId()).toStrictEqual(authorId);
     expect(unwrapped.getName()).toStrictEqual('flower.jpg');
     expect(unwrapped.isNsfw()).toStrictEqual(false);
   });
@@ -54,7 +56,7 @@ describe('upload', () => {
     const a = await readFile('./pkg/drive/testData/flower.jpeg');
     const res = await service.handle({
       name: 'flower.jpg',
-      authorId: '1' as AccountID,
+      authorId: authorId,
       nsfw: false,
       file: a,
     });
@@ -76,7 +78,7 @@ describe('upload', () => {
     const a = await readFile('./pkg/drive/testData/flower.jpeg');
     const res = await s.handle({
       name: 'flower.jpg',
-      authorId: '1' as AccountID,
+      authorId: authorId,
       nsfw: false,
       file: a,
     });
@@ -90,7 +92,7 @@ describe('upload', () => {
     const a = await readFile('./pkg/drive/testData/tokyo.heic');
     const res = await service.handle({
       name: 'tokyo.heic',
-      authorId: '1' as AccountID,
+      authorId: authorId,
       nsfw: false,
       file: a,
     });

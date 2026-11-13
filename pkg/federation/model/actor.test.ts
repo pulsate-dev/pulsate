@@ -1,16 +1,21 @@
 import { Option } from '@mikuroxina/mini-fn';
 import { describe, expect, it } from 'vitest';
-import type { AccountID } from '../../accounts/model/account.ts';
-import { Actor, type ActorID } from './actor.ts';
-import { ActorKeyPair, type ActorKeyPairID, type PEMKey } from './actorKey.ts';
-import type { InstanceID } from './instance.ts';
+import type { Account } from '../../accounts/model/account.ts';
+import { generateDummyID } from '../../internal/id/dummy.ts';
+import { Actor } from './actor.ts';
+import { ActorKeyPair, type PEMKey } from './actorKey.ts';
+import type { Instance } from './instance.ts';
 
 describe('Actor', () => {
   it('should create new instance', () => {
+    const actorID = generateDummyID<Actor>();
+    const instanceID = generateDummyID<Instance>();
+    const accountID = generateDummyID<Account>();
+    const actorKeyPairID = generateDummyID<ActorKeyPair>();
     const res = Actor.new({
-      id: '1' as ActorID,
-      instanceID: '31415926535' as InstanceID,
-      accountID: '141421356' as AccountID,
+      id: actorID,
+      instanceID: instanceID,
+      accountID: accountID,
       profileURL: new URL(
         'https://social.example.com/accounts/@john@example.com',
       ),
@@ -29,8 +34,8 @@ describe('Actor', () => {
       sharedInboxURL: new URL('https://social.example.com/shared-inbox'),
       actorKeyPair: [
         ActorKeyPair.new({
-          id: '10' as ActorKeyPairID,
-          actorID: '1' as ActorID,
+          id: actorKeyPairID,
+          actorID,
           publicKey: 'pubkey' as PEMKey,
           privateKey: Option.some('privkey' as PEMKey),
           publicKeyID: new URL('https://social.example.com/actor/1#main-key'),
@@ -38,9 +43,9 @@ describe('Actor', () => {
       ],
     });
 
-    expect(res.getID()).toBe('1');
-    expect(res.getInstanceID()).toBe('31415926535');
-    expect(res.getAccountID()).toBe('141421356');
+    expect(res.getID()).toBe(actorID);
+    expect(res.getInstanceID()).toBe(instanceID);
+    expect(res.getAccountID()).toBe(accountID);
     expect(res.getProfileURL()).toEqual(
       new URL('https://social.example.com/accounts/@john@example.com'),
     );
@@ -48,6 +53,6 @@ describe('Actor', () => {
       new URL('https://social.example.com/accounts/31415926535/inbox'),
     );
     expect(res.getActorKeyPair()).toHaveLength(1);
-    expect(res.getActorKeyPair()[0]?.getID()).toBe('10');
+    expect(res.getActorKeyPair()[0]?.getID()).toBe(actorKeyPairID);
   });
 });

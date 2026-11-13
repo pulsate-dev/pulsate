@@ -1,8 +1,10 @@
 import { Option, Result } from '@mikuroxina/mini-fn';
 import { describe, expect, it } from 'vitest';
-import type { AccountID } from '../../../../accounts/model/account.ts';
-import type { NoteID } from '../../../../notes/model/note.ts';
-import type { ReactionID } from '../../../../notes/model/reaction.ts';
+import type { Account } from '../../../../accounts/model/account.ts';
+import { generateDummyID } from '../../../../internal/id/dummy.ts';
+import { addDuration } from '../../../../internal/time/mod.ts';
+import type { Note } from '../../../../notes/model/note.ts';
+import type { Reaction } from '../../../../notes/model/reaction.ts';
 import {
   FollowedNotification,
   FollowRequestedNotification,
@@ -10,54 +12,61 @@ import {
   ReactedNotification,
   RenotedNotification,
 } from '../../../model/notification.ts';
-import type { NotificationID } from '../../../model/notificationBase.ts';
+import type { NotificationBase } from '../../../model/notificationBase.ts';
 import { InMemoryNotificationRepository } from './notification.ts';
 
 describe('InMemoryNotificationRepository', () => {
+  const baseDate = new Date('2023-09-10T00:00:00Z');
+  const recipientID = generateDummyID<Account>();
+  const actorID = generateDummyID<Account>();
+  const createdAt = (days: number) => addDuration(baseDate, { days });
+  const notificationID = (days: number) =>
+    generateDummyID<NotificationBase>(createdAt(days));
+
   const dummyNotification1 = FollowedNotification.new({
-    id: '1' as NotificationID,
-    recipientID: '10' as AccountID,
+    id: notificationID(0),
+    recipientID: recipientID,
     notificationType: 'followed',
     actorType: 'account',
-    actorID: '11' as AccountID,
-    createdAt: new Date('2023-09-10T00:00:00Z'),
+    actorID: actorID,
+    createdAt: createdAt(0),
   });
   const dummyNotification2 = ReactedNotification.new({
-    id: '2' as NotificationID,
-    recipientID: '10' as AccountID,
+    id: notificationID(1),
+    recipientID: recipientID,
     notificationType: 'reacted',
     actorType: 'account',
-    actorID: '11' as AccountID,
-    createdAt: new Date('2023-09-11T00:00:00Z'),
-    sourceID: '12' as NoteID,
-    activityID: '13' as ReactionID,
+    actorID: actorID,
+    createdAt: createdAt(1),
+    sourceID: generateDummyID<Note>(),
+    activityID: generateDummyID<Reaction>(),
   });
   const dummyNotification3 = MentionedNotification.new({
-    id: '3' as NotificationID,
-    recipientID: '10' as AccountID,
+    id: notificationID(2),
+    recipientID: recipientID,
     notificationType: 'mentioned',
     actorType: 'account',
-    actorID: '11' as AccountID,
-    createdAt: new Date('2023-09-12T00:00:00Z'),
-    activityID: '14' as NoteID,
+    actorID: actorID,
+    createdAt: createdAt(2),
+    activityID: generateDummyID<Note>(),
   });
   const dummyNotification4 = RenotedNotification.new({
-    id: '4' as NotificationID,
-    recipientID: '10' as AccountID,
+    id: notificationID(3),
+    recipientID: recipientID,
     notificationType: 'renoted',
     actorType: 'account',
-    actorID: '11' as AccountID,
-    createdAt: new Date('2023-09-13T00:00:00Z'),
-    sourceID: '15' as NoteID,
-    activityID: '16' as NoteID,
+    actorID: actorID,
+    createdAt: createdAt(3),
+    sourceID: generateDummyID<Note>(),
+    activityID: generateDummyID<Note>(),
   });
   const dummyNotification5 = FollowRequestedNotification.new({
-    id: '5' as NotificationID,
-    recipientID: '10' as AccountID,
+    id: notificationID(4),
+    recipientID: recipientID,
     notificationType: 'followRequested',
     actorType: 'account',
-    actorID: '11' as AccountID,
-    createdAt: new Date('2023-09-14T00:00:00Z'),
+    actorID: actorID,
+    createdAt: createdAt(4),
   });
 
   const repository = new InMemoryNotificationRepository([
@@ -78,11 +87,11 @@ describe('InMemoryNotificationRepository', () => {
      *        ←| returns 1,2 (specified notification is excluded)
      * ```
      */
-    const actual = await repository.findByRecipientID('10' as AccountID, {
+    const actual = await repository.findByRecipientID(recipientID, {
       limit: Option.none(),
       cursor: Option.some({
         type: 'before',
-        id: '3' as NotificationID,
+        id: dummyNotification3.getID(),
       }),
     });
 
@@ -103,11 +112,11 @@ describe('InMemoryNotificationRepository', () => {
      *         |→ returns 4,5 (specified notification is included)
      * ```
      */
-    const actual = await repository.findByRecipientID('10' as AccountID, {
+    const actual = await repository.findByRecipientID(recipientID, {
       limit: Option.none(),
       cursor: Option.some({
         type: 'after',
-        id: '3' as NotificationID,
+        id: dummyNotification3.getID(),
       }),
     });
 
@@ -121,7 +130,7 @@ describe('InMemoryNotificationRepository', () => {
   it('filter: if after/beforeID are not specified, return {filter.limit} notifications from the latest notification', async () => {
     // if limit not set, returns 5 notifications
     // NOTE: If the number of all notifications is less than the limit, return all notifications
-    const limitNotSet = await repository.findByRecipientID('10' as AccountID, {
+    const limitNotSet = await repository.findByRecipientID(recipientID, {
       limit: Option.none(),
       cursor: Option.none(),
     });
@@ -135,7 +144,7 @@ describe('InMemoryNotificationRepository', () => {
     ]);
 
     // if limit set 2, returns 2 notifications
-    const limit2 = await repository.findByRecipientID('10' as AccountID, {
+    const limit2 = await repository.findByRecipientID(recipientID, {
       limit: Option.some(2),
       cursor: Option.none(),
     });

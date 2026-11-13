@@ -2,11 +2,7 @@ import { Option } from '@mikuroxina/mini-fn';
 import type { PartialAccount } from '../../intermodule/account.ts';
 import { DUMMY_BASE_DATE, generateDummyID } from '../../internal/id/dummy.ts';
 import { addDuration } from '../../internal/time/mod.ts';
-import {
-  Account,
-  type AccountID,
-  type CreateAccountArgs,
-} from '../model/account.ts';
+import { Account, type CreateAccountArgs } from '../model/account.ts';
 import {
   AccountFollow,
   type AccountFollowConstructorArgs,
@@ -72,29 +68,29 @@ export const generateDummyFollow = (
   });
 
 export const dummyNormalAccount1 = generateDummyAccount({
-  id: '101' as AccountID,
   name: '@john@example.com',
+  mail: 'john@example.com',
   createdAt: new Date('2023-09-10T00:00:00Z'),
 });
 export const dummyNormalAccount2 = generateDummyAccount({
-  id: '102' as AccountID,
   name: '@johndoe@example.com',
+  mail: 'johndoe@example.com',
   createdAt: new Date('2023-09-11T00:00:00Z'),
 });
 export const dummyNormalAccount3 = generateDummyAccount({
-  id: '103' as AccountID,
   name: '@alice@example.com',
+  mail: 'alice@example.com',
   createdAt: new Date('2023-09-12T00:00:00Z'),
 });
 export const dummyFrozenAccount = generateDummyAccount({
-  id: '104' as AccountID,
   name: '@frozen@example.com',
+  mail: 'frozen@example.com',
   frozen: 'frozen',
   createdAt: new Date('2023-09-13T00:00:00Z'),
 });
 export const dummySilencedAccount = generateDummyAccount({
-  id: '105' as AccountID,
   name: '@silenced@example.com',
+  mail: 'silenced@example.com',
   silenced: 'silenced',
   createdAt: new Date('2023-09-14T00:00:00Z'),
 });

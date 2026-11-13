@@ -1,14 +1,15 @@
 import { Option, Result } from '@mikuroxina/mini-fn';
 import { describe, expect, it } from 'vitest';
 
-import type { AccountID } from '../../accounts/model/account.ts';
+import type { Account } from '../../accounts/model/account.ts';
+import { generateDummyID } from '../../internal/id/dummy.ts';
 import { MediaSizeTooLargeError, MediaTypeInvalidError } from './errors.ts';
-import { Medium, type MediumID } from './medium.ts';
+import { Medium } from './medium.ts';
 
 const baseArgs = {
-  id: '1' as MediumID,
+  id: generateDummyID<Medium>(),
   name: 'test.webp',
-  authorId: '10' as AccountID,
+  authorId: generateDummyID<Account>(),
   hash: 'blurhash',
   mime: 'image/webp',
   nsfw: false,

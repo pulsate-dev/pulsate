@@ -1,10 +1,13 @@
 import { describe, expect, it } from 'vitest';
-import { Instance, type InstanceID } from './instance.ts';
+import { generateDummyID } from '../../internal/id/dummy.ts';
+import { Instance } from './instance.ts';
 
 describe('Instance', () => {
+  const instanceID = generateDummyID<Instance>();
+
   it('should create new instance', () => {
     const res = Instance.new({
-      id: '1' as InstanceID,
+      id: instanceID,
       name: 'Pulsate social',
       fqdn: new URL('https://social.example.com:3000'),
       softwareName: 'Pulsate',
@@ -17,7 +20,7 @@ describe('Instance', () => {
       firstContact: new Date('2023-09-10T00:00:00.000Z'),
     });
 
-    expect(res.getID()).toBe('1');
+    expect(res.getID()).toBe(instanceID);
     expect(res.getName()).toBe('Pulsate social');
     expect(res.getFQDN()).toBe('social.example.com:3000');
     expect(res.getSoftwareName()).toBe('Pulsate');
@@ -31,7 +34,7 @@ describe('Instance', () => {
 
   it('should set Unknown/Unknwon if software version or name empty', () => {
     const res = Instance.new({
-      id: '1' as InstanceID,
+      id: instanceID,
       name: 'Pulsate social',
       fqdn: new URL('https://social.example.com:3000'),
       softwareName: '',
