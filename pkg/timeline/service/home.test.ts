@@ -1,8 +1,7 @@
 import { Result } from '@mikuroxina/mini-fn';
 import { describe, expect, it } from 'vitest';
 
-import type { AccountID } from '../../accounts/model/account.ts';
-import type { NoteID } from '../../notes/model/note.ts';
+import { dummyNormalAccount1 } from '../../accounts/testData/testData.ts';
 import { InMemoryTimelineRepository } from '../adaptor/repository/dummy.ts';
 import { InMemoryTimelineCacheRepository } from '../adaptor/repository/dummyCache.ts';
 import {
@@ -15,7 +14,14 @@ import { HomeTimelineService } from './home.ts';
 
 describe('HomeTimelineService', () => {
   const timelineCacheRepository = new InMemoryTimelineCacheRepository([
-    ['101' as AccountID, ['1' as NoteID, '2' as NoteID, '3' as NoteID]],
+    [
+      dummyNormalAccount1.getID(),
+      [
+        dummyPublicNote.getID(),
+        dummyHomeNote.getID(),
+        dummyFollowersNote.getID(),
+      ],
+    ],
   ]);
   const timelineRepository = new InMemoryTimelineRepository([
     dummyPublicNote,
@@ -30,7 +36,7 @@ describe('HomeTimelineService', () => {
 
   it('Successfully get home timeline', async () => {
     const res = await homeTimelineService.fetchHomeTimeline(
-      '101' as AccountID,
+      dummyNormalAccount1.getID(),
       {
         hasAttachment: false,
         noNsfw: false,
@@ -38,46 +44,50 @@ describe('HomeTimelineService', () => {
     );
 
     expect(Result.unwrap(res).map((v) => v.getID())).toStrictEqual([
-      '3',
-      '2',
-      '1',
+      dummyFollowersNote.getID(),
+      dummyHomeNote.getID(),
+      dummyPublicNote.getID(),
     ]);
   });
 
   it('with beforeId cursor', async () => {
     const res = await homeTimelineService.fetchHomeTimeline(
-      '101' as AccountID,
+      dummyNormalAccount1.getID(),
       {
         hasAttachment: false,
         noNsfw: false,
-        beforeId: '2' as NoteID,
+        beforeId: dummyHomeNote.getID(),
       },
     );
 
-    expect(Result.unwrap(res).map((v) => v.getID())).toStrictEqual(['1']);
+    expect(Result.unwrap(res).map((v) => v.getID())).toStrictEqual([
+      dummyPublicNote.getID(),
+    ]);
   });
 
   it('with afterID cursor', async () => {
     const res = await homeTimelineService.fetchHomeTimeline(
-      '101' as AccountID,
+      dummyNormalAccount1.getID(),
       {
         hasAttachment: false,
         noNsfw: false,
-        afterId: '2' as NoteID,
+        afterId: dummyHomeNote.getID(),
       },
     );
 
-    expect(Result.unwrap(res).map((v) => v.getID())).toStrictEqual(['3']);
+    expect(Result.unwrap(res).map((v) => v.getID())).toStrictEqual([
+      dummyFollowersNote.getID(),
+    ]);
   });
 
   it('with both beforeId and afterID cursor', async () => {
     const res = await homeTimelineService.fetchHomeTimeline(
-      '101' as AccountID,
+      dummyNormalAccount1.getID(),
       {
         hasAttachment: false,
         noNsfw: false,
-        beforeId: '1' as NoteID,
-        afterId: '3' as NoteID,
+        beforeId: dummyPublicNote.getID(),
+        afterId: dummyFollowersNote.getID(),
       },
     );
 

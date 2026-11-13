@@ -7,24 +7,28 @@ import {
   type MockedObject,
   vi,
 } from 'vitest';
-import type { AccountID } from '../../accounts/model/account.ts';
+import type { Account } from '../../accounts/model/account.ts';
 import type { EventPublisher } from '../../internal/event/mod.ts';
+import { generateDummyID } from '../../internal/id/dummy.ts';
 import { InMemoryListRepository } from '../adaptor/repository/dummy.ts';
 import {
   ListNotFoundError,
   TimelineInsufficientPermissionError,
 } from '../model/errors.ts';
-import { List, type ListID } from '../model/list.ts';
+import type { List } from '../model/list.ts';
+import { generateDummyList } from '../testData/testData.ts';
 import { RemoveListMemberService } from './removeMember.ts';
 
 describe('RemoveListMemberService', () => {
+  const ownerId = generateDummyID<Account>();
+  const memberId = generateDummyID<Account>();
+  const otherMemberId = generateDummyID<Account>();
+  const listId = generateDummyID<List>();
   const listData = [
-    List.reconstruct({
-      createdAt: new Date('2023-09-10T00:00:00.000Z'),
-      id: '10' as ListID,
-      memberIds: ['2' as AccountID, '3' as AccountID],
-      ownerId: '1' as AccountID,
-      publicity: 'PUBLIC',
+    generateDummyList({
+      id: listId,
+      ownerId,
+      memberIds: [memberId, otherMemberId],
       title: 'ABC',
     }),
   ];
@@ -40,12 +44,8 @@ describe('RemoveListMemberService', () => {
   });
 
   it('should remove member from list', async () => {
-    const res = await service.handle(
-      '10' as ListID,
-      '2' as AccountID,
-      '1' as AccountID,
-    );
-    const listRes = await listRepository.fetchListMembers('10' as ListID);
+    const res = await service.handle(listId, memberId, ownerId);
+    const listRes = await listRepository.fetchListMembers(listId);
 
     expect(Result.isErr(res)).toBe(false);
     expect(Result.unwrap(listRes)).toHaveLength(1);
@@ -56,9 +56,9 @@ describe('RemoveListMemberService', () => {
 
   it("should return error if list doesn't exist", async () => {
     const res = await service.handle(
-      '20' as ListID,
-      '200' as AccountID,
-      '1' as AccountID,
+      generateDummyID<List>(),
+      generateDummyID<Account>(),
+      ownerId,
     );
 
     expect(Result.isErr(res)).toBe(true);
@@ -66,11 +66,7 @@ describe('RemoveListMemberService', () => {
   });
 
   it('should return error if actor does not own the list', async () => {
-    const res = await service.handle(
-      '10' as ListID,
-      '2' as AccountID,
-      '2' as AccountID,
-    );
+    const res = await service.handle(listId, memberId, memberId);
 
     expect(Result.isErr(res)).toBe(true);
     expect(Result.unwrapErr(res)).toBeInstanceOf(

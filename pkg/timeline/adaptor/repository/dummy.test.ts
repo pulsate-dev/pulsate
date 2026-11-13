@@ -1,14 +1,18 @@
 import { Option, Result } from '@mikuroxina/mini-fn';
 import { afterEach, describe, expect, it } from 'vitest';
 
-import type { AccountID } from '../../../accounts/model/account.ts';
+import type { Account, AccountID } from '../../../accounts/model/account.ts';
+import { generateDummyAccount } from '../../../accounts/testData/testData.ts';
 import {
-  DirectNote,
-  type DirectNoteID,
-} from '../../../notes/model/directNote.ts';
-import { Note, type NoteID } from '../../../notes/model/note.ts';
+  DUMMY_BASE_DATE,
+  generateDummyID,
+} from '../../../internal/id/dummy.ts';
+import { addDuration } from '../../../internal/time/mod.ts';
+import { DirectNote } from '../../../notes/model/directNote.ts';
+import { generateDummyNote } from '../../../notes/testData/testData.ts';
 import { TimelineInvalidFilterRangeError } from '../../model/errors.ts';
-import { List, type ListID } from '../../model/list.ts';
+import type { List } from '../../model/list.ts';
+import { generateDummyList } from '../../testData/testData.ts';
 import {
   InMemoryConversationRepository,
   InMemoryListRepository,
@@ -16,72 +20,43 @@ import {
 } from './dummy.ts';
 
 describe('InMemoryTimelineRepository', () => {
-  const dummyPublicNote = Note.reconstruct({
-    id: '1' as NoteID,
-    authorID: '100' as AccountID,
+  const authorID = generateDummyID<Account>();
+  const recipientID = generateDummyID<Account>();
+  const dummyPublicNote = generateDummyNote({
+    authorID,
     content: 'Hello world',
-    contentsWarningComment: '',
-    createdAt: new Date('2023-09-10T00:00:00Z'),
-    originalNoteID: Option.none(),
-    attachmentFileID: [],
-    sendTo: Option.none(),
+    createdAt: DUMMY_BASE_DATE,
     visibility: 'PUBLIC',
-    updatedAt: Option.none(),
-    deletedAt: Option.none(),
   });
-  const dummyHomeNote = Note.reconstruct({
-    id: '2' as NoteID,
-    authorID: '100' as AccountID,
+  const dummyHomeNote = generateDummyNote({
+    authorID,
     content: 'Hello world to Home',
-    contentsWarningComment: '',
-    createdAt: new Date('2023-09-11T00:00:00Z'),
-    originalNoteID: Option.none(),
-    attachmentFileID: [],
-    sendTo: Option.none(),
+    createdAt: addDuration(DUMMY_BASE_DATE, { days: 1 }),
     visibility: 'HOME',
-    updatedAt: Option.none(),
-    deletedAt: Option.none(),
   });
-  const dummyFollowersNote = Note.reconstruct({
-    id: '3' as NoteID,
-    authorID: '100' as AccountID,
+  const dummyFollowersNote = generateDummyNote({
+    authorID,
     content: 'Hello world to followers',
-    contentsWarningComment: '',
-    createdAt: new Date('2023-09-12T00:00:00Z'),
-    originalNoteID: Option.none(),
-    attachmentFileID: [],
-    sendTo: Option.none(),
+    createdAt: addDuration(DUMMY_BASE_DATE, { days: 2 }),
     visibility: 'FOLLOWERS',
-    updatedAt: Option.none(),
-    deletedAt: Option.none(),
   });
-  const dummyDirectNote = Note.reconstruct({
-    id: '4' as NoteID,
-    authorID: '100' as AccountID,
+  const dummyDirectNote = generateDummyNote({
+    authorID,
     content: 'Hello world to direct',
-    contentsWarningComment: '',
-    createdAt: new Date('2023-09-13T00:00:00Z'),
-    originalNoteID: Option.none(),
-    attachmentFileID: [],
-    sendTo: Option.some('101' as AccountID),
+    createdAt: addDuration(DUMMY_BASE_DATE, { days: 3 }),
+    sendTo: Option.some(recipientID),
     visibility: 'DIRECT',
-    updatedAt: Option.none(),
-    deletedAt: Option.none(),
   });
-
-  const repository = new InMemoryTimelineRepository([
+  const dummyNotes = [
     dummyPublicNote,
     dummyHomeNote,
     dummyFollowersNote,
     dummyDirectNote,
-  ]);
+  ];
+
+  const repository = new InMemoryTimelineRepository(dummyNotes);
   afterEach(() => {
-    repository.reset([
-      dummyPublicNote,
-      dummyHomeNote,
-      dummyFollowersNote,
-      dummyDirectNote,
-    ]);
+    repository.reset(dummyNotes);
   });
 
   it('filter: if beforeID is specified, return notes before the specified note', async () => {
@@ -93,11 +68,11 @@ describe('InMemoryTimelineRepository', () => {
      * 4,  3,  2,  1
      *           |→ return 1
      */
-    const actual = await repository.getAccountTimeline('100' as AccountID, {
-      id: '100' as AccountID,
+    const actual = await repository.getAccountTimeline(authorID, {
+      id: authorID,
       hasAttachment: true,
       noNsfw: false,
-      beforeId: '2' as NoteID,
+      beforeId: dummyHomeNote.getID(),
     });
 
     expect(Result.isOk(actual)).toBe(true);
@@ -113,11 +88,11 @@ describe('InMemoryTimelineRepository', () => {
      * 4,  3,  2,  1
      *         ←| return 3,2 (4 is filtered out because it is DIRECT note)
      */
-    const actual = await repository.getAccountTimeline('100' as AccountID, {
-      id: '100' as AccountID,
+    const actual = await repository.getAccountTimeline(authorID, {
+      id: authorID,
       hasAttachment: true,
       noNsfw: false,
-      afterId: '2' as NoteID,
+      afterId: dummyHomeNote.getID(),
     });
 
     expect(Result.isOk(actual)).toBe(true);
@@ -128,8 +103,8 @@ describe('InMemoryTimelineRepository', () => {
   });
 
   it('filter: if after/beforeID are not specified, return 20 notes from the latest note', async () => {
-    const actual = await repository.getAccountTimeline('100' as AccountID, {
-      id: '100' as AccountID,
+    const actual = await repository.getAccountTimeline(authorID, {
+      id: authorID,
       hasAttachment: true,
       noNsfw: false,
     });
@@ -139,12 +114,12 @@ describe('InMemoryTimelineRepository', () => {
   });
 
   it('filter: if after/beforeID both are specified, return error', async () => {
-    const actual = await repository.getAccountTimeline('100' as AccountID, {
-      id: '100' as AccountID,
+    const actual = await repository.getAccountTimeline(authorID, {
+      id: authorID,
       hasAttachment: true,
       noNsfw: false,
-      afterId: '1' as NoteID,
-      beforeId: '1' as NoteID,
+      afterId: dummyPublicNote.getID(),
+      beforeId: dummyPublicNote.getID(),
     });
     expect(Result.isErr(actual)).toBe(true);
     expect(Result.unwrapErr(actual)).toBeInstanceOf(
@@ -153,8 +128,8 @@ describe('InMemoryTimelineRepository', () => {
   });
 
   it('Account Timeline only returns PUBLIC/HOME/FOLLOWERS notes', async () => {
-    const actual = await repository.getAccountTimeline('100' as AccountID, {
-      id: '100' as AccountID,
+    const actual = await repository.getAccountTimeline(authorID, {
+      id: authorID,
       hasAttachment: true,
       noNsfw: false,
     });
@@ -168,7 +143,7 @@ describe('InMemoryTimelineRepository', () => {
   });
   it('Home Timeline only returns PUBLIC/HOME/FOLLOWERS notes', async () => {
     const actual = await repository.getHomeTimeline(
-      ['1' as NoteID, '2' as NoteID, '3' as NoteID, '4' as NoteID],
+      dummyNotes.map((v) => v.getID()),
       {
         hasAttachment: false,
         noNsfw: false,
@@ -185,56 +160,75 @@ describe('InMemoryTimelineRepository', () => {
 
   it('Home Timeline with beforeId cursor', async () => {
     const actual = await repository.getHomeTimeline(
-      ['1' as NoteID, '2' as NoteID, '3' as NoteID],
+      [
+        dummyPublicNote.getID(),
+        dummyHomeNote.getID(),
+        dummyFollowersNote.getID(),
+      ],
       {
         hasAttachment: false,
         noNsfw: false,
-        beforeId: '2' as NoteID,
+        beforeId: dummyHomeNote.getID(),
       },
     );
     expect(Result.isOk(actual)).toBe(true);
-    // beforeId '2' より古いノートのみ返す (createdAt降順で2より後ろ)
-    expect(Result.unwrap(actual).map((v) => v.getID())).toStrictEqual(['1']);
+    // beforeId dummyHomeNote より古いノートのみ返す (createdAt降順で2より後ろ)
+    expect(Result.unwrap(actual).map((v) => v.getID())).toStrictEqual([
+      dummyPublicNote.getID(),
+    ]);
   });
 
   it('Home Timeline with afterID cursor', async () => {
     const actual = await repository.getHomeTimeline(
-      ['1' as NoteID, '2' as NoteID, '3' as NoteID],
+      [
+        dummyPublicNote.getID(),
+        dummyHomeNote.getID(),
+        dummyFollowersNote.getID(),
+      ],
       {
         hasAttachment: false,
         noNsfw: false,
-        afterId: '2' as NoteID,
+        afterId: dummyHomeNote.getID(),
       },
     );
     expect(Result.isOk(actual)).toBe(true);
-    // afterID '2' より新しいノートのみ返す (createdAt降順で2より前)
-    expect(Result.unwrap(actual).map((v) => v.getID())).toStrictEqual(['3']);
+    // afterID dummyHomeNote より新しいノートのみ返す (createdAt降順で2より前)
+    expect(Result.unwrap(actual).map((v) => v.getID())).toStrictEqual([
+      dummyFollowersNote.getID(),
+    ]);
   });
 
   it('Home Timeline with both beforeId and afterID returns error', async () => {
     const actual = await repository.getHomeTimeline(
-      ['1' as NoteID, '2' as NoteID, '3' as NoteID],
+      [
+        dummyPublicNote.getID(),
+        dummyHomeNote.getID(),
+        dummyFollowersNote.getID(),
+      ],
       {
         hasAttachment: false,
         noNsfw: false,
-        beforeId: '3' as NoteID,
-        afterId: '1' as NoteID,
+        beforeId: dummyFollowersNote.getID(),
+        afterId: dummyPublicNote.getID(),
       },
     );
     expect(Result.isErr(actual)).toBe(true);
   });
 
   it('should fetch list timeline', async () => {
-    const actual = await repository.fetchListTimeline(['1' as NoteID], {
-      hasAttachment: false,
-      noNsfw: false,
-    });
+    const actual = await repository.fetchListTimeline(
+      [dummyPublicNote.getID()],
+      {
+        hasAttachment: false,
+        noNsfw: false,
+      },
+    );
     expect(Result.isOk(actual)).toBe(true);
   });
 
   it('should not return DIRECT notes', async () => {
     const actual = await repository.fetchListTimeline(
-      ['1' as NoteID, '4' as NoteID],
+      [dummyPublicNote.getID(), dummyDirectNote.getID()],
       {
         hasAttachment: false,
         noNsfw: false,
@@ -249,40 +243,25 @@ describe('InMemoryTimelineRepository', () => {
 });
 
 describe('InMemoryListRepository', () => {
-  const dummyList = List.reconstruct({
-    id: '1' as ListID,
+  const ownerID = generateDummyID<Account>();
+  const memberID = generateDummyID<Account>();
+  const dummyList = generateDummyList({
     title: 'dummy list',
-    publicity: 'PUBLIC',
-    ownerId: '100' as AccountID,
-    memberIds: ['100' as AccountID, '101' as AccountID] as const,
-    createdAt: new Date(),
+    ownerId: ownerID,
+    memberIds: [ownerID, memberID],
   });
 
-  const dummyPublicNote = Note.reconstruct({
-    id: '10' as NoteID,
-    authorID: '100' as AccountID,
+  const dummyPublicNote = generateDummyNote({
+    authorID: ownerID,
     content: 'Hello world',
-    contentsWarningComment: '',
-    createdAt: new Date('2023-09-10T00:00:00Z'),
-    originalNoteID: Option.none(),
-    attachmentFileID: [],
-    sendTo: Option.none(),
     visibility: 'PUBLIC',
-    updatedAt: Option.none(),
-    deletedAt: Option.none(),
   });
-  const dummyDirectNote = Note.reconstruct({
-    id: '14' as NoteID,
-    authorID: '100' as AccountID,
+  const dummyDirectNote = generateDummyNote({
+    authorID: ownerID,
     content: 'Hello world to direct',
-    contentsWarningComment: '',
-    createdAt: new Date('2023-09-13T00:00:00Z'),
-    originalNoteID: Option.none(),
-    attachmentFileID: [],
-    sendTo: Option.some('101' as AccountID),
+    createdAt: addDuration(DUMMY_BASE_DATE, { days: 3 }),
+    sendTo: Option.some(memberID),
     visibility: 'DIRECT',
-    updatedAt: Option.none(),
-    deletedAt: Option.none(),
   });
 
   const repository = new InMemoryListRepository(
@@ -294,53 +273,47 @@ describe('InMemoryListRepository', () => {
   });
 
   it('should create list', async () => {
-    const dummy = List.reconstruct({
-      id: '2' as ListID,
+    const otherMemberID = generateDummyID<Account>();
+    const dummy = generateDummyList({
       title: 'dummy list 2',
-      publicity: 'PUBLIC',
-      ownerId: '101' as AccountID,
-      memberIds: ['101' as AccountID, '102' as AccountID] as const,
-      createdAt: new Date(),
+      ownerId: memberID,
+      memberIds: [memberID, otherMemberID],
     });
 
     const actual = await repository.create(dummy);
     expect(Result.isOk(actual)).toBe(true);
 
-    const actual2 = await repository.fetchList('2' as ListID);
+    const actual2 = await repository.fetchList(dummy.getId());
     expect(Result.isOk(actual2)).toBe(true);
     expect(Result.unwrap(actual2)).toStrictEqual(dummy);
   });
 
   it('should fetch list', async () => {
-    const actual = await repository.fetchList('1' as ListID);
+    const actual = await repository.fetchList(dummyList.getId());
     expect(Result.isOk(actual)).toBe(true);
     expect(Result.unwrap(actual)).toStrictEqual(dummyList);
   });
 
   it('should return error when list not found', async () => {
-    const actual = await repository.fetchList('2' as ListID);
+    const actual = await repository.fetchList(generateDummyID<List>());
     expect(Result.isErr(actual)).toBe(true);
   });
 
   it('should fetch lists by owner id', async () => {
-    const actual = await repository.fetchListsByOwnerId('100' as AccountID);
+    const actual = await repository.fetchListsByOwnerId(ownerID);
     expect(Result.isOk(actual)).toBe(true);
     expect(Result.unwrap(actual)).toStrictEqual([dummyList]);
   });
 
   it('should fetch list members', async () => {
-    const actual = await repository.fetchListMembers('1' as ListID);
+    const actual = await repository.fetchListMembers(dummyList.getId());
     expect(Result.isOk(actual)).toBe(true);
-    expect(Result.unwrap(actual)).toStrictEqual([
-      '100' as AccountID,
-      '101' as AccountID,
-    ]);
+    expect(Result.unwrap(actual)).toStrictEqual([ownerID, memberID]);
   });
 });
 
 describe('InMemoryConversationRepository', () => {
   const directNoteFactory = (
-    id: DirectNoteID,
     authorID: AccountID,
     recipientID: AccountID,
     createdAt: Date,
@@ -348,7 +321,7 @@ describe('InMemoryConversationRepository', () => {
     Result.unwrap(
       DirectNote.new(
         {
-          id,
+          id: generateDummyID<DirectNote>(createdAt),
           authorID,
           recipientID,
           content: 'this is a test note',
@@ -360,68 +333,65 @@ describe('InMemoryConversationRepository', () => {
       ),
     );
 
+  const accountA = generateDummyAccount().getID();
+  const accountB = generateDummyAccount().getID();
+  const accountWithoutNotes = generateDummyAccount().getID();
+
   const testMap = [
-    // 1-->2
+    // A-->B
+    directNoteFactory(accountA, accountB, DUMMY_BASE_DATE),
+    // A-->B
     directNoteFactory(
-      '100' as DirectNoteID,
-      '1' as AccountID,
-      '2' as AccountID,
-      new Date('2023-09-10T00:00:00Z'),
+      accountA,
+      accountB,
+      addDuration(DUMMY_BASE_DATE, { days: 1 }),
     ),
-    // 1-->2
+    // B-->A
     directNoteFactory(
-      '101' as DirectNoteID,
-      '1' as AccountID,
-      '2' as AccountID,
-      new Date('2023-09-11T00:00:00Z'),
+      accountB,
+      accountA,
+      addDuration(DUMMY_BASE_DATE, { days: 2 }),
     ),
-    // 2-->1
+    // B-->A
     directNoteFactory(
-      '200' as DirectNoteID,
-      '2' as AccountID,
-      '1' as AccountID,
-      new Date('2023-09-12T00:00:00Z'),
-    ),
-    // 2-->1
-    directNoteFactory(
-      '201' as DirectNoteID,
-      '2' as AccountID,
-      '1' as AccountID,
-      new Date('2023-09-13T00:00:00Z'),
+      accountB,
+      accountA,
+      addDuration(DUMMY_BASE_DATE, { days: 3 }),
     ),
   ];
+  const latestNote = testMap[3];
   const repo = new InMemoryConversationRepository(testMap);
 
   it('should return newest note', async () => {
-    const res = await repo.findByAccountID('1' as AccountID);
+    const res = await repo.findByAccountID(accountA);
 
     expect(Result.isOk(res)).toBe(true);
     expect(Result.unwrap(res)).toStrictEqual([
       {
-        id: '2' as AccountID,
-        lastSentAt: new Date('2023-09-13T00:00:00Z'),
-        latestNoteID: '201' as DirectNoteID,
-        latestNoteAuthor: '2' as AccountID,
+        id: accountB,
+        lastSentAt: addDuration(DUMMY_BASE_DATE, { days: 3 }),
+        latestNoteID: latestNote?.getID(),
+        latestNoteAuthor: accountB,
       },
     ]);
   });
 
   it('should return newest note: not received yet', async () => {
-    const res = await repo.findByAccountID('2' as AccountID);
+    const res = await repo.findByAccountID(accountB);
 
     expect(Result.isOk(res)).toBe(true);
     expect(Result.unwrap(res)).toStrictEqual([
       {
-        id: '1' as AccountID,
-        lastSentAt: new Date('2023-09-13T00:00:00Z'),
-        latestNoteID: '201' as DirectNoteID,
-        latestNoteAuthor: '2' as AccountID,
+        id: accountA,
+        lastSentAt: addDuration(DUMMY_BASE_DATE, { days: 3 }),
+        latestNoteID: latestNote?.getID(),
+        latestNoteAuthor: accountB,
       },
     ]);
   });
 
   it('should return empty array when no notes are found', async () => {
-    const res = await repo.findByAccountID('3' as AccountID);
+    const res = await repo.findByAccountID(accountWithoutNotes);
 
     expect(Result.isOk(res)).toBe(true);
     expect(Result.unwrap(res)).toStrictEqual([]);

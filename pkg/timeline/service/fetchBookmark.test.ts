@@ -1,36 +1,29 @@
 import { Result } from '@mikuroxina/mini-fn';
 import { describe, expect, it } from 'vitest';
 
-import type { AccountID } from '../../accounts/model/account.ts';
+import { generateDummyAccount } from '../../accounts/testData/testData.ts';
+import { DUMMY_BASE_DATE } from '../../internal/id/dummy.ts';
+import { addDuration } from '../../internal/time/mod.ts';
 import { Bookmark } from '../../notes/model/bookmark.ts';
-import type { NoteID } from '../../notes/model/note.ts';
+import { generateDummyNote } from '../../notes/testData/testData.ts';
 import {
   InMemoryBookmarkTimelineRepository,
   InMemoryTimelineRepository,
 } from '../adaptor/repository/dummy.ts';
 import { FetchBookmarkService } from './fetchBookmark.ts';
 
+const accountA = generateDummyAccount().getID();
+const accountB = generateDummyAccount().getID();
+const bookmarkedNote = (seconds: number) =>
+  generateDummyNote({
+    createdAt: addDuration(DUMMY_BASE_DATE, { seconds }),
+  }).getID();
 const bookmarks = [
-  Bookmark.reconstruct({
-    accountID: '10' as AccountID,
-    noteID: '1' as NoteID,
-  }),
-  Bookmark.reconstruct({
-    accountID: '10' as AccountID,
-    noteID: '2' as NoteID,
-  }),
-  Bookmark.reconstruct({
-    accountID: '20' as AccountID,
-    noteID: '3' as NoteID,
-  }),
-  Bookmark.reconstruct({
-    accountID: '20' as AccountID,
-    noteID: '4' as NoteID,
-  }),
-  Bookmark.reconstruct({
-    accountID: '20' as AccountID,
-    noteID: '5' as NoteID,
-  }),
+  Bookmark.reconstruct({ accountID: accountA, noteID: bookmarkedNote(0) }),
+  Bookmark.reconstruct({ accountID: accountA, noteID: bookmarkedNote(1) }),
+  Bookmark.reconstruct({ accountID: accountB, noteID: bookmarkedNote(2) }),
+  Bookmark.reconstruct({ accountID: accountB, noteID: bookmarkedNote(3) }),
+  Bookmark.reconstruct({ accountID: accountB, noteID: bookmarkedNote(4) }),
 ];
 
 describe('FetchBookmarkService', () => {
@@ -39,7 +32,7 @@ describe('FetchBookmarkService', () => {
   const service = new FetchBookmarkService(repo, timelineRepo);
 
   it('should fetch bookmarks by accountID', async () => {
-    const res = await service.fetchBookmarkByAccountID('10' as AccountID, {
+    const res = await service.fetchBookmarkByAccountID(accountA, {
       hasAttachment: false,
       noNsfw: false,
     });
@@ -53,10 +46,10 @@ describe('FetchBookmarkService', () => {
   });
 
   it('should return when set beforeID', async () => {
-    const res = await service.fetchBookmarkByAccountID('20' as AccountID, {
+    const res = await service.fetchBookmarkByAccountID(accountB, {
       hasAttachment: false,
       noNsfw: false,
-      beforeId: '5' as NoteID,
+      beforeId: bookmarks[4]?.getNoteID(),
     });
 
     expect(Result.isOk(res)).toBe(true);

@@ -1,21 +1,24 @@
 import { Result } from '@mikuroxina/mini-fn';
 import { describe, expect, it } from 'vitest';
 
-import type { AccountID } from '../../accounts/model/account.ts';
+import type { Account } from '../../accounts/model/account.ts';
+import { generateDummyID, generateDummyIDs } from '../../internal/id/dummy.ts';
 import {
   ListMemberAlreadyExistsError,
   ListTitleLengthInvalidError,
   ListTooManyMembersError,
 } from './errors.ts';
-import { type CreateListArgs, List, type ListID } from './list.ts';
+import { type CreateListArgs, List } from './list.ts';
 
 describe('List', () => {
+  const memberId = generateDummyID<Account>();
+  const newMemberId = generateDummyID<Account>();
   const args: CreateListArgs = {
-    id: '1' as ListID,
+    id: generateDummyID<List>(),
     title: 'My List',
     publicity: 'PUBLIC',
-    ownerId: '2' as AccountID,
-    memberIds: ['3' as AccountID],
+    ownerId: generateDummyID<Account>(),
+    memberIds: [memberId],
     createdAt: new Date(),
   } as const;
 
@@ -48,10 +51,7 @@ describe('List', () => {
     });
 
     it('should return ListTooManyMembersError when memberIds exceeds 250', () => {
-      const memberIds = Array.from(
-        { length: 251 },
-        (_, i) => `${i + 1}` as AccountID,
-      );
+      const memberIds = generateDummyIDs<Account>(251);
       const res = List.new({ ...args, memberIds }, args.ownerId);
 
       expect(Result.isErr(res)).toBe(true);
@@ -61,38 +61,29 @@ describe('List', () => {
 
   it('should add a member to the list', () => {
     const list = List.reconstruct(args);
-    const memberId = '4' as AccountID;
 
-    const res = list.addMember(memberId, args.ownerId);
+    const res = list.addMember(newMemberId, args.ownerId);
 
     expect(Result.isOk(res)).toBe(true);
-    expect(list.getMemberIds()).toStrictEqual([
-      '3' as AccountID,
-      '4' as AccountID,
-    ]);
+    expect(list.getMemberIds()).toStrictEqual([memberId, newMemberId]);
   });
 
   it('should not add a member if already in the list', () => {
     const list = List.reconstruct({
       ...args,
-      memberIds: ['3' as AccountID],
+      memberIds: [memberId],
     });
-    const memberId = '3' as AccountID;
 
     const res = list.addMember(memberId, args.ownerId);
 
     expect(Result.isErr(res)).toBe(true);
     expect(Result.unwrapErr(res)).toBeInstanceOf(ListMemberAlreadyExistsError);
-    expect(list.getMemberIds()).toStrictEqual(['3' as AccountID]);
+    expect(list.getMemberIds()).toStrictEqual([memberId]);
   });
 
   it('should reject adding a member when member count reaches the limit (250)', () => {
-    const memberIds = Array.from(
-      { length: 250 },
-      (_, i) => `${i + 1}` as AccountID,
-    );
+    const memberIds = generateDummyIDs<Account>(250);
     const list = List.reconstruct({ ...args, memberIds });
-    const newMemberId = '251' as AccountID;
 
     const res = list.addMember(newMemberId, args.ownerId);
 
@@ -104,9 +95,8 @@ describe('List', () => {
   it('should remove member from list', () => {
     const list = List.reconstruct({
       ...args,
-      memberIds: ['3' as AccountID],
+      memberIds: [memberId],
     });
-    const memberId = '3' as AccountID;
 
     const res = list.removeMember(memberId, args.ownerId);
 
@@ -117,9 +107,9 @@ describe('List', () => {
   it('should no duplicate member when initialize', () => {
     const list = List.reconstruct({
       ...args,
-      memberIds: ['3' as AccountID, '3' as AccountID],
+      memberIds: [memberId, memberId],
     });
-    expect(list.getMemberIds()).toStrictEqual(['3' as AccountID]);
+    expect(list.getMemberIds()).toStrictEqual([memberId]);
   });
 
   describe('setTitle', () => {
@@ -209,9 +199,8 @@ describe('List', () => {
     describe('list.member.appended', () => {
       it('should push exactly one list.member.appended event on success', () => {
         const list = List.reconstruct(args);
-        const memberId = '4' as AccountID;
 
-        const res = list.addMember(memberId, args.ownerId);
+        const res = list.addMember(newMemberId, args.ownerId);
         expect(Result.isOk(res)).toBe(true);
 
         const events = list.pullEvents();
@@ -221,13 +210,13 @@ describe('List', () => {
         expect(event?.eventName).toBe('list.member.appended');
         expect(event?.target).toBe(args.id);
         expect(event?.actor).toBe(args.ownerId);
-        expect(event?.payload).toStrictEqual({ memberID: memberId });
+        expect(event?.payload).toStrictEqual({ memberID: newMemberId });
       });
 
       it('should not push any event when member already exists', () => {
         const list = List.reconstruct(args);
 
-        const res = list.addMember('3' as AccountID, args.ownerId);
+        const res = list.addMember(memberId, args.ownerId);
 
         expect(Result.isErr(res)).toBe(true);
         expect(list.pullEvents()).toStrictEqual([]);
@@ -235,7 +224,7 @@ describe('List', () => {
 
       it('should return an empty array on the second pullEvents call', () => {
         const list = List.reconstruct(args);
-        const res = list.addMember('4' as AccountID, args.ownerId);
+        const res = list.addMember(newMemberId, args.ownerId);
         expect(Result.isOk(res)).toBe(true);
 
         list.pullEvents();
@@ -247,7 +236,6 @@ describe('List', () => {
     describe('list.member.removed', () => {
       it('should push exactly one list.member.removed event on success', () => {
         const list = List.reconstruct(args);
-        const memberId = '3' as AccountID;
 
         const res = list.removeMember(memberId, args.ownerId);
         expect(Result.isOk(res)).toBe(true);
@@ -264,7 +252,7 @@ describe('List', () => {
 
       it('should return an empty array on the second pullEvents call', () => {
         const list = List.reconstruct(args);
-        const res = list.removeMember('3' as AccountID, args.ownerId);
+        const res = list.removeMember(memberId, args.ownerId);
         expect(Result.isOk(res)).toBe(true);
 
         list.pullEvents();

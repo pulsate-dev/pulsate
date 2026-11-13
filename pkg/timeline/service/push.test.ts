@@ -1,37 +1,36 @@
-import { Option, Result } from '@mikuroxina/mini-fn';
+import { Result } from '@mikuroxina/mini-fn';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
-import type { AccountID } from '../../accounts/model/account.ts';
-import { partialAccount1 } from '../../accounts/testData/testData.ts';
+import {
+  dummyNormalAccount1,
+  partialAccount1,
+} from '../../accounts/testData/testData.ts';
 import { dummyAccountModuleFacade } from '../../intermodule/account.ts';
-import { addSecondsToDate } from '../../internal/time/mod.ts';
-import { Note, type NoteID } from '../../notes/model/note.ts';
+import { addDuration } from '../../internal/time/mod.ts';
+import { generateDummyNote } from '../../notes/testData/testData.ts';
 import { InMemoryListRepository } from '../adaptor/repository/dummy.ts';
 import { InMemoryTimelineCacheRepository } from '../adaptor/repository/dummyCache.ts';
-import { List, type ListID } from '../model/list.ts';
 import {
   dummyFollowersNote,
   dummyHomeNote,
+  dummyNoteAuthorID,
   dummyPublicNote,
+  generateDummyList,
 } from '../testData/testData.ts';
 import { FetchSubscribedListService } from './fetchSubscribed.ts';
 import { NoteVisibilityService } from './noteVisibility.ts';
 import { PushTimelineService } from './push.ts';
 
 describe('PushTimelineService', () => {
-  const dummyList = List.reconstruct({
-    id: '10' as ListID,
-    title: 'dummy',
-    memberIds: ['100' as AccountID],
-    publicity: 'PUBLIC',
-    ownerId: '101' as AccountID,
-    createdAt: new Date('2023-09-10T00:00:00.000Z'),
+  const dummyList = generateDummyList({
+    memberIds: [dummyNoteAuthorID],
+    ownerId: dummyNormalAccount1.getID(),
   });
 
   const noteVisibility = new NoteVisibilityService(dummyAccountModuleFacade);
   const timelineCacheRepository = new InMemoryTimelineCacheRepository([
-    ['100' as AccountID, []],
-    ['101' as AccountID, []],
+    [dummyNoteAuthorID, []],
+    [dummyNormalAccount1.getID(), []],
   ]);
   const listRepository = new InMemoryListRepository([dummyList]);
   const fetchSubscribedListService = new FetchSubscribedListService(
@@ -52,10 +51,10 @@ describe('PushTimelineService', () => {
     );
     timelineCacheRepository.reset(
       [
-        ['100' as AccountID, []],
-        ['101' as AccountID, []],
+        [dummyNoteAuthorID, []],
+        [dummyNormalAccount1.getID(), []],
       ],
-      [['10' as ListID, []]],
+      [[dummyList.getId(), []]],
     );
   });
 
@@ -67,28 +66,27 @@ describe('PushTimelineService', () => {
 
   it('push to author home timeline', async () => {
     const res = await pushTimelineService.handle(dummyPublicNote);
-    const homeTimeline = await timelineCacheRepository.getHomeTimeline(
-      '100' as AccountID,
-    );
+    const homeTimeline =
+      await timelineCacheRepository.getHomeTimeline(dummyNoteAuthorID);
     expect(Result.unwrap(res)).toBe(undefined);
     expect(Result.isErr(homeTimeline)).toBe(false);
-    expect(Result.unwrap(homeTimeline)).toEqual(['1' as NoteID]);
+    expect(Result.unwrap(homeTimeline)).toEqual([dummyPublicNote.getID()]);
   });
 
   it('push to list', async () => {
     const res = await pushTimelineService.handle(dummyPublicNote);
     const listTimeline = await timelineCacheRepository.getListTimeline(
-      '10' as ListID,
+      dummyList.getId(),
     );
     expect(Result.unwrap(res)).toBe(undefined);
     expect(Result.isErr(listTimeline)).toBe(false);
-    expect(Result.unwrap(listTimeline)).toEqual(['1' as NoteID]);
+    expect(Result.unwrap(listTimeline)).toEqual([dummyPublicNote.getID()]);
   });
 
   it("if Note.visibility is FOLLOWERS, don't push to List", async () => {
     const res = await pushTimelineService.handle(dummyFollowersNote);
     const listTimeline = await timelineCacheRepository.getListTimeline(
-      '10' as ListID,
+      dummyList.getId(),
     );
 
     expect(Result.isErr(res)).toBe(true);
@@ -98,24 +96,16 @@ describe('PushTimelineService', () => {
   });
 
   it('if Cache limit reached, delete oldest note', async () => {
-    const data = [...new Array(300)].map((_, i) => {
-      return Note.reconstruct({
-        id: (i + 1).toString() as NoteID,
-        authorID: '100' as AccountID,
+    const data = [...new Array(300)].map((_, i) =>
+      generateDummyNote({
+        authorID: dummyNoteAuthorID,
         content: `Hello world ${i}`,
-        contentsWarningComment: '',
-        originalNoteID: Option.none(),
-        attachmentFileID: [],
-        sendTo: Option.none(),
-        visibility: 'PUBLIC',
-        createdAt: addSecondsToDate(
-          new Date('2023/09/10 00:00:00'),
-          3600 * 24 * i,
-        ),
-        updatedAt: Option.none(),
-        deletedAt: Option.none(),
-      });
-    });
+        createdAt: addDuration(new Date('2023/09/10 00:00:00'), { days: i }),
+      }),
+    );
+
+    const [oldestNote] = data;
+    if (!oldestNote) throw new Error('unreachable');
 
     for (const v of data) {
       await pushTimelineService.handle(v);
@@ -124,9 +114,9 @@ describe('PushTimelineService', () => {
     await pushTimelineService.handle(dummyHomeNote);
 
     const listData = Result.unwrap(
-      await timelineCacheRepository.getListTimeline('10' as ListID),
+      await timelineCacheRepository.getListTimeline(dummyList.getId()),
     );
     expect(listData.length).toBe(300);
-    expect(listData.includes('1' as NoteID)).toBe(false);
+    expect(listData.includes(oldestNote.getID())).toBe(false);
   });
 });

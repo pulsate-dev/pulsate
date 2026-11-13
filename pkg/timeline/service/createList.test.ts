@@ -1,8 +1,9 @@
 import { Result } from '@mikuroxina/mini-fn';
 import { describe, expect, it, type MockedObject, vi } from 'vitest';
 
-import type { AccountID } from '../../accounts/model/account.ts';
+import type { Account } from '../../accounts/model/account.ts';
 import type { EventPublisher } from '../../internal/event/mod.ts';
+import { generateDummyID } from '../../internal/id/dummy.ts';
 import { MockClock, SnowflakeIDGenerator } from '../../internal/id/mod.ts';
 import { InMemoryListRepository } from '../adaptor/repository/dummy.ts';
 import { CreateListService } from './createList.ts';
@@ -22,13 +23,15 @@ describe('CreateListService', () => {
   );
 
   it('should create a list', async () => {
-    const res = await service.handle('Hello world', true, '1' as AccountID);
+    const ownerId = generateDummyID<Account>();
+
+    const res = await service.handle('Hello world', true, ownerId);
 
     expect(Result.isOk(res)).toBe(true);
     const unwrapped = Result.unwrap(res);
     expect(unwrapped.getTitle()).toBe('Hello world');
     expect(unwrapped.isPublic()).toBe(true);
-    expect(unwrapped.getOwnerId()).toBe('1');
+    expect(unwrapped.getOwnerId()).toBe(ownerId);
     expect(eventPublisher.publishMany).toHaveBeenCalledWith([
       expect.objectContaining({ eventName: 'list.created' }),
     ]);

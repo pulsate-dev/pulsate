@@ -1,8 +1,9 @@
 import { Result } from '@mikuroxina/mini-fn';
 import { describe, expect, it } from 'vitest';
+import { generateDummyID } from '../../internal/id/dummy.ts';
 import { InMemoryTimelineRepository } from '../adaptor/repository/dummy.ts';
 import { InMemoryTimelineCacheRepository } from '../adaptor/repository/dummyCache.ts';
-import type { ListID } from '../model/list.ts';
+import type { List } from '../model/list.ts';
 import {
   dummyDirectNote,
   dummyFollowersNote,
@@ -12,8 +13,9 @@ import {
 import { ListTimelineService } from './list.ts';
 
 describe('ListTimelineService', () => {
+  const dummyListID = generateDummyID<List>();
   const cache = new InMemoryTimelineCacheRepository();
-  cache.addNotesToList('1' as ListID, [dummyPublicNote, dummyHomeNote]);
+  cache.addNotesToList(dummyListID, [dummyPublicNote, dummyHomeNote]);
   const repository = new InMemoryTimelineRepository([
     dummyPublicNote,
     dummyHomeNote,
@@ -23,7 +25,7 @@ describe('ListTimelineService', () => {
   const service = new ListTimelineService(cache, repository);
 
   it('should fetch list timeline notes', async () => {
-    const res = await service.handle('1' as ListID, {
+    const res = await service.handle(dummyListID, {
       hasAttachment: false,
       noNsfw: false,
     });
@@ -33,7 +35,7 @@ describe('ListTimelineService', () => {
   });
 
   it('should notes sorted by ID, descending', async () => {
-    const res = await service.handle('1' as ListID, {
+    const res = await service.handle(dummyListID, {
       hasAttachment: false,
       noNsfw: false,
     });
