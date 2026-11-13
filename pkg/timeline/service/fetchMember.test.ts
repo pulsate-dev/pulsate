@@ -1,5 +1,6 @@
 import { Result } from '@mikuroxina/mini-fn';
 import { describe, expect, it, vi } from 'vitest';
+
 import {
   dummyAccounts,
   dummyNormalAccount1,

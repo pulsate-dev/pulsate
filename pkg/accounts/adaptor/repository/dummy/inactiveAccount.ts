@@ -1,4 +1,5 @@
 import { Ether, Option, Result } from '@mikuroxina/mini-fn';
+
 import type { AccountID } from '../../../model/account.ts';
 import type { InactiveAccount } from '../../../model/inactiveAccount.ts';
 import {
@@ -6,9 +7,7 @@ import {
   inactiveAccountRepoSymbol,
 } from '../../../model/repository.ts';
 
-export class InMemoryInactiveAccountRepository
-  implements InactiveAccountRepository
-{
+export class InMemoryInactiveAccountRepository implements InactiveAccountRepository {
   #data: Set<InactiveAccount>;
 
   constructor() {

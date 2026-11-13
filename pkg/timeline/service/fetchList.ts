@@ -1,4 +1,5 @@
 import { Ether, type Result } from '@mikuroxina/mini-fn';
+
 import type { List, ListID } from '../model/list.ts';
 import { type ListRepository, listRepoSymbol } from '../model/repository.ts';
 

@@ -1,5 +1,6 @@
 import { Result } from '@mikuroxina/mini-fn';
 import { describe, expect, it } from 'vitest';
+
 import { MockClock } from '../../internal/id/mod.ts';
 import { Argon2idPasswordEncoder } from '../../internal/password/mod.ts';
 import { InMemoryAccountRepository } from '../adaptor/repository/dummy/account.ts';

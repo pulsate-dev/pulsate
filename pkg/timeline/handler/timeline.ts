@@ -1,5 +1,6 @@
 import { OpenAPIHono } from '@hono/zod-openapi';
 import { Option, Result } from '@mikuroxina/mini-fn';
+
 import type { AccountID } from '../../accounts/model/account.ts';
 import { AccountNotFoundError } from '../../accounts/model/errors.ts';
 import type { AuthMiddlewareVariable } from '../../adaptors/authenticateMiddleware.ts';

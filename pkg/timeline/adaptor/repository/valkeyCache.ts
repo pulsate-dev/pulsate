@@ -14,9 +14,7 @@ import {
   timelineNotesCacheRepoSymbol,
 } from '../../model/repository.ts';
 
-export class ValkeyTimelineCacheRepository
-  implements TimelineNotesCacheRepository
-{
+export class ValkeyTimelineCacheRepository implements TimelineNotesCacheRepository {
   readonly #redisClient: Redis;
   constructor(redisClient: Redis) {
     this.#redisClient = redisClient;

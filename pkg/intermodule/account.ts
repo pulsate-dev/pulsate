@@ -1,4 +1,5 @@
 import { Cat, Ether, Option, Result } from '@mikuroxina/mini-fn';
+
 import { InMemoryAccountRepository } from '../accounts/adaptor/repository/dummy/account.ts';
 import { inMemoryAccountAvatarRepo } from '../accounts/adaptor/repository/dummy/avatar.ts';
 import { newFollowRepo } from '../accounts/adaptor/repository/dummy/follow.ts';

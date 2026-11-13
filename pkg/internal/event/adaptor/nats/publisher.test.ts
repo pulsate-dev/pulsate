@@ -1,5 +1,6 @@
 import { Result } from '@mikuroxina/mini-fn';
 import { afterEach, describe, expect, it, vi } from 'vitest';
+
 import type { EventID } from '../../type.ts';
 import { eventModuleLogger } from '../logger.ts';
 import type { NatsEventClient } from './client.ts';

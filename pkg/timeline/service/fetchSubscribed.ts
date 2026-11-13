@@ -1,4 +1,5 @@
 import { Promise, type Result } from '@mikuroxina/mini-fn';
+
 import type { AccountID } from '../../accounts/model/account.ts';
 import type { List, ListID } from '../model/list.ts';
 import type { ListRepository } from '../model/repository.ts';

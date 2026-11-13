@@ -11,9 +11,7 @@ import {
   timelineNotesCacheRepoSymbol,
 } from '../../model/repository.ts';
 
-export class InMemoryTimelineCacheRepository
-  implements TimelineNotesCacheRepository
-{
+export class InMemoryTimelineCacheRepository implements TimelineNotesCacheRepository {
   #data: Map<CacheObjectKey, NoteID[]>;
   constructor(
     homeData: [AccountID, NoteID[]][] = [],

@@ -1,4 +1,5 @@
 import { writeFileSync } from 'node:fs';
+
 import { testClient } from 'hono/testing';
 
 import { app } from '../main.ts';

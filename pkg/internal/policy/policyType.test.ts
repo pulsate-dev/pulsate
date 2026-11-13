@@ -1,4 +1,5 @@
 import { expectTypeOf, it } from 'vitest';
+
 import type { PolicyAction } from './policy.ts';
 
 it('rejects actions from other policies', () => {

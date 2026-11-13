@@ -1,4 +1,5 @@
 import { Ether, Result } from '@mikuroxina/mini-fn';
+
 import { MediaNotFoundError } from '../../../../drive/model/errors.ts';
 import type { Medium, MediumID } from '../../../../drive/model/medium.ts';
 import type { AccountID } from '../../../model/account.ts';
@@ -8,9 +9,7 @@ import {
   accountAvatarRepoSymbol,
 } from '../../../model/repository.ts';
 
-export class InMemoryAccountAvatarRepository
-  implements AccountAvatarRepository
-{
+export class InMemoryAccountAvatarRepository implements AccountAvatarRepository {
   #media: Map<MediumID, Medium>;
   #data: Map<AccountID, MediumID>;
   constructor(

@@ -1,4 +1,5 @@
 import { Ether, type Result } from '@mikuroxina/mini-fn';
+
 import type { InMemoryMediaRepository } from '../drive/adaptor/repository/dummy.ts';
 import { fetchMediaServiceInstance } from '../drive/deps.ts';
 import type { Medium, MediumID } from '../drive/model/medium.ts';

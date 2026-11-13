@@ -1,5 +1,6 @@
 import { Result } from '@mikuroxina/mini-fn';
 import { beforeEach, describe, expect, it } from 'vitest';
+
 import { InMemoryMediaRepository } from '../../drive/adaptor/repository/dummy.ts';
 import {
   dummyMedium,

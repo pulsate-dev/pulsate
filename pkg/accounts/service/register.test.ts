@@ -1,5 +1,6 @@
 import { Result } from '@mikuroxina/mini-fn';
 import { afterEach, describe, expect, it, type MockedObject, vi } from 'vitest';
+
 import { notificationModule } from '../../intermodule/notification.ts';
 import type { EventPublisher } from '../../internal/event/mod.ts';
 import { MockClock, SnowflakeIDGenerator } from '../../internal/id/mod.ts';

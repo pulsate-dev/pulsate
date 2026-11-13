@@ -1,6 +1,7 @@
 import { Ether, Option, Result } from '@mikuroxina/mini-fn';
-import type { PrismaClient } from '../../../../adaptors/prisma/client.ts';
+
 import type { prismaClient } from '../../../../adaptors/prisma.ts';
+import type { PrismaClient } from '../../../../adaptors/prisma/client.ts';
 import type {
   AccountID,
   AccountName,
@@ -18,9 +19,7 @@ type InactiveAccountPrismaArgs = Awaited<
   ReturnType<typeof prismaClient.inactiveAccount.findUnique>
 >;
 
-export class PrismaInactiveAccountRepository
-  implements InactiveAccountRepository
-{
+export class PrismaInactiveAccountRepository implements InactiveAccountRepository {
   readonly #prisma: PrismaClient;
   constructor(prisma: PrismaClient) {
     this.#prisma = prisma;

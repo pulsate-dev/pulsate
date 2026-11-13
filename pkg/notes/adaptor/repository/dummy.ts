@@ -183,9 +183,7 @@ export const inMemoryBookmarkRepo = (bookmarks: Bookmark[]) =>
     () => new InMemoryBookmarkRepository(bookmarks),
   );
 
-export class InMemoryNoteAttachmentRepository
-  implements NoteAttachmentRepository
-{
+export class InMemoryNoteAttachmentRepository implements NoteAttachmentRepository {
   readonly #attachments: Map<NoteID, MediumID[]>;
   readonly #medium: Map<MediumID, Medium>;
 

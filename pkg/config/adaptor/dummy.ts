@@ -1,4 +1,5 @@
 import { Ether } from '@mikuroxina/mini-fn';
+
 import { type ConfigStore, configStoreSymbol } from '../mod.ts';
 import type { Config } from '../model/config.ts';
 

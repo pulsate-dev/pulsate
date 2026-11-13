@@ -1,9 +1,10 @@
 import { Ether, Option, Result } from '@mikuroxina/mini-fn';
+
+import type { prismaClient } from '../../../../adaptors/prisma.ts';
 import {
   Prisma,
   type PrismaClient,
 } from '../../../../adaptors/prisma/client.ts';
-import type { prismaClient } from '../../../../adaptors/prisma.ts';
 import {
   Account,
   type AccountFrozen,
@@ -205,9 +206,7 @@ export class PrismaAccountRepository implements AccountRepository {
 export const prismaAccountRepo = (client: PrismaClient) =>
   Ether.newEther(accountRepoSymbol, () => new PrismaAccountRepository(client));
 
-export class PrismaAccountVerifyTokenRepository
-  implements AccountVerifyTokenRepository
-{
+export class PrismaAccountVerifyTokenRepository implements AccountVerifyTokenRepository {
   readonly #prisma: PrismaClient;
   constructor(prisma: PrismaClient) {
     this.#prisma = prisma;

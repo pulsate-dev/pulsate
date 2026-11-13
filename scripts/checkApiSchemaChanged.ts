@@ -1,6 +1,7 @@
 import { appendFileSync, mkdtempSync, readFileSync, rmSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { fileURLToPath } from 'node:url';
+
 import pacote from 'pacote';
 
 const REGISTRY = 'https://registry.npmjs.org';

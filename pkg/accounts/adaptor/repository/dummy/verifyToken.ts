@@ -1,4 +1,5 @@
 import { Ether, Option, Result } from '@mikuroxina/mini-fn';
+
 import type { AccountID } from '../../../model/account.ts';
 import {
   type AccountVerifyTokenRepository,
@@ -6,9 +7,7 @@ import {
 } from '../../../model/repository.ts';
 import { VerifyToken } from '../../../model/verifyToken.ts';
 
-export class InMemoryAccountVerifyTokenRepository
-  implements AccountVerifyTokenRepository
-{
+export class InMemoryAccountVerifyTokenRepository implements AccountVerifyTokenRepository {
   #data: Map<string, { token: string; expire: Date }>;
 
   constructor() {

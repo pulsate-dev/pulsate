@@ -1,5 +1,6 @@
 import { Result } from '@mikuroxina/mini-fn';
 import { afterEach, describe, expect, it } from 'vitest';
+
 import { generateDummyID } from '../../internal/id/dummy.ts';
 import { InMemoryAccountRepository } from '../adaptor/repository/dummy/account.ts';
 import type { Account } from '../model/account.ts';
@@ -57,9 +58,8 @@ describe('FetchService', () => {
   });
 
   it("fetch account by ID doesn't exist", async () => {
-    const account = await fetchService.fetchAccountByID(
-      generateDummyID<Account>(),
-    );
+    const account =
+      await fetchService.fetchAccountByID(generateDummyID<Account>());
 
     expect(Result.isErr(account)).toBe(true);
   });

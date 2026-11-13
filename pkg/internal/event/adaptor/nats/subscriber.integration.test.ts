@@ -1,5 +1,6 @@
 import { Result } from '@mikuroxina/mini-fn';
 import { afterEach, describe, expect, it, vi } from 'vitest';
+
 import type {
   EventSubscription,
   EventSubscriptionOptions,
@@ -40,7 +41,9 @@ async function setup() {
     `test${suffix}.renoted`,
   ];
   try {
-    await (await a.jetstream.jetstreamManager()).streams.add({
+    await (
+      await a.jetstream.jetstreamManager()
+    ).streams.add({
       name: stream,
       subjects,
     });

@@ -1,4 +1,5 @@
 import { Result } from '@mikuroxina/mini-fn';
+
 import type {
   Policy,
   PolicyArgs,

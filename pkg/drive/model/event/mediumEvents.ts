@@ -43,16 +43,14 @@ export const mediumEventFactory = {
     authorID: AccountID;
     occurredAt?: Date;
   }): Result.Result<Error, MediumCreatedEvent> {
-    return Result.map(
-      (id: EventID): MediumCreatedEvent => ({
-        id,
-        eventName: 'medium.created' as const,
-        target: args.target,
-        actor: args.actor,
-        occurredAt: args.occurredAt ?? new Date(),
-        payload: { authorID: args.authorID },
-      }),
-    )(eventIDGenerator.generate<'Event'>());
+    return Result.map((id: EventID): MediumCreatedEvent => ({
+      id,
+      eventName: 'medium.created' as const,
+      target: args.target,
+      actor: args.actor,
+      occurredAt: args.occurredAt ?? new Date(),
+      payload: { authorID: args.authorID },
+    }))(eventIDGenerator.generate<'Event'>());
   },
 
   deleted(args: {
@@ -60,16 +58,14 @@ export const mediumEventFactory = {
     actor: AccountID;
     occurredAt?: Date;
   }): Result.Result<Error, MediumDeletedEvent> {
-    return Result.map(
-      (id: EventID): MediumDeletedEvent => ({
-        id,
-        eventName: 'medium.deleted' as const,
-        target: args.target,
-        actor: args.actor,
-        occurredAt: args.occurredAt ?? new Date(),
-        payload: {},
-      }),
-    )(eventIDGenerator.generate<'Event'>());
+    return Result.map((id: EventID): MediumDeletedEvent => ({
+      id,
+      eventName: 'medium.deleted' as const,
+      target: args.target,
+      actor: args.actor,
+      occurredAt: args.occurredAt ?? new Date(),
+      payload: {},
+    }))(eventIDGenerator.generate<'Event'>());
   },
 
   adminFlagged(args: {
@@ -77,16 +73,14 @@ export const mediumEventFactory = {
     actor: AccountID;
     occurredAt?: Date;
   }): Result.Result<Error, MediumAdminFlaggedEvent> {
-    return Result.map(
-      (id: EventID): MediumAdminFlaggedEvent => ({
-        id,
-        eventName: 'medium.admin.flagged' as const,
-        target: args.target,
-        actor: args.actor,
-        occurredAt: args.occurredAt ?? new Date(),
-        payload: {},
-      }),
-    )(eventIDGenerator.generate<'Event'>());
+    return Result.map((id: EventID): MediumAdminFlaggedEvent => ({
+      id,
+      eventName: 'medium.admin.flagged' as const,
+      target: args.target,
+      actor: args.actor,
+      occurredAt: args.occurredAt ?? new Date(),
+      payload: {},
+    }))(eventIDGenerator.generate<'Event'>());
   },
 
   adminUnflagged(args: {
@@ -94,15 +88,13 @@ export const mediumEventFactory = {
     actor: AccountID;
     occurredAt?: Date;
   }): Result.Result<Error, MediumAdminUnflaggedEvent> {
-    return Result.map(
-      (id: EventID): MediumAdminUnflaggedEvent => ({
-        id,
-        eventName: 'medium.admin.unflagged' as const,
-        target: args.target,
-        actor: args.actor,
-        occurredAt: args.occurredAt ?? new Date(),
-        payload: {},
-      }),
-    )(eventIDGenerator.generate<'Event'>());
+    return Result.map((id: EventID): MediumAdminUnflaggedEvent => ({
+      id,
+      eventName: 'medium.admin.unflagged' as const,
+      target: args.target,
+      actor: args.actor,
+      occurredAt: args.occurredAt ?? new Date(),
+      payload: {},
+    }))(eventIDGenerator.generate<'Event'>());
   },
 };

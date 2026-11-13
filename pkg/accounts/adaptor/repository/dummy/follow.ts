@@ -1,4 +1,5 @@
 import { Ether, Result } from '@mikuroxina/mini-fn';
+
 import type { AccountID } from '../../../model/account.ts';
 import type { AccountFollow } from '../../../model/follow.ts';
 import {
@@ -7,9 +8,7 @@ import {
   followRepoSymbol,
 } from '../../../model/repository.ts';
 
-export class InMemoryAccountFollowRepository
-  implements AccountFollowRepository
-{
+export class InMemoryAccountFollowRepository implements AccountFollowRepository {
   readonly #data: Set<AccountFollow>;
 
   constructor(data?: AccountFollow[]) {

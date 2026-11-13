@@ -7,6 +7,7 @@ import {
   type MockedObject,
   vi,
 } from 'vitest';
+
 import type { EventPublisher } from '../../internal/event/mod.ts';
 import { generateDummyID } from '../../internal/id/dummy.ts';
 import { MockClock } from '../../internal/id/mod.ts';

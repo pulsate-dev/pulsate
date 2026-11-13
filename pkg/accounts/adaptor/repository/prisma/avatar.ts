@@ -1,6 +1,7 @@
 import { Ether, Option, Result } from '@mikuroxina/mini-fn';
-import type { PrismaClient } from '../../../../adaptors/prisma/client.ts';
+
 import type { prismaClient } from '../../../../adaptors/prisma.ts';
+import type { PrismaClient } from '../../../../adaptors/prisma/client.ts';
 import { Medium, type MediumID } from '../../../../drive/model/medium.ts';
 import type { AccountID } from '../../../model/account.ts';
 import { AccountInternalError } from '../../../model/errors.ts';

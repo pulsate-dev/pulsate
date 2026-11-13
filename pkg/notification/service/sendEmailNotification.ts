@@ -1,4 +1,5 @@
 import { Ether, type Result } from '@mikuroxina/mini-fn';
+
 import { type EmailSender, emailSenderSymbol } from '../model/emailSender.ts';
 
 export class SendEmailNotificationService {

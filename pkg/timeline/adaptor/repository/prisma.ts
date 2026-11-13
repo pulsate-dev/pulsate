@@ -1,7 +1,8 @@
 import { Ether, Option, Result } from '@mikuroxina/mini-fn';
+
 import type { AccountID } from '../../../accounts/model/account.ts';
-import { Prisma, type PrismaClient } from '../../../adaptors/prisma/client.ts';
 import type { prismaClient } from '../../../adaptors/prisma.ts';
+import { Prisma, type PrismaClient } from '../../../adaptors/prisma/client.ts';
 import {
   DirectNote,
   type DirectNoteID,
@@ -487,9 +488,7 @@ type DeserializeBookmarkArgs = Awaited<
   ReturnType<typeof prismaClient.bookmark.findMany>
 >;
 
-export class PrismaBookmarkTimelineRepository
-  implements BookmarkTimelineRepository
-{
+export class PrismaBookmarkTimelineRepository implements BookmarkTimelineRepository {
   readonly #TIMELINE_NOTE_LIMIT = 20;
 
   readonly #prisma: PrismaClient;

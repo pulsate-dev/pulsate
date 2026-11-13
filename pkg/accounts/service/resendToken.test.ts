@@ -1,5 +1,6 @@
 import { Option, Result } from '@mikuroxina/mini-fn';
 import { afterEach, describe, expect, it, vi } from 'vitest';
+
 import { notificationModule } from '../../intermodule/notification.ts';
 import type { EventPublisher } from '../../internal/event/mod.ts';
 import { generateDummyID } from '../../internal/id/dummy.ts';

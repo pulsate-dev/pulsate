@@ -360,9 +360,7 @@ export class InMemoryListRepository implements ListRepository {
 export const inMemoryListRepo = (data?: List[], notes?: Note[]) =>
   Ether.newEther(listRepoSymbol, () => new InMemoryListRepository(data, notes));
 
-export class InMemoryBookmarkTimelineRepository
-  implements BookmarkTimelineRepository
-{
+export class InMemoryBookmarkTimelineRepository implements BookmarkTimelineRepository {
   #data: Map<`${AccountID}_${NoteID}`, Bookmark>;
 
   constructor(data: readonly Bookmark[] = []) {
