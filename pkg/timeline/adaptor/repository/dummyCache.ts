@@ -1,5 +1,4 @@
 import { Ether, Result } from '@mikuroxina/mini-fn';
-
 import type { AccountID } from '../../../accounts/model/account.ts';
 import { compareID } from '../../../internal/id/mod.ts';
 import type { Note, NoteID } from '../../../notes/model/note.ts';

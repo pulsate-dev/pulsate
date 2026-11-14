@@ -1,6 +1,5 @@
 import { Result } from '@mikuroxina/mini-fn';
 import { describe, expect, it } from 'vitest';
-
 import { checkVisibilityForSilencedActor } from './createDomainService.ts';
 import { NoteAccountSilencedError } from './errors.ts';
 

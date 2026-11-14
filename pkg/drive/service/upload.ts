@@ -2,7 +2,6 @@ import { Cat, Option, Promise, Result } from '@mikuroxina/mini-fn';
 import { encode } from 'blurhash';
 import { fileTypeFromBuffer } from 'file-type';
 import sharp from 'sharp';
-
 import type { AccountID } from '../../accounts/model/account.ts';
 import type { EventPublisher } from '../../internal/event/mod.ts';
 import type { SnowflakeIDGenerator } from '../../internal/id/mod.ts';

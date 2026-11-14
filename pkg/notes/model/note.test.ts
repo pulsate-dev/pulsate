@@ -1,6 +1,5 @@
 import { Option, Result } from '@mikuroxina/mini-fn';
 import { describe, expect, it } from 'vitest';
-
 import type { Account } from '../../accounts/model/account.ts';
 import type { Medium } from '../../drive/model/medium.ts';
 import { generateDummyID, generateDummyIDs } from '../../internal/id/dummy.ts';

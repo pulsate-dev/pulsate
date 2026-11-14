@@ -1,6 +1,5 @@
 import { Option, Result } from '@mikuroxina/mini-fn';
 import { afterEach, describe, expect, it, type MockedObject, vi } from 'vitest';
-
 import { generateDummyAccount } from '../../accounts/testData/testData.ts';
 import type { EventPublisher } from '../../internal/event/mod.ts';
 import { generateDummyID } from '../../internal/id/dummy.ts';

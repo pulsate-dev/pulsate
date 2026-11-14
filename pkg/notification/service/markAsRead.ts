@@ -1,5 +1,4 @@
 import { Cat, Ether, Promise, Result } from '@mikuroxina/mini-fn';
-
 import type { AccountID } from '../../accounts/model/account.ts';
 import { type Clock, clockSymbol } from '../../internal/id/mod.ts';
 import type {

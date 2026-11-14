@@ -1,6 +1,5 @@
 import { Result } from '@mikuroxina/mini-fn';
 import { afterEach, describe, expect, it, vi } from 'vitest';
-
 import type {
   EventSubscription,
   EventSubscriptionOptions,

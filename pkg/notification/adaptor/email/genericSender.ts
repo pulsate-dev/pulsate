@@ -1,7 +1,6 @@
 import { Ether, Result } from '@mikuroxina/mini-fn';
 import { createMessage } from '@upyo/core';
 import { SmtpTransport } from '@upyo/smtp';
-
 import {
   type EmailSender,
   emailSenderSymbol,

@@ -1,5 +1,4 @@
 import { createRoute, z } from '@hono/zod-openapi';
-
 import { InternalError } from '../accounts/adaptor/presenter/errors.ts';
 import {
   bearerAuth,

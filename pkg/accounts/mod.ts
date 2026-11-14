@@ -1,5 +1,4 @@
 import { OpenAPIHono } from '@hono/zod-openapi';
-
 import type { AuthMiddlewareVariable } from '../adaptors/authenticateMiddleware.ts';
 import { accountHandlers } from './handler/account.ts';
 import { authHandlers } from './handler/auth.ts';

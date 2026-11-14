@@ -1,6 +1,5 @@
 import type { Result } from '@mikuroxina/mini-fn';
 import * as v from 'valibot';
-
 import type {
   EventSubscriber,
   EventSubscription,

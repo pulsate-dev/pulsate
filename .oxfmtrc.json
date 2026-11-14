@@ -13,6 +13,8 @@
   "bracketSameLine": false,
   "bracketSpacing": true,
   "singleAttributePerLine": false,
-  "sortImports": {},
+  "sortImports": {
+    "newlinesBetween": false
+  },
   "ignorePatterns": ["**/build", "pkg/adaptors/prisma/**"]
 }

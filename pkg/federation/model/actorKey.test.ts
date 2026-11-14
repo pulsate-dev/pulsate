@@ -1,6 +1,5 @@
 import { Option, Result } from '@mikuroxina/mini-fn';
 import { describe, expect, it } from 'vitest';
-
 import { generateDummyID } from '../../internal/id/dummy.ts';
 import type { Actor } from './actor.ts';
 import { ActorKeyPair, type PEMKey } from './actorKey.ts';

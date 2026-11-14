@@ -1,5 +1,4 @@
 import { Option } from '@mikuroxina/mini-fn';
-
 import type { ID } from '../../internal/id/type.ts';
 
 export type InstanceID = ID<Instance>;

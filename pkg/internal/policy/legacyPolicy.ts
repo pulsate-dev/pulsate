@@ -1,5 +1,4 @@
 import type { Result } from '@mikuroxina/mini-fn';
-
 import type { Account } from '../../accounts/model/account.ts';
 
 export type PolicyAuthorizedActionFunc<T, R> = (

@@ -1,6 +1,5 @@
 import { Result } from '@mikuroxina/mini-fn';
 import { afterEach, describe, expect, it } from 'vitest';
-
 import { generateDummyID } from '../../internal/id/dummy.ts';
 import { InMemoryAccountRepository } from '../adaptor/repository/dummy/account.ts';
 import type { Account } from '../model/account.ts';

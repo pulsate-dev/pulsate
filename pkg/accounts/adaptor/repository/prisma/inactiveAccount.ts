@@ -1,5 +1,4 @@
 import { Ether, Option, Result } from '@mikuroxina/mini-fn';
-
 import type { prismaClient } from '../../../../adaptors/prisma.ts';
 import type { PrismaClient } from '../../../../adaptors/prisma/client.ts';
 import type {

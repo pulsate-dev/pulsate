@@ -1,6 +1,5 @@
 import { Result } from '@mikuroxina/mini-fn';
 import { beforeEach, describe, expect, it } from 'vitest';
-
 import { InMemoryListRepository } from '../adaptor/repository/dummy.ts';
 import { ListTitleLengthInvalidError } from '../model/errors.ts';
 import type { List } from '../model/list.ts';

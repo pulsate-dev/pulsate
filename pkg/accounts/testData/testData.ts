@@ -1,5 +1,4 @@
 import { Option } from '@mikuroxina/mini-fn';
-
 import type { PartialAccount } from '../../intermodule/account.ts';
 import { DUMMY_BASE_DATE, generateDummyID } from '../../internal/id/dummy.ts';
 import { addDuration } from '../../internal/time/mod.ts';

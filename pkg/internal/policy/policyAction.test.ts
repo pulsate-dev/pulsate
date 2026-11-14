@@ -1,5 +1,4 @@
 import { describe, expect, it } from 'vitest';
-
 import { PolicyAction } from './policy.ts';
 
 class TestAction extends PolicyAction<string> {

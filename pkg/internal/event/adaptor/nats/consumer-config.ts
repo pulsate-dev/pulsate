@@ -7,7 +7,6 @@ import {
 } from '@nats-io/jetstream';
 import { nanos } from '@nats-io/transport-node';
 import * as v from 'valibot';
-
 import type { EventSubscriptionOptions } from '../../subscriber.ts';
 
 export const maxDeliver = 5;

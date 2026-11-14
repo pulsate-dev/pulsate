@@ -1,6 +1,5 @@
 import { Result } from '@mikuroxina/mini-fn';
 import { describe, expect, it } from 'vitest';
-
 import type { EventSubscriptionOptions } from '../../subscriber.ts';
 import type { NatsEventClient } from './client.ts';
 import { getConsumer } from './consumer.ts';

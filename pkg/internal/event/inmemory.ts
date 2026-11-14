@@ -1,5 +1,4 @@
 import { Result } from '@mikuroxina/mini-fn';
-
 import { eventModuleLogger } from './adaptor/logger.ts';
 import type { EventPublisher } from './publisher.ts';
 import type {

@@ -1,5 +1,4 @@
 import { Result } from '@mikuroxina/mini-fn';
-
 import type { MediumID } from '../../../drive/model/medium.ts';
 import { eventIDGenerator } from '../../../internal/event/idGenerator.ts';
 import type { DomainEvent, EventID } from '../../../internal/event/type.ts';

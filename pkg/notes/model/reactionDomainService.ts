@@ -1,5 +1,4 @@
 import { Option } from '@mikuroxina/mini-fn';
-
 import type { Note, NoteID } from './note.ts';
 
 /**

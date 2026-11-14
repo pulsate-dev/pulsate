@@ -1,6 +1,5 @@
 import { OpenAPIHono } from '@hono/zod-openapi';
 import { Result } from '@mikuroxina/mini-fn';
-
 import type { AuthMiddlewareVariable } from '../../adaptors/authenticateMiddleware.ts';
 import { accountModuleLogger } from '../adaptor/logger.ts';
 import { controller } from '../deps.ts';

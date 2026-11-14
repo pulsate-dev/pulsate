@@ -1,5 +1,4 @@
 import { Ether, Option, Result } from '@mikuroxina/mini-fn';
-
 import type { AccountID } from '../../../../accounts/model/account.ts';
 import type {
   Prisma,

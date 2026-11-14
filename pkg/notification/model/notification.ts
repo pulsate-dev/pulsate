@@ -1,5 +1,4 @@
 import { Option, type Result } from '@mikuroxina/mini-fn';
-
 import type { AccountID } from '../../accounts/model/account.ts';
 import type { NoteID } from '../../notes/model/note.ts';
 import type { ReactionID } from '../../notes/model/reaction.ts';

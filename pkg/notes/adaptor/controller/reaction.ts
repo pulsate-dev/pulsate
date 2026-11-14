@@ -1,6 +1,5 @@
 import type { z } from '@hono/zod-openapi';
 import { Option, Result } from '@mikuroxina/mini-fn';
-
 import type { AccountID } from '../../../accounts/model/account.ts';
 import type { NoteID } from '../../model/note.ts';
 import type { CreateReactionService } from '../../service/createReaction.ts';

@@ -1,5 +1,4 @@
 import { Ether } from '@mikuroxina/mini-fn';
-
 import { InMemoryEventBus } from './inmemory.ts';
 import type { EventPublisher } from './publisher.ts';
 import { eventPublisherSymbol } from './publisher.ts';

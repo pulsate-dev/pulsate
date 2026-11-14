@@ -1,6 +1,5 @@
 import { OpenAPIHono } from '@hono/zod-openapi';
 import { Option, Result } from '@mikuroxina/mini-fn';
-
 import {
   AuthenticateMiddlewareService,
   type AuthMiddlewareVariable,

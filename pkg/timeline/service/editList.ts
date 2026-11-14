@@ -1,5 +1,4 @@
 import { Cat, Ether, Promise, type Result } from '@mikuroxina/mini-fn';
-
 import type { ID } from '../../internal/id/type.ts';
 import type { List } from '../model/list.ts';
 import { type ListRepository, listRepoSymbol } from '../model/repository.ts';

@@ -1,5 +1,4 @@
 import { Cat, Ether } from '@mikuroxina/mini-fn';
-
 import { AuthenticateMiddlewareService } from '../adaptors/authenticateMiddleware.ts';
 import { prismaClient } from '../adaptors/prisma.ts';
 import { valkeyClient } from '../adaptors/valkey.ts';

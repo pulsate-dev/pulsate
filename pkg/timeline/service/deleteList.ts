@@ -1,5 +1,4 @@
 import { Ether, Result } from '@mikuroxina/mini-fn';
-
 import {
   type EventPublisher,
   eventPublisherSymbol,

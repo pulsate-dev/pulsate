@@ -1,6 +1,5 @@
 import type { z } from '@hono/zod-openapi';
 import { Option, Result } from '@mikuroxina/mini-fn';
-
 import type { Account, AccountID } from '../../../accounts/model/account.ts';
 import type { AccountModuleFacade } from '../../../intermodule/account.ts';
 import type {

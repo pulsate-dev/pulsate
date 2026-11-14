@@ -1,5 +1,4 @@
 import { Cat, Ether, Promise, Result } from '@mikuroxina/mini-fn';
-
 import type { Medium, MediumID } from '../../drive/model/medium.ts';
 import {
   type MediaModuleFacade,

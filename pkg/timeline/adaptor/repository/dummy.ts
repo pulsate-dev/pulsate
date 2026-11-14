@@ -1,5 +1,4 @@
 import { Ether, Result } from '@mikuroxina/mini-fn';
-
 import type { AccountID } from '../../../accounts/model/account.ts';
 import { AccountNotFoundError } from '../../../accounts/model/errors.ts';
 import type { NoteModuleFacade } from '../../../intermodule/note.ts';

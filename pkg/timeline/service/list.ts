@@ -1,5 +1,4 @@
 import { Ether, Result } from '@mikuroxina/mini-fn';
-
 import type { Note } from '../../notes/model/note.ts';
 import { timelineModuleLogger } from '../adaptor/logger.ts';
 import type { ListID } from '../model/list.ts';

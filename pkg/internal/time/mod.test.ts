@@ -1,5 +1,4 @@
 import { describe, expect, it } from 'vitest';
-
 import { addDuration, addSecondsToDate } from './mod.ts';
 
 describe('addDuration', () => {

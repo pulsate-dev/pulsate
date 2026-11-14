@@ -1,5 +1,4 @@
 import { Result } from '@mikuroxina/mini-fn';
-
 import type { AccountID } from '../../../accounts/model/account.ts';
 import { eventIDGenerator } from '../../../internal/event/idGenerator.ts';
 import type { DomainEvent, EventID } from '../../../internal/event/type.ts';

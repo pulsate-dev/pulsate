@@ -1,6 +1,5 @@
 import { Result } from '@mikuroxina/mini-fn';
 import { describe, expect, it } from 'vitest';
-
 import { generateDummyAccount } from '../../accounts/testData/testData.ts';
 import { DUMMY_BASE_DATE } from '../../internal/id/dummy.ts';
 import { addDuration } from '../../internal/time/mod.ts';

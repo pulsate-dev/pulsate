@@ -1,5 +1,4 @@
 import { Ether, Result } from '@mikuroxina/mini-fn';
-
 import type { AccountID } from '../../../model/account.ts';
 import type { AccountFollow } from '../../../model/follow.ts';
 import {

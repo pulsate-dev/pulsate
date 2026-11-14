@@ -1,5 +1,4 @@
 import { describe, expect, it } from 'vitest';
-
 import { generateDummyID } from '../../internal/id/dummy.ts';
 import type { Account } from './account.ts';
 import { VerifyToken } from './verifyToken.ts';
