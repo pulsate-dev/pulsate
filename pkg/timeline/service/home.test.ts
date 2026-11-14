@@ -1,6 +1,5 @@
 import { Result } from '@mikuroxina/mini-fn';
 import { describe, expect, it } from 'vitest';
-
 import { dummyNormalAccount1 } from '../../accounts/testData/testData.ts';
 import { InMemoryTimelineRepository } from '../adaptor/repository/dummy.ts';
 import { InMemoryTimelineCacheRepository } from '../adaptor/repository/dummyCache.ts';

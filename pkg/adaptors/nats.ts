@@ -1,6 +1,5 @@
 import { Result } from '@mikuroxina/mini-fn';
 import { JetStreamApiCodes, JetStreamApiError } from '@nats-io/jetstream';
-
 import { NatsEventClient } from '../internal/event/adaptor/nats/client.ts';
 import { collectEventNames } from '../internal/event/eventNames.ts';
 

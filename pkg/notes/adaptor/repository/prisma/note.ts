@@ -1,10 +1,10 @@
 import { Ether, Option, Result } from '@mikuroxina/mini-fn';
 import type { AccountID } from '../../../../accounts/model/account.ts';
+import type { prismaClient } from '../../../../adaptors/prisma.ts';
 import type {
   Prisma,
   PrismaClient,
 } from '../../../../adaptors/prisma/client.ts';
-import type { prismaClient } from '../../../../adaptors/prisma.ts';
 import { Medium, type MediumID } from '../../../../drive/model/medium.ts';
 import { Bookmark } from '../../../model/bookmark.ts';
 import { Note, type NoteID, type NoteVisibility } from '../../../model/note.ts';
@@ -347,9 +347,7 @@ type DeserializeNoteAttachmentArgs = Awaited<
   >
 >;
 
-export class PrismaNoteAttachmentRepository
-  implements NoteAttachmentRepository
-{
+export class PrismaNoteAttachmentRepository implements NoteAttachmentRepository {
   readonly #client: PrismaClient;
   constructor(client: PrismaClient) {
     this.#client = client;

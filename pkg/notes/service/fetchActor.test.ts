@@ -1,6 +1,5 @@
 import { Result } from '@mikuroxina/mini-fn';
 import { describe, expect, it } from 'vitest';
-
 import type { Account } from '../../accounts/model/account.ts';
 import { AccountNotFoundError } from '../../accounts/model/errors.ts';
 import { dummyNormalAccount1 } from '../../accounts/testData/testData.ts';

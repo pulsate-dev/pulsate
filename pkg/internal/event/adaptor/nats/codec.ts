@@ -1,7 +1,6 @@
 import { Result } from '@mikuroxina/mini-fn';
 import type { JsMsg as JetStreamMessage } from '@nats-io/jetstream';
 import * as v from 'valibot';
-
 import type { AnyDomainEvent, EventID } from '../../type.ts';
 
 const encoder = new TextEncoder();

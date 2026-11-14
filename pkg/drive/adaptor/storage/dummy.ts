@@ -1,7 +1,6 @@
 import * as fs from 'node:fs/promises';
 import { writeFile } from 'node:fs/promises';
 import path from 'node:path';
-
 import type { Storage } from '../../model/storage.ts';
 
 export class LocalStorage implements Storage {

@@ -1,5 +1,4 @@
 import { Cat, Ether, Option, Promise, Result } from '@mikuroxina/mini-fn';
-
 import type { Account, AccountID } from '../../accounts/model/account.ts';
 import type { MediumID } from '../../drive/model/medium.ts';
 import {

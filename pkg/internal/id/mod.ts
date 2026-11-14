@@ -1,6 +1,5 @@
 import { z } from '@hono/zod-openapi';
 import { Ether, Result } from '@mikuroxina/mini-fn';
-
 import { OFFSET_FROM_UNIX_EPOCH } from '../time/mod.ts';
 import type { ID } from './type.ts';
 

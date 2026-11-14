@@ -1,5 +1,4 @@
 import { describe, expect, it } from 'vitest';
-
 import { Config } from '../model/config.ts';
 import { DummyConfigStore } from './dummy.ts';
 

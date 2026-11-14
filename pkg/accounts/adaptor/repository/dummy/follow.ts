@@ -7,9 +7,7 @@ import {
   followRepoSymbol,
 } from '../../../model/repository.ts';
 
-export class InMemoryAccountFollowRepository
-  implements AccountFollowRepository
-{
+export class InMemoryAccountFollowRepository implements AccountFollowRepository {
   readonly #data: Set<AccountFollow>;
 
   constructor(data?: AccountFollow[]) {

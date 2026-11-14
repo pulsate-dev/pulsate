@@ -6,7 +6,6 @@ import {
   JetStreamApiCodes,
   JetStreamApiError,
 } from '@nats-io/jetstream';
-
 import type { EventSubscriptionOptions } from '../../subscriber.ts';
 import type { NatsEventClient } from './client.ts';
 import {

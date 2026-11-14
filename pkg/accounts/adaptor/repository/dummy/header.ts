@@ -8,9 +8,7 @@ import {
   accountHeaderRepoSymbol,
 } from '../../../model/repository.ts';
 
-export class InMemoryAccountHeaderRepository
-  implements AccountHeaderRepository
-{
+export class InMemoryAccountHeaderRepository implements AccountHeaderRepository {
   #media: Map<MediumID, Medium>;
   #data: Map<AccountID, MediumID>;
   constructor(

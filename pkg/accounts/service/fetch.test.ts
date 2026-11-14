@@ -57,9 +57,8 @@ describe('FetchService', () => {
   });
 
   it("fetch account by ID doesn't exist", async () => {
-    const account = await fetchService.fetchAccountByID(
-      generateDummyID<Account>(),
-    );
+    const account =
+      await fetchService.fetchAccountByID(generateDummyID<Account>());
 
     expect(Result.isErr(account)).toBe(true);
   });

@@ -1,6 +1,5 @@
 import { Result } from '@mikuroxina/mini-fn';
 import { afterEach, describe, expect, it, vi } from 'vitest';
-
 import { eventModuleLogger } from './adaptor/logger.ts';
 import { InMemoryEventBus } from './inmemory.ts';
 import type { EventID } from './type.ts';

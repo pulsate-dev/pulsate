@@ -1,5 +1,4 @@
 import { Option, Result } from '@mikuroxina/mini-fn';
-
 import type { AccountID } from './account.ts';
 import { type FollowEvent, followEventFactory } from './event/followEvents.ts';
 

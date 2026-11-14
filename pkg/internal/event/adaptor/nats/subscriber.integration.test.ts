@@ -40,7 +40,9 @@ async function setup() {
     `test${suffix}.renoted`,
   ];
   try {
-    await (await a.jetstream.jetstreamManager()).streams.add({
+    await (
+      await a.jetstream.jetstreamManager()
+    ).streams.add({
       name: stream,
       subjects,
     });

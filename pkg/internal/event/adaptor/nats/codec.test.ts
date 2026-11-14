@@ -1,7 +1,6 @@
 import { Result } from '@mikuroxina/mini-fn';
 import type { JsMsg as JetStreamMessage } from '@nats-io/jetstream';
 import { describe, expect, it, vi } from 'vitest';
-
 import { decodeEvent } from './codec.ts';
 
 const subject = 'note.created';

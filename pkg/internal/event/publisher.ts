@@ -1,5 +1,4 @@
 import { Ether, type Result } from '@mikuroxina/mini-fn';
-
 import type { AnyDomainEvent } from './type.ts';
 
 /** Publishes domain events to the application's event transport. */

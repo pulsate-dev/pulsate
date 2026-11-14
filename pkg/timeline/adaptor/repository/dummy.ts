@@ -1,5 +1,4 @@
 import { Ether, Result } from '@mikuroxina/mini-fn';
-
 import type { AccountID } from '../../../accounts/model/account.ts';
 import { AccountNotFoundError } from '../../../accounts/model/errors.ts';
 import type { NoteModuleFacade } from '../../../intermodule/note.ts';
@@ -360,9 +359,7 @@ export class InMemoryListRepository implements ListRepository {
 export const inMemoryListRepo = (data?: List[], notes?: Note[]) =>
   Ether.newEther(listRepoSymbol, () => new InMemoryListRepository(data, notes));
 
-export class InMemoryBookmarkTimelineRepository
-  implements BookmarkTimelineRepository
-{
+export class InMemoryBookmarkTimelineRepository implements BookmarkTimelineRepository {
   #data: Map<`${AccountID}_${NoteID}`, Bookmark>;
 
   constructor(data: readonly Bookmark[] = []) {

@@ -1,5 +1,4 @@
 import { describe, expect, it } from 'vitest';
-
 import { Config } from './config.ts';
 import { ConfigInvalidError } from './errors.ts';
 

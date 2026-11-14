@@ -2,7 +2,6 @@
  * These are dummy data for test, don't use it in production environment
  * */
 import { Option } from '@mikuroxina/mini-fn';
-
 import type { Account } from '../../accounts/model/account.ts';
 import { dummyNormalAccount1 } from '../../accounts/testData/testData.ts';
 import { DUMMY_BASE_DATE, generateDummyID } from '../../internal/id/dummy.ts';

@@ -6,9 +6,7 @@ import {
 } from '../../../model/repository.ts';
 import { VerifyToken } from '../../../model/verifyToken.ts';
 
-export class InMemoryAccountVerifyTokenRepository
-  implements AccountVerifyTokenRepository
-{
+export class InMemoryAccountVerifyTokenRepository implements AccountVerifyTokenRepository {
   #data: Map<string, { token: string; expire: Date }>;
 
   constructor() {

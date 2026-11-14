@@ -1,5 +1,4 @@
 import { Ether, type Result } from '@mikuroxina/mini-fn';
-
 import type { Note } from '../../notes/model/note.ts';
 import {
   type FetchHomeTimelineFilter,

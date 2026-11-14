@@ -1,6 +1,5 @@
 import { Option, Result } from '@mikuroxina/mini-fn';
 import { afterEach, describe, expect, it, vi } from 'vitest';
-
 import { NoteNotFoundError } from '../notes/model/errors.ts';
 import { generateDummyNote } from '../notes/testData/testData.ts';
 import { NoteModuleFacade, noteFetchServiceInstance } from './note.ts';
