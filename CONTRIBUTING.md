@@ -61,7 +61,7 @@ Before submitting a pull request, please check the following points:
   - If you want to submit a PR in progress, [please submit it as "Draft"](https://docs.github.com/pull-requests/collaborating-with-pull-requests/proposing-changes-to-your-work-with-pull-requests/changing-the-stage-of-a-pull-request).
 - Pull request title conforms to [Conventional Commits](#commit-message)
 
-After finishing, please run `pnpm format` to format the code. (If you are using VSCode, it will be formatted automatically.)
+After finishing, please run `pnpm format` to format the code and `pnpm lint` to lint it. (If you are using VSCode, it will be formatted automatically.)
 
 Once it has been reviewed and approved by the Pulsate maintainer, it can be merged.
 
@@ -143,7 +143,7 @@ If you change the model, you can update the Prisma Client by running this comman
 
 A style guide for Pulsate development.
 
-- These settings are bound by Prettier, ESLint, .editorconfig.
+- These settings are bound by Prettier, oxlint, .editorconfig.
   - Some editors and IDEs require special plug-ins to be installed.
   - For more details, click [here](https://editorconfig.org/#download).
 

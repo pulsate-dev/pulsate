@@ -2,8 +2,11 @@ pre-commit:
   commands:
     check:
       glob: '*.{js,ts,md}'
-      # Run `pnpm biome check` for all files (formatter and linter)
+      # Run `pnpm biome check` for all files (formatter)
       run: pnpm biome check
+    lint:
+      glob: '*.{js,ts}'
+      run: pnpm run lint
     check:filename:
       glob: '*.{js,ts}'
       run: pnpm run check:filename

@@ -1,6 +1,7 @@
 {
   "recommendations": [
     "biomejs.biome",
+    "oxc.oxc-vscode",
     "yzhang.markdown-all-in-one",
     "EditorConfig.EditorConfig"
   ]
