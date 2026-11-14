@@ -17,6 +17,7 @@ import {
   NoteAccountSilencedError,
   NoteAlreadyReactedError,
   NoteAttachmentNotFoundError,
+  NoteBookmarkNotFoundError,
   NoteContentLengthError,
   NoteEmojiNotFoundError,
   NoteNotFoundError,
@@ -261,6 +262,10 @@ noteHandlers.openapi(DeleteBookmarkRoute, async (c) => {
 
     if (error instanceof NoteNotFoundError) {
       return c.json({ error: 'NOTE_NOT_FOUND' as const }, 404);
+    }
+
+    if (error instanceof NoteBookmarkNotFoundError) {
+      return c.json({ error: 'NOTE_BOOKMARK_NOT_FOUND' as const }, 404);
     }
 
     noteModuleLogger.error('Uncaught error', error);
