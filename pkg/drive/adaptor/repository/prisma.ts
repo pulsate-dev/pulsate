@@ -36,6 +36,7 @@ export class PrismaMediaRepository implements MediaRepository {
     const res = await this.#prisma.medium.findUnique({
       where: {
         id,
+        deletedAt: null,
       },
     });
 
@@ -51,6 +52,7 @@ export class PrismaMediaRepository implements MediaRepository {
       const res = await this.#prisma.medium.findMany({
         where: {
           authorId,
+          deletedAt: null,
         },
         orderBy: {
           createdAt: 'desc',

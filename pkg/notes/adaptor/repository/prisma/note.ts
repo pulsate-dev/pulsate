@@ -146,8 +146,7 @@ export class PrismaNoteRepository implements NoteRepository {
       const res = await this.#client.note.findMany({
         where: {
           authorId,
-          // NOTE: Exclude from the search those whose deletedAt does not appear undefined.
-          deletedAt: undefined,
+          deletedAt: null,
         },
         take: limit,
         orderBy: {
@@ -168,7 +167,7 @@ export class PrismaNoteRepository implements NoteRepository {
           id: {
             in: [...new Set(ids)],
           },
-          deletedAt: undefined,
+          deletedAt: null,
         },
         orderBy: {
           createdAt: 'desc',
@@ -185,10 +184,9 @@ export class PrismaNoteRepository implements NoteRepository {
       const res = await this.#client.note.findUniqueOrThrow({
         where: {
           id,
-          // NOTE: Exclude from the search those whose deletedAt does not appear undefined.
-          deletedAt: undefined,
+          deletedAt: null,
         },
-        include: { noteAttachment: true },
+        include: { noteAttachment: { where: { deletedAt: null } } },
       });
       const { noteAttachment, ...noteData } = res;
       return Option.some(
@@ -294,7 +292,7 @@ export class PrismaBookmarkRepository implements BookmarkRepository {
       const res = await this.#client.bookmark.findMany({
         where: {
           accountId: id,
-          deletedAt: undefined,
+          deletedAt: null,
         },
       });
       return Option.some(
@@ -321,7 +319,7 @@ export class PrismaBookmarkRepository implements BookmarkRepository {
             accountId: id.accountID,
             noteId: id.noteID,
           },
-          deletedAt: undefined,
+          deletedAt: null,
         },
       });
       return Option.some(
@@ -400,6 +398,7 @@ export class PrismaNoteAttachmentRepository
       const res = await this.#client.noteAttachment.findMany({
         where: {
           noteId: noteID,
+          deletedAt: null,
         },
         include: {
           medium: true,
@@ -461,6 +460,7 @@ export class PrismaReactionRepository implements ReactionRepository {
       const res = await this.#client.reaction.findUnique({
         where: {
           reactionId: id,
+          deletedAt: null,
         },
       });
 
@@ -481,7 +481,7 @@ export class PrismaReactionRepository implements ReactionRepository {
             reactedById: id.accountID,
             reactedToId: id.noteID,
           },
-          deletedAt: undefined,
+          deletedAt: null,
         },
       });
 
@@ -498,7 +498,7 @@ export class PrismaReactionRepository implements ReactionRepository {
       const res = await this.#client.reaction.findMany({
         where: {
           reactedById: id,
-          deletedAt: undefined,
+          deletedAt: null,
         },
       });
 

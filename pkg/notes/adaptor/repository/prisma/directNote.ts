@@ -162,7 +162,7 @@ export class PrismaDirectNoteAttachmentRepository
   ): Promise<Result.Result<Error, Medium[]>> {
     try {
       const res = await this.#client.directNoteAttachment.findMany({
-        where: { directNoteId: directNoteID },
+        where: { directNoteId: directNoteID, deletedAt: null },
         include: { medium: true },
       });
       return Result.ok(this.deserialize(res));

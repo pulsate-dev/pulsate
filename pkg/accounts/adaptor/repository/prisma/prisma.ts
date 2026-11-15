@@ -57,6 +57,7 @@ export class PrismaAccountRepository implements AccountRepository {
     const res = await this.#prisma.account.findUnique({
       where: {
         id: id,
+        deletedAt: null,
       },
     });
     if (!res) {
@@ -74,6 +75,7 @@ export class PrismaAccountRepository implements AccountRepository {
         id: {
           in: id as AccountID[],
         },
+        deletedAt: null,
       },
     });
 
@@ -84,6 +86,7 @@ export class PrismaAccountRepository implements AccountRepository {
     const res = await this.#prisma.account.findUnique({
       where: {
         mail: mail,
+        deletedAt: null,
       },
     });
     if (!res) {
@@ -96,6 +99,7 @@ export class PrismaAccountRepository implements AccountRepository {
     const res = await this.#prisma.account.findUnique({
       where: {
         name: name,
+        deletedAt: null,
       },
     });
     if (!res) {
@@ -293,7 +297,7 @@ export class PrismaAccountFollowRepository implements AccountFollowRepository {
           },
         },
         update: {
-          deletedAt: undefined,
+          deletedAt: null,
         },
         create: {
           fromId: follow.getFromID(),
@@ -308,7 +312,6 @@ export class PrismaAccountFollowRepository implements AccountFollowRepository {
 
   async unfollow(follow: AccountFollow): Promise<Result.Result<Error, void>> {
     try {
-      // ToDo: Should replace with a hard delete. It can't follow it back again due to a composite primary key.
       await this.#prisma.following.update({
         where: {
           fromId_toId: {
@@ -334,6 +337,7 @@ export class PrismaAccountFollowRepository implements AccountFollowRepository {
     const res = await this.#prisma.following.findMany({
       where: {
         toId: accountID,
+        deletedAt: null,
       },
     });
     return Result.ok(res.map((f) => this.fromPrismaArgs(f)));
@@ -344,6 +348,7 @@ export class PrismaAccountFollowRepository implements AccountFollowRepository {
     const res = await this.#prisma.following.findMany({
       where: {
         fromId: accountID,
+        deletedAt: null,
       },
     });
     return Result.ok(res.map((f) => this.fromPrismaArgs(f)));
@@ -356,6 +361,7 @@ export class PrismaAccountFollowRepository implements AccountFollowRepository {
     const res = await this.#prisma.following.findMany({
       where: {
         toId: accountID,
+        deletedAt: null,
       },
       take: limit,
       orderBy: {
@@ -372,6 +378,7 @@ export class PrismaAccountFollowRepository implements AccountFollowRepository {
     const res = await this.#prisma.following.findMany({
       where: {
         fromId: accountID,
+        deletedAt: null,
       },
       take: limit,
       orderBy: {
@@ -388,11 +395,13 @@ export class PrismaAccountFollowRepository implements AccountFollowRepository {
       const followers = await this.#prisma.following.count({
         where: {
           toId: accountID,
+          deletedAt: null,
         },
       });
       const following = await this.#prisma.following.count({
         where: {
           fromId: accountID,
+          deletedAt: null,
         },
       });
       return Result.ok({
