@@ -105,15 +105,15 @@ export class RenoteService {
           ),
         ),
       )
+      .runWith(({ renote }) =>
+        this.#deps.noteRepository.create(renote).then(Result.map(() => [])),
+      )
       .when(
         () => attachmentFileID.length !== 0,
         ({ renote }) =>
           this.#deps.noteAttachmentRepository
             .create(renote.getID(), renote.getAttachmentFileID())
             .then(Result.map(() => [])),
-      )
-      .runWith(({ renote }) =>
-        this.#deps.noteRepository.create(renote).then(Result.map(() => [])),
       )
       .finish(({ renote }) => renote);
 
