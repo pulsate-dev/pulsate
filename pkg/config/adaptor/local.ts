@@ -1,8 +1,6 @@
 import { readFileSync } from 'node:fs';
-
 import { Ether } from '@mikuroxina/mini-fn';
 import { parse } from 'yaml';
-
 import { type ConfigStore, configStoreSymbol } from '../mod.ts';
 import { type AccountName, Config } from '../model/config.ts';
 

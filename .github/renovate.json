@@ -1,13 +1,22 @@
 {
   "$schema": "https://docs.renovatebot.com/renovate-schema.json",
-  "extends": [
-    "github>pulsate-dev/renovate-conf",
-    "customManagers:biomeVersions"
-  ],
+  "extends": ["github>pulsate-dev/renovate-conf"],
   "lockFileMaintenance": {
     "enabled": true,
     "schedule": ["before 3am on monday"],
     "automerge": true,
     "commitMessageAction": "Lock file maintenance"
-  }
+  },
+  "packageRules": [
+    {
+      "description": "oxfmt is pre-1.0 and its output may change between releases; reformat with `pnpm format` before merging",
+      "groupName": "oxc toolchain",
+      "matchPackageNames": ["oxlint", "oxfmt"],
+      "automerge": false,
+      "autoApprove": false,
+      "prBodyNotes": [
+        "If `check:format` fails, run `pnpm format` on this branch and commit the result."
+      ]
+    }
+  ]
 }

@@ -1,5 +1,4 @@
 import { Ether, Option, Result } from '@mikuroxina/mini-fn';
-
 import type { AccountID } from '../../../accounts/model/account.ts';
 import type { Medium, MediumID } from '../../../drive/model/medium.ts';
 import { Bookmark } from '../../model/bookmark.ts';
@@ -183,9 +182,7 @@ export const inMemoryBookmarkRepo = (bookmarks: Bookmark[]) =>
     () => new InMemoryBookmarkRepository(bookmarks),
   );
 
-export class InMemoryNoteAttachmentRepository
-  implements NoteAttachmentRepository
-{
+export class InMemoryNoteAttachmentRepository implements NoteAttachmentRepository {
   readonly #attachments: Map<NoteID, MediumID[]>;
   readonly #medium: Map<MediumID, Medium>;
 

@@ -1,7 +1,6 @@
 import { Option, Result } from '@mikuroxina/mini-fn';
 import * as v from 'valibot';
 import { describe, expect, it } from 'vitest';
-
 import { generateDummyID } from '../../internal/id/dummy.ts';
 import {
   Account,

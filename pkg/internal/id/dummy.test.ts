@@ -1,6 +1,5 @@
 import { Result } from '@mikuroxina/mini-fn';
 import { describe, expect, it } from 'vitest';
-
 import { generateDummyID, generateDummyIDs } from './dummy.ts';
 import { compareID, IDSchema, MockClock, SnowflakeIDGenerator } from './mod.ts';
 

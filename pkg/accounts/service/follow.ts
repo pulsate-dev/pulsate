@@ -1,5 +1,4 @@
 import { Cat, Ether, Option, Promise, type Result } from '@mikuroxina/mini-fn';
-
 import {
   type EventPublisher,
   eventPublisherSymbol,

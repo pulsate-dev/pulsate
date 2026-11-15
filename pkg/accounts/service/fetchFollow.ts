@@ -1,5 +1,4 @@
 import { Cat, Ether, Option, Promise, type Result } from '@mikuroxina/mini-fn';
-
 import type { AccountID, AccountName } from '../model/account.ts';
 import { AccountNotFoundError } from '../model/errors.ts';
 import type { AccountFollow } from '../model/follow.ts';

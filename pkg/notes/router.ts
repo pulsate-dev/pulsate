@@ -1,5 +1,4 @@
 import { createRoute, z } from '@hono/zod-openapi';
-
 import { AccountNotFound } from '../accounts/adaptor/presenter/errors.ts';
 import {
   bearerAuth,

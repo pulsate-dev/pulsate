@@ -1,5 +1,4 @@
 import { Ether, type Result } from '@mikuroxina/mini-fn';
-
 import type { AccountID } from '../../accounts/model/account.ts';
 import type { DirectNote, DirectNoteID } from '../../notes/model/directNote.ts';
 import type { Note, NoteID } from '../../notes/model/note.ts';

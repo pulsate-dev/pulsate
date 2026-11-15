@@ -1,5 +1,4 @@
 import { Ether, Option, Result } from '@mikuroxina/mini-fn';
-
 import type { Account, AccountID } from '../model/account.ts';
 import { AccountNotFoundError } from '../model/errors.ts';
 import {

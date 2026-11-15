@@ -1,8 +1,7 @@
 import { Ether, Option, Result } from '@mikuroxina/mini-fn';
-
 import type { AccountID } from '../../../../accounts/model/account.ts';
-import type { PrismaClient } from '../../../../adaptors/prisma/client.ts';
 import type { prismaClient } from '../../../../adaptors/prisma.ts';
+import type { PrismaClient } from '../../../../adaptors/prisma/client.ts';
 import { Medium, type MediumID } from '../../../../drive/model/medium.ts';
 import { DirectNote, type DirectNoteID } from '../../../model/directNote.ts';
 import {
@@ -114,9 +113,7 @@ export const prismaDirectNoteRepo = (client: PrismaClient) =>
     () => new PrismaDirectNoteRepository(client),
   );
 
-export class PrismaDirectNoteAttachmentRepository
-  implements DirectNoteAttachmentRepository
-{
+export class PrismaDirectNoteAttachmentRepository implements DirectNoteAttachmentRepository {
   readonly #client: PrismaClient;
   constructor(client: PrismaClient) {
     this.#client = client;

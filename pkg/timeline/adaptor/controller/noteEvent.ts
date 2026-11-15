@@ -1,5 +1,4 @@
 import { Result } from '@mikuroxina/mini-fn';
-
 import type { NoteModuleFacade } from '../../../intermodule/note.ts';
 import type { EventHandler } from '../../../internal/event/mod.ts';
 import type { AnyDomainEvent } from '../../../internal/event/type.ts';

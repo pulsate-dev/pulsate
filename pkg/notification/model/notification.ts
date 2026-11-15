@@ -11,8 +11,7 @@ import {
   type NotificationType,
 } from './notificationBase.ts';
 
-export interface CreateFollowedNotificationArgs
-  extends CreateNotificationBaseArgs {
+export interface CreateFollowedNotificationArgs extends CreateNotificationBaseArgs {
   notificationType: 'followed';
 }
 export class FollowedNotification implements Notification {
@@ -66,8 +65,7 @@ export class FollowedNotification implements Notification {
   }
 }
 
-export interface CreateFollowRequestedNotificationArgs
-  extends CreateNotificationBaseArgs {
+export interface CreateFollowRequestedNotificationArgs extends CreateNotificationBaseArgs {
   notificationType: 'followRequested';
 }
 export class FollowRequestedNotification implements Notification {
@@ -123,8 +121,7 @@ export class FollowRequestedNotification implements Notification {
   }
 }
 
-export interface CreateFollowAcceptedNotificationArgs
-  extends CreateNotificationBaseArgs {
+export interface CreateFollowAcceptedNotificationArgs extends CreateNotificationBaseArgs {
   notificationType: 'followAccepted';
 }
 export class FollowAcceptedNotification implements Notification {
@@ -180,8 +177,7 @@ export class FollowAcceptedNotification implements Notification {
   }
 }
 
-export interface CreateMentionedNotificationArgs
-  extends CreateNotificationBaseArgs {
+export interface CreateMentionedNotificationArgs extends CreateNotificationBaseArgs {
   notificationType: 'mentioned';
   activityID: NoteID;
 }
@@ -251,8 +247,7 @@ export class MentionedNotification implements Notification {
   }
 }
 
-export interface CreateRenotedNotificationArgs
-  extends CreateNotificationBaseArgs {
+export interface CreateRenotedNotificationArgs extends CreateNotificationBaseArgs {
   notificationType: 'renoted';
   sourceID: NoteID;
   activityID: NoteID;
@@ -339,8 +334,7 @@ export class RenotedNotification implements Notification {
   }
 }
 
-export interface CreateReactedNotificationArgs
-  extends CreateNotificationBaseArgs {
+export interface CreateReactedNotificationArgs extends CreateNotificationBaseArgs {
   notificationType: 'reacted';
   sourceID: NoteID;
   activityID: ReactionID;

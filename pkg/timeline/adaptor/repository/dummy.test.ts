@@ -1,6 +1,5 @@
 import { Option, Result } from '@mikuroxina/mini-fn';
 import { afterEach, describe, expect, it } from 'vitest';
-
 import type { Account, AccountID } from '../../../accounts/model/account.ts';
 import { generateDummyAccount } from '../../../accounts/testData/testData.ts';
 import {

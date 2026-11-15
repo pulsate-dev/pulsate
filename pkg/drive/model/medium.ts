@@ -1,6 +1,5 @@
 import { type Option, Result } from '@mikuroxina/mini-fn';
 import * as v from 'valibot';
-
 import type { AccountID } from '../../accounts/model/account.ts';
 import type { ID } from '../../internal/id/type.ts';
 import { MediaSizeTooLargeError, MediaTypeInvalidError } from './errors.ts';

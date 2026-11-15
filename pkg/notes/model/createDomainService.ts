@@ -1,5 +1,4 @@
 import { Result } from '@mikuroxina/mini-fn';
-
 import { NoteAccountSilencedError } from './errors.ts';
 import type { NoteVisibility } from './note.ts';
 

@@ -1,6 +1,5 @@
 import { Result } from '@mikuroxina/mini-fn';
 import { describe, expect, it, type MockedObject, vi } from 'vitest';
-
 import {
   dummyNormalAccount1,
   dummyNormalAccount2,

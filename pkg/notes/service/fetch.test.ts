@@ -1,6 +1,5 @@
 import { Option, Result } from '@mikuroxina/mini-fn';
 import { afterEach, describe, expect, it, vi } from 'vitest';
-
 import { InMemoryAccountRepository } from '../../accounts/adaptor/repository/dummy/account.ts';
 import { generateDummyAccount } from '../../accounts/testData/testData.ts';
 import { dummyMedium, dummyNSFWMedium } from '../../drive/testData/testData.ts';

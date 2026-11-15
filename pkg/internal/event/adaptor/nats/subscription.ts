@@ -1,6 +1,5 @@
 import { Result } from '@mikuroxina/mini-fn';
 import type { Consumer, JsMsg as JetStreamMessage } from '@nats-io/jetstream';
-
 import type {
   EventSubscription,
   EventSubscriptionOptions,

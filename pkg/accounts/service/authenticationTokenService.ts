@@ -1,6 +1,5 @@
 import { Ether, Option, type Promise, Result } from '@mikuroxina/mini-fn';
 import * as jose from 'jose';
-
 import { type Clock, clockSymbol } from '../../internal/id/mod.ts';
 import {
   AccountAuthenticationTokenExpiredError,

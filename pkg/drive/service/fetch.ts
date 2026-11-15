@@ -1,5 +1,4 @@
 import { Ether, Option, type Result } from '@mikuroxina/mini-fn';
-
 import type { AccountID } from '../../accounts/model/account.ts';
 import { MediaNotFoundError } from '../model/errors.ts';
 import type { Medium, MediumID } from '../model/medium.ts';

@@ -1,5 +1,4 @@
 import { Cat, Ether, Option, Promise, Result } from '@mikuroxina/mini-fn';
-
 import {
   type PasswordEncoder,
   passwordEncoderSymbol,

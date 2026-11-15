@@ -1,5 +1,4 @@
 import { Result } from '@mikuroxina/mini-fn';
-
 import type { Account, AccountID } from '../../accounts/model/account.ts';
 import { AccountNotFoundError } from '../../accounts/model/errors.ts';
 import type { AccountModuleFacade } from '../../intermodule/account.ts';

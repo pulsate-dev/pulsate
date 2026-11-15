@@ -7,7 +7,6 @@ import {
   type MockedObject,
   vi,
 } from 'vitest';
-
 import type { EventPublisher } from '../../internal/event/mod.ts';
 import { InMemoryAccountRepository } from '../adaptor/repository/dummy/account.ts';
 import { generateDummyAccount } from '../testData/testData.ts';

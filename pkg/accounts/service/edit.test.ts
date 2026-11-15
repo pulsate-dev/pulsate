@@ -8,7 +8,6 @@ import {
   type MockedObject,
   vi,
 } from 'vitest';
-
 import type { EventPublisher } from '../../internal/event/mod.ts';
 import { Argon2idPasswordEncoder } from '../../internal/password/mod.ts';
 import { InMemoryAccountRepository } from '../adaptor/repository/dummy/account.ts';

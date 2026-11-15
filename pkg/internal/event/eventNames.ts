@@ -1,5 +1,4 @@
 import { Result } from '@mikuroxina/mini-fn';
-
 import { accountEventFactory } from '../../accounts/model/event/accountEvents.ts';
 import { avatarEventFactory } from '../../accounts/model/event/avatarEvents.ts';
 import { followEventFactory } from '../../accounts/model/event/followEvents.ts';

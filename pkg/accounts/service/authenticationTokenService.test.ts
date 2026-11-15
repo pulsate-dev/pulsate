@@ -1,7 +1,6 @@
 import { Option, Result } from '@mikuroxina/mini-fn';
 import * as jose from 'jose';
 import { describe, expect, it } from 'vitest';
-
 import { MockClock } from '../../internal/id/mod.ts';
 import { AuthenticationTokenService } from './authenticationTokenService.ts';
 

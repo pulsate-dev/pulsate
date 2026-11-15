@@ -1,5 +1,4 @@
 import { Option } from '@mikuroxina/mini-fn';
-
 import type { Account } from '../../accounts/model/account.ts';
 import {
   dummyNormalAccount1,

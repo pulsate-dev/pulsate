@@ -1,5 +1,4 @@
 import { describe, expect, it } from 'vitest';
-
 import { compareID } from '../../internal/id/mod.ts';
 import { generateDummyAccount, generateDummyAccounts } from './testData.ts';
 

@@ -1,6 +1,5 @@
 import { Ether, Result } from '@mikuroxina/mini-fn';
 import type { Redis } from 'ioredis';
-
 import type { AccountID } from '../../../accounts/model/account.ts';
 import type { Note, NoteID } from '../../../notes/model/note.ts';
 import {
@@ -14,9 +13,7 @@ import {
   timelineNotesCacheRepoSymbol,
 } from '../../model/repository.ts';
 
-export class ValkeyTimelineCacheRepository
-  implements TimelineNotesCacheRepository
-{
+export class ValkeyTimelineCacheRepository implements TimelineNotesCacheRepository {
   readonly #redisClient: Redis;
   constructor(redisClient: Redis) {
     this.#redisClient = redisClient;

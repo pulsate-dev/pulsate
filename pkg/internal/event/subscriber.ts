@@ -1,5 +1,4 @@
 import type { Result } from '@mikuroxina/mini-fn';
-
 import type { AnyDomainEvent } from './type.ts';
 
 /** Handles a validated domain event and reports processing errors. */

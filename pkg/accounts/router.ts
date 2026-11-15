@@ -1,5 +1,4 @@
 import { createRoute, z } from '@hono/zod-openapi';
-
 import { FileNotFound } from '../drive/adaptor/presenter/errors.ts';
 import {
   bearerAuth,

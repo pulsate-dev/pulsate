@@ -6,9 +6,7 @@ import {
   inactiveAccountRepoSymbol,
 } from '../../../model/repository.ts';
 
-export class InMemoryInactiveAccountRepository
-  implements InactiveAccountRepository
-{
+export class InMemoryInactiveAccountRepository implements InactiveAccountRepository {
   #data: Set<InactiveAccount>;
 
   constructor() {
