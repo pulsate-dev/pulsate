@@ -122,6 +122,7 @@ export class PrismaTimelineRepository implements TimelineRepository {
     const accountNotes = await this.#prisma.note.findMany({
       where: {
         authorId: accountId,
+        deletedAt: null,
       },
       ...this.buildCursorFilter(filter),
     });
@@ -148,6 +149,7 @@ export class PrismaTimelineRepository implements TimelineRepository {
         id: {
           in: noteIDs as NoteID[],
         },
+        deletedAt: null,
       },
       ...this.buildCursorFilter(filter),
     });
@@ -197,6 +199,7 @@ export class PrismaTimelineRepository implements TimelineRepository {
           // NOTE: prisma requires non-readonly Array in here
           in: noteIDs as NoteID[],
         },
+        deletedAt: null,
         ...(filter.hasAttachment
           ? {
               attachmentFiles: {
@@ -302,7 +305,7 @@ export class PrismaListRepository implements ListRepository {
       const res = await this.#prisma.list.findMany({
         where: {
           accountId: ownerId,
-          deletedAt: undefined,
+          deletedAt: null,
         },
         orderBy: {
           createdAt: 'desc',
@@ -310,7 +313,7 @@ export class PrismaListRepository implements ListRepository {
         include: {
           listMember: {
             where: {
-              deletedAt: undefined,
+              deletedAt: null,
             },
             select: {
               memberId: true,
@@ -329,12 +332,12 @@ export class PrismaListRepository implements ListRepository {
       const res = await this.#prisma.list.findUnique({
         where: {
           id: listId,
-          deletedAt: undefined,
+          deletedAt: null,
         },
         include: {
           listMember: {
             where: {
-              deletedAt: undefined,
+              deletedAt: null,
             },
             select: {
               memberId: true,
@@ -355,7 +358,7 @@ export class PrismaListRepository implements ListRepository {
       const res = await this.#prisma.listMember.findMany({
         where: {
           listId: listId,
-          deletedAt: undefined,
+          deletedAt: null,
         },
       });
 
@@ -374,7 +377,7 @@ export class PrismaListRepository implements ListRepository {
     try {
       const res = await this.#prisma.list.findMany({
         where: {
-          deletedAt: undefined,
+          deletedAt: null,
           listMember: {
             every: {
               memberId: accountID,
@@ -384,7 +387,7 @@ export class PrismaListRepository implements ListRepository {
         include: {
           listMember: {
             where: {
-              deletedAt: undefined,
+              deletedAt: null,
             },
             select: {
               memberId: true,
@@ -517,6 +520,7 @@ export class PrismaBookmarkTimelineRepository
     const bookmarks = await this.#prisma.bookmark.findMany({
       where: {
         accountId: id,
+        deletedAt: null,
       },
       orderBy: {
         createdAt: filter.afterId ? 'asc' : 'desc',
