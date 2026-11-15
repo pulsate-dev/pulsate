@@ -66,8 +66,9 @@ export class RenoteService {
     visibility: NoteVisibility,
   ): Promise<Result.Result<Error, Note>> {
     const now = this.#deps.clock.now();
+    const monad = Promise.resultMonad<Error>();
 
-    const res = await Cat.doT(Promise.resultMonad<Error>())
+    const res = await Cat.doT(monad)
       .addM('actor', fetchActor(this.#deps.accountModule, authorID))
       .runWith(({ actor }) =>
         Promise.resolve(
@@ -82,8 +83,8 @@ export class RenoteService {
       )
       .addMWith('originalNote', () => this.resolveOriginalNote(originalID))
       .runWith(({ originalNote }) =>
-        Promise.resolve(originalNote.canBeRenotedBy(authorID)).then(
-          Result.map(() => []),
+        monad.map(() => [])(
+          Promise.resolve(originalNote.canBeRenotedBy(authorID)),
         ),
       )
       .addM('id', Promise.resolve(this.#deps.idGenerator.generate<Note>()))
@@ -106,14 +107,17 @@ export class RenoteService {
         ),
       )
       .runWith(({ renote }) =>
-        this.#deps.noteRepository.create(renote).then(Result.map(() => [])),
+        monad.map(() => [])(this.#deps.noteRepository.create(renote)),
       )
       .when(
         () => attachmentFileID.length !== 0,
         ({ renote }) =>
-          this.#deps.noteAttachmentRepository
-            .create(renote.getID(), renote.getAttachmentFileID())
-            .then(Result.map(() => [])),
+          monad.map(() => [])(
+            this.#deps.noteAttachmentRepository.create(
+              renote.getID(),
+              renote.getAttachmentFileID(),
+            ),
+          ),
       )
       .finish(({ renote }) => renote);
 
