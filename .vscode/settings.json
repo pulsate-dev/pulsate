@@ -5,7 +5,7 @@
   "markdown.extension.toc.levels": "2..6",
   "editor.codeActionsOnSave": {
     "source.organizeImports.biome": "explicit",
-    "quickfix.biome": "explicit"
+    "source.fixAll.oxc": "explicit"
   },
   "[typescript]": {
     "editor.defaultFormatter": "biomejs.biome"

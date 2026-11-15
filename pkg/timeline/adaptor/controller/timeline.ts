@@ -151,7 +151,7 @@ export class TimelineController {
       notes
         .filter((v) => accountsMap.has(v.getAuthorID()))
         .map((note) => {
-          // biome-ignore lint/style/noNonNullAssertion: This variable is safe because it is filtered by the above filter.
+          // oxlint-disable-next-line typescript/no-non-null-assertion -- This variable is safe because it is filtered by the above filter.
           const author = accountsMap.get(note.getAuthorID())!;
           const attachments = attachmentsMap.get(note.getID()) ?? [];
           const reactions = reactionsMap.get(note.getID()) ?? [];
