@@ -17,7 +17,6 @@ import {
 import type {
   Notification,
   NotificationActorType,
-  NotificationBase,
   NotificationID,
   NotificationType,
 } from '../../../model/notificationBase.ts';
@@ -66,9 +65,7 @@ export class PrismaNotificationRepository implements NotificationRepository {
     this.#prisma = prisma;
   }
 
-  private serialize(
-    notification: NotificationBase,
-  ): Prisma.NotificationCreateInput {
+  #serialize(notification: Notification): Prisma.NotificationCreateInput {
     return {
       id: notification.getID(),
       recipient: {
@@ -84,26 +81,17 @@ export class PrismaNotificationRepository implements NotificationRepository {
           id: notification.getActorID(),
         },
       },
-      sourceID: ((): string => {
-        if (!('sourceID' in notification)) return '';
-
-        return (
-          notification as unknown as NotificationBase & {
-            getSourceID(): string;
-          }
-        ).getSourceID();
-      })(),
-      activityID: ((): string => {
-        if (!('activityID' in notification)) {
-          return '';
-        }
-
-        return (
-          notification as unknown as NotificationBase & {
-            getActivityID(): string;
-          }
-        ).getActivityID();
-      })(),
+      sourceID:
+        notification instanceof RenotedNotification ||
+        notification instanceof ReactedNotification
+          ? notification.getSourceID()
+          : '',
+      activityID:
+        notification instanceof MentionedNotification ||
+        notification instanceof RenotedNotification ||
+        notification instanceof ReactedNotification
+          ? notification.getActivityID()
+          : '',
       createdAt: notification.getCreatedAt(),
       readAt: null,
     };
@@ -239,11 +227,11 @@ export class PrismaNotificationRepository implements NotificationRepository {
   }
 
   async create(
-    notification: NotificationBase,
+    notification: Notification,
   ): Promise<Result.Result<Error, void>> {
     try {
       await this.#prisma.notification.create({
-        data: this.serialize(notification),
+        data: this.#serialize(notification),
       });
       return Result.ok(undefined);
     } catch (e) {
@@ -300,7 +288,7 @@ export class PrismaNotificationRepository implements NotificationRepository {
   }
 
   async updateReadAt(
-    notification: NotificationBase,
+    notification: Notification,
   ): Promise<Result.Result<Error, void>> {
     try {
       if (Option.isNone(notification.getReadAt())) {
