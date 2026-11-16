@@ -66,7 +66,7 @@ export class PrismaNotificationRepository implements NotificationRepository {
   }
 
   #serialize(notification: Notification): Prisma.NotificationCreateInput {
-    return {
+    const data: Prisma.NotificationCreateInput = {
       id: notification.getID(),
       recipient: {
         connect: {
@@ -81,20 +81,28 @@ export class PrismaNotificationRepository implements NotificationRepository {
           id: notification.getActorID(),
         },
       },
-      sourceID:
-        notification instanceof RenotedNotification ||
-        notification instanceof ReactedNotification
-          ? notification.getSourceID()
-          : '',
-      activityID:
-        notification instanceof MentionedNotification ||
-        notification instanceof RenotedNotification ||
-        notification instanceof ReactedNotification
-          ? notification.getActivityID()
-          : '',
+      sourceID: '',
+      activityID: '',
       createdAt: notification.getCreatedAt(),
       readAt: null,
     };
+
+    if (
+      notification instanceof RenotedNotification ||
+      notification instanceof ReactedNotification
+    ) {
+      return {
+        ...data,
+        sourceID: notification.getSourceID(),
+        activityID: notification.getActivityID(),
+      };
+    }
+
+    if (notification instanceof MentionedNotification) {
+      return { ...data, activityID: notification.getActivityID() };
+    }
+
+    return data;
   }
 
   private serializeFilter(
