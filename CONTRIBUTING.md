@@ -254,6 +254,22 @@ const a: string[]
 const a: Array<string>
 ```
 
+#### Classes
+
+Use hard private `#foo` for fields of classes.
+
+```ts
+// Good
+class Foo {
+  #bar: number = 0;
+}
+
+// Bad
+class Foo {
+  private bar: number = 0;
+}
+```
+
 ## Database Schema Migration
 
 Pulsate uses Prisma to manage the database schema migration.  
