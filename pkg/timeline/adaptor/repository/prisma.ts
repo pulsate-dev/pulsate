@@ -71,8 +71,9 @@ export class PrismaTimelineRepository implements TimelineRepository {
 
   private deserialize(
     data: Awaited<ReturnType<PrismaClient['note']['findMany']> & {}>,
+    afterId?: NoteID,
   ): Note[] {
-    return data.map((v) => {
+    const notes = data.map((v) => {
       const visibility = (): NoteVisibility => {
         switch (v.visibility) {
           case 0:
@@ -104,6 +105,7 @@ export class PrismaTimelineRepository implements TimelineRepository {
         visibility: visibility() as NoteVisibility,
       });
     });
+    return afterId ? notes.reverse() : notes;
   }
 
   async getAccountTimeline(
@@ -127,7 +129,7 @@ export class PrismaTimelineRepository implements TimelineRepository {
       ...this.buildCursorFilter(filter),
     });
 
-    return Result.ok(this.deserialize(accountNotes));
+    return Result.ok(this.deserialize(accountNotes, filter.afterId));
   }
 
   async getHomeTimeline(
@@ -154,7 +156,7 @@ export class PrismaTimelineRepository implements TimelineRepository {
       ...this.buildCursorFilter(filter),
     });
 
-    return Result.ok(this.deserialize(homeNotes));
+    return Result.ok(this.deserialize(homeNotes, filter.afterId));
   }
 
   async getPublicTimeline(
@@ -177,7 +179,7 @@ export class PrismaTimelineRepository implements TimelineRepository {
       ...this.buildCursorFilter(filter),
     });
 
-    return Result.ok(this.deserialize(publicNotes));
+    return Result.ok(this.deserialize(publicNotes, filter.afterId));
   }
 
   async fetchListTimeline(
@@ -221,7 +223,7 @@ export class PrismaTimelineRepository implements TimelineRepository {
       },
       ...this.buildCursorFilter(filter),
     });
-    return Result.ok(this.deserialize(listNotes));
+    return Result.ok(this.deserialize(listNotes, filter.afterId));
   }
 }
 
@@ -551,7 +553,8 @@ export class PrismaBookmarkTimelineRepository
       take: this.#TIMELINE_NOTE_LIMIT,
     });
 
-    return Result.ok(this.deserialize(bookmarks));
+    const noteIDs = this.deserialize(bookmarks);
+    return Result.ok(filter.afterId ? noteIDs.reverse() : noteIDs);
   }
 }
 
