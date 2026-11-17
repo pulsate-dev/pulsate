@@ -223,9 +223,16 @@ export class PrismaAccountVerifyTokenRepository
     expire: Date,
   ): Promise<Result.Result<Error, void>> {
     try {
-      await this.#prisma.accountVerifyToken.create({
-        data: {
+      await this.#prisma.accountVerifyToken.upsert({
+        where: {
           accountId: accountID,
+        },
+        create: {
+          accountId: accountID,
+          token: token,
+          expiresAt: expire,
+        },
+        update: {
           token: token,
           expiresAt: expire,
         },

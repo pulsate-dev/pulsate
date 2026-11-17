@@ -28,6 +28,9 @@ export const inactiveAccountRepoSymbol =
   Ether.newEtherSymbol<InactiveAccountRepository>();
 
 export interface AccountVerifyTokenRepository {
+  /**
+   * Store a token, replacing any existing token and expiration for the account.
+   */
   create(
     accountID: AccountID,
     token: string,
