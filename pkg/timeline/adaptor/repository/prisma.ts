@@ -47,7 +47,7 @@ export class PrismaTimelineRepository implements TimelineRepository {
   ) {
     return {
       orderBy: {
-        createdAt: filter.afterId ? 'asc' : 'desc',
+        createdAt: 'desc',
       } as const,
       ...(filter.beforeId
         ? {
@@ -65,15 +65,14 @@ export class PrismaTimelineRepository implements TimelineRepository {
             skip: 1,
           }
         : {}),
-      take: limit,
+      take: filter.afterId ? -limit : limit,
     };
   }
 
   private deserialize(
     data: Awaited<ReturnType<PrismaClient['note']['findMany']> & {}>,
-    afterId?: NoteID,
   ): Note[] {
-    const notes = data.map((v) => {
+    return data.map((v) => {
       const visibility = (): NoteVisibility => {
         switch (v.visibility) {
           case 0:
@@ -105,7 +104,6 @@ export class PrismaTimelineRepository implements TimelineRepository {
         visibility: visibility() as NoteVisibility,
       });
     });
-    return afterId ? notes.reverse() : notes;
   }
 
   async getAccountTimeline(
@@ -129,7 +127,7 @@ export class PrismaTimelineRepository implements TimelineRepository {
       ...this.buildCursorFilter(filter),
     });
 
-    return Result.ok(this.deserialize(accountNotes, filter.afterId));
+    return Result.ok(this.deserialize(accountNotes));
   }
 
   async getHomeTimeline(
@@ -156,7 +154,7 @@ export class PrismaTimelineRepository implements TimelineRepository {
       ...this.buildCursorFilter(filter),
     });
 
-    return Result.ok(this.deserialize(homeNotes, filter.afterId));
+    return Result.ok(this.deserialize(homeNotes));
   }
 
   async getPublicTimeline(
@@ -179,7 +177,7 @@ export class PrismaTimelineRepository implements TimelineRepository {
       ...this.buildCursorFilter(filter),
     });
 
-    return Result.ok(this.deserialize(publicNotes, filter.afterId));
+    return Result.ok(this.deserialize(publicNotes));
   }
 
   async fetchListTimeline(
@@ -223,7 +221,7 @@ export class PrismaTimelineRepository implements TimelineRepository {
       },
       ...this.buildCursorFilter(filter),
     });
-    return Result.ok(this.deserialize(listNotes, filter.afterId));
+    return Result.ok(this.deserialize(listNotes));
   }
 }
 
@@ -525,7 +523,7 @@ export class PrismaBookmarkTimelineRepository
         deletedAt: null,
       },
       orderBy: {
-        createdAt: filter.afterId ? 'asc' : 'desc',
+        createdAt: 'desc',
       },
       ...(filter.beforeId
         ? {
@@ -550,11 +548,12 @@ export class PrismaBookmarkTimelineRepository
             skip: 1,
           }
         : {}),
-      take: this.#TIMELINE_NOTE_LIMIT,
+      take: filter.afterId
+        ? -this.#TIMELINE_NOTE_LIMIT
+        : this.#TIMELINE_NOTE_LIMIT,
     });
 
-    const noteIDs = this.deserialize(bookmarks);
-    return Result.ok(filter.afterId ? noteIDs.reverse() : noteIDs);
+    return Result.ok(this.deserialize(bookmarks));
   }
 }
 
