@@ -1,4 +1,4 @@
-import { Ether, type Result } from '@mikuroxina/mini-fn';
+import { Ether, Result } from '@mikuroxina/mini-fn';
 
 import type { AccountID } from '../../accounts/model/account.ts';
 import type { Note, NoteID } from '../../notes/model/note.ts';
@@ -29,13 +29,23 @@ export class FetchBookmarkService {
   }
 
   async fetchBookmarkNotes(
-    noteIDs: NoteID[],
+    noteIDs: readonly NoteID[],
   ): Promise<Result.Result<Error, Note[]>> {
     // NOTE: This function is simply used to fetch multiple posts by retrieving Notes from the IDs obtained in fetchBookmarkByAccountID.
-    return await this.#timelineRepository.getHomeTimeline(noteIDs, {
-      hasAttachment: false,
-      noNsfw: false,
-    });
+    return await this.#timelineRepository
+      .getHomeTimeline(noteIDs, {
+        hasAttachment: false,
+        noNsfw: false,
+      })
+      .then(
+        Result.map((notes) => {
+          const notesByID = new Map(notes.map((note) => [note.getID(), note]));
+          return noteIDs.flatMap((id) => {
+            const note = notesByID.get(id);
+            return note ? [note] : [];
+          });
+        }),
+      );
   }
 }
 export const fetchBookmarkServiceSymbol =

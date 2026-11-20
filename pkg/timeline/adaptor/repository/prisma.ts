@@ -47,7 +47,7 @@ export class PrismaTimelineRepository implements TimelineRepository {
   ) {
     return {
       orderBy: {
-        createdAt: filter.afterId ? 'asc' : 'desc',
+        createdAt: 'desc',
       } as const,
       ...(filter.beforeId
         ? {
@@ -65,7 +65,7 @@ export class PrismaTimelineRepository implements TimelineRepository {
             skip: 1,
           }
         : {}),
-      take: limit,
+      take: filter.afterId ? -limit : limit,
     };
   }
 
@@ -523,7 +523,7 @@ export class PrismaBookmarkTimelineRepository
         deletedAt: null,
       },
       orderBy: {
-        createdAt: filter.afterId ? 'asc' : 'desc',
+        createdAt: 'desc',
       },
       ...(filter.beforeId
         ? {
@@ -548,7 +548,9 @@ export class PrismaBookmarkTimelineRepository
             skip: 1,
           }
         : {}),
-      take: this.#TIMELINE_NOTE_LIMIT,
+      take: filter.afterId
+        ? -this.#TIMELINE_NOTE_LIMIT
+        : this.#TIMELINE_NOTE_LIMIT,
     });
 
     return Result.ok(this.deserialize(bookmarks));
