@@ -35,27 +35,8 @@
   },
   "assist": { "actions": { "source": { "organizeImports": "on" } } },
 
-  // linter
+  // linter (replaced by oxlint, see .oxlintrc.json)
   "linter": {
-    "enabled": true,
-    "rules": {
-      "preset": "recommended",
-      "suspicious": {
-        "noShadowRestrictedNames": "off",
-        "noImportCycles": "error"
-      },
-      "style": {
-        "noParameterAssign": "error",
-        "useAsConstAssertion": "error",
-        "useDefaultParameterLast": "error",
-        "useEnumInitializers": "error",
-        "useSelfClosingElements": "error",
-        "useSingleVarDeclarator": "error",
-        "noUnusedTemplateLiteral": "error",
-        "useNumberNamespace": "error",
-        "noInferrableTypes": "error",
-        "noUselessElse": "error"
-      }
-    }
+    "enabled": false
   }
 }

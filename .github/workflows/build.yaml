@@ -39,6 +39,10 @@ jobs:
         run: |
           pnpm biome ci
 
+      - name: Run lint
+        run: |
+          pnpm lint
+
       - name: Run ls-lint
         run: |
           pnpm check:filename
