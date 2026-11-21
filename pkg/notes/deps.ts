@@ -111,6 +111,7 @@ const createBookmarkServiceObj = Ether.runEther(
 
 const deleteBookmarkServiceObj = Ether.runEther(
   Cat.cat(deleteBookmarkService)
+    .feed(Ether.compose(noteRepoEther))
     .feed(Ether.compose(bookmarkRepository))
     .feed(Ether.compose(eventPublisherEther)).value,
 );
