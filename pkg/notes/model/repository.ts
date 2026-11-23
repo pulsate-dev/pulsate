@@ -2,11 +2,59 @@ import { Ether, type Option, type Result } from '@mikuroxina/mini-fn';
 
 import type { AccountID } from '../../accounts/model/account.ts';
 import type { Medium, MediumID } from '../../drive/model/medium.ts';
+import type { Principal } from '../../internal/policy/principal.ts';
+import type {
+  NoteReadContext,
+  NoteReadResource,
+  NoteReadScope,
+} from '../policy/notePolicy.ts';
 import type { Bookmark } from './bookmark.ts';
 import type { DirectNote, DirectNoteID } from './directNote.ts';
 import type { Note, NoteID } from './note.ts';
 import type { Reaction, ReactionID } from './reaction.ts';
 import type { RenoteStatus } from './renoteStatus.ts';
+
+export interface NoteReadProfile {
+  readonly id: AccountID;
+  readonly name: string;
+  readonly display_name: string;
+  readonly bio: string;
+}
+
+export interface NoteReadRepository {
+  findAuthorization(
+    noteId: NoteID,
+    principal: Principal<AccountID>,
+  ): Promise<
+    Result.Result<
+      Error,
+      Option.Option<{
+        resource: NoteReadResource;
+        context: NoteReadContext;
+      }>
+    >
+  >;
+  findNote(scope: NoteReadScope): Promise<
+    Result.Result<
+      Error,
+      {
+        note: Note;
+        author: NoteReadProfile;
+      }
+    >
+  >;
+  findAttachments(
+    scope: NoteReadScope,
+  ): Promise<Result.Result<Error, Medium[]>>;
+  findReactions(
+    scope: NoteReadScope,
+  ): Promise<Result.Result<Error, Reaction[]>>;
+  findRenoteStatus(
+    scope: NoteReadScope,
+  ): Promise<Result.Result<Error, boolean>>;
+}
+
+export const noteReadRepoSymbol = Ether.newEtherSymbol<NoteReadRepository>();
 
 export interface NoteRepository {
   create(note: Note): Promise<Result.Result<Error, void>>;

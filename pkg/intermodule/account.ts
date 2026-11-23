@@ -1,21 +1,20 @@
 import { Cat, Ether, Option, Result } from '@mikuroxina/mini-fn';
-import { InMemoryAccountRepository } from '../accounts/adaptor/repository/dummy/account.ts';
 import { inMemoryAccountAvatarRepo } from '../accounts/adaptor/repository/dummy/avatar.ts';
-import { newFollowRepo } from '../accounts/adaptor/repository/dummy/follow.ts';
 import { inMemoryAccountHeaderRepo } from '../accounts/adaptor/repository/dummy/header.ts';
 import { prismaAccountAvatarRepo } from '../accounts/adaptor/repository/prisma/avatar.ts';
 import { prismaAccountHeaderRepo } from '../accounts/adaptor/repository/prisma/header.ts';
 import {
-  PrismaAccountRepository,
-  prismaFollowRepo,
-} from '../accounts/adaptor/repository/prisma/prisma.ts';
+  accountFollowRepository,
+  accountRepository,
+  dummyAccountRepository,
+  dummyFollowRepository,
+} from '../accounts/adaptor/repository/shared.ts';
 import type {
   Account,
   AccountID,
   AccountName,
 } from '../accounts/model/account.ts';
 import type { AccountFollow } from '../accounts/model/follow.ts';
-import { accountRepoSymbol } from '../accounts/model/repository.ts';
 import {
   type AccountAvatarService,
   accountAvatar,
@@ -28,7 +27,6 @@ import {
   type AccountHeaderService,
   accountHeader,
 } from '../accounts/service/header.ts';
-import { dummyAccounts, dummyfollows } from '../accounts/testData/testData.ts';
 import { isProduction } from '../adaptors/env.ts';
 import { prismaClient } from '../adaptors/prisma.ts';
 import type { Medium } from '../drive/model/medium.ts';
@@ -62,6 +60,13 @@ export class AccountModuleFacade {
 
   async fetchAccount(id: AccountID): Promise<Result.Result<Error, Account>> {
     return await this.#fetchService.fetchAccountByID(id);
+  }
+
+  async hasActiveFollow(
+    fromID: AccountID,
+    targetID: AccountID,
+  ): Promise<Result.Result<Error, boolean>> {
+    return this.#fetchFollowService.hasActiveFollow(fromID, targetID);
   }
 
   async fetchAccounts(
@@ -205,18 +210,6 @@ export class AccountModuleFacade {
 export const accountModuleFacadeSymbol =
   Ether.newEtherSymbol<AccountModuleFacade>();
 
-const accountRepoObject = isProduction
-  ? new PrismaAccountRepository(prismaClient)
-  : new InMemoryAccountRepository([]);
-const accountRepository = Ether.newEther(
-  accountRepoSymbol,
-  () => accountRepoObject,
-);
-
-const accountFollowRepository = isProduction
-  ? prismaFollowRepo(prismaClient)
-  : newFollowRepo();
-
 const accountHeaderRepository = isProduction
   ? prismaAccountHeaderRepo(prismaClient)
   : inMemoryAccountHeaderRepo([], []);
@@ -243,19 +236,14 @@ export const accountModule = new AccountModuleFacade(
   ),
 );
 
-const inMemoryAccountRepository = Ether.newEther(
-  accountRepoSymbol,
-  () => new InMemoryAccountRepository(dummyAccounts),
-);
-const inMemoryFollowRepository = newFollowRepo(dummyfollows);
 export const dummyAccountModuleFacade = new AccountModuleFacade(
   Ether.runEther(
-    Cat.cat(fetch).feed(Ether.compose(inMemoryAccountRepository)).value,
+    Cat.cat(fetch).feed(Ether.compose(dummyAccountRepository)).value,
   ),
   Ether.runEther(
     Cat.cat(fetchFollow)
-      .feed(Ether.compose(inMemoryFollowRepository))
-      .feed(Ether.compose(inMemoryAccountRepository)).value,
+      .feed(Ether.compose(dummyFollowRepository))
+      .feed(Ether.compose(dummyAccountRepository)).value,
   ),
   Ether.runEther(
     Cat.cat(accountAvatar)

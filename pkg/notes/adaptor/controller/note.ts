@@ -3,10 +3,11 @@ import { Option, Result } from '@mikuroxina/mini-fn';
 
 import type { AccountID } from '../../../accounts/model/account.ts';
 import type { MediumID } from '../../../drive/model/medium.ts';
-import type { AccountModuleFacade } from '../../../intermodule/account.ts';
+import type { Principal } from '../../../internal/policy/principal.ts';
 import type { NoteID, NoteVisibility } from '../../model/note.ts';
 import type { CreateService } from '../../service/create.ts';
 import type { FetchService } from '../../service/fetch.ts';
+import type { ReadNoteService } from '../../service/read.ts';
 import type { RenoteService } from '../../service/renote.ts';
 import type {
   CreateNoteResponseSchema,
@@ -18,17 +19,17 @@ export class NoteController {
   readonly #createService: CreateService;
   readonly #fetchService: FetchService;
   readonly #renoteService: RenoteService;
-  readonly #accountModule: AccountModuleFacade;
+  readonly #readService: ReadNoteService;
   constructor(
     createService: CreateService,
     fetchService: FetchService,
     renoteService: RenoteService,
-    accountModule: AccountModuleFacade,
+    readService: ReadNoteService,
   ) {
     this.#createService = createService;
     this.#fetchService = fetchService;
     this.#renoteService = renoteService;
-    this.#accountModule = accountModule;
+    this.#readService = readService;
   }
 
   async createNote(args: {
@@ -82,46 +83,12 @@ export class NoteController {
 
   async getNoteByID(
     noteID: string,
-    accountID: Option.Option<AccountID>,
+    principal: Principal<AccountID>,
   ): Promise<Result.Result<Error, z.infer<typeof GetNoteResponseSchema>>> {
-    const noteRes = await this.#fetchService.fetchNoteByID(noteID as NoteID);
-    if (Option.isNone(noteRes)) {
-      return Result.err(new Error('Note not found'));
-    }
-    const note = Option.unwrap(noteRes);
-
-    const authorAccountRes = await this.#accountModule.fetchAccount(
-      note.getAuthorID(),
-    );
-    if (Result.isErr(authorAccountRes)) {
-      return authorAccountRes;
-    }
-    const author = Result.unwrap(authorAccountRes);
-
-    const attachmentsRes = await this.#fetchService.fetchNoteAttachments(
-      note.getID(),
-    );
-    if (Result.isErr(attachmentsRes)) {
-      return attachmentsRes;
-    }
-    const attachments = Result.unwrap(attachmentsRes);
-
-    const reactionsRes = await this.#fetchService.fetchNoteReactions(
-      note.getID(),
-    );
-    if (Result.isErr(reactionsRes)) {
-      return reactionsRes;
-    }
-    const reactions = Result.unwrap(reactionsRes);
-
-    // FIXME: complex 3ternary operator
-    const isRenoted = Option.isSome(accountID)
-      ? (
-          await this.#fetchService.fetchRenoteStatus(Option.unwrap(accountID), [
-            note.getID(),
-          ])
-        )[0]?.getIsRenoted() || false
-      : false;
+    const result = await this.#readService.handle(noteID as NoteID, principal);
+    if (Result.isErr(result)) return result;
+    const { note, author, attachments, reactions, renoted } =
+      Result.unwrap(result);
 
     return Result.ok({
       id: note.getID(),
@@ -148,17 +115,16 @@ export class NoteController {
         };
       }),
       author: {
-        id: author.getID(),
-        name: author.getName(),
-        display_name: author.getNickname(),
-        bio: author.getBio(),
-        // ToDo: fill avatar, header
+        id: author.id,
+        name: author.name,
+        display_name: author.display_name,
+        bio: author.bio,
         avatar: '',
         header: '',
         followed_count: 0,
         following_count: 0,
       },
-      renoted: isRenoted,
+      renoted,
     });
   }
 

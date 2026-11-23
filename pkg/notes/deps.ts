@@ -13,6 +13,7 @@ import { clockSymbol, snowflakeIDGenerator } from '../internal/id/mod.ts';
 import { BookmarkController } from './adaptor/controller/bookmark.ts';
 import { NoteController } from './adaptor/controller/note.ts';
 import { ReactionController } from './adaptor/controller/reaction.ts';
+import { InMemoryNoteReadRepository } from './adaptor/repository/dummy/noteRead.ts';
 import {
   inMemoryBookmarkRepo,
   inMemoryNoteAttachmentRepo,
@@ -26,12 +27,14 @@ import {
   prismaNoteRepo,
   prismaReactionRepo,
 } from './adaptor/repository/prisma/note.ts';
+import { PrismaNoteReadRepository } from './adaptor/repository/prisma/noteRead.ts';
 import { createService } from './service/create.ts';
 import { createBookmark } from './service/createBookmark.ts';
 import { createReactionService } from './service/createReaction.ts';
 import { deleteBookmarkService } from './service/deleteBookmark.ts';
 import { deleteReaction } from './service/deleteReaction.ts';
 import { fetch } from './service/fetch.ts';
+import { ReadNoteService } from './service/read.ts';
 import { renote } from './service/renote.ts';
 
 // These dependency Ethers are shared with the intermodule layer so both use the same instances.
@@ -99,7 +102,16 @@ export const noteController = new NoteController(
   noteCreateServiceInstance,
   noteFetchServiceInstance,
   noteRenoteServiceInstance,
-  isProduction ? accountModule : dummyAccountModuleFacade,
+  new ReadNoteService(
+    isProduction
+      ? new PrismaNoteReadRepository(prismaClient)
+      : new InMemoryNoteReadRepository(
+          Ether.runEther(noteRepoEther),
+          Ether.runEther(noteAttachmentRepoEther),
+          Ether.runEther(noteReactionRepoEther),
+          dummyAccountModuleFacade,
+        ),
+  ),
 );
 
 const createBookmarkServiceObj = Ether.runEther(

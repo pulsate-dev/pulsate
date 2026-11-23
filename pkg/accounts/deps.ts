@@ -9,21 +9,18 @@ import { eventPublisherEther } from '../internal/event/mod.ts';
 import { clockSymbol, snowflakeIDGenerator } from '../internal/id/mod.ts';
 import { argon2idPasswordEncoder } from '../internal/password/mod.ts';
 import { AccountController } from './adaptor/controller/account.ts';
-import { InMemoryAccountRepository } from './adaptor/repository/dummy/account.ts';
 import { inMemoryAccountAvatarRepo } from './adaptor/repository/dummy/avatar.ts';
-import { newFollowRepo } from './adaptor/repository/dummy/follow.ts';
 import { inMemoryAccountHeaderRepo } from './adaptor/repository/dummy/header.ts';
 import { inactiveAccountRepo } from './adaptor/repository/dummy/inactiveAccount.ts';
 import { verifyTokenRepo } from './adaptor/repository/dummy/verifyToken.ts';
 import { prismaAccountAvatarRepo } from './adaptor/repository/prisma/avatar.ts';
 import { prismaAccountHeaderRepo } from './adaptor/repository/prisma/header.ts';
 import { prismaInactiveAccountRepo } from './adaptor/repository/prisma/inactiveAccount.ts';
+import { prismaVerifyTokenRepo } from './adaptor/repository/prisma/prisma.ts';
 import {
-  PrismaAccountRepository,
-  prismaFollowRepo,
-  prismaVerifyTokenRepo,
-} from './adaptor/repository/prisma/prisma.ts';
-import { accountRepoSymbol } from './model/repository.ts';
+  accountFollowRepository,
+  accountRepository,
+} from './adaptor/repository/shared.ts';
 import { authenticate } from './service/authenticate.ts';
 import {
   authenticateToken,
@@ -42,7 +39,6 @@ import { resendToken } from './service/resendToken.ts';
 import { silence } from './service/silence.ts';
 import { unfollow } from './service/unfollow.ts';
 import { verifyAccountToken } from './service/verifyToken.ts';
-import { dummyAccounts } from './testData/testData.ts';
 
 class Clock {
   now() {
@@ -68,17 +64,6 @@ export const authenticationTokenService = Ether.runEtherT(authToken);
 
 const isProduction = process.env.NODE_ENV === 'production';
 
-const accountRepoObject = isProduction
-  ? new PrismaAccountRepository(prismaClient)
-  : new InMemoryAccountRepository(dummyAccounts);
-const accountRepository = Ether.newEther(
-  accountRepoSymbol,
-  () => accountRepoObject,
-);
-
-const accountFollowRepository = isProduction
-  ? prismaFollowRepo(prismaClient)
-  : newFollowRepo();
 const accountHeaderRepository = isProduction
   ? prismaAccountHeaderRepo(prismaClient)
   : inMemoryAccountHeaderRepo([], []);

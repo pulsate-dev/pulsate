@@ -7,6 +7,7 @@ import {
   AuthenticateMiddlewareService,
   type AuthMiddlewareVariable,
 } from '../../adaptors/authenticateMiddleware.ts';
+import type { Principal } from '../../internal/policy/principal.ts';
 import { noteModuleLogger } from '../adaptor/logger.ts';
 import {
   bookmarkController,
@@ -104,7 +105,17 @@ noteHandlers[GetNoteRoute.method](
 noteHandlers.openapi(GetNoteRoute, async (c) => {
   const { id } = c.req.param();
   const accountId = c.get('accountID') as Option.Option<AccountID>;
-  const res = await noteController.getNoteByID(id, accountId);
+  const principal = Option.unwrapOr<Principal<AccountID>>({
+    kind: 'anonymous',
+  })(
+    Option.map(
+      (accountId: AccountID): Principal<AccountID> => ({
+        kind: 'account',
+        accountId,
+      }),
+    )(accountId),
+  );
+  const res = await noteController.getNoteByID(id, principal);
   if (Result.isErr(res)) {
     const error = Result.unwrapErr(res);
     noteModuleLogger.warn(error);
