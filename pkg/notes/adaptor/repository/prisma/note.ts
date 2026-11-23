@@ -22,9 +22,9 @@ import {
 } from '../../../model/repository.ts';
 import { noteModuleLogger } from '../../logger.ts';
 
-type DeserializeNoteArgs = Awaited<
-  ReturnType<typeof prismaClient.note.findUnique>
->;
+type DeserializeNoteArgs = Prisma.NoteGetPayload<{
+  include: { noteAttachment: true };
+}>;
 
 export class PrismaNoteRepository implements NoteRepository {
   readonly #client: PrismaClient;
@@ -70,10 +70,7 @@ export class PrismaNoteRepository implements NoteRepository {
     };
   }
 
-  private deserialize(
-    data: DeserializeNoteArgs,
-    attachmentFileID: readonly MediumID[] = [],
-  ): Note {
+  private deserialize(data: DeserializeNoteArgs): Note {
     if (!data) {
       throw new Error('Invalid Note data');
     }
@@ -101,7 +98,9 @@ export class PrismaNoteRepository implements NoteRepository {
       originalNoteID: data.renoteId
         ? Option.some(data.renoteId as NoteID)
         : Option.none(),
-      attachmentFileID,
+      attachmentFileID: data.noteAttachment.map(
+        (attachment) => attachment.mediumId as MediumID,
+      ),
       // ToDo: add SendTo field to schema
       sendTo: Option.none(),
       updatedAt: Option.none(),
@@ -150,6 +149,7 @@ export class PrismaNoteRepository implements NoteRepository {
           deletedAt: null,
         },
         take: limit,
+        include: { noteAttachment: { where: { deletedAt: null } } },
         orderBy: {
           createdAt: 'desc',
         },
@@ -170,6 +170,7 @@ export class PrismaNoteRepository implements NoteRepository {
           },
           deletedAt: null,
         },
+        include: { noteAttachment: { where: { deletedAt: null } } },
         orderBy: {
           createdAt: 'desc',
         },
@@ -189,13 +190,7 @@ export class PrismaNoteRepository implements NoteRepository {
         },
         include: { noteAttachment: { where: { deletedAt: null } } },
       });
-      const { noteAttachment, ...noteData } = res;
-      return Option.some(
-        this.deserialize(
-          noteData,
-          noteAttachment.map((a) => a.mediumId as MediumID),
-        ),
-      );
+      return Option.some(this.deserialize(res));
     } catch {
       return Option.none();
     }

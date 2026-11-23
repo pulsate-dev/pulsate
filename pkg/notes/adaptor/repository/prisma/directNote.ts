@@ -1,7 +1,10 @@
 import { Ether, Option, Result } from '@mikuroxina/mini-fn';
 
 import type { AccountID } from '../../../../accounts/model/account.ts';
-import type { PrismaClient } from '../../../../adaptors/prisma/client.ts';
+import type {
+  Prisma,
+  PrismaClient,
+} from '../../../../adaptors/prisma/client.ts';
 import type { prismaClient } from '../../../../adaptors/prisma.ts';
 import { Medium, type MediumID } from '../../../../drive/model/medium.ts';
 import { DirectNote, type DirectNoteID } from '../../../model/directNote.ts';
@@ -12,9 +15,9 @@ import {
   directNoteRepoSymbol,
 } from '../../../model/repository.ts';
 
-type RawDirectNote = Awaited<
-  ReturnType<typeof prismaClient.directNote.findUnique>
->;
+type RawDirectNote = Prisma.DirectNoteGetPayload<{
+  include: { directNoteAttachment: true };
+}>;
 
 type RawDirectNoteAttachment = Awaited<
   ReturnType<
@@ -40,7 +43,9 @@ export class PrismaDirectNoteRepository implements DirectNoteRepository {
       recipientID: data.recipientId as AccountID,
       content: data.text,
       contentsWarningComment: data.contentsWarningComment,
-      attachmentFileID: [],
+      attachmentFileID: data.directNoteAttachment.map(
+        (attachment) => attachment.mediumId as MediumID,
+      ),
       createdAt: data.createdAt,
       deletedAt: data.deletedAt ? Option.some(data.deletedAt) : Option.none(),
     });
@@ -73,6 +78,7 @@ export class PrismaDirectNoteRepository implements DirectNoteRepository {
     try {
       const res = await this.#client.directNote.findUnique({
         where: { id, deletedAt: null },
+        include: { directNoteAttachment: { where: { deletedAt: null } } },
       });
       if (!res) return Result.ok(Option.none());
       return Result.ok(Option.some(this.deserialize(res)));
@@ -87,6 +93,7 @@ export class PrismaDirectNoteRepository implements DirectNoteRepository {
     try {
       const res = await this.#client.directNote.findMany({
         where: { recipientId: recipientID, deletedAt: null },
+        include: { directNoteAttachment: { where: { deletedAt: null } } },
         orderBy: { createdAt: 'desc' },
       });
       return Result.ok(res.map((v) => this.deserialize(v)));

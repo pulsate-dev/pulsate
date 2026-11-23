@@ -73,7 +73,7 @@ export class PrismaAccountHeaderRepository implements AccountHeaderRepository {
     accountIDs: readonly AccountID[],
   ): Promise<Result.Result<Error, Medium[]>> {
     try {
-      const res = await this.#prisma.accountAvatar.findMany({
+      const res = await this.#prisma.accountHeader.findMany({
         where: {
           accountId: {
             in: accountIDs as AccountID[],
