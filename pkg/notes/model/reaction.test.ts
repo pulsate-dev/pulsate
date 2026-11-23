@@ -47,12 +47,12 @@ const quoteNote = noteFactory(
   Option.some(normalNote.getID()),
 );
 
-const baseArgs: CreateReactionArgs = {
+const baseArgs = {
   id: generateDummyID<Reaction>(),
   note: normalNote,
   accountID: generateDummyID<Account>(),
   body: '👍',
-};
+} as const satisfies CreateReactionArgs;
 
 describe('Reaction', () => {
   describe('valid input', () => {

@@ -13,14 +13,14 @@ import { type CreateListArgs, List } from './list.ts';
 describe('List', () => {
   const memberId = generateDummyID<Account>();
   const newMemberId = generateDummyID<Account>();
-  const args: CreateListArgs = {
+  const args = {
     id: generateDummyID<List>(),
     title: 'My List',
     publicity: 'PUBLIC',
     ownerId: generateDummyID<Account>(),
     memberIds: [memberId],
     createdAt: new Date(),
-  } as const;
+  } as const satisfies CreateListArgs;
 
   describe('new', () => {
     it('should create a new list', () => {
