@@ -39,8 +39,7 @@ export class PrismaDirectNoteRepository implements DirectNoteRepository {
       authorID: data.authorId as AccountID,
       recipientID: data.recipientId as AccountID,
       content: data.text,
-      // NOTE: contentsWarningComment is not stored in DB yet
-      contentsWarningComment: '',
+      contentsWarningComment: data.contentsWarningComment,
       attachmentFileID: [],
       createdAt: data.createdAt,
       deletedAt: data.deletedAt ? Option.some(data.deletedAt) : Option.none(),
@@ -53,6 +52,7 @@ export class PrismaDirectNoteRepository implements DirectNoteRepository {
         data: {
           id: note.getID(),
           text: note.getContent(),
+          contentsWarningComment: note.getCwComment(),
           authorId: note.getAuthorID(),
           recipientId: note.getRecipientID(),
           createdAt: note.getCreatedAt(),
