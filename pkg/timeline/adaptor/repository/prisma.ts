@@ -93,7 +93,7 @@ export class PrismaTimelineRepository implements TimelineRepository {
         authorID: v.authorId as AccountID,
         createdAt: v.createdAt,
         deletedAt: !v.deletedAt ? Option.none() : Option.some(v.deletedAt),
-        contentsWarningComment: '',
+        contentsWarningComment: v.contentsWarningComment,
         originalNoteID: !v.renoteId
           ? Option.none()
           : Option.some(v.renoteId as NoteID),
@@ -579,7 +579,7 @@ export class PrismaConversationRepository implements ConversationRepository {
       authorID: data.authorId as AccountID,
       recipientID: data.recipientId as AccountID,
       content: data.text,
-      contentsWarningComment: '',
+      contentsWarningComment: data.contentsWarningComment,
       attachmentFileID: [],
       createdAt: data.createdAt,
       deletedAt: data.deletedAt ? Option.some(data.deletedAt) : Option.none(),

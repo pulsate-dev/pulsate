@@ -49,6 +49,7 @@ export class PrismaNoteRepository implements NoteRepository {
     return {
       id: note.getID(),
       text: note.getContent(),
+      contentsWarningComment: note.getCwComment(),
       visibility: visibility(),
       author: {
         connect: {
@@ -93,7 +94,7 @@ export class PrismaNoteRepository implements NoteRepository {
       authorID: data.authorId as AccountID,
       createdAt: data.createdAt,
       deletedAt: !data.deletedAt ? Option.none() : Option.some(data.deletedAt),
-      contentsWarningComment: '',
+      contentsWarningComment: data.contentsWarningComment,
       originalNoteID: data.renoteId
         ? Option.some(data.renoteId as NoteID)
         : Option.none(),

@@ -62,13 +62,14 @@ model Following {
 }
 
 model Note {
-  id         String  @id
-  text       String  @db.Text
-  visibility Int     @default(0)
-  author     Account @relation("author", fields: [authorId], references: [id])
-  authorId   String  @map("author_id")
-  renoteId   String? @map("renote_id")
-  renote     Note?   @relation("renote", fields: [renoteId], references: [id])
+  id                     String  @id
+  text                   String  @db.Text
+  contentsWarningComment String  @default("") @map("contents_warning_comment") @db.Text
+  visibility             Int     @default(0)
+  author                 Account @relation("author", fields: [authorId], references: [id])
+  authorId               String  @map("author_id")
+  renoteId               String? @map("renote_id")
+  renote                 Note?   @relation("renote", fields: [renoteId], references: [id])
 
   createdAt      DateTime         @default(now()) @map("created_at")
   deletedAt      DateTime?        @map("deleted_at")
@@ -81,12 +82,13 @@ model Note {
 }
 
 model DirectNote {
-  id          String  @id
-  text        String  @db.Text
-  author      Account @relation("directNoteAuthor", fields: [authorId], references: [id])
-  authorId    String  @map("author_id")
-  recipient   Account @relation("directNoteRecipient", fields: [recipientId], references: [id])
-  recipientId String  @map("recipient_id")
+  id                     String  @id
+  text                   String  @db.Text
+  contentsWarningComment String  @default("") @map("contents_warning_comment") @db.Text
+  author                 Account @relation("directNoteAuthor", fields: [authorId], references: [id])
+  authorId               String  @map("author_id")
+  recipient              Account @relation("directNoteRecipient", fields: [recipientId], references: [id])
+  recipientId            String  @map("recipient_id")
 
   createdAt            DateTime               @default(now()) @map("created_at")
   deletedAt            DateTime?              @map("deleted_at")
