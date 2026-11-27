@@ -9,7 +9,7 @@ import {
   type CreateAccountArgs,
 } from './account.ts';
 
-const exampleInput: CreateAccountArgs = {
+const exampleInput = {
   id: generateDummyID<Account>(),
   bio: "this is john doe's account!",
   createdAt: new Date('2023-09-10T00:00:00.000Z'),
@@ -23,7 +23,7 @@ const exampleInput: CreateAccountArgs = {
   name: '@johndoe@social.example.com',
   updatedAt: new Date('2023-09-10T09:00:00.000Z'),
   deletedAt: new Date('2023-09-10T10:00:00.000Z'),
-};
+} as const satisfies CreateAccountArgs;
 
 const newAccount = () => Account.new(exampleInput, Option.none());
 

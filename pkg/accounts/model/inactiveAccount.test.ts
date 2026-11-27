@@ -9,13 +9,13 @@ import {
   InactiveAccount,
 } from './inactiveAccount.ts';
 
-const exampleInput: CreateInactiveAccountArgs = {
+const exampleInput = {
   id: generateDummyID<Account>(),
   name: '@johndoe@social.example.com',
   mail: 'test@mail.example.com',
   passphraseHash: 'leknflkwnrigohidvlk',
   role: 'admin',
-};
+} as const satisfies CreateInactiveAccountArgs;
 
 const exampleActivateArgs: ActivateArgs = {
   createdAt: new Date('2023-09-10T00:00:00.000Z'),

@@ -6,10 +6,10 @@ import { generateDummyID } from '../../internal/id/dummy.ts';
 import { Bookmark, type CreateBookmarkArgs } from './bookmark.ts';
 import type { Note } from './note.ts';
 
-const exampleInput: CreateBookmarkArgs = {
+const exampleInput = {
   noteID: generateDummyID<Note>(),
   accountID: generateDummyID<Account>(),
-};
+} as const satisfies CreateBookmarkArgs;
 
 describe('Bookmark', () => {
   it('add note to bookmark', () => {

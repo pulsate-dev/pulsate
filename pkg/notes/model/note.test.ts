@@ -11,7 +11,7 @@ import {
 } from './errors.ts';
 import { type CreateNoteArgs, Note } from './note.ts';
 
-const exampleInput: CreateNoteArgs = {
+const exampleInput = {
   id: generateDummyID<Note>(),
   authorID: generateDummyID<Account>(),
   content: 'hello world!',
@@ -23,7 +23,7 @@ const exampleInput: CreateNoteArgs = {
   attachmentFileID: generateDummyIDs<Medium>(3),
   updatedAt: Option.none(),
   deletedAt: Option.none(),
-};
+} as const satisfies CreateNoteArgs;
 
 const actor = exampleInput.authorID;
 const otherAccountID = generateDummyID<Account>();

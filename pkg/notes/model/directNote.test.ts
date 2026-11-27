@@ -10,7 +10,7 @@ import {
   DirectNoteTooManyAttachmentsError,
 } from './errors.ts';
 
-const exampleInput: Omit<CreateDirectNoteArgs, 'deletedAt'> = {
+const exampleInput = {
   id: generateDummyID<DirectNote>(),
   authorID: generateDummyID<Account>(),
   recipientID: generateDummyID<Account>(),
@@ -18,7 +18,7 @@ const exampleInput: Omit<CreateDirectNoteArgs, 'deletedAt'> = {
   contentsWarningComment: '',
   attachmentFileID: [],
   createdAt: new Date('2023-09-10T00:00:00.000Z'),
-};
+} as const satisfies Omit<CreateDirectNoteArgs, 'deletedAt'>;
 
 describe('DirectNote', () => {
   it('generate new instance', () => {
