@@ -38,6 +38,7 @@ export class FollowService {
   ): Promise<Result.Result<Error, AccountFollow>> {
     const monad = Promise.resultMonad<Error>();
 
+    // TODO: Check for an active follow before creating the relationship.
     return Cat.doT(monad)
       .addM(
         'fromAccount',

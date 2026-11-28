@@ -28,6 +28,13 @@ export class FetchFollowService {
     return this.#accountFollowRepository.fetchAllFollowing(id);
   }
 
+  async hasActiveFollow(
+    fromID: AccountID,
+    targetID: AccountID,
+  ): Promise<Result.Result<Error, boolean>> {
+    return this.#accountFollowRepository.hasActiveFollow(fromID, targetID);
+  }
+
   async fetchFollowingsByName(
     name: AccountName,
   ): Promise<Result.Result<Error, AccountFollow[]>> {

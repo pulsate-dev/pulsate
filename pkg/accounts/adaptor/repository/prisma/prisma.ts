@@ -14,6 +14,7 @@ import {
   type AccountStatus,
 } from '../../../model/account.ts';
 import {
+  AccountAlreadyFollowingError,
   AccountInternalError,
   AccountNotFoundError,
 } from '../../../model/errors.ts';
@@ -294,25 +295,51 @@ export class PrismaAccountFollowRepository implements AccountFollowRepository {
     this.#prisma = prisma;
   }
 
+  async hasActiveFollow(
+    fromID: AccountID,
+    targetID: AccountID,
+  ): Promise<Result.Result<Error, boolean>> {
+    try {
+      const follow = await this.#prisma.following.findFirst({
+        where: { fromId: fromID, toId: targetID, deletedAt: null },
+        select: { fromId: true },
+      });
+      return Result.ok(follow !== null);
+    } catch (error) {
+      return Result.err(parsePrismaError(error));
+    }
+  }
+
   async follow(follow: AccountFollow): Promise<Result.Result<Error, void>> {
     try {
-      await this.#prisma.following.upsert({
+      // Restore only deleted rows; an active pair must not be a successful no-op.
+      const restored = await this.#prisma.following.updateMany({
         where: {
-          fromId_toId: {
-            fromId: follow.getFromID(),
-            toId: follow.getTargetID(),
-          },
+          fromId: follow.getFromID(),
+          toId: follow.getTargetID(),
+          deletedAt: { not: null },
         },
-        update: {
-          deletedAt: null,
-        },
-        create: {
+        data: { deletedAt: null },
+      });
+      if (restored.count > 0) return Result.ok(undefined);
+      await this.#prisma.following.create({
+        data: {
           fromId: follow.getFromID(),
           toId: follow.getTargetID(),
         },
       });
       return Result.ok(undefined);
     } catch (e) {
+      if (
+        e instanceof Prisma.PrismaClientKnownRequestError &&
+        e.code === 'P2002'
+      ) {
+        return Result.err(
+          new AccountAlreadyFollowingError('Account is already following', {
+            cause: e,
+          }),
+        );
+      }
       return Result.err(parsePrismaError(e));
     }
   }

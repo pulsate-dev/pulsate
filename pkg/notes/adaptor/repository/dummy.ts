@@ -91,6 +91,7 @@ export class InMemoryNoteRepository implements NoteRepository {
         [...this.#notes.values()].some(
           (note) =>
             note.getAuthorID() === accountId &&
+            Option.isNone(note.getDeletedAt()) &&
             Option.isSome(note.getOriginalNoteID()) &&
             Option.unwrap(note.getOriginalNoteID()) === noteID,
         ),
@@ -98,8 +99,10 @@ export class InMemoryNoteRepository implements NoteRepository {
     });
   }
 }
-export const inMemoryNoteRepo = (note: Note[]) =>
-  Ether.newEther(noteRepoSymbol, () => new InMemoryNoteRepository(note));
+export const inMemoryNoteRepo = (note: Note[]) => {
+  const repository = new InMemoryNoteRepository(note);
+  return Ether.newEther(noteRepoSymbol, () => repository);
+};
 
 export class InMemoryBookmarkRepository implements BookmarkRepository {
   readonly #bookmarks: Map<[NoteID, AccountID], Bookmark>;
@@ -188,10 +191,22 @@ export class InMemoryNoteAttachmentRepository
 {
   readonly #attachments: Map<NoteID, MediumID[]>;
   readonly #medium: Map<MediumID, Medium>;
+  readonly #deleted: {
+    attachments?: ReadonlyMap<NoteID, ReadonlySet<MediumID>>;
+    media?: ReadonlySet<MediumID>;
+  };
 
-  constructor(medium: Medium[], attachments: [NoteID, MediumID[]][]) {
+  constructor(
+    medium: Medium[],
+    attachments: [NoteID, MediumID[]][],
+    deleted: {
+      attachments?: ReadonlyMap<NoteID, ReadonlySet<MediumID>>;
+      media?: ReadonlySet<MediumID>;
+    } = {},
+  ) {
     this.#attachments = new Map(attachments);
     this.#medium = new Map(medium.map((m) => [m.getId(), m]));
+    this.#deleted = deleted;
   }
 
   async create(
@@ -215,6 +230,11 @@ export class InMemoryNoteAttachmentRepository
 
     // ToDo: make filter more safe (may be fix at TypeScript 5.4)
     const res = attachment
+      .filter(
+        (id) =>
+          !this.#deleted.attachments?.get(noteID)?.has(id) &&
+          !this.#deleted.media?.has(id),
+      )
       .map((id) => this.#medium.get(id))
       .filter((v): v is Medium => Boolean(v));
     return Result.ok(res);
@@ -223,19 +243,23 @@ export class InMemoryNoteAttachmentRepository
 export const inMemoryNoteAttachmentRepo = (
   medium: Medium[],
   attachments: [NoteID, MediumID[]][],
-) =>
-  Ether.newEther(
-    noteAttachmentRepoSymbol,
-    () => new InMemoryNoteAttachmentRepository(medium, attachments),
-  );
+) => {
+  const repository = new InMemoryNoteAttachmentRepository(medium, attachments);
+  return Ether.newEther(noteAttachmentRepoSymbol, () => repository);
+};
 
 export class InMemoryReactionRepository implements ReactionRepository {
   readonly #reactions: Map<ReactionID, Reaction>;
+  readonly #deleted: ReadonlySet<ReactionID>;
 
-  constructor(reactions: Reaction[] = []) {
+  constructor(
+    reactions: Reaction[] = [],
+    deleted: ReadonlySet<ReactionID> = new Set(),
+  ) {
     this.#reactions = new Map(
       reactions.map((reaction) => [reaction.getID(), reaction]),
     );
+    this.#deleted = deleted;
   }
 
   async create(reaction: Reaction): Promise<Result.Result<Error, void>> {
@@ -292,7 +316,7 @@ export class InMemoryReactionRepository implements ReactionRepository {
   }
   async findByNoteID(id: NoteID): Promise<Result.Result<Error, Reaction[]>> {
     const reactions = [...this.#reactions.entries()]
-      .filter((v) => v[1].getNoteID() === id)
+      .filter((v) => v[1].getNoteID() === id && !this.#deleted.has(v[0]))
       .map((v) => v[1]);
     return Result.ok(reactions);
   }
@@ -307,8 +331,7 @@ export class InMemoryReactionRepository implements ReactionRepository {
     return Result.ok(undefined);
   }
 }
-export const inMemoryReactionRepo = (reactions: Reaction[]) =>
-  Ether.newEther(
-    reactionRepoSymbol,
-    () => new InMemoryReactionRepository(reactions),
-  );
+export const inMemoryReactionRepo = (reactions: Reaction[]) => {
+  const repository = new InMemoryReactionRepository(reactions);
+  return Ether.newEther(reactionRepoSymbol, () => repository);
+};
