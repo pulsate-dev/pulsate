@@ -126,8 +126,7 @@ export class NotificationController {
       const avatar = avatars.get(notification.getActorID());
       if (!account) {
         throw new Error(
-          'Account not found for notification actor ID: ' +
-            notification.getActorID(),
+          `Account not found for notification actor ID: ${notification.getActorID()}`,
         );
       }
 

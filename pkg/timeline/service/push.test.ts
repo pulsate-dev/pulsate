@@ -96,7 +96,7 @@ describe('PushTimelineService', () => {
   });
 
   it('if Cache limit reached, delete oldest note', async () => {
-    const data = [...new Array(300)].map((_, i) =>
+    const data = Array.from({ length: 300 }, (_, i) =>
       generateDummyNote({
         authorID: dummyNoteAuthorID,
         content: `Hello world ${i}`,

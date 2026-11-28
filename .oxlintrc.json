@@ -1,0 +1,81 @@
+{
+  "$schema": "./node_modules/oxlint/configuration_schema.json",
+  "plugins": ["typescript", "unicorn", "oxc", "import"],
+  "categories": {
+    "correctness": "error"
+  },
+  "ignorePatterns": ["**/build", "pkg/adaptors/prisma/**"],
+  "rules": {
+    "no-shadow-restricted-names": "off",
+    "import/no-cycle": "error",
+    "no-param-reassign": "error",
+    "typescript/prefer-as-const": "error",
+    "default-param-last": "error",
+    "typescript/prefer-enum-initializers": "error",
+    "one-var": ["error", "never"],
+    "unicorn/prefer-number-properties": "error",
+    "typescript/no-inferrable-types": "error",
+    "no-else-return": "error",
+    "typescript/no-non-null-assertion": "error",
+    "typescript/no-explicit-any": "error",
+    "typescript/consistent-type-imports": "error",
+    "prefer-const": "error",
+    "no-var": "error",
+    "unicorn/prefer-node-protocol": "error",
+    "no-unused-vars": [
+      "error",
+      {
+        "argsIgnorePattern": "^_",
+        "varsIgnorePattern": "^_"
+      }
+    ],
+    "prefer-rest-params": "error",
+    "typescript/no-unsafe-function-type": "error",
+    "no-sequences": "error",
+    "no-labels": "error",
+    "no-constructor-return": "error",
+    "eqeqeq": "error",
+    "no-fallthrough": "error",
+    "no-inner-declarations": "error",
+    "no-use-before-define": [
+      "error",
+      { "functions": false, "classes": false, "variables": false }
+    ],
+    "no-label-var": "error",
+    "no-prototype-builtins": "error",
+    "no-redeclare": "error",
+    "no-self-compare": "error",
+    "unicorn/no-static-only-class": "error",
+    "no-case-declarations": "error",
+    "no-template-curly-in-string": "error",
+    "no-useless-constructor": "error",
+    "no-extra-label": "error",
+    "no-lone-blocks": "error",
+    "unicorn/no-useless-switch-case": "error",
+    "no-unneeded-ternary": "error",
+    "typescript/no-unnecessary-type-constraint": "error",
+    "typescript/adjacent-overload-signatures": "error",
+    "no-array-constructor": "error",
+    "prefer-arrow-callback": "error",
+    "unicorn/prefer-date-now": "error",
+    "default-case-last": "error",
+    "prefer-exponentiation-operator": "error",
+    "unicorn/prefer-array-flat-map": "error",
+    "unicorn/no-instanceof-array": "error",
+    "typescript/prefer-literal-enum-member": "error",
+    "prefer-numeric-literals": "error",
+    "prefer-regex-literals": "error",
+    "typescript/prefer-function-type": "error",
+    "prefer-template": "error",
+    "typescript/no-empty-interface": "error",
+    "typescript/ban-ts-comment": "error"
+  },
+  "overrides": [
+    {
+      "files": ["pkg/accounts/service/sendNotification.ts"],
+      "rules": {
+        "unicorn/no-empty-file": "off"
+      }
+    }
+  ]
+}

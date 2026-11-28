@@ -2,6 +2,7 @@ import { describe, expect, it } from 'vitest';
 import { PolicyAction } from './policy.ts';
 
 class TestAction extends PolicyAction<string> {
+  // oxlint-disable-next-line no-useless-constructor -- Widens the protected base constructor to public for tests.
   constructor(policyName: string, modelName: string, actionName: string) {
     super(policyName, modelName, actionName);
   }
