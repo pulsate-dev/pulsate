@@ -15,6 +15,7 @@ import {
   EmojiNotFound,
   InvalidVisibility,
   NoDestination,
+  NoteBookmarkNotFound,
   NoteInternal,
   NoteNotFound,
   NotReacted,
@@ -251,7 +252,19 @@ export const DeleteBookmarkRoute = createRoute({
   },
   responses: {
     204: noContentResponse('OK'),
-    404: errorResponse('Bookmark not found', NoteNotFound),
+    404: {
+      description: 'Note not found',
+      content: {
+        'application/json': {
+          schema: z.object({
+            error: z.union([NoteNotFound, NoteBookmarkNotFound]).openapi({
+              description: 'Error codes',
+              example: 'NOTE_NOT_FOUND',
+            }),
+          }),
+        },
+      },
+    },
     500: internalErrorResponse(noteInternalErrorSchema),
   },
 });
